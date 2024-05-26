@@ -3,8 +3,8 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from pathlib import Path
 from app.models import mongodb
-from app.models.book import BookModel
-from app.book_scraper import NaverBookScraper
+from app.models.oliveyoung import BrandListModel
+from app.oliveyoung_scraper import BrandList
 from datetime import datetime
 
 # from fastapi.staticfiles import StaticFiles
@@ -18,7 +18,7 @@ templates = Jinja2Templates(directory=BASE_DIR / "templates")
 
 @app.get("/", response_class=HTMLResponse)
 async def root(request: Request):
-    # book = BookModel(
+    # book = BrandListModel(
     #     keyword="파이썬",
     #     publisher="BJPublic",
     #     price=1200,
@@ -41,19 +41,21 @@ async def search(request: Request, q: str):
         return templates.TemplateResponse(
             "./index.html", {"request": request, "title": "콜렉터 북북이"}
         )
-    if await mongodb.engine.find_one(BookModel, BookModel.keyword == keyword):
-        books = await mongodb.engine.find(BookModel, BookModel.keyword == keyword)
+    if await mongodb.engine.find_one(BrandListModel, BrandListModel.keyword == keyword):
+        books = await mongodb.engine.find(
+            BrandListModel, BrandListModel.keyword == keyword
+        )
         return templates.TemplateResponse(
             "./index.html",
             {"request": request, "title": "콜렉터 북북이", "books": books},
         )
     #     해당 검색어에 대해 수집된 데이터가 이미 DB에 존재한다면 해당 데이터를 사용자에게 보여준다. return
     # 2. 데이터 수집기로 해당 검색어에 대해 데이터를 수집한다.
-    naver_book_scraper = NaverBookScraper()
+    naver_book_scraper = BrandList()
     books = await naver_book_scraper.search(keyword, 10)
     book_models = []
     for book in books:
-        book_model = BookModel(
+        book_model = BrandListModel(
             keyword=keyword,
             publisher=book["publisher"],
             price=book["discount"],

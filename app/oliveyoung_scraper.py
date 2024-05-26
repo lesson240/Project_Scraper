@@ -1,6 +1,14 @@
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from bs4 import BeautifulSoup
 import aiohttp
 import asyncio
-from app.config import get_secret
+import re
+from datetime import date
+import math
+import time
+
 
 # import os
 # import aiofiles
@@ -10,7 +18,7 @@ from app.config import get_secret
 # ua.random
 
 
-class NaverBookScraper:
+class BrandList:
 
     NAVER_API_BOOK = "https://openapi.naver.com/v1/search/book"
     NAVER_API_ID = get_secret("NAVER_API_ID")
