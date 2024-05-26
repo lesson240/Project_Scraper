@@ -21,8 +21,6 @@ import time
 class BrandList:
 
     NAVER_API_BOOK = "https://openapi.naver.com/v1/search/book"
-    NAVER_API_ID = get_secret("NAVER_API_ID")
-    NAVER_API_SECRET = get_secret("NAVER_API_SECRET")
 
     @staticmethod
     async def fetch(session, url, headers):
@@ -44,10 +42,7 @@ class BrandList:
         apis = [self.unit_url(keyword, 1 + i * 10) for i in range(total_page)]
         async with aiohttp.ClientSession() as session:
             all_data = await asyncio.gather(
-                *[
-                    NaverBookScraper.fetch(session, api["url"], api["headers"])
-                    for api in apis
-                ]
+                *[BrandList.fetch(session, api["url"], api["headers"]) for api in apis]
             )
             result = []
             for data in all_data:
@@ -61,5 +56,5 @@ class BrandList:
 
 
 if __name__ == "__main__":
-    scraper = NaverBookScraper()
+    scraper = BrandList()
     print(scraper.run("파이썬", 3))
