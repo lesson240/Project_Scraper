@@ -4,7 +4,6 @@ from odmantic import Model
 class BrandListModel(Model):
     code: str
     brand: str
-    time: str
     status: str
     collection_time: str
 

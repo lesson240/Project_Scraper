@@ -6,6 +6,7 @@ from app.models import mongodb
 from app.models.oliveyoung import BrandListModel
 from app.oliveyoung_scraper import BrandList
 from datetime import datetime
+import asyncio
 
 # from fastapi.staticfiles import StaticFiles
 
@@ -17,63 +18,41 @@ templates = Jinja2Templates(directory=BASE_DIR / "templates")
 
 
 @app.get("/", response_class=HTMLResponse)
-async def root(request: Request):
-    # book = BrandListModel(
-    #     keyword="파이썬",
-    #     publisher="BJPublic",
-    #     price=1200,
-    #     image="me.png",
-    #     hhh="askljdlkas",
-    # )
-    # await mongodb.engine.save(book)  # DB에 저장
+def root(request: Request):
     return templates.TemplateResponse(
-        "./index.html", {"request": request, "title": "콜렉터 북북이"}
+        "./index.html", {"request": request, "title": "올리브영 수집기"}
     )
 
 
-@app.get("/search", response_class=HTMLResponse)
-async def search(request: Request, q: str):
-    # 1. 쿼리에서 검색어 추출
-    keyword = q
-    #     (예외처리)
-    #     검색어가 없다면, 사용자에게 검색을 요구 return
-    if not keyword:
-        return templates.TemplateResponse(
-            "./index.html", {"request": request, "title": "콜렉터 북북이"}
+@app.get("/collect", response_class=HTMLResponse)
+async def collect(request: Request):
+    # 1. BRAND_LIST 수집 시, SCRAPER 로 BRAND_LIST를 수집한다.
+    brands = BrandList.run()
+    oliveyoung_models = []
+    for brand in brands:
+        print(brand)
+        oliveyoung_model = BrandListModel(
+            code=brand["code"],
+            brand=brand["brand"],
+            collection_time=brand["time"],
+            status=brand["status"],
         )
-    if await mongodb.engine.find_one(BrandListModel, BrandListModel.keyword == keyword):
-        books = await mongodb.engine.find(
-            BrandListModel, BrandListModel.keyword == keyword
-        )
-        return templates.TemplateResponse(
-            "./index.html",
-            {"request": request, "title": "콜렉터 북북이", "books": books},
-        )
-    #     해당 검색어에 대해 수집된 데이터가 이미 DB에 존재한다면 해당 데이터를 사용자에게 보여준다. return
-    # 2. 데이터 수집기로 해당 검색어에 대해 데이터를 수집한다.
-    naver_book_scraper = BrandList()
-    books = await naver_book_scraper.search(keyword, 10)
-    book_models = []
-    for book in books:
-        book_model = BrandListModel(
-            keyword=keyword,
-            publisher=book["publisher"],
-            price=book["discount"],
-            image=book["image"],
-        )
-        book_models.append(book_model)
-    # 3. DB에 수집된 데이터를 저장한다.
-    await mongodb.engine.save_all(book_models)
+        oliveyoung_models.append(oliveyoung_model)
 
-    #     수집된 각각의 데이터에 대해서 DB에 들어갈 모델 인스턴스를 찍는다.
-    #     각 모델 인스턴스를 DB에 저장한다.
+    # 2. DB에 수집된 데이터를 저장한다. (모델 인스턴스를 통해 각 DB에 저장)
+    await mongodb.engine.save_all(oliveyoung_models)
+
+    # (예외 처리)  동일한 BRAND_CODE의 DIC VALUE는 저장하지 않는다.
+
+    # 3. HTML BODY에 표시한다.
     return templates.TemplateResponse(
-        "./index.html", {"request": request, "title": "콜렉터 북북이", "books": books}
+        "./index.html",
+        {"request": request, "title": "올리브영 수집기", "brands": brands},
     )
 
 
 @app.on_event("startup")
-async def startup_event():
+def startup_event():
     # def on_app_start():
     """before app starts"""
     mongodb.connect()

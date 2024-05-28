@@ -16,37 +16,37 @@
 
 <body>
     <header>
-        <h1>콜렉터 북북이</h1>
+        <h1>올리브영 수집기</h1>
 
         <center>
-            <form id="search_form" action="/search">
-                <input type="search" placeholder="keyword" id="search_input" name="q" />
-                <button type="submit">검색</button>
+            <form id="button" action="/collect" method="get">
+                <!-- <input type="search" placeholder="keyword" id="search_input" name="q" /> -->
+                <button onclick="collect()">수집</button>
             </form>
         </center>
     </header>
     <main>
-        {% if books %}
+        {% if brands %}
         <center>
-            <h3 style="color:grey">{{books|length}}개 데이터 수집..</h3>
+            <h3 style="color:grey">{{brands|length}}개 데이터 수집..</h3>
         </center>
         <section>
-            {% for book in books %}
+            {% for brand in brands %}
             <div>
-                <img src="{{book.image}}" width="150px" height="200px" />
+                <!-- <img src="{{book.image}}" width="150px" height="200px" /> -->
                 <p>
-                    {% if book.publisher|length > 10 %}
-                    {{book.publisher[:10]}}...
-                    {% else %} {{book.price}} {% endif %}
+                    {% if brand.brand|length > 10 %}
+                    {{brand.brand[:10]}}...
+                    {% else %} {{brand.code}} {% endif %}
                 </p>
-                <p>{{book.discount}} 원</p>
+                <p>{{brand.time}}</p>
             </div>
             {% endfor %}
         </section>
-        {% else %}
+        <!-- {% else %}
         <center>
             <h3 style="color:grey">Please Input Keyword</h3>
-        </center>
+        </center> -->
         {% endif %}
     </main>
 </body>
