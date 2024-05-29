@@ -45,8 +45,7 @@ class BrandList:
                     area_info = soup.select("a[data-ref-onlbrndcd]")
                     # 데이터를 저장할 리스트
                     branddics = []
-
-                    existing_codes = {item["code"] for item in branddics}
+                    existing_codes = set()
                     collectiontime = datetime.now()
                     idx_counter = 1  # idx 값을 생성하기 위한 카운터
 

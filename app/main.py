@@ -1,7 +1,12 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
-from app.routers import collect, index  # , user 사용자 서비스를 비활성화합니다.
+from app.routers import (
+    collect,
+    index,
+    autocomplete,
+    brands,
+)  # , user 사용자 서비스를 비활성화합니다.
 from datetime import datetime
 from app.services.mongodb import mongodb_service
 import logging
@@ -20,6 +25,8 @@ logging.basicConfig(filename="log.txt", level=logging.INFO)
 # 라우터 추가
 app.include_router(index.router)
 app.include_router(collect.router)
+app.include_router(autocomplete.router)
+app.include_router(brands.router)
 # app.include_router(user.router)  # 사용자 서비스를 비활성화합니다.
 
 

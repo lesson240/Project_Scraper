@@ -1,4 +1,3 @@
-<!-- templates/index.html -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,6 +5,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title }}</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#input_brand").on("input", function () {
+                var query = $(this).val();
+                if (query.length > 2) {
+                    $.ajax({
+                        url: "/autocomplete/brands",
+                        type: "get",
+                        data: { query: query },
+                        success: function (data) {
+                            $("#autocomplete_list").empty();
+                            data.brands.forEach(function (brand) {
+                                $("#autocomplete_list").append("<option value='" + brand + "'>");
+                            });
+                        }
+                    });
+                }
+            });
+
+            $("#brand_form").on("submit", function (event) {
+                event.preventDefault();
+                var brandName = $("#input_brand").val();
+                $.ajax({
+                    url: "/get_brand_code",
+                    type: "get",
+                    data: { brand: brandName },
+                    success: function (data) {
+                        $("#input_code").val(data.code);
+                        $("#brand_form")[0].submit();  // 최종 폼 제출
+                    },
+                    error: function () {
+                        alert("브랜드 코드를 찾을 수 없습니다.");
+                    }
+                });
+            });
+        });
+    </script>
 </head>
 
 <body>
@@ -17,9 +54,11 @@
     </form>
 
     <!-- 브랜드 샵 수집 입력 폼 -->
-    <form action="/collect/brandshop" method="get">
-        <label for="input_code">브랜드 코드:</label>
-        <input type="text" id="input_code" name="input_code">
+    <form id="brand_form" action="/collect/brandshop" method="get">
+        <label for="input_brand">브랜드 이름:</label>
+        <input type="text" id="input_brand" list="autocomplete_list">
+        <datalist id="autocomplete_list"></datalist>
+        <input type="hidden" id="input_code" name="input_code">
         <button type="submit">브랜드 샵 수집</button>
     </form>
 
