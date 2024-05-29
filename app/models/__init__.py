@@ -4,19 +4,17 @@ from app.config import MONGO_DB_NAME, MONGO_DB_URL
 
 
 class MongoDB:
-
-    def __init__(self):
+    def __init__(self, url: str, db_name: str):
         self.client = None
+        self.db = None
         self.engine = None
+        self.url = url
+        self.db_name = db_name
 
-    def connect(self):
-        self.client = AsyncIOMotorClient(MONGO_DB_URL)
-        self.engine = AIOEngine(client=self.client, database=MONGO_DB_NAME)
-        print("DB와 성공적으로 연결되었습니다.")
+    async def connect(self):
+        self.client = AsyncIOMotorClient(self.url)
+        self.db = self.client[self.db_name]
+        self.engine = AIOEngine(client=self.client, database=self.db_name)
 
-    def close(self):
+    async def close(self):
         self.client.close()
-        print("DB와 성공적으로 연결을 끊었습니다")
-
-
-mongodb = MongoDB()

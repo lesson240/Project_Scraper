@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="" en">
+
+<head>
+    <title>{{ title }}</title>
+    <link href="https://unpkg.com/mvp.css" rel="stylesheet" />
+</head>
+
+<style>
+    section {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+</style>
+
+<body>
+    <header>
+        <h1>올리브영 수집기</h1>
+
+        <center>
+            <form id="button" action="/collect" method="get">
+                <!-- <input type="search" placeholder="keyword" id="search_input" name="q" /> -->
+                <button onclick="collect()">수집</button>
+            </form>
+        </center>
+    </header>
+    <main>
+        {% if brands %}
+        <center>
+            <h3 style="color:grey">{{brands|length}}개 데이터 수집..</h3>
+        </center>
+        <section>
+            {% for brand in brands %}
+            <div>
+                <!-- <img src="{{book.image}}" width="150px" height="200px" /> -->
+                <p>
+                    {% if brand.brand|length > 10 %}
+                    {{brand.brand[:10]}}...
+                    {% else %} {{brand.code}} {% endif %}
+                </p>
+                <p>{{brand.time}}</p>
+            </div>
+            {% endfor %}
+        </section>
+        <!-- {% else %}
+        <center>
+            <h3 style="color:grey">Please Input Keyword</h3>
+        </center> -->
+        {% endif %}
+    </main>
+</body>
+
+</html>

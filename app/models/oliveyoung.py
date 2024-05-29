@@ -2,6 +2,7 @@ from odmantic import Model
 
 
 class BrandListModel(Model):
+    idx: int
     code: str
     brand: str
     status: str
@@ -11,12 +12,13 @@ class BrandListModel(Model):
 
 
 class BrandShopModel(Model):
+    idx: int
     code: str
     name: str
-    total_price: int
-    sale: str
+    price: int
     sold_out: str
-    number: int
+    sale: str
+    coupon: str
     collection_time: str
 
     model_config = {"collection": "OYBrandShop"}
@@ -36,5 +38,3 @@ class GoodsDetailModel(Model):
     collection_time: str
 
     model_config = {"collection": "OYGoodsDetail"}
-
-    # TypeError: field Config is defined without type annotation

@@ -1,54 +1,46 @@
+<!-- templates/index.html -->
 <!DOCTYPE html>
-<html lang="" en">
+<html lang="en">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title }}</title>
-    <link href="https://unpkg.com/mvp.css" rel="stylesheet" />
 </head>
 
-<style>
-    section {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 15px;
-    }
-</style>
-
 <body>
-    <header>
-        <h1>올리브영 수집기</h1>
+    <h1>{{ title }}</h1>
 
-        <center>
-            <form id="button" action="/collect" method="get">
-                <!-- <input type="search" placeholder="keyword" id="search_input" name="q" /> -->
-                <button onclick="collect()">수집</button>
-            </form>
-        </center>
-    </header>
-    <main>
-        {% if brands %}
-        <center>
-            <h3 style="color:grey">{{brands|length}}개 데이터 수집..</h3>
-        </center>
-        <section>
-            {% for brand in brands %}
-            <div>
-                <!-- <img src="{{book.image}}" width="150px" height="200px" /> -->
-                <p>
-                    {% if brand.brand|length > 10 %}
-                    {{brand.brand[:10]}}...
-                    {% else %} {{brand.code}} {% endif %}
-                </p>
-                <p>{{brand.time}}</p>
-            </div>
-            {% endfor %}
-        </section>
-        <!-- {% else %}
-        <center>
-            <h3 style="color:grey">Please Input Keyword</h3>
-        </center> -->
-        {% endif %}
-    </main>
+    <!-- 브랜드 리스트 수집 버튼 -->
+    <form action="/collect/brandlist" method="get">
+        <button type="submit">브랜드 리스트 수집</button>
+    </form>
+
+    <!-- 브랜드 샵 수집 입력 폼 -->
+    <form action="/collect/brandshop" method="get">
+        <label for="input_code">브랜드 코드:</label>
+        <input type="text" id="input_code" name="input_code">
+        <button type="submit">브랜드 샵 수집</button>
+    </form>
+
+    <!-- 데이터 표시 -->
+    {% if brands %}
+    <h2>Brand List:</h2>
+    <ul>
+        {% for brand in brands %}
+        <li>{{ brand }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% if goods %}
+    <h2>Products:</h2>
+    <ul>
+        {% for good in goods %}
+        <li>{{ good }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
 </body>
 
 </html>
