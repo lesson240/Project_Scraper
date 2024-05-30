@@ -1,0 +1,64 @@
+/* app/static/css/product-collect/table.css */
+
+/* "수집" 버튼 스타일링 */
+#collect-btn {
+    background-color: #4CAF50;
+    /* Green */
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 10px;
+}
+
+#collect-btn:hover {
+    background-color: #45a049;
+}
+
+
+.table-responsive {
+    border-radius: 10px;
+    /* 테이블을 감싸는 div에 라운딩을 적용합니다. */
+    overflow: hidden;
+    /* 라운딩된 테이블이 div를 넘어가는 것을 방지합니다. */
+}
+
+.table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    /* 테이블 셀 사이의 간격을 없앱니다. */
+    width: 100%;
+    max-width: 100%;
+    /* 테이블이 부모 요소를 넘어가지 않도록 설정합니다. */
+    border-radius: 10px;
+    /* 테이블의 라운딩을 적용합니다. */
+}
+
+/* th에 배경색을 넣습니다. */
+.table th {
+    background-color: #ff0000;
+    /* 원하는 배경색으로 변경하세요 */
+}
+
+.table td {
+    padding: 10px;
+    /* 셀 내부의 여백을 지정합니다. */
+}
+
+
+.table-hover tbody tr:hover {
+    background-color: #c7cdff;
+    /* 마우스를 올린 행의 배경색을 지정합니다. */
+}
+
+
+.table tbody tr {
+    border-radius: 10px;
+    overflow: hidden;
+    /* 행의 라운딩이 부드럽게 보이도록 합니다. */
+}

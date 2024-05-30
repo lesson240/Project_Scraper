@@ -6,9 +6,16 @@ from app.routers import (
     index,
     autocomplete,
     brands,
+    pagecollect,
+    pagemanage,
+    pageorder,
+    pagesetting,
+    pageuser,
 )  # , user 사용자 서비스를 비활성화합니다.
+from app.endpoints import ep_collect
 from datetime import datetime
 from app.services.mongodb import mongodb_service
+from fastapi.middleware.cors import CORSMiddleware
 import logging
 
 app = FastAPI()
@@ -19,14 +26,33 @@ app.mount(
     "/static", StaticFiles(directory=BASE_DIR / "path/tabler/static"), name="static"
 )
 
+# CORS 설정
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # 로깅 설정
-logging.basicConfig(filename="log.txt", level=logging.INFO)
+logging.basicConfig(
+    filename="log.txt",
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+)
 
 # 라우터 추가
 app.include_router(index.router)
 app.include_router(collect.router)
-app.include_router(autocomplete.router)
+# app.include_router(autocomplete.router) # 에러 출력으로 임시 중단
 app.include_router(brands.router)
+app.include_router(pagecollect.router)
+app.include_router(pagemanage.router)
+app.include_router(pageorder.router)
+app.include_router(pagesetting.router)
+app.include_router(pageuser.router)
+app.include_router(ep_collect.router)
 # app.include_router(user.router)  # 사용자 서비스를 비활성화합니다.
 
 
@@ -44,3 +70,8 @@ async def shutdown_event():
     print("정상적으로 서버에 연결 해제되었습니다.")
     logging.info(f"Application shutdown: {datetime.now()}")
     await mongodb_service.close()
+
+
+@app.get("/")
+def read_root():
+    return {"message": "Welcome to the FastAPI application!"}

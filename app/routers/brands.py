@@ -1,18 +1,30 @@
 from fastapi import APIRouter, HTTPException, Query
+import logging
 from app.services.mongodb import mongodb_service
 from app.models.oliveyoung import BrandListModel
 
 router = APIRouter()
 
 
-@router.get("/get_brand_code")
-async def get_brand_code(brand: str = Query(..., min_length=1)):
+@router.get("/get_brand_info")
+async def get_brand_info(
+    code: str = Query(
+        ..., min_length=1, description="The brand code to get the information for"
+    )
+):
     try:
-        brand_obj = await mongodb_service.engine.find_one(
-            BrandListModel, BrandListModel.brand == brand
+        brand_model = await mongodb_service.engine.find_one(
+            BrandListModel, BrandListModel.code == code
         )
-        if not brand_obj:
+        if not brand_model:
             raise HTTPException(status_code=404, detail="Brand not found")
-        return {"code": brand_obj.code}
+        return brand_model.dict()
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"An error occurred: {e}")
+        logging.error(
+            f"An error occurred while fetching the brand information: {e}",
+            exc_info=True,
+        )
+        raise HTTPException(
+            status_code=500,
+            detail="An error occurred while fetching the brand information.",
+        )

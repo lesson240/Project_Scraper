@@ -1,54 +1,63 @@
 <!DOCTYPE html>
-<html lang="" en">
+<html lang="ko">
 
 <head>
-    <title>{{ title }}</title>
-    <link href="https://unpkg.com/mvp.css" rel="stylesheet" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Scraper</title>
+    <!-- Tabler CSS -->
+    <link rel="stylesheet" href="/static/css/tabler.min.css">
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 
-<style>
-    section {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 15px;
-    }
-</style>
-
 <body>
-    <header>
-        <h1>올리브영 수집기</h1>
+    <!-- Side Menu Bar -->
+    <div id="sidebar" class="sidebar close">
+        <button class="closebtn" onclick="toggleSidebar()">&#9776;</button> <!-- 햄버거 아이콘 사용 -->
+        <div class="sidebar-menu">
+            <a href="/" class="sidebar-item"><i class="fas fa-home"></i> Home</a>
+            <a href="/product-collect" class="sidebar-item"><i class="fas fa-tags"></i> 상품수집</a>
+            <a href="/product-manage" class="sidebar-item"><i class="fas fa-clipboard"></i> 상품관리</a>
+            <a href="/product-order" class="sidebar-item"><i class="fas fa-clipboard"></i> 주문관리</a>
+            <a href="/user-setting" class="sidebar-item"><i class="fas fa-clipboard"></i> 기본설정</a>
+            <a href="/user-inform" class="sidebar-item"><i class="fas fa-user"></i> User</a>
+        </div>
+    </div>
 
-        <center>
-            <form id="button" action="/collect" method="get">
-                <!-- <input type="search" placeholder="keyword" id="search_input" name="q" /> -->
-                <button onclick="collect()">수집</button>
-            </form>
-        </center>
-    </header>
-    <main>
-        {% if brands %}
-        <center>
-            <h3 style="color:grey">{{brands|length}}개 데이터 수집..</h3>
-        </center>
-        <section>
-            {% for brand in brands %}
-            <div>
-                <!-- <img src="{{book.image}}" width="150px" height="200px" /> -->
-                <p>
-                    {% if brand.brand|length > 10 %}
-                    {{brand.brand[:10]}}...
-                    {% else %} {{brand.code}} {% endif %}
-                </p>
-                <p>{{brand.time}}</p>
+    <!-- Main Content -->
+    <div id="main" class="main-content close">
+        <!-- Header -->
+        <header class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container">
+                <button class="closebtn" onclick="toggleSidebar()">&#9776;</button> <!-- 햄버거 아이콘 사용 -->
+                <a class="navbar-brand" href="/">Project Scraper</a>
             </div>
-            {% endfor %}
-        </section>
-        <!-- {% else %}
-        <center>
-            <h3 style="color:grey">Please Input Keyword</h3>
-        </center> -->
-        {% endif %}
-    </main>
+        </header>
+
+
+        <main class="container mt-5">
+            {% block content %}
+            <!-- 각 페이지의 내용이 여기에 들어갑니다. -->
+            {% endblock %}
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer bg-dark text-white">
+        <div class="container text-center">
+            <span>&copy; 2024 Project Scraper. All rights reserved.</span>
+        </div>
+    </footer>
+
+    <!-- Tabler JS -->
+    <script src="/static/js/tabler.min.js"></script>
+    <!-- Custom Scripts -->
+    <script src="/static/js/scripts.js"></script>
+    <!-- FontAwesome for icons -->
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
 </body>
 
 </html>
