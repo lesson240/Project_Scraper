@@ -25,13 +25,16 @@ class BrandShopModel(Model):
 
 
 class GoodsDetailModel(Model):
-    code: str
+    goods_code: str
     name: str
-    goods_origin: int
-    sale_price: int
     total_price: int
+    goods_origin: int
     sale_start: str
     sale_end: str
+    sale_price: int
+    coupon_start: int
+    coupon_end: int
+    coupon_price: str
     delivery: str
     sold_out: str
     thumb: str

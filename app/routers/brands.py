@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Query
 import logging
 from app.services.mongodb import mongodb_service
-from app.models.oliveyoung import BrandListModel
+from app.models.oliveyoung_model import BrandListModel
 
 router = APIRouter()
 

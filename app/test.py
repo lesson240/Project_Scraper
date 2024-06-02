@@ -4,7 +4,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
 from app.models import mongodb
-from app.models.oliveyoung import BrandListModel
+from app.models.oliveyoung_model import BrandListModel
 from app.oliveyoung_scraper import BrandList
 from datetime import datetime
 import asyncio

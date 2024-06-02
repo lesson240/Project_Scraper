@@ -7,42 +7,84 @@
 <h1>상품 수집 페이지</h1>
 <p>여기에 상품 수집과 관련된 내용을 추가하세요.</p>
 
+<!-- 자동완성 기능을 위한 입력 필드 -->
+<input type="text" id="brand-search" placeholder="브랜드 검색" autocomplete="off">
+
+<!-- 드롭다운 메뉴 -->
+<select id="brand-dropdown" size="5" class="dropdown-content"></select>
+
 <!-- "수집" 버튼 -->
 <button id="collect-btn">수집</button>
 
+<!-- HTML 파일에서 자동완성 기능을 위한 스크립트 파일 연결 -->
+<link rel="stylesheet" href="/static/css/product-collect/collect-brand-list.css">
+<script src="/static/js/product-collect/autocomplete-brand.js"></script>
+
 <!-- Tabler의 테이블 코드 -->
-
-<head>
-    <link rel="stylesheet" href="/static/css/product-collect/table.css">
-</head>
-
 <div class="table-responsive">
     <table class="table table-hover table-vcenter" id="product-table">
         <thead>
             <tr>
                 <th>#</th>
                 <th>코드</th>
-                <th>브랜드</th>
-                <th>수집시간</th>
-                <th>상태</th>
+                <th>이름</th>
+                <th>가격</th>
+                <th>품절</th>
+                <th>세일</th>
+                <th>쿠폰</th>
+                <th>수집 시간</th>
             </tr>
         </thead>
         <tbody>
-            {% for brand in brands %}
+            {% for good in goods %}
             <tr>
-                <td>{{ brand.idx }}</td>
-                <td>{{ brand.code }}</td>
-                <td>{{ brand.brand }}</td>
-                <td>{{ brand.time }}</td>
-                <td>{{ brand.status }}</td>
+                <td>{{ good.idx }}</td>
+                <td>{{ good.code }}</td>
+                <td>{{ good.name }}</td>
+                <td>{{ good.price }}</td>
+                <td>{{ good.sold_out }}</td>
+                <td>{{ good.sale }}</td>
+                <td>{{ good.coupon }}</td>
+                <td>{{ good.collection_time }}</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
 
-<!-- HTML 파일에서 collect-brand-list.js 파일을 연결 -->
-<script src="/static/js/product-collect/collect-brand-list.js"></script>
-
+{% if goods %}
+<!-- 수집된 상품 목록을 표시 -->
+<h2>수집된 상품 목록</h2>
+<div class="table-responsive">
+    <table class="table table-hover table-vcenter">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>코드</th>
+                <th>이름</th>
+                <th>가격</th>
+                <th>품절</th>
+                <th>세일</th>
+                <th>쿠폰</th>
+                <th>수집 시간</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for good in goods %}
+            <tr>
+                <td>{{ good.idx }}</td>
+                <td>{{ good.code }}</td>
+                <td>{{ good.name }}</td>
+                <td>{{ good.price }}</td>
+                <td>{{ good.sold_out }}</td>
+                <td>{{ good.sale }}</td>
+                <td>{{ good.coupon }}</td>
+                <td>{{ good.collection_time }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
 
 {% endblock %}

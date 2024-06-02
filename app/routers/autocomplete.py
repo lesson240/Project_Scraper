@@ -1,9 +1,9 @@
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Query
 from fastapi.responses import JSONResponse
 import logging
-from typing import List
+from typing import List, Dict
 from app.services.mongodb import mongodb_service
-from app.models.oliveyoung import BrandListModel
+from app.models.oliveyoung_model import BrandListModel
 import re
 
 router = APIRouter()
@@ -22,13 +22,17 @@ async def autocomplete_brands(
         brands = await mongodb_service.engine.find(
             BrandListModel, {"brand": {"$regex": regex}}
         )
-        brand_names: List[str] = [brand.brand for brand in brands]
-        return {"brands": brand_names}
+        brand_list: List[Dict[str, str]] = [
+            {"brand": brand.brand, "code": brand.code} for brand in brands
+        ]
+
+        # 검색어와 일치하는 브랜드를 반환
+        return {"brands": brand_list}
     except Exception as e:
         logging.error(
             f"An error occurred while fetching autocomplete brands: {e}", exc_info=True
         )
-        raise HTTPException(
+        return JSONResponse(
             status_code=500,
-            detail="An error occurred while fetching autocomplete brands.",
+            content={"error": "An error occurred while fetching autocomplete brands."},
         )

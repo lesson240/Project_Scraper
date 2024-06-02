@@ -1,0 +1,48 @@
+<!-- app/templates/product-collect.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+<!-- 페이지 내용 -->
+<h1>관리자 페이지</h1>
+<p>여기에 관리자와 관련된 내용을 추가하세요...</p>
+
+<!-- "수집" 버튼 -->
+<button id="collect-btn">수집</button>
+
+<!-- Tabler의 테이블 코드 -->
+
+<head>
+    <link rel="stylesheet" href="/static/css/manager/table.css">
+</head>
+
+<div class="table-responsive">
+    <table class="table table-hover table-vcenter" id="product-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>코드</th>
+                <th>브랜드</th>
+                <th>수집시간</th>
+                <th>상태</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for brand in brands %}
+            <tr>
+                <td>{{ brand.idx }}</td>
+                <td>{{ brand.code }}</td>
+                <td>{{ brand.brand }}</td>
+                <td>{{ brand.time }}</td>
+                <td>{{ brand.status }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- HTML 파일에서 collect-brand-list.js 파일을 연결 -->
+<script src="/static/js/manager/collect-brand-list.js"></script>
+
+
+{% endblock %}

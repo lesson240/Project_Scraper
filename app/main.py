@@ -11,6 +11,7 @@ from app.routers import (
     pageorder,
     pagesetting,
     pageuser,
+    pagemanager,
 )  # , user 사용자 서비스를 비활성화합니다.
 from app.endpoints import ep_collect
 from datetime import datetime
@@ -45,13 +46,14 @@ logging.basicConfig(
 # 라우터 추가
 app.include_router(index.router)
 app.include_router(collect.router)
-# app.include_router(autocomplete.router) # 에러 출력으로 임시 중단
+app.include_router(autocomplete.router)
 app.include_router(brands.router)
 app.include_router(pagecollect.router)
 app.include_router(pagemanage.router)
 app.include_router(pageorder.router)
 app.include_router(pagesetting.router)
 app.include_router(pageuser.router)
+app.include_router(pagemanager.router)
 app.include_router(ep_collect.router)
 # app.include_router(user.router)  # 사용자 서비스를 비활성화합니다.
 

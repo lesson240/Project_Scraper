@@ -1,23 +1,26 @@
-// collect-brand-list.js
-
 document.addEventListener("DOMContentLoaded", function () {
     console.log("Custom scripts loaded!");
 
     // "수집" 버튼 클릭 이벤트 핸들러
     const collectBtn = document.getElementById('collect-btn');
     collectBtn.addEventListener('click', async function () {
-        console.log('수집 버튼이 클릭되었습니다.');
-
+        // console.log('수집 버튼이 클릭.');
         try {
             // 서버로부터 데이터 가져오기
             const response = await fetch("/endpoint/brandlist");
+            // console.log('Response:', response);
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
             const data = await response.json();
+            // console.log('Data:', data);
 
             // 테이블에 데이터 추가하기
             const tableBody = document.querySelector('table tbody');
+            if (!tableBody) {
+                console.error('Table body not found');
+                return;
+            }
             tableBody.innerHTML = ''; // 기존 테이블 내용 초기화
             data.forEach(item => {
                 const row = document.createElement('tr');
