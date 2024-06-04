@@ -13,6 +13,8 @@ class BrandListModel(Model):
 
 class BrandShopModel(Model):
     idx: int
+    brand: str
+    brand_code: str
     code: str
     name: str
     price: int

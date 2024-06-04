@@ -4,11 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Scraper</title>
+    <title>{% block title %}Project Scraper{% endblock %}</title>
     <!-- Tabler CSS -->
     <link rel="stylesheet" href="/static/css/tabler.min.css">
     <!-- Custom Styles -->
-    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="/static/css/base.css">
     <!-- FontAwesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <!-- jQuery 로드 -->
@@ -16,51 +16,64 @@
 </head>
 
 <body>
-    <!-- Side Menu Bar -->
-    <div id="sidebar" class="sidebar close">
-        <button class="closebtn" onclick="toggleSidebar()">&#9776;</button> <!-- 햄버거 아이콘 사용 -->
-        <div class="sidebar-menu">
-            <a href="/" class="sidebar-item"><i class="fas fa-home"></i> Home</a>
-            <a href="/product-collect" class="sidebar-item"><i class="fas fa-tags"></i> 상품수집</a>
-            <a href="/product-manage" class="sidebar-item"><i class="fas fa-clipboard"></i> 상품관리</a>
-            <a href="/product-order" class="sidebar-item"><i class="fas fa-clipboard"></i> 주문관리</a>
-            <a href="/user-setting" class="sidebar-item"><i class="fas fa-clipboard"></i> 기본설정</a>
-            <a href="/user-inform" class="sidebar-item"><i class="fas fa-user"></i> User</a>
-            <a href="/manager" class="sidebar-item"><i class="fas fa-user"></i> 관리자</a>
+    <!-- Sidebar -->
+    <div id="mySidebar" class="sidebar">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+        <form id="sidebarForm">
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name">
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email">
+            </div>
+            <div class="form-group">
+                <label for="message">Message</label>
+                <textarea id="message" name="message" rows="4"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="logo">
+            <a href="/" style="color: white; text-decoration: none;">Project Scraper</a>
+        </div>
+        <div class="menu">
+            <a href="/">Home <div class="dropdown"><a href="#">Submenu 1</a><a href="#">Submenu 2</a></div>
+            </a>
+            <a href="/product-collect">상품수집 <div class="dropdown"><a href="#">Submenu 1</a><a href="#">Submenu
+                        2</a></div></a>
+            <a href="/product-manage">상품관리 <div class="dropdown"><a href="#">Submenu 1</a><a href="#">Submenu 2</a>
+                </div></a>
+            <a href="/product-order">주문관리 <div class="dropdown"><a href="#">Submenu 1</a><a href="#">Submenu 2</a>
+                </div></a>
+            <a href="/user-inform">User <div class="dropdown"><a href="#">Submenu 1</a><a href="#">Submenu 2</a>
+                </div></a>
+            <a href="/user-setting">Setting <div class="dropdown"><a href="#">Submenu 1</a><a href="#">Submenu
+                        2</a></div></a>
+            <a href="/manager">Admin <div class="dropdown"><a href="#">Submenu 1</a><a href="#">Submenu 2</a></div>
+            </a>
         </div>
     </div>
 
-    <!-- Main Content -->
-    <div id="main" class="main-content close">
-        <!-- Header -->
-        <header class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <div class="container">
-                <button class="closebtn" onclick="toggleSidebar()">&#9776;</button> <!-- 햄버거 아이콘 사용 -->
-                <a class="navbar-brand" href="/">Project Scraper</a>
-            </div>
-        </header>
-
-
-        <main class="container mt-5">
-            {% block content %}
-            <!-- 각 페이지의 내용이 여기에 들어갑니다. -->
-            {% endblock %}
-        </main>
+    <div id="main-content" class="container">
+        {% block content %}
+        <!-- Content will be injected here -->
+        {% endblock %}
     </div>
 
     <!-- Footer -->
-    <footer class="footer bg-dark text-white">
-        <div class="container text-center">
-            <span>&copy; 2024 Project Scraper. All rights reserved.</span>
-        </div>
-    </footer>
+    <div class="footer">
+        <p>&copy; 2024 Project Scraper. All rights reserved.</p>
+    </div>
 
     <!-- Tabler JS -->
     <script src="/static/js/tabler.min.js"></script>
     <!-- Custom Scripts -->
-    <script src="/static/js/scripts.js"></script>
-    <!-- FontAwesome for icons -->
-    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+    <script src="/static/js/base.js"></script>
 </body>
 
 </html>

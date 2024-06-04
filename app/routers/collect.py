@@ -10,6 +10,7 @@ from app.oliveyoung_scraper import BrandList, BrandShop, BrandGoodsDetail
 from app.services.mongodb import mongodb_service
 from fastapi.responses import JSONResponse, Response
 import json
+from typing import List, Dict
 
 
 router = APIRouter()
@@ -90,15 +91,19 @@ async def collect_brand_list(request: Request):
 
 @router.get("/collect/brandshop", response_class=JSONResponse)
 async def collect_brand_shop(
-    input_code: str = Query(..., description="The brand code")
+    input_code: str = Query(..., description="The brand code"),
+    input_brand: str = Query(..., description="The brand"),
 ):
     try:
         # 로깅: 요청이 도착했음을 로그에 남깁니다.
-        logger.info(
-            f"Request received to /collect/brandshop with input_code: {input_code}"
+        logging.info(
+            f"Request received to /collect/brandshop with input_code: {input_code}, input_brand: {input_brand}"
         )
-        brand_shop = BrandShop(input_code)
+
+        # BrandShop 클래스와 run 메서드가 정의되어 있다고 가정합니다.
+        brand_shop = BrandShop(input_code, input_brand)
         goods = await brand_shop.run()
+
         if not goods:
             logging.error(f"No goods found for brand code: {input_code}")
             raise HTTPException(
@@ -133,6 +138,8 @@ async def collect_brand_shop(
             if good["code"] not in existing_codes:
                 oliveyoung_model = BrandShopModel(
                     idx=good["idx"],
+                    brand=good["brand"],
+                    brand_code=good["brand_code"],
                     code=good["code"],
                     name=good["name"],
                     price=price,
@@ -142,7 +149,7 @@ async def collect_brand_shop(
                     collection_time=good.get("time"),
                 )
                 new_oliveyoung_models.append(oliveyoung_model)
-
+            print(new_oliveyoung_models)
         # 새로운 데이터가 있을 경우에만 저장
         if new_oliveyoung_models:
             try:

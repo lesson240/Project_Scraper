@@ -5,7 +5,7 @@ from app.routers import (
     collect,
     index,
     autocomplete,
-    brands,
+    inquiry,
     pagecollect,
     pagemanage,
     pageorder,
@@ -47,7 +47,7 @@ logging.basicConfig(
 app.include_router(index.router)
 app.include_router(collect.router)
 app.include_router(autocomplete.router)
-app.include_router(brands.router)
+app.include_router(inquiry.router)
 app.include_router(pagecollect.router)
 app.include_router(pagemanage.router)
 app.include_router(pageorder.router)

@@ -1,7 +1,8 @@
 document.addEventListener("DOMContentLoaded", function () {
+    console.log("Document loaded"); // 로그 추가
     var brandSearch = document.getElementById("brand-search");
     var dropdown = document.getElementById("brand-dropdown");
-    var collectBtn = document.getElementById("collect-btn");
+    var searchBtn = document.querySelector(".btn.btn-primary"); // 클래스 이름으로 선택자 추가
     var selectedBrandCode = document.createElement("input");
     selectedBrandCode.type = "hidden";
     selectedBrandCode.id = "selected-brand-code";
@@ -16,16 +17,17 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         $.ajax({
-            url: "/autocomplete/brands",
+            url: "/autocomplete/collectedbrands",
             method: "GET",
             data: { query: query },
             success: function (response) {
+                console.log(response); // 응답 객체 구조 확인
                 dropdown.innerHTML = "";
                 if (response.brands.length > 0) {
                     response.brands.forEach(function (brand) {
                         var option = document.createElement("option");
                         option.text = brand.brand;
-                        option.value = brand.code;
+                        option.value = brand.brand_code;
                         dropdown.appendChild(option);
                     });
                     dropdown.style.display = "block";
@@ -87,7 +89,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    collectBtn.addEventListener("click", function () {
+    searchBtn.addEventListener("click", function () { // searchBtn 변수 사용
         var brandCode = selectedBrandCode.value;
         var brandName = brandSearch.value;
         if (!brandCode || !brandName) {
@@ -95,15 +97,18 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
+        console.log("Brand Code:", brandCode); // 로그 추가
+        console.log("Brand Name:", brandName); // 로그 추가
+
         $.ajax({
-            url: "/collect/brandshop",
+            url: "/info/brandshop",
             method: "GET",
             data: { input_code: brandCode, input_brand: brandName },
             success: function (response) {
                 var saved_goods_list = response.saved_goods_list;
 
                 if (!saved_goods_list || saved_goods_list.length === 0) {
-                    alert("수집된 상품이 없습니다.");
+                    alert("조회할 상품이 없습니다.");
                     return;
                 }
 

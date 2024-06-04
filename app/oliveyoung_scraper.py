@@ -82,8 +82,9 @@ class BrandShop:
 
     OLIVEYOUNG_URL = "https://www.oliveyoung.co.kr"
 
-    def __init__(self, code):
+    def __init__(self, code, brand):
         self.code = code
+        self.brand = brand
 
     def unit_url(self, page_idx):
         url = f"{self.OLIVEYOUNG_URL}/store/display/getBrandShopDetailGoodsPagingAjax.do?onlBrndCd={self.code}&rowsPerPage=48&pageIdx={page_idx}"
@@ -146,6 +147,8 @@ class BrandShop:
                             products.append(
                                 {
                                     "idx": idx,
+                                    "brand": self.brand,
+                                    "brand_code": self.code,
                                     "code": goods_code,
                                     "name": goods_name,
                                     "price": self.extract_price(goods_total),
@@ -197,7 +200,6 @@ class BrandShop:
     async def run(self):
         """Runs the scraping process."""
         total_page = await self.get_total_page()
-        print(total_page)
         if total_page is None:
             return []
 
@@ -413,14 +415,15 @@ async def scrape_goods(goods_codes):
 #     print(brand)
 # print(type(brand_list))
 
-# class BrandShop 출력 test
+# # class BrandShop 출력 test
 if __name__ == "__main__":
     INPUNT_CODE = "A000149"
-    brand_shop = BrandShop(INPUNT_CODE)
+    BRAND = "아벤느"
+    brand_shop = BrandShop(INPUNT_CODE, BRAND)
     products = asyncio.run(brand_shop.run())
     print(products)
 
-# # class BrandGoodsDetail 출력 test
+# class BrandGoodsDetail 출력 test
 # if __name__ == "__main__":
 #     INPUT_CODES = ["A000000205905", "A000000166296"]
 #     loop = asyncio.get_event_loop()

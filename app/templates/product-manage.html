@@ -1,8 +1,67 @@
 {% extends "base.html" %}
 
+{% block title %}Product Management{% endblock %}
+
 {% block content %}
-<!-- 페이지 내용 -->
-<h1>상품 관리 페이지</h1>
-<p>여기에 상품 관리와 관련된 내용을 추가하세요.</p>
-<!-- 추가적인 내용을 원하면 이 곳에 추가하세요 -->
+<h1>Product Management</h1>
+<div class="filter-container">
+    <div class="filter-row">
+        <!-- 자동완성 기능을 위한 입력 필드 -->
+        <input type="text" id="brand-search" class="dropdown-content" placeholder="브랜드 검색" autocomplete="off">
+
+        <!-- 드롭다운 메뉴 -->
+        <select id="brand-dropdown" size="5" class="dropdown-content"></select>
+
+        <input type="text" placeholder="Filter by Division" class="form-control">
+        <input type="text" placeholder="Filter by Location" class="form-control">
+    </div>
+    <div class="filter-row">
+        <input type="text" placeholder="Filter by Status" class="form-control">
+        <input type="text" placeholder="Filter by Transaction" class="form-control">
+        <input type="text" placeholder="Filter by Date" class="form-control">
+        <button class="btn btn-primary">조희</button>
+    </div>
+</div>
+<div class="spacer"></div>
+<div class="btn-group">
+    <button class="btn btn-primary btn-table">Add</button>
+    <button class="btn btn-secondary btn-table">Edit</button>
+    <button class="btn btn-success btn-table">Save</button>
+    <button class="btn btn-danger btn-table">수집동기화</button>
+    <button class="btn btn-warning btn-table">판매동기화</button>
+    <button class="btn btn-info btn-table">Export</button>
+</div>
+
+<!-- HTML 파일에서 자동완성 기능을 위한 스크립트 파일 연결 -->
+<link rel="stylesheet" href="/static/css/product-manage/table.css">
+<script src="/static/js/product-manage/autocomplete-brand.js"></script>
+
+
+
+
+<div class="table-container">
+    <table class="table">
+        <thead>
+            <tr>
+                <th><button class="parent-expand-btn">&#9660;</button></th>
+                <th><input type="checkbox" class="grandparent-checkbox"></th>
+                <th>No.</th>
+                <th>상품코드</th>
+                <th>상픔명</th>
+                <th>옵션명</th>
+                <th>구매가</th>
+                <th>할인가</th>
+                <th>최저가</th>
+                <th>최고가</th>
+                <th>위너가</th>
+                <th>재고</th>
+                <th>상품정보</th>
+                <th>비고</th>
+            </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+    </table>
+</div>
 {% endblock %}
