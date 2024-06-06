@@ -13,6 +13,9 @@
 <!-- 드롭다운 메뉴 -->
 <select id="brand-dropdown" size="5" class="dropdown-content"></select>
 
+<!-- "검색" 버튼 -->
+<button id="search-btn">검색</button>
+
 <!-- "수집" 버튼 -->
 <button id="collect-btn">수집</button>
 
@@ -26,29 +29,15 @@
         <thead>
             <tr>
                 <th>#</th>
-                <th>코드</th>
-                <th>이름</th>
-                <th>가격</th>
+                <th>상품명</th>
+                <th>상품코드</th>
+                <th>상품가격</th>
                 <th>품절</th>
                 <th>세일</th>
                 <th>쿠폰</th>
                 <th>수집 시간</th>
             </tr>
         </thead>
-        <tbody>
-            {% for good in goods %}
-            <tr>
-                <td>{{ good.idx }}</td>
-                <td>{{ good.code }}</td>
-                <td>{{ good.name }}</td>
-                <td>{{ good.price }}</td>
-                <td>{{ good.sold_out }}</td>
-                <td>{{ good.sale }}</td>
-                <td>{{ good.coupon }}</td>
-                <td>{{ good.collection_time }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
     </table>
 </div>
 
@@ -60,9 +49,9 @@
         <thead>
             <tr>
                 <th>#</th>
-                <th>코드</th>
-                <th>이름</th>
-                <th>가격</th>
+                <th>상품명</th>
+                <th>상품코드</th>
+                <th>상품가격</th>
                 <th>품절</th>
                 <th>세일</th>
                 <th>쿠폰</th>
@@ -73,8 +62,8 @@
             {% for good in goods %}
             <tr>
                 <td>{{ good.idx }}</td>
-                <td>{{ good.code }}</td>
                 <td>{{ good.name }}</td>
+                <td>{{ good.code }}</td>
                 <td>{{ good.price }}</td>
                 <td>{{ good.sold_out }}</td>
                 <td>{{ good.sale }}</td>

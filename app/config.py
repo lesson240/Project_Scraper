@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 from typing import Optional
+import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -27,4 +28,3 @@ NAVER_API_SECRET = get_secret("NAVER_API_SECRET")
 
 if __name__ == "__main__":
     world = get_secret("hello")
-    print(world)

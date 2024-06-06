@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
     var brandSearch = document.getElementById("brand-search");
     var dropdown = document.getElementById("brand-dropdown");
+    var searchBtn = document.getElementById("search-btn");
     var collectBtn = document.getElementById("collect-btn");
     var selectedBrandCode = document.createElement("input");
     selectedBrandCode.type = "hidden";
@@ -87,7 +88,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    collectBtn.addEventListener("click", function () {
+    searchBtn.addEventListener("click", function () {
         var brandCode = selectedBrandCode.value;
         var brandName = brandSearch.value;
         if (!brandCode || !brandName) {
@@ -95,27 +96,36 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
+        var tableBody = document.querySelector("#product-table tbody");
+        if (!tableBody) {
+            tableBody = document.createElement("tbody");
+            document.querySelector("#product-table").appendChild(tableBody);
+        }
+        tableBody.innerHTML = `<tr><td colspan="7" style="text-align:center;"><img src="/static/images/loading.gif" id="loading-spinner"></td></tr>`;
+
         $.ajax({
             url: "/collect/brandshop",
             method: "GET",
             data: { input_code: brandCode, input_brand: brandName },
             success: function (response) {
                 var saved_goods_list = response.saved_goods_list;
+                savedGoodsList = saved_goods_list; // 전역 변수에 저장
+
 
                 if (!saved_goods_list || saved_goods_list.length === 0) {
                     alert("수집된 상품이 없습니다.");
+                    tableBody.innerHTML = "";
                     return;
                 }
 
-                var tableBody = document.querySelector("#product-table tbody");
                 tableBody.innerHTML = ""; // 기존 테이블 내용 초기화
 
                 saved_goods_list.forEach(function (item) {
                     var row = document.createElement("tr");
                     row.innerHTML = `
                         <td>${item.idx}</td>
-                        <td>${item.code}</td>
                         <td>${item.name}</td>
+                        <td>${item.code}</td>
                         <td>${item.price}</td>
                         <td>${item.sold_out}</td>
                         <td>${item.sale}</td>
@@ -124,10 +134,47 @@ document.addEventListener("DOMContentLoaded", function () {
                     `;
                     tableBody.appendChild(row);
                 });
+
             },
             error: function (err) {
                 console.error(err);
                 alert("상품 수집 중 오류가 발생했습니다.");
+                tableBody.innerHTML = "";
+            }
+        });
+    });
+
+    collectBtn.addEventListener("click", function () {
+        var brandCode = selectedBrandCode.value;
+        var brandName = brandSearch.value;
+        if (!brandCode || !brandName) {
+            alert("브랜드를 선택해주세요.");
+            return;
+        }
+
+        var loadingSpinner = document.getElementById("loading-spinner");
+        if (loadingSpinner) {
+            loadingSpinner.style.display = "block";
+        }
+
+        var goodsCodes = savedGoodsList.map(item => item.code);
+
+        $.ajax({
+            url: "/collect/brandgoodsdetail",
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({ goodsCodes: goodsCodes, brandCode: brandCode, brandName: brandName }), // 변경된 부분
+            success: function (response) {
+                console.log("상품 수집이 완료되었습니다.");
+                if (loadingSpinner) {
+                    loadingSpinner.style.display = "none";
+                }
+            },
+            error: function (err) {
+                console.error("상품 수집 중 오류가 발생했습니다.");
+                if (loadingSpinner) {
+                    loadingSpinner.style.display = "none";
+                }
             }
         });
     });

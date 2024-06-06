@@ -1,4 +1,5 @@
 from odmantic import Model
+from typing import Dict, Optional
 
 
 class BrandListModel(Model):
@@ -13,6 +14,7 @@ class BrandListModel(Model):
 
 class BrandShopModel(Model):
     idx: int
+    market: str
     brand: str
     brand_code: str
     code: str
@@ -24,6 +26,30 @@ class BrandShopModel(Model):
     collection_time: str
 
     model_config = {"collection": "OYBrandShop"}
+
+
+class OriginGoodsDetailModel(Model):  # naming에 따른 연동된 코드 수정필요
+    market: str
+    brand: str
+    brand_code: str
+    origin_goods_code: str
+    origin_goods_name: str
+    total_price: int
+    goods_origin: int
+    sale_start: Optional[str]
+    sale_end: Optional[str]
+    sale_price: Optional[int]
+    coupon_start: Optional[str]
+    coupon_end: Optional[str]
+    coupon_price: Optional[int]
+    delivery: str
+    sold_out: str
+    thumb: Dict[str, str]
+    collection_time: str
+    sale: str
+    coupon: str
+
+    model_config = {"collection": "OriginGoodsDetail"}
 
 
 class GoodsDetailModel(Model):
@@ -42,4 +68,4 @@ class GoodsDetailModel(Model):
     thumb: str
     collection_time: str
 
-    model_config = {"collection": "OYGoodsDetail"}
+    model_config = {"collection": "OriginGoodsDetail"}

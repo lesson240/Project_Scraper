@@ -30,12 +30,14 @@
     margin-right: 20px;
 }
 
-#collect-btn {
+#collect-btn,
+#search-btn {
     width: 70px;
 }
 
 /* "수집" 버튼 스타일링 */
-#collect-btn {
+#collect-btn,
+#search-btn {
     background-color: #4CAF50;
     border: none;
     color: white;
@@ -50,7 +52,8 @@
     border-radius: 5px;
 }
 
-#collect-btn:hover {
+#collect-btn:hover,
+#search-btn:hover {
     background-color: #45a049;
 }
 

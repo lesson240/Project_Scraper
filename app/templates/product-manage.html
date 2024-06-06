@@ -19,7 +19,7 @@
         <input type="text" placeholder="Filter by Status" class="form-control">
         <input type="text" placeholder="Filter by Transaction" class="form-control">
         <input type="text" placeholder="Filter by Date" class="form-control">
-        <button class="btn btn-primary">조희</button>
+        <button class="btn btn-primary" id="search-btn">조희</button>
     </div>
 </div>
 <div class="spacer"></div>
@@ -34,20 +34,20 @@
 
 <!-- HTML 파일에서 자동완성 기능을 위한 스크립트 파일 연결 -->
 <link rel="stylesheet" href="/static/css/product-manage/table.css">
-<script src="/static/js/product-manage/autocomplete-brand.js"></script>
+<script src="/static/js/product-manage/product-manage.js"></script>
 
 
 
 
 <div class="table-container">
-    <table class="table">
+    <table id="product-table" class="table">
         <thead>
             <tr>
                 <th><button class="parent-expand-btn">&#9660;</button></th>
                 <th><input type="checkbox" class="grandparent-checkbox"></th>
                 <th>No.</th>
                 <th>상품코드</th>
-                <th>상픔명</th>
+                <th>상품명</th>
                 <th>옵션명</th>
                 <th>구매가</th>
                 <th>할인가</th>
@@ -59,8 +59,57 @@
                 <th>비고</th>
             </tr>
         </thead>
-        <tbody>
-
+        <tbody id="product-tbody">
+            <tr class="expandable">
+                <td><button class="expand-btn">&#9660;</button></td>
+                <td><input type="checkbox" class="parent-checkbox"></td>
+                <td><input type="text" id="brand1" class="input-cell"></td>
+                <td><input type="text" id="brand2" class="input-cell"></td>
+                <td><input type="text" id="brand3" class="input-cell"></td>
+                <td><input type="text" id="origin_goods_code" class="input-cell"></td>
+                <td><input type="text" id="origin_goods_name" class="input-cell"></td>
+                <td><input type="text" id="total_price" class="input-cell"></td>
+                <td><input type="text" id="sold_out" class="input-cell"></td>
+                <td><input type="text" id="sale" class="input-cell"></td>
+                <td><input type="text" id="coupon" class="input-cell"></td>
+                <td><input type="text" id="collection_time" class="input-cell"></td>
+                <td><button class="btn btn-warning btn-table detail-btn">Details</button></td>
+                <td><button class="btn btn-info btn-table">Action</button></td>
+            </tr>
+            <tr class="expanded-row">
+                <td colspan="14">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Select</th>
+                                <th>Dessert</th>
+                                <th>Commits</th>
+                                <th>Tasks</th>
+                                <th>Projects</th>
+                                <th>Hours</th>
+                            </tr>
+                        </thead>
+                        <tbody id="expanded-tbody">
+                            <tr>
+                                <td><input type="checkbox" class="child-checkbox"></td>
+                                <td><input type="text" class="input-cell" value="Bitka Cotail"></td>
+                                <td><input type="text" class="input-cell" value="11.2"></td>
+                                <td><input type="text" class="input-cell" value="24"></td>
+                                <td><input type="text" class="input-cell" value="9.0"></td>
+                                <td><input type="text" class="input-cell" value="24,000"></td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" class="child-checkbox"></td>
+                                <td><input type="text" class="input-cell" value="Girl Scout Cookies"></td>
+                                <td><input type="text" class="input-cell" value="21.4"></td>
+                                <td><input type="text" class="input-cell" value="6"></td>
+                                <td><input type="text" class="input-cell" value="1.1"></td>
+                                <td><input type="text" class="input-cell" value="112.1"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
         </tbody>
     </table>
 </div>

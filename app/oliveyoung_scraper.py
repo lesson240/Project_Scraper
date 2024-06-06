@@ -3,6 +3,7 @@ import math
 from datetime import date
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.service import Service as ChromeService
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.common.exceptions import NoSuchElementException
@@ -15,9 +16,19 @@ from datetime import date
 from datetime import datetime
 import nest_asyncio
 import json
+import logging
 
 nest_asyncio.apply()
 
+# 로깅 설정
+logging.basicConfig(
+    filename="log_scraper.txt",
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+)
+
+# logger 객체 생성
+logger = logging.getLogger(__name__)
 
 # import os
 # import aiofiles
@@ -239,11 +250,14 @@ class BrandGoodsDetail:
             options.add_argument("mute-audio")  # --mute-audio
             options.add_experimental_option("excludeSwitches", ["enable-logging"])
             options.add_experimental_option("detach", True)
-            self.driver = webdriver.Chrome(options=options)
+            self.driver = webdriver.Chrome(
+                service=ChromeService(ChromeDriverManager().install()), options=options
+            )
 
     async def close_driver(self):
         if self.driver:
             self.driver.quit()
+            self.driver = None
 
     @staticmethod
     def extract_price(price_str):
@@ -264,140 +278,174 @@ class BrandGoodsDetail:
             "code": f"{self.goodscode}",
             "collectiontime": f"{date.today()}",
         }
-
-        # 상품명 추출하는 함수
-        goodsname = self.driver.find_element(
-            By.XPATH, '//*[@id="Contents"]/div[2]/div[2]/div/p[2]'
-        ).text.strip()
-        elementlist["name"] = f"{goodsname}"
-
-        # 가격 정보 추출하는 함수
-        price_class = self.driver.find_elements(By.CLASS_NAME, "price")
-
-        if len(price_class) == 1:
-            goodspricelist = self.driver.find_element(By.CLASS_NAME, "price").text
-            goodstotal = re.sub("(원|,|\n)", "", goodspricelist)
-            elementlist["total_price"] = f"{goodstotal}"
-
-        else:
-            self.driver.find_element(By.ID, "btnSaleOpen").click()
-            goodspricelist = self.driver.find_element(By.ID, "saleLayer").text
-            sub_condition = re.sub(
-                "(혜택|정보|판매가|원|최적가|레이어|닫기|\n)", " ", goodspricelist
+        try:
+            # 상품명 추출하는 함수
+            goodsname_element = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located(
+                    (By.XPATH, '//*[@id="Contents"]/div[2]/div[2]/div/p[2]')
+                )
             )
-            replace_condition = {
-                ",": "_",
-                ".": "-",
-                "(": "_",
-                ")": "_",
-                "~": "_",
-                "-": "_",
-            }
-            condition_key = "".join(list(replace_condition.keys()))
-            condition_value = "".join(list(replace_condition.values()))
-            extract_value = (
-                sub_condition.translate(str.maketrans(condition_key, condition_value))
-                .replace("_", "")
-                .strip()
-                .split()
-            )
+            goodsname = goodsname_element.text.strip()
+            elementlist["name"] = f"{goodsname}"
 
-            if "쿠폰" in extract_value:
-                coupon = extract_value.index("쿠폰")
-                del extract_value[coupon]
-                del extract_value[coupon - 1]
-                if "세일" in extract_value:
+            # 가격 정보 추출하는 함수
+            WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located((By.CLASS_NAME, "price"))
+            )
+            price_class = self.driver.find_elements(By.CLASS_NAME, "price")
+            if len(price_class) == 1:
+                goodspricelist = self.driver.find_element(By.CLASS_NAME, "price").text
+                goodstotal = re.sub("(원|,|\n)", "", goodspricelist)
+                elementlist["total_price"] = f"{goodstotal}"
+            else:
+                self.driver.find_element(By.ID, "btnSaleOpen").click()
+                WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located((By.ID, "saleLayer"))
+                )
+                goodspricelist = self.driver.find_element(By.ID, "saleLayer").text
+                sub_condition = re.sub(
+                    "(혜택|정보|판매가|원|최적가|레이어|닫기|\n)", " ", goodspricelist
+                )
+                replace_condition = {
+                    ",": "_",
+                    ".": "-",
+                    "(": "_",
+                    ")": "_",
+                    "~": "_",
+                    "-": "_",
+                }
+                condition_key = "".join(list(replace_condition.keys()))
+                condition_value = "".join(list(replace_condition.values()))
+                extract_value = (
+                    sub_condition.translate(
+                        str.maketrans(condition_key, condition_value)
+                    )
+                    .replace("_", "")
+                    .strip()
+                    .split()
+                )
+
+                if "쿠폰" in extract_value:
+                    coupon = extract_value.index("쿠폰")
+                    del extract_value[coupon]
+                    del extract_value[coupon - 1]
+                    if "세일" in extract_value:
+                        sale = extract_value.index("세일")
+                        del extract_value[sale]
+                        if len(extract_value) == 8:
+                            elementlist["totalprice"] = f"{extract_value[7]}"
+                            elementlist["goodsorigin"] = f"{extract_value[0]}"
+                            elementlist["salestart"] = f"{extract_value[1]}"
+                            elementlist["saleend"] = f"{extract_value[2]}"
+                            elementlist["saleprice"] = f"{extract_value[3]}"
+                            elementlist["couponstart"] = f"{extract_value[4]}"
+                            elementlist["couponend"] = f"{extract_value[5]}"
+                            elementlist["couponprice"] = f"{extract_value[6]}"
+                        else:
+                            return print("len_extract_value dose not match")
+                    else:
+                        if len(extract_value) == 5:
+                            elementlist["totalprice"] = f"{extract_value[4]}"
+                            elementlist["goodsorigin"] = f"{extract_value[0]}"
+                            elementlist["couponstart"] = f"{extract_value[1]}"
+                            elementlist["couponend"] = f"{extract_value[2]}"
+                            elementlist["couponprice"] = f"{extract_value[3]}"
+                        else:
+                            return print("len_extract_value dose not match")
+                elif "세일" in extract_value:
                     sale = extract_value.index("세일")
                     del extract_value[sale]
-                    if len(extract_value) == 8:
-                        elementlist["totalprice"] = f"{extract_value[7]}"
+                    if len(extract_value) == 5:
+                        elementlist["totalprice"] = f"{extract_value[4]}"
                         elementlist["goodsorigin"] = f"{extract_value[0]}"
                         elementlist["salestart"] = f"{extract_value[1]}"
                         elementlist["saleend"] = f"{extract_value[2]}"
                         elementlist["saleprice"] = f"{extract_value[3]}"
-                        elementlist["couponstart"] = f"{extract_value[4]}"
-                        elementlist["couponend"] = f"{extract_value[5]}"
-                        elementlist["couponprice"] = f"{extract_value[6]}"
                     else:
                         return print("len_extract_value dose not match")
-                else:
-                    if len(extract_value) == 5:
-                        elementlist["totalprice"] = f"{extract_value[4]}"
-                        elementlist["goodsorigin"] = f"{extract_value[0]}"
-                        elementlist["couponstart"] = f"{extract_value[1]}"
-                        elementlist["couponend"] = f"{extract_value[2]}"
-                        elementlist["couponprice"] = f"{extract_value[3]}"
-                    else:
-                        return print("len_extract_value dose not match")
-            elif "세일" in extract_value:
-                sale = extract_value.index("세일")
-                del extract_value[sale]
-                if len(extract_value) == 5:
-                    elementlist["totalprice"] = f"{extract_value[4]}"
-                    elementlist["goodsorigin"] = f"{extract_value[0]}"
-                    elementlist["salestart"] = f"{extract_value[1]}"
-                    elementlist["saleend"] = f"{extract_value[2]}"
-                    elementlist["saleprice"] = f"{extract_value[3]}"
-                else:
-                    return print("len_extract_value dose not match")
 
-        # 배송 정보 추출하는 함수  # 배송 정보 최적화 함수 만들기
-        delivery_xpath = self.driver.find_elements(
-            By.XPATH, '//*[@id="Contents"]/div[2]/div[2]/div/div[3]/div[1]/ul/li'
-        )
-        if len(delivery_xpath) == 1:
-            goodsdelivery = self.driver.find_element(
-                By.XPATH,
-                '//*[@id="Contents"]/div[2]/div[2]/div/div[3]/div[1]/ul/li/div/b[1]',
-            ).text
-        else:
-            goodsdelivery = self.driver.find_element(
-                By.XPATH,
-                '//*[@id="Contents"]/div[2]/div[2]/div/div[3]/div[1]/ul/li[1]/div',
-            ).text
+            # 배송 정보 추출하는 함수  # 배송 정보 최적화 함수 만들기
+            delivery_xpath = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_all_elements_located(
+                    (
+                        By.XPATH,
+                        '//*[@id="Contents"]/div[2]/div[2]/div/div[3]/div[1]/ul/li',
+                    )
+                )
+            )
+            if len(delivery_xpath) == 1:
+                goodsdelivery_element = WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located(
+                        (
+                            By.XPATH,
+                            '//*[@id="Contents"]/div[2]/div[2]/div/div[3]/div[1]/ul/li',
+                        )
+                    )
+                )
+                elementlist["delivery"] = goodsdelivery_element.text
+            else:
+                goodsdelivery_element = WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located(
+                        (
+                            By.XPATH,
+                            '//*[@id="Contents"]/div[2]/div[2]/div/div[3]/div[1]/ul/li[1]/div',
+                        )
+                    )
+                )
+                elementlist["delivery"] = goodsdelivery_element.text
 
-        elementlist["delivery"] = f"{goodsdelivery}"
+            # 일시품절 text 추출 함수
+            soldout_css_element = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located(
+                    (By.CSS_SELECTOR, "div.prd_btn_area.new-style.type1")
+                )
+            )
+            soldout_css = soldout_css_element.text.strip()
+            sub_condition = re.sub("\n", " ", soldout_css).split()
+            elementlist["solde_out"] = (
+                "일시품절" if sub_condition[0] == "일시품절" else "판매"
+            )
 
-        # 일시품절 text 추출 함수
-        soldout_css = self.driver.find_element(
-            By.CSS_SELECTOR, "div.prd_btn_area.new-style.type1"
-        ).text
-        sub_condition = re.sub("\n", " ", soldout_css).split()
-        if sub_condition[0] == "일시품절":
-            goodssoldout = "일시품절"
-        else:
-            goodssoldout = "판매"
+            # 썸네일(5개) src 추출 함수
+            thumbcount_element = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_all_elements_located(
+                    (By.XPATH, '//*[@id="prd_thumb_list"]/li')
+                )
+            )
+            thumbcount = len(thumbcount_element)
+            goodsthumb = {}
+            for thumb in range(1, thumbcount + 1):
+                WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, f'//*[@id="prd_thumb_list"]/li[{thumb}]')
+                    )
+                ).click()
+                thumburl_element = WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located((By.ID, "mainImg"))
+                )
+                thumburl = thumburl_element.get_attribute("src")
+                goodsthumb[f"thumb{thumb}"] = thumburl
+            elementlist["thumb"] = goodsthumb
 
-        elementlist["solde_out"] = f"{goodssoldout}"
+            # 상품정보 제공고시 png 생성 함수
+            # btn_buyinfo = self.driver.find_element(By.ID, "buyInfo")
+            # if bool(btn_buyinfo) == True:
+            #     btn_buyinfo.click()
+            #     buy_info = self.driver.find_element(By.ID, "artcInfo")
+            #     buy_info.screenshot(f"{self.goodscode}.png")
+            # else:
+            #     pass
 
-        # 썸네일(5개) src 추출 함수
-        thumbcount = len(
-            self.driver.find_elements(By.XPATH, '//*[@id="prd_thumb_list"]/li')
-        )
-        goodsthumb = {}
-        for thumb in range(1, thumbcount + 1):
-            self.driver.find_element(
-                By.XPATH, f'//*[@id="prd_thumb_list"]/li[{thumb}]'
-            ).click()
-            thumburl = self.driver.find_element(By.ID, "mainImg").get_attribute("src")
-            goodsthumb[f"thumb{thumb}"] = f"{thumburl}"
-        elementlist["thumb"] = goodsthumb
+            return elementlist
 
-        # 상품정보 제공고시 png 생성 함수
-        btn_buyinfo = self.driver.find_element(By.ID, "buyInfo")
-        if bool(btn_buyinfo) == True:
-            btn_buyinfo.click()
-            buy_info = self.driver.find_element(By.ID, "artcInfo")
-            buy_info.screenshot(f"{self.goodscode}.png")
-        else:
-            pass
-
-        return elementlist
+        except Exception as e:
+            logging.error(f"An error occurred during fetching: {e}")
+            return None
 
     async def run(self):
         await self.create_driver()
         try:
-            result = await self.fetch()
+            result = await self.fetch()  # 동기 함수 fetch를 비동기로 호출
         finally:
             await self.close_driver()
         return result
@@ -415,17 +463,17 @@ async def scrape_goods(goods_codes):
 #     print(brand)
 # print(type(brand_list))
 
-# # class BrandShop 출력 test
-if __name__ == "__main__":
-    INPUNT_CODE = "A000149"
-    BRAND = "아벤느"
-    brand_shop = BrandShop(INPUNT_CODE, BRAND)
-    products = asyncio.run(brand_shop.run())
-    print(products)
+# class BrandShop 출력 test
+# if __name__ == "__main__":
+#     INPUNT_CODE = "A000149"
+#     BRAND = "아벤느"
+#     brand_shop = BrandShop(INPUNT_CODE, BRAND)
+#     products = asyncio.run(brand_shop.run())
+#     print(products)
 
 # class BrandGoodsDetail 출력 test
-# if __name__ == "__main__":
-#     INPUT_CODES = ["A000000205905", "A000000166296"]
-#     loop = asyncio.get_event_loop()
-#     products = loop.run_until_complete(scrape_goods(INPUT_CODES))
-#     print(json.dumps(products, indent=2, ensure_ascii=False))
+if __name__ == "__main__":
+    INPUT_CODES = ["A000000114002"]
+    loop = asyncio.get_event_loop()
+    products = loop.run_until_complete(scrape_goods(INPUT_CODES))
+    print(json.dumps(products, indent=2, ensure_ascii=False))
