@@ -118,16 +118,17 @@ document.addEventListener("DOMContentLoaded", function () {
                     row.innerHTML = `
                         <td><button class="expand-btn" data-index="${index}">&#9660;</button></td>    
                         <td><input type="checkbox" class="parent-checkbox"></td>
-                        <td><input type="text" class="input-cell" value="${item.brand1}"></td>
-                        <td><input type="text" class="input-cell" value="${item.brand2}"></td>
-                        <td><input type="text" class="input-cell" value="${item.brand3}"></td>
+                        <td><input type="text" class="input-cell" value="${item.market}"></td>
                         <td><input type="text" class="input-cell" value="${item.origin_goods_code}"></td>
                         <td><input type="text" class="input-cell" value="${item.origin_goods_name}"></td>
+                        <td><input type="text" class="input-cell" value="stock_option"> </td>
                         <td><input type="text" class="input-cell" value="${item.total_price}"></td>
-                        <td><input type="text" class="input-cell" value="${item.sold_out}"></td>
-                        <td><input type="text" class="input-cell" value="${item.sale}"></td>
-                        <td><input type="text" class="input-cell" value="${item.coupon}"></td>
-                        <td><input type="text" class="input-cell" value="${item.collection_time}"></td>
+                        <td><input type="text" class="input-cell" value="selling_price"></td>
+                        <td><input type="text" class="input-cell" value="winner_price"></td>
+                        <td><input type="text" class="input-cell" value="lowest_price"></td>
+                        <td><input type="text" class="input-cell" value="maximum_price"></td>
+                        <td><input type="text" class="input-cell" value="stock_status"></td>
+                        <td><input type="text" class="input-cell" value="promotion_period"></td>
                         <td><button class="btn btn-warning btn-table detail-btn">Details</button></td>
                         <td><button class="btn btn-info btn-table">Action</button></td>
                     `;
@@ -142,30 +143,30 @@ document.addEventListener("DOMContentLoaded", function () {
                             <table class="table">
                                 <thead>
                                     <tr>
-                                        <th>Select</th>
-                                        <th>Dessert</th>
-                                        <th>Commits</th>
-                                        <th>Tasks</th>
-                                        <th>Projects</th>
-                                        <th>Hours</th>
+                                        <th>옵션명</th>
+                                        <th>재고옵션</th>
+                                        <th>옵션가</th>
+                                        <th>할인가</th>
+                                        <th>위너가</th>
+                                        <th>최저가</th>
+                                        <th>최고가</th>
+                                        <th>재고</th>
+                                        <th>상품정보</th>
+                                        <th>비고</th>
                                     </tr>
                                 </thead>
                                 <tbody id="expanded-tbody">
                                     <tr>
                                         <td><input type="checkbox" class="child-checkbox"></td>
-                                        <td><input type="text" class="input-cell" value="Bitka Cotail"></td>
-                                        <td><input type="text" class="input-cell" value="11.2"></td>
-                                        <td><input type="text" class="input-cell" value="24"></td>
-                                        <td><input type="text" class="input-cell" value="9.0"></td>
-                                        <td><input type="text" class="input-cell" value="24,000"></td>
-                                    </tr>
-                                    <tr>
-                                        <td><input type="checkbox" class="child-checkbox"></td>
-                                        <td><input type="text" class="input-cell" value="Girl Scout Cookies"></td>
-                                        <td><input type="text" class="input-cell" value="21.4"></td>
-                                        <td><input type="text" class="input-cell" value="6"></td>
-                                        <td><input type="text" class="input-cell" value="1.1"></td>
-                                        <td><input type="text" class="input-cell" value="112.1"></td>
+                                        <td><input type="text" value="origrin_option_name" class="input-cell"></td>
+                                        <td><input type="text" value="stock_option" class="input-cell"></td>
+                                        <td><input type="text" class="input-cell" value="${item.market}"></td>
+                                        <td><input type="text" value="selling_price" class="input-cell"></td>
+                                        <td><input type="text" value="winner_price" class="input-cell"></td>
+                                        <td><input type="text" value="maximum_price" class="input-cell"></td>
+                                        <td><input type="text" values="stock_status" class="input-cell"></td>
+                                        <td><button class="btn btn-warning btn-table detail-btn">Details</button></td>
+                                        <td><button class="btn btn-info btn-table">Action</button></td>
                                     </tr>
                                 </tbody>
                             </table>

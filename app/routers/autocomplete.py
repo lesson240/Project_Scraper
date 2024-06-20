@@ -2,14 +2,13 @@ from fastapi import APIRouter, Query
 from fastapi.responses import JSONResponse
 from typing import List, Dict
 from app.services.mongodb import mongodb_service
-from app.models.oliveyoung_model import BrandListModel, BrandShopModel
+from app.models.oliveyoung_model import BrandListModel, OriginGoodsDetailModel
 import re
 from pathlib import Path
 import os
 from dotenv import load_dotenv
 import logging
 from logging.handlers import RotatingFileHandler
-
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -103,7 +102,7 @@ async def autocomplete_collected_brands(
         # MongoDB에서 입력된 query를 포함하는 brand 값을 찾기 위해 정규 표현식을 사용
         regex = re.compile(f".*{re.escape(query)}.*", re.IGNORECASE)
         brands = await mongodb_service.engine.find(
-            BrandShopModel, {"brand": {"$regex": regex}}
+            OriginGoodsDetailModel, {"brand": {"$regex": regex}}
         )
 
         # 중복 제거를 위한 세트 사용

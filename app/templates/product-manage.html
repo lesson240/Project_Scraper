@@ -45,16 +45,17 @@
             <tr>
                 <th><button class="parent-expand-btn">&#9660;</button></th>
                 <th><input type="checkbox" class="grandparent-checkbox"></th>
-                <th>No.</th>
+                <th>수집마켓</th>
                 <th>상품코드</th>
                 <th>상품명</th>
-                <th>옵션명</th>
+                <th>재고옵션</th>
                 <th>구매가</th>
                 <th>할인가</th>
+                <th>위너가</th>
                 <th>최저가</th>
                 <th>최고가</th>
-                <th>위너가</th>
                 <th>재고</th>
+                <th>행사기간</th>
                 <th>상품정보</th>
                 <th>비고</th>
             </tr>
@@ -63,16 +64,17 @@
             <tr class="expandable">
                 <td><button class="expand-btn">&#9660;</button></td>
                 <td><input type="checkbox" class="parent-checkbox"></td>
-                <td><input type="text" id="brand1" class="input-cell"></td>
-                <td><input type="text" id="brand2" class="input-cell"></td>
-                <td><input type="text" id="brand3" class="input-cell"></td>
+                <td><input type="text" id="market" class="input-cell"></td>
                 <td><input type="text" id="origin_goods_code" class="input-cell"></td>
                 <td><input type="text" id="origin_goods_name" class="input-cell"></td>
+                <td><input type="text" id="stock_option" class="input-cell"></td>
                 <td><input type="text" id="total_price" class="input-cell"></td>
-                <td><input type="text" id="sold_out" class="input-cell"></td>
-                <td><input type="text" id="sale" class="input-cell"></td>
-                <td><input type="text" id="coupon" class="input-cell"></td>
-                <td><input type="text" id="collection_time" class="input-cell"></td>
+                <td><input type="text" id="selling_price" class="input-cell"></td>
+                <td><input type="text" id="winner_price" class="input-cell"></td>
+                <td><input type="text" id="lowest_price" class="input-cell"></td>
+                <td><input type="text" id="maximum_price" class="input-cell"></td>
+                <td><input type="text" id="stock_status" class="input-cell"></td>
+                <td><input type="text" id="promotion_period" class="input-cell"></td>
                 <td><button class="btn btn-warning btn-table detail-btn">Details</button></td>
                 <td><button class="btn btn-info btn-table">Action</button></td>
             </tr>
@@ -81,30 +83,30 @@
                     <table class="table">
                         <thead>
                             <tr>
-                                <th>Select</th>
-                                <th>Dessert</th>
-                                <th>Commits</th>
-                                <th>Tasks</th>
-                                <th>Projects</th>
-                                <th>Hours</th>
+                                <th>옵션명</th>
+                                <th>재고옵션</th>
+                                <th>옵션가</th>
+                                <th>할인가</th>
+                                <th>위너가</th>
+                                <th>최저가</th>
+                                <th>최고가</th>
+                                <th>재고</th>
+                                <th>상품정보</th>
+                                <th>비고</th>
                             </tr>
                         </thead>
                         <tbody id="expanded-tbody">
                             <tr>
                                 <td><input type="checkbox" class="child-checkbox"></td>
-                                <td><input type="text" class="input-cell" value="Bitka Cotail"></td>
-                                <td><input type="text" class="input-cell" value="11.2"></td>
-                                <td><input type="text" class="input-cell" value="24"></td>
-                                <td><input type="text" class="input-cell" value="9.0"></td>
-                                <td><input type="text" class="input-cell" value="24,000"></td>
-                            </tr>
-                            <tr>
-                                <td><input type="checkbox" class="child-checkbox"></td>
-                                <td><input type="text" class="input-cell" value="Girl Scout Cookies"></td>
-                                <td><input type="text" class="input-cell" value="21.4"></td>
-                                <td><input type="text" class="input-cell" value="6"></td>
-                                <td><input type="text" class="input-cell" value="1.1"></td>
-                                <td><input type="text" class="input-cell" value="112.1"></td>
+                                <td><input type="text" id="origrin_option_name" class="input-cell"></td>
+                                <td><input type="text" id="stock_option" class="input-cell"></td>
+                                <td><input type="text" id="total_price" class="input-cell"></td>
+                                <td><input type="text" id="selling_price" class="input-cell"></td>
+                                <td><input type="text" id="winner_price" class="input-cell"></td>
+                                <td><input type="text" id="maximum_price" class="input-cell"></td>
+                                <td><input type="text" id="stock_status" class="input-cell"></td>
+                                <td><button class="btn btn-warning btn-table detail-btn">Details</button></td>
+                                <td><button class="btn btn-info btn-table">Action</button></td>
                             </tr>
                         </tbody>
                     </table>

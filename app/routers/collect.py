@@ -296,14 +296,14 @@ async def send_goods_detail(
             end_date=None,  # 기본값으로 None 설정
         )
 
-        await mongodb_service.engine.save(record)
+        await mongodb_service.records_engine.save(record)
         logger.info(f"Record saved to MongoDB: {record.id}")
 
         # 저장 후 일정 시간 대기
         await asyncio.sleep(1)  # 1초 대기 (필요에 따라 시간 조절)
 
         # 저장 후 다시 조회하여 백그라운드 작업에 전달
-        saved_record = await mongodb_service.engine.find_one(
+        saved_record = await mongodb_service.records_engine.find_one(
             CollectionRecordsModel, CollectionRecordsModel.id == record.id
         )
         if not saved_record:
@@ -325,7 +325,7 @@ async def send_goods_detail(
 
 
 async def process_collect_data(record_id: str):
-    record = await mongodb_service.engine.find_one(
+    record = await mongodb_service.records_engine.find_one(
         CollectionRecordsModel, CollectionRecordsModel.id == record_id
     )
 
@@ -450,3 +450,29 @@ async def process_collect_data(record_id: str):
         record.end_date = time.strftime("%Y-%m-%d %H:%M:%S")
         await mongodb_service.records_engine.save(record)
         raise Exception(f"Process_message, An error occurred while saving models: {e}")
+
+    # MongoDB에서 데이터 가져오기
+    try:
+        saved_goods = await mongodb_service.engine.find(
+            OriginGoodsDetailModel,
+            {"code": {"$in": [model.code for model in new_oliveyoung_models]}},
+        )
+        saved_goods_list = []
+        for item in saved_goods:
+            item_dict = item.dict()
+            # '_id' 및 'id' 필드 제거
+            item_dict.pop("_id", None)
+            item_dict.pop("id", None)
+            saved_goods_list.append(item_dict)
+        logger.info(f"{saved_goods_list}")
+
+        # JSON 응답 생성
+        return JSONResponse(content={"saved_goods_list": saved_goods_list})
+    except Exception as e:
+        logger.error(
+            f"collect_brand_shop, An error occurred while fetching saved goods_/collect/brandshop: {e}"
+        )
+        raise HTTPException(
+            status_code=500,
+            detail="An error occurred while fetching saved goods.",
+        )

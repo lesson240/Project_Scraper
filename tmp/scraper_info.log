@@ -6,3 +6,6 @@
 2024-06-20 16:08:00,105 - INFO - class of BrandShop:Total pages: 1
 2024-06-20 16:08:00,146 - INFO - class of BrandShop:Fetched 2 products from URL: https://www.oliveyoung.co.kr/store/display/getBrandShopDetailGoodsPagingAjax.do?onlBrndCd=A002201&rowsPerPage=48&pageIdx=1
 2024-06-20 16:08:00,147 - INFO - class of BrandShop:Total products fetched: 2
+2024-06-20 17:27:24,373 - INFO - class of BrandShop:Total pages: 1
+2024-06-20 17:27:24,472 - INFO - class of BrandShop:Fetched 2 products from URL: https://www.oliveyoung.co.kr/store/display/getBrandShopDetailGoodsPagingAjax.do?onlBrndCd=A000894&rowsPerPage=48&pageIdx=1
+2024-06-20 17:27:24,473 - INFO - class of BrandShop:Total products fetched: 2
