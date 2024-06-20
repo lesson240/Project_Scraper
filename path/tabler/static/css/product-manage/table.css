@@ -1,4 +1,16 @@
-/* app/static/css/product-collect/autocomplete-brand.css */
+/* 페이지 크기에 맞게 테이블을 확장 */
+.table-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.product-table {
+    flex-grow: 1;
+    overflow-y: auto;
+    width: 100%;
+    /* 추가: 테이블 너비를 전체 페이지 너비로 설정 */
+}
 
 #brand-dropdown {
     display: none;

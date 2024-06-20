@@ -1,0 +1,55 @@
+version: '3.8' # Docker Compose 파일 버전, 3.8 버전을 사용
+
+services:
+  # Docker Compose로 정의된 서비스 목록
+  app:
+    # FastAPI 애플리케이션 서비스 정의
+    build:
+      context: .
+      dockerfile: Dockerfile.app
+    container_name: fastapi_app # 컨테이너 이름을 fastapi_app으로 지정
+    environment:
+      - AWS_EXECUTION_ENV=${AWS_EXECUTION_ENV}
+      - AWS_REGION=${AWS_REGION}
+      - AWS_ACCOUNT_ID=${AWS_ACCOUNT_ID}
+      - LAMBDA_REPO_NAME=${LAMBDA_REPO_NAME}
+      - WORKER_REPO_NAME=${WORKER_REPO_NAME}
+      - SQS_QUEUE_URL=${SQS_QUEUE_URL}
+      - MONGO_DB_NAME=${MONGO_DB_NAME}
+      - MONGO_URL=${MONGO_URL}
+    volumes:
+      - .:/var/task
+      # secrets.json 파일을 컨테이너로 복사
+      - ./secrets.json:/app/secrets.json
+    env_file:
+      # 환경 변수 파일을 사용하여 환경 변수를 설정
+      - .env # 로컬 개발 환경에서 사용할 환경 파일
+    ports:
+      # 호스트와 컨테이너 간의 포트를 매핑
+      - "8001:8000" # 호스트의 8000 포트를 컨테이너의 8000 포트에 매핑
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --loop asyncio # 컨테이너가 시작될 때 실행할 명령어
+
+  lambda:
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${LAMBDA_REPO_NAME}:latest
+    container_name: SQS_Lambda_function
+    environment:
+      - AWS_EXECUTION_ENV=${AWS_EXECUTION_ENV}
+      - AWS_REGION=${AWS_REGION}
+      - AWS_ACCOUNT_ID=${AWS_ACCOUNT_ID}
+      - LAMBDA_REPO_NAME=${LAMBDA_REPO_NAME}
+      - WORKER_REPO_NAME=${WORKER_REPO_NAME}
+      - SQS_QUEUE_URL=${SQS_QUEUE_URL}
+      - MONGO_DB_NAME=${MONGO_DB_NAME}
+      - MONGO_URL=${MONGO_URL}
+      - COLLECT_SERVIwlCE_URL=http://app:8000 # Docker Compose 네트워크를 사용하여 FastAPI 서비스와 통신
+    volumes:
+      - .:/var/task
+      - ./secrets.json:/app/secrets.json
+    env_file:
+      - .env
+
+secrets:
+  AWS_ACCESS_KEY_ID:
+    external: true
+  AWS_SECRET_ACCESS_KEY:
+    external: true

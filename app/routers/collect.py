@@ -1,39 +1,78 @@
-from fastapi import APIRouter, Request, HTTPException, Query
-from fastapi.responses import HTMLResponse
+from fastapi import APIRouter, Request, HTTPException, Query, BackgroundTasks
+from fastapi.responses import HTMLResponse, JSONResponse, Response
 from fastapi.templating import Jinja2Templates
-from datetime import datetime
 import asyncio
-import logging
-from pathlib import Path
 from app.models.oliveyoung_model import (
     BrandListModel,
     BrandShopModel,
     OriginGoodsDetailModel,
 )
+from app.models.records_model import CollectionRecordsModel
 from app.oliveyoung_scraper import BrandList, BrandShop, BrandGoodsDetail
 from app.services.mongodb import mongodb_service
-from fastapi.responses import JSONResponse, Response
-import json
 from typing import List, Dict
 from pymongo import UpdateOne
 from pydantic import BaseModel
+import json
+from pathlib import Path
+import os
+from dotenv import load_dotenv
+import logging
+from logging.handlers import RotatingFileHandler
+import time
+
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+
+# .env 파일 로드
+load_dotenv()
+
+# AWS 환경 확인
+AWS_EXECUTION_ENV = os.getenv("AWS_EXECUTION_ENV", "local")
+
+log_format = "%(asctime)s - %(levelname)s - %(message)s"
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)  # 로거의 기본 레벨을 DEBUG로 설정
+
+# 로깅 디렉토리 설정
+if AWS_EXECUTION_ENV == "local":
+    log_dir = BASE_DIR / "tmp" / "routers"
+    if not log_dir.exists():
+        log_dir.mkdir(parents=True, exist_ok=True)
+    # 로컬 개발 환경
+    info_handler = RotatingFileHandler(
+        log_dir / "collect.log", maxBytes=2000000, backupCount=10, encoding="utf-8"
+    )
+    info_handler.setLevel(logging.INFO)
+    info_handler.addFilter(lambda record: record.levelno == logging.INFO)
+    info_handler.setFormatter(logging.Formatter(log_format))
+
+    error_handler = RotatingFileHandler(
+        log_dir / "collect_error.log",
+        maxBytes=2000000,
+        backupCount=10,
+        encoding="utf-8",
+    )
+    error_handler.setLevel(logging.ERROR)
+    error_handler.setFormatter(logging.Formatter(log_format))
+
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.ERROR)
+    console_handler.setFormatter(logging.Formatter(log_format))
+
+    logger.addHandler(info_handler)
+    logger.addHandler(error_handler)
+else:
+    # AWS Lambda 환경
+    stream_handler = logging.StreamHandler()
+    stream_handler.setLevel(logging.INFO)
+    logger.addHandler(stream_handler)
+    logger.setLevel(logging.INFO)
 
 
 router = APIRouter()
 
 # Jinja2 템플릿 경로 설정
-BASE_DIR = Path(__file__).resolve().parent.parent
 templates = Jinja2Templates(directory=BASE_DIR / "templates")
-
-# 로깅 설정
-logging.basicConfig(
-    filename="log.txt",
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-)
-
-# logger 객체 생성
-logger = logging.getLogger(__name__)
 
 
 @router.get("/manager/brandlist", response_class=HTMLResponse)
@@ -51,8 +90,7 @@ async def collect_brand_list(request: Request):
                 item.code for item in await mongodb_service.engine.find(BrandListModel)
             }
         except Exception as e:
-            # 오류 처리
-            logging.error(f"An error occurred while finding existing codes: {e}")
+            logger.error(f"An error occurred while finding existing codes: {e}")
             raise HTTPException(
                 status_code=500,
                 detail="An error occurred while finding existing codes.",
@@ -76,7 +114,6 @@ async def collect_brand_list(request: Request):
             if new_oliveyoung_models:
                 await mongodb_service.engine.save_all(new_oliveyoung_models)
         except Exception as e:
-            # 오류 처리
             logging.error(
                 f"An error occurred while saving new models_/manager/brandlist: {e}"
             )
@@ -91,7 +128,7 @@ async def collect_brand_list(request: Request):
         )
 
     except Exception as e:
-        logging.error(f"An error occurred while collecting brand list: {e}")
+        logger.error(f"An error occurred while collecting brand list: {e}")
         raise HTTPException(
             status_code=500, detail="An error occurred while collecting brand list."
         )
@@ -108,8 +145,8 @@ async def collect_brand_shop(
         goods = await brand_shop.run()
 
         if not goods:
-            logging.error(
-                f"No goods found for brand code_/collect/brandshop: {input_code}"
+            logger.error(
+                f"collect_brand_shop, No goods found for brand code_/collect/brandshop: {input_code}"
             )
             raise HTTPException(
                 status_code=404,
@@ -121,8 +158,8 @@ async def collect_brand_shop(
                 item.code for item in await mongodb_service.engine.find(BrandShopModel)
             }
         except Exception as e:
-            logging.error(
-                f"An error occurred while finding existing codes_/collect/brandshop: {e}"
+            logger.error(
+                f"collect_brand_shop, An error occurred while finding existing codes_/collect/brandshop: {e}"
             )
             raise HTTPException(
                 status_code=500,
@@ -158,8 +195,8 @@ async def collect_brand_shop(
                         )
                         new_oliveyoung_models.append(oliveyoung_model)
                     except Exception as e:
-                        logging.error(
-                            f"An error occurred while creating model instance/manager/brandlist: {e}"
+                        logger.error(
+                            f"collect_brand_shop, An error occurred while creating model instance/manager/brandlist: {e}"
                         )
                         raise HTTPException(
                             status_code=500,
@@ -185,13 +222,16 @@ async def collect_brand_shop(
         if bulk_operations:
             try:
                 result = await collection.bulk_write(bulk_operations)
-                logging.info(f"Bulk write result: {result.bulk_api_result}")
+                logger.info(
+                    f"collect_brand_shop, Bulk write result: {result.bulk_api_result}"
+                )
             except Exception as e:
-                logging.error(
-                    f"An error occurred while saving new models/manager/brandlist: {e}"
+                logger.error(
+                    f"collect_brand_shop, An error occurred while saving new models/manager/brandlist: {e}"
                 )
                 raise HTTPException(
-                    status_code=500, detail="An error occurred while saving new models."
+                    status_code=500,
+                    detail="collect_brand_shop, An error occurred while saving new models.",
                 )
 
         # MongoDB에서 데이터 가져오기
@@ -213,8 +253,8 @@ async def collect_brand_shop(
             return JSONResponse(content={"saved_goods_list": saved_goods_list})
 
         except Exception as e:
-            logging.error(
-                f"An error occurred while fetching saved goods_/collect/brandshop: {e}"
+            logger.error(
+                f"collect_brand_shop, An error occurred while fetching saved goods_/collect/brandshop: {e}"
             )
             raise HTTPException(
                 status_code=500,
@@ -222,145 +262,191 @@ async def collect_brand_shop(
             )
 
     except Exception as e:
-        logging.error(f"An error occurred while collecting /collect/brandshop: {e}")
+        logger.error(
+            f"collect_brand_shop, An error occurred while collecting /collect/brandshop: {e}"
+        )
         raise HTTPException(
             status_code=500, detail="An error occurred while collecting brandshop."
         )
 
 
-class InputData(BaseModel):
+class CollectRequest(BaseModel):
     goodsCodes: List[str]
     brandCode: str
     brandName: str
 
 
-@router.post("/collect/brandgoodsdetail", response_class=HTMLResponse)
-async def collect_brand_goods_detail(request: Request, input_data: InputData):
-
+@router.post("/collect/brandgoodsdetail", response_class=JSONResponse)
+async def send_goods_detail(
+    input_data: CollectRequest, background_tasks: BackgroundTasks
+):
     try:
-        goods_codes = input_data.goodsCodes
-        brand_code = input_data.brandCode
-        brand_name = input_data.brandName
-
-        # 결과를 저장할 리스트
-        all_goods = []
-
-        for goodscode in goods_codes:
-            brand_goods_code = BrandGoodsDetail(goodscode)
-            goods = await brand_goods_code.run()
-            all_goods.append(goods)
-
-        # MongoDB collection 가져오기
-        engine = mongodb_service.engine
-
-        new_oliveyoung_models = []
-        for good in all_goods:
-            if isinstance(good, dict):
-                total_price = (
-                    0
-                    if good.get("totalprice") is None
-                    or good.get("totalprice") == "null"
-                    else int(good.get("totalprice"))
-                )
-                goods_origin = (
-                    0
-                    if good.get("goodsorigin") is None
-                    or good.get("goodsorigin") == "null"
-                    else int(good.get("goodsorigin"))
-                )
-                sale_start = (
-                    "null" if good.get("salestart") is None else good.get("salestart")
-                )
-                sale_end = (
-                    "null" if good.get("saleend") is None else good.get("saleend")
-                )
-                sale_price = (
-                    0
-                    if good.get("saleprice") is None or good.get("saleprice") == "null"
-                    else int(good.get("saleprice"))
-                )
-                coupon_start = (
-                    "null"
-                    if good.get("couponstart") is None
-                    else good.get("couponstart")
-                )
-                coupon_end = (
-                    "null" if good.get("couponend") is None else good.get("couponend")
-                )
-                coupon_price = (
-                    0
-                    if good.get("couponprice") is None
-                    or good.get("couponprice") == "null"
-                    else int(good.get("couponprice"))
-                )
-                soldout = (
-                    "null" if good.get("sold_out") is None else good.get("sold_out")
-                )
-
-                # Sale and coupon values
-                sale = (
-                    "세일"
-                    if good.get("saleprice", "null") not in ["null", None, ""]
-                    else "없음"
-                )
-                coupon = (
-                    "쿠폰"
-                    if good.get("couponprice", "null") not in ["null", None, ""]
-                    else "없음"
-                )
-
-                # thumb 필드가 딕셔너리인 경우 문자열로 변환하지 않고 그대로 사용
-                thumb = good.get("thumb", {})
-
-                # if isinstance(thumb, dict):
-                #     thumb = ", ".join(f"{key}: {value}" for key, value in thumb.items())
-
-                model = OriginGoodsDetailModel(
-                    market="올리브영",
-                    brand=brand_name,
-                    brand_code=brand_code,
-                    origin_goods_code=good["code"],
-                    origin_goods_name=good["name"],
-                    total_price=total_price,
-                    goods_origin=goods_origin,
-                    sale_start=sale_start,
-                    sale_end=sale_end,
-                    sale_price=sale_price,
-                    coupon_start=coupon_start,
-                    coupon_end=coupon_end,
-                    coupon_price=coupon_price,
-                    delivery=good["delivery"],
-                    sold_out=soldout,
-                    thumb=thumb,
-                    collection_time=good["collectiontime"],
-                    sale=sale,
-                    coupon=coupon,
-                )
-
-                new_oliveyoung_models.append(model)
-
-        # Save all models to MongoDB using Odmantic
-        if new_oliveyoung_models:
-            try:
-                await engine.save_all(new_oliveyoung_models)
-                logging.info("Successfully saved all new models to MongoDB")
-            except Exception as e:
-                logging.error(
-                    f"An error occurred while saving new models_/collect/brandgoodsdetail: {e}"
-                )
-                raise HTTPException(
-                    status_code=500, detail="An error occurred while saving new models."
-                )
-
-        # 템플릿 렌더링 및 응답 반환
-        return templates.TemplateResponse(
-            "./index.html",
-            {"request": request, "title": "올리브영 수집기", "goods": goods},
+        logger.info(
+            f"Starting post.brandgoodsdetail:{input_data.goodsCodes},{input_data.brandCode},{input_data.brandName}"
         )
+
+        record = CollectionRecordsModel(
+            goodsCodes=input_data.goodsCodes,
+            brandCode=input_data.brandCode,
+            brandName=input_data.brandName,
+            status="pending",
+            request_count=len(input_data.goodsCodes),
+            success_count=0,
+            start_date=time.strftime("%Y-%m-%d %H:%M:%S"),
+            end_date=None,  # 기본값으로 None 설정
+        )
+
+        await mongodb_service.engine.save(record)
+        logger.info(f"Record saved to MongoDB: {record.id}")
+
+        # 저장 후 일정 시간 대기
+        await asyncio.sleep(1)  # 1초 대기 (필요에 따라 시간 조절)
+
+        # 저장 후 다시 조회하여 백그라운드 작업에 전달
+        saved_record = await mongodb_service.engine.find_one(
+            CollectionRecordsModel, CollectionRecordsModel.id == record.id
+        )
+        if not saved_record:
+            logger.error(f"Record with id {record.id} not found after saving")
+            raise HTTPException(
+                status_code=500,
+                detail=f"Record with id {record.id} not found after saving",
+            )
+
+        background_tasks.add_task(process_collect_data, saved_record.id)
+
+        return {"record_id": str(saved_record.id)}
 
     except Exception as e:
-        logging.error(f"An error occurred while collecting brandgoodsdetail: {e}")
-        raise HTTPException(
-            status_code=500,
-            detail="An error occurred while collecting brandgoodsdetail.",
+        logger.error(
+            f"collect_brand_goods_detail,An error occurred: {e}", exc_info=True
         )
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+async def process_collect_data(record_id: str):
+    record = await mongodb_service.engine.find_one(
+        CollectionRecordsModel, CollectionRecordsModel.id == record_id
+    )
+
+    if not record:
+        logger.error(f"Record with id {record_id} not found")
+        return
+
+    goods_codes = record.goodsCodes
+    brand_code = record.brandCode
+    brand_name = record.brandName
+    all_goods = []
+
+    for goodscode in goods_codes:
+        logger.info(f"Process_message, Processing goodscode: {goodscode}")
+        brand_goods_code = BrandGoodsDetail(goodscode)
+        goods = await brand_goods_code.run()
+        all_goods.append(goods)
+
+    logger.info(
+        f"Process_message, Completed task.goods_detail_task with record ID: {record_id}"
+    )
+
+    new_oliveyoung_models = []
+    for good in all_goods:
+        if isinstance(good, dict):
+            total_price = (
+                0
+                if good.get("total_price") is None or good.get("total_price") == "null"
+                else int(good.get("total_price"))
+            )
+            goods_origin = (
+                0
+                if good.get("goods_origin") is None
+                or good.get("goods_origin") == "null"
+                else int(good.get("goods_origin"))
+            )
+            sale_start = (
+                "null" if good.get("sale_start") is None else good.get("sale_start")
+            )
+            sale_end = "null" if good.get("sale_end") is None else good.get("sale_end")
+            sale_price = (
+                0
+                if good.get("sale_price") is None or good.get("sale_price") == "null"
+                else int(good.get("sale_price"))
+            )
+            coupon_start = (
+                "null" if good.get("coupon_start") is None else good.get("coupon_start")
+            )
+            coupon_end = (
+                "null" if good.get("coupon_end") is None else good.get("coupon_end")
+            )
+            coupon_price = (
+                0
+                if good.get("coupon_price") is None
+                or good.get("coupon_price") == "null"
+                else int(good.get("coupon_price"))
+            )
+
+            sold_out = "null" if good.get("sold_out") is None else good.get("sold_out")
+
+            sale = (
+                "세일"
+                if good.get("sale_price", "null") not in ["null", None, ""]
+                else "없음"
+            )
+            coupon = (
+                "쿠폰"
+                if good.get("coupon_price", "null") not in ["null", None, ""]
+                else "없음"
+            )
+
+            thumb = good.get("thumb", {})
+            option = good.get("option", {})
+            delivery = good.get("delivery", {})
+            # goods_promotion = good.get("goods_promotion", {})
+
+            model = OriginGoodsDetailModel(
+                market="올리브영",
+                # goods_url=["goods_url"],
+                brand=brand_name,
+                brand_code=brand_code,
+                origin_goods_code=good["code"],
+                origin_goods_name=good["name"],
+                total_price=total_price,
+                goods_origin=goods_origin,
+                sale_start=sale_start,
+                sale_end=sale_end,
+                sale_price=sale_price,
+                coupon_start=coupon_start,
+                coupon_end=coupon_end,
+                coupon_price=coupon_price,
+                # goods_promotion=goods_promotion,
+                delivery=delivery,
+                option=option,
+                sold_out=sold_out,
+                thumb=thumb,
+                collection_time=good["collection_time"],
+                sale=sale,
+                coupon=coupon,
+            )
+
+            new_oliveyoung_models.append(model)
+            logger.info(
+                f"Process_message, Model prepared for goodscode: {goodscode}, model: {model}"
+            )
+
+        # Save models to MongoDB using Odmantic
+    try:
+        await mongodb_service.engine.save_all(new_oliveyoung_models)
+        logger.info(f"Process_message, Successfully saved models to MongoDB")
+        record.status = "completed"
+        record.success_count = len(new_oliveyoung_models)
+        record.end_date = time.strftime("%Y-%m-%d %H:%M:%S")
+        await mongodb_service.records_engine.save(record)
+        logger.info(f"Record updated to completed: {record.id}")
+    except Exception as e:
+        logger.error(
+            f"Process_message, An error occurred while saving models: {e}",
+            exc_info=True,
+        )
+        record.status = "failed"
+        record.end_date = time.strftime("%Y-%m-%d %H:%M:%S")
+        await mongodb_service.records_engine.save(record)
+        raise Exception(f"Process_message, An error occurred while saving models: {e}")

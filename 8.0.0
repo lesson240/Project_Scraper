@@ -1,0 +1,2 @@
+Requirement already satisfied: click in c:\users\user\desktop\project_scraper\venv\lib\site-packages (8.1.7)
+Requirement already satisfied: colorama in c:\users\user\desktop\project_scraper\venv\lib\site-packages (from click) (0.4.6)

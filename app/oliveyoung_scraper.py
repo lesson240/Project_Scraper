@@ -1,9 +1,7 @@
 import re
 import math
-from datetime import date
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.service import Service as ChromeService
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.common.exceptions import NoSuchElementException
@@ -12,23 +10,63 @@ from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 import aiohttp
 import asyncio
-from datetime import date
-from datetime import datetime
 import nest_asyncio
+from datetime import date, datetime
 import json
 import logging
+from logging.handlers import RotatingFileHandler
+from pathlib import Path
+import os
+from dotenv import load_dotenv
+
+if "uvloop" in str(type(asyncio.get_event_loop())):
+    asyncio.set_event_loop_policy(asyncio.DefaultEventLoopPolicy())
 
 nest_asyncio.apply()
 
-# 로깅 설정
-logging.basicConfig(
-    filename="log_scraper.txt",
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-)
+BASE_DIR = Path(__file__).resolve().parent.parent
 
-# logger 객체 생성
+# .env 파일 로드
+load_dotenv(".env")
+
+# AWS 환경 확인
+AWS_EXECUTION_ENV = os.getenv("AWS_EXECUTION_ENV", "local")
+
+log_format = "%(asctime)s - %(levelname)s - %(message)s"
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)  # 로거의 기본 레벨을 DEBUG로 설정
+
+# 로깅 디렉토리 설정
+if AWS_EXECUTION_ENV == "local":
+    log_dir = BASE_DIR / "tmp"
+    if not log_dir.exists():
+        log_dir.mkdir(parents=True, exist_ok=True)
+    # 로컬 개발 환경
+    info_handler = RotatingFileHandler(
+        log_dir / "scraper_info.log", maxBytes=2000, backupCount=10, encoding="utf-8"
+    )
+    info_handler.setLevel(logging.INFO)
+    info_handler.addFilter(lambda record: record.levelno == logging.INFO)
+    info_handler.setFormatter(logging.Formatter(log_format))
+
+    error_handler = RotatingFileHandler(
+        log_dir / "scraper_error.log", maxBytes=2000, backupCount=10, encoding="utf-8"
+    )
+    error_handler.setLevel(logging.ERROR)
+    error_handler.setFormatter(logging.Formatter(log_format))
+
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.ERROR)
+    console_handler.setFormatter(logging.Formatter(log_format))
+
+    logger.addHandler(info_handler)
+    logger.addHandler(error_handler)
+else:
+    # AWS Lambda 환경
+    stream_handler = logging.StreamHandler()
+    stream_handler.setLevel(logging.INFO)
+    logger.addHandler(stream_handler)
+    logger.setLevel(logging.INFO)
 
 # import os
 # import aiofiles
@@ -76,10 +114,11 @@ class BrandList:
                             branddics.append(branddic)
                             existing_codes.add(code)
                             idx_counter += 1  # 다음 idx 값을 위해 카운터 증가
+            logger.info("class of BrandList: Brand list fetched successfully.")
             return branddics
 
         except Exception as e:
-            print(f"An error occurred: {e}")
+            logger.error(f"class of BrandList:An error occurred: {e}")
             return []
 
     @staticmethod
@@ -170,11 +209,13 @@ class BrandShop:
                                 }
                             )
                             accumulated_idx += 1
-
+                    logger.info(
+                        f"class of BrandShop:Fetched {len(products)} products from URL: {url}"
+                    )
                     return products, accumulated_idx
 
         except Exception as e:
-            print(f"An error occurred: {e}")
+            logger.error(f"class of BrandShop:An error occurred: {e}")
             return [], accumulated_idx
 
     async def get_total_page(self):
@@ -194,24 +235,29 @@ class BrandShop:
                         total_page = max(
                             int(tag["data-page-no"]) for tag in page_a_tags
                         )
+                        logger.info(f"class of BrandShop:Total pages: {total_page}")
                         return total_page
                     elif page_strong_tag:
                         total_page = int(page_strong_tag.text.strip())
+                        logger.info(f"class of BrandShop:Total pages: {total_page}")
                         return total_page
                     else:
-                        print(
-                            "Could not find the page number in the expected location."
+                        logger.warning(
+                            f"class of BrandShop:Could not find the page number in the expected location."
                         )
                         return None
 
         except Exception as e:
-            print(f"An error occurred: {e}")
+            logger.error(f"class of BrandShop:An error occurred: {e}")
             return None
 
     async def run(self):
         """Runs the scraping process."""
         total_page = await self.get_total_page()
         if total_page is None:
+            logger.warning(
+                f"class of BrandShop:Total page number is None, exiting run."
+            )
             return []
 
         all_products = []
@@ -220,6 +266,9 @@ class BrandShop:
             url = self.unit_url(page_idx)
             products, accumulated_idx = await self.fetch(url, accumulated_idx)
             all_products.extend(products)
+            logger.info(
+                f"class of BrandShop:Total products fetched: {len(all_products)}"
+            )
         return all_products
 
 
@@ -276,7 +325,7 @@ class BrandGoodsDetail:
         # DB 적재용 'key : value' setting
         elementlist = {
             "code": f"{self.goodscode}",
-            "collectiontime": f"{date.today()}",
+            "collection_time": f"{date.today()}",
         }
         try:
             # 상품명 추출하는 함수
@@ -288,6 +337,9 @@ class BrandGoodsDetail:
             goodsname = goodsname_element.text.strip()
             elementlist["name"] = f"{goodsname}"
 
+            # # 상품 url 추출하는 함수
+            # elementlist["goods_url"] = f"{self.unit_url()}"
+
             # 가격 정보 추출하는 함수
             WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located((By.CLASS_NAME, "price"))
@@ -298,14 +350,23 @@ class BrandGoodsDetail:
                 goodstotal = re.sub("(원|,|\n)", "", goodspricelist)
                 elementlist["total_price"] = f"{goodstotal}"
             else:
+                # 혜택 정보 추출 함수
                 self.driver.find_element(By.ID, "btnSaleOpen").click()
+
+                # saleLayer가 나타날 때까지 대기
                 WebDriverWait(self.driver, 10).until(
                     EC.presence_of_element_located((By.ID, "saleLayer"))
                 )
+
+                # saleLayer의 텍스트를 가져오기
                 goodspricelist = self.driver.find_element(By.ID, "saleLayer").text
+
+                # 불필요한 단어와 기호 제거
                 sub_condition = re.sub(
-                    "(혜택|정보|판매가|원|최적가|레이어|닫기|\n)", " ", goodspricelist
+                    r"(혜택|정보|판매가|원|최적가|레이어|닫기|\n)", " ", goodspricelist
                 )
+
+                # 문자열 치환 조건 설정
                 replace_condition = {
                     ",": "_",
                     ".": "-",
@@ -314,12 +375,10 @@ class BrandGoodsDetail:
                     "~": "_",
                     "-": "_",
                 }
-                condition_key = "".join(list(replace_condition.keys()))
-                condition_value = "".join(list(replace_condition.values()))
+
+                # 치환 조건을 적용하여 문자열 정리
                 extract_value = (
-                    sub_condition.translate(
-                        str.maketrans(condition_key, condition_value)
-                    )
+                    sub_condition.translate(str.maketrans(replace_condition))
                     .replace("_", "")
                     .strip()
                     .split()
@@ -333,38 +392,60 @@ class BrandGoodsDetail:
                         sale = extract_value.index("세일")
                         del extract_value[sale]
                         if len(extract_value) == 8:
-                            elementlist["totalprice"] = f"{extract_value[7]}"
-                            elementlist["goodsorigin"] = f"{extract_value[0]}"
-                            elementlist["salestart"] = f"{extract_value[1]}"
-                            elementlist["saleend"] = f"{extract_value[2]}"
-                            elementlist["saleprice"] = f"{extract_value[3]}"
-                            elementlist["couponstart"] = f"{extract_value[4]}"
-                            elementlist["couponend"] = f"{extract_value[5]}"
-                            elementlist["couponprice"] = f"{extract_value[6]}"
+                            elementlist["total_price"] = f"{extract_value[7]}"
+                            elementlist["goods_origin"] = f"{extract_value[0]}"
+                            elementlist["sale_start"] = f"{extract_value[1]}"
+                            elementlist["sale_end"] = f"{extract_value[2]}"
+                            elementlist["sale_price"] = f"{extract_value[3]}"
+                            elementlist["coupon_start"] = f"{extract_value[4]}"
+                            elementlist["coupon_end"] = f"{extract_value[5]}"
+                            elementlist["coupon_price"] = f"{extract_value[6]}"
                         else:
-                            return print("len_extract_value dose not match")
+                            logger.warning(
+                                "class of BranGoodsDetail:len_extract_value does not match"
+                            )
                     else:
                         if len(extract_value) == 5:
-                            elementlist["totalprice"] = f"{extract_value[4]}"
-                            elementlist["goodsorigin"] = f"{extract_value[0]}"
-                            elementlist["couponstart"] = f"{extract_value[1]}"
-                            elementlist["couponend"] = f"{extract_value[2]}"
-                            elementlist["couponprice"] = f"{extract_value[3]}"
+                            elementlist["total_price"] = f"{extract_value[4]}"
+                            elementlist["goods_origin"] = f"{extract_value[0]}"
+                            elementlist["coupon_start"] = f"{extract_value[1]}"
+                            elementlist["coupon_end"] = f"{extract_value[2]}"
+                            elementlist["coupon_price"] = f"{extract_value[3]}"
                         else:
-                            return print("len_extract_value dose not match")
+                            logger.warning(
+                                "class of BranGoodsDetail:len_extract_value does not match"
+                            )
                 elif "세일" in extract_value:
                     sale = extract_value.index("세일")
                     del extract_value[sale]
                     if len(extract_value) == 5:
-                        elementlist["totalprice"] = f"{extract_value[4]}"
-                        elementlist["goodsorigin"] = f"{extract_value[0]}"
-                        elementlist["salestart"] = f"{extract_value[1]}"
-                        elementlist["saleend"] = f"{extract_value[2]}"
-                        elementlist["saleprice"] = f"{extract_value[3]}"
+                        elementlist["total_price"] = f"{extract_value[4]}"
+                        elementlist["goods_origin"] = f"{extract_value[0]}"
+                        elementlist["sale_start"] = f"{extract_value[1]}"
+                        elementlist["sale_end"] = f"{extract_value[2]}"
+                        elementlist["sale_price"] = f"{extract_value[3]}"
                     else:
-                        return print("len_extract_value dose not match")
+                        logger.warning(
+                            "class of BranGoodsDetail:len_extract_value does not match"
+                        )
 
-            # 배송 정보 추출하는 함수  # 배송 정보 최적화 함수 만들기
+            # # 2+1, 세일, 쿠폰, 증정 등 행사 유무 정보를 추출하는 함수
+            # goods_promotion_element = WebDriverWait(self.driver, 10).until(
+            #     EC.presence_of_element_located((By.XPATH, '//*[@id="icon_area"]'))
+            # )
+            # goods_promotion_dict = {}
+
+            # # "\n"을 기준으로 split 하여 딕셔너리에 저장
+            # goods_promotion_line = goods_promotion_element.text.split("\n")
+
+            # if goods_promotion_line:
+            #     for idx, line in enumerate(goods_promotion_line, start=1):
+            #         goods_promotion_dict[f"프로모션{idx}"] = line.strip()
+
+            # # 결과를 elementlist에 저장
+            # elementlist["goods_promotion"] = goods_promotion_dict
+
+            # 배송 정보 추출하는 함수
             delivery_xpath = WebDriverWait(self.driver, 10).until(
                 EC.presence_of_all_elements_located(
                     (
@@ -373,6 +454,10 @@ class BrandGoodsDetail:
                     )
                 )
             )
+
+            # 배송 정보 추출 및 딕셔너리로 저장
+            goodsdelivery_dict = {}
+
             if len(delivery_xpath) == 1:
                 goodsdelivery_element = WebDriverWait(self.driver, 10).until(
                     EC.presence_of_element_located(
@@ -382,7 +467,7 @@ class BrandGoodsDetail:
                         )
                     )
                 )
-                elementlist["delivery"] = goodsdelivery_element.text
+                delivery_text = goodsdelivery_element.text
             else:
                 goodsdelivery_element = WebDriverWait(self.driver, 10).until(
                     EC.presence_of_element_located(
@@ -392,7 +477,42 @@ class BrandGoodsDetail:
                         )
                     )
                 )
-                elementlist["delivery"] = goodsdelivery_element.text
+                delivery_text = goodsdelivery_element.text
+
+            # "\n"을 기준으로 split 하여 딕셔너리에 저장
+            delivery_lines = delivery_text.split("\n")
+            for idx, line in enumerate(delivery_lines, start=1):
+                goodsdelivery_dict[f"배송정보{idx}"] = line.strip()
+
+            # 결과를 elementlist에 저장
+            elementlist["delivery"] = goodsdelivery_dict
+
+            # 옵션 정보 추출 함수
+            option_class = self.driver.find_elements(By.ID, "buy_option_box")
+            goodsoptions = {}
+            if len(option_class) == 1:
+                self.driver.find_element(By.ID, "buy_option_box").click()
+                WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located((By.CLASS_NAME, "option_value"))
+                )
+                options_list = self.driver.find_element(By.ID, "option_list")
+                options = options_list.find_elements(By.TAG_NAME, "li")
+                for option in options:
+                    option_value_text = option.find_element(
+                        By.CLASS_NAME, "option_value"
+                    ).text
+                    option_value_element = option_value_text.split("\n")
+
+                    if len(option_value_element) == 2:
+                        option_value = option_value_element[0].strip()
+                        option_price = re.sub(
+                            "[원,]", "", option_value_element[1].strip()
+                        )
+                    else:
+                        option_value = option_value_text
+                        option_price = ""
+                    goodsoptions[f"{option_value}"] = option_price
+                elementlist["option"] = goodsoptions
 
             # 일시품절 text 추출 함수
             soldout_css_element = WebDriverWait(self.driver, 10).until(
@@ -402,7 +522,7 @@ class BrandGoodsDetail:
             )
             soldout_css = soldout_css_element.text.strip()
             sub_condition = re.sub("\n", " ", soldout_css).split()
-            elementlist["solde_out"] = (
+            elementlist["sold_out"] = (
                 "일시품절" if sub_condition[0] == "일시품절" else "판매"
             )
 

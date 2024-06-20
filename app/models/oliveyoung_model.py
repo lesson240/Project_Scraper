@@ -32,6 +32,7 @@ class OriginGoodsDetailModel(Model):  # naming에 따른 연동된 코드 수정
     market: str
     brand: str
     brand_code: str
+    # goods_url: str
     origin_goods_code: str
     origin_goods_name: str
     total_price: int
@@ -42,8 +43,10 @@ class OriginGoodsDetailModel(Model):  # naming에 따른 연동된 코드 수정
     coupon_start: Optional[str]
     coupon_end: Optional[str]
     coupon_price: Optional[int]
-    delivery: str
+    # goods_promotion: Dict[str, str]
+    delivery: Dict[str, str]
     sold_out: str
+    option: Dict[str, str]
     thumb: Dict[str, str]
     collection_time: str
     sale: str

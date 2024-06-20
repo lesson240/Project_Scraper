@@ -1,3 +1,8 @@
+// 전역 변수 선언
+var brandCode = "";
+var brandName = "";
+var goodsCodes = [];
+
 document.addEventListener("DOMContentLoaded", function () {
     var brandSearch = document.getElementById("brand-search");
     var dropdown = document.getElementById("brand-dropdown");
@@ -8,6 +13,14 @@ document.addEventListener("DOMContentLoaded", function () {
     selectedBrandCode.id = "selected-brand-code";
     document.body.appendChild(selectedBrandCode);
 
+    // 로딩 스피너 요소 생성 및 추가
+    var loadingSpinner = document.createElement("img");
+    loadingSpinner.id = "loading-spinner";
+    loadingSpinner.src = "/static/images/loading.gif";
+    loadingSpinner.style.display = "none";
+    document.body.appendChild(loadingSpinner);
+
+    // brandSearch 입력 시 드롭다운에 브랜드 옵션 표시
     brandSearch.addEventListener("input", function () {
         var query = this.value;
 
@@ -16,14 +29,12 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        $.ajax({
-            url: "/autocomplete/brands",
-            method: "GET",
-            data: { query: query },
-            success: function (response) {
+        fetch("/autocomplete/brands?query=" + query)
+            .then(response => response.json())
+            .then(data => {
                 dropdown.innerHTML = "";
-                if (response.brands.length > 0) {
-                    response.brands.forEach(function (brand) {
+                if (data.brands.length > 0) {
+                    data.brands.forEach(function (brand) {
                         var option = document.createElement("option");
                         option.text = brand.brand;
                         option.value = brand.code;
@@ -33,14 +44,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 } else {
                     dropdown.style.display = "none";
                 }
-            },
-            error: function (err) {
-                console.error(err);
+            })
+            .catch(error => {
+                console.error(error);
                 dropdown.style.display = "none";
-            }
-        });
+            });
     });
 
+    // 드롭다운에서 옵션을 클릭하여 브랜드 선택
     dropdown.addEventListener("click", function (event) {
         if (event.target.tagName === "OPTION") {
             brandSearch.value = event.target.text;
@@ -49,6 +60,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
+    // 상품 테이블에서 Enter 키로 옵션 선택
     brandSearch.addEventListener("keydown", function (event) {
         var items = dropdown.getElementsByTagName("option");
         if (items.length === 0) {
@@ -82,19 +94,25 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
+    // 영역 외 클릭 시 드롭다운 숨김
     document.addEventListener("click", function (event) {
         if (!brandSearch.contains(event.target) && !dropdown.contains(event.target)) {
             dropdown.style.display = "none";
         }
     });
 
+    // 브랜드 검색 버튼 클릭 시 상품 수집
     searchBtn.addEventListener("click", function () {
-        var brandCode = selectedBrandCode.value;
-        var brandName = brandSearch.value;
+        brandCode = selectedBrandCode.value;
+        brandName = brandSearch.value;
+
         if (!brandCode || !brandName) {
             alert("브랜드를 선택해주세요.");
             return;
         }
+
+        // 이전에 저장된 상품 리스트 초기화
+        saved_goods_list = [];
 
         var tableBody = document.querySelector("#product-table tbody");
         if (!tableBody) {
@@ -103,14 +121,11 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         tableBody.innerHTML = `<tr><td colspan="7" style="text-align:center;"><img src="/static/images/loading.gif" id="loading-spinner"></td></tr>`;
 
-        $.ajax({
-            url: "/collect/brandshop",
-            method: "GET",
-            data: { input_code: brandCode, input_brand: brandName },
-            success: function (response) {
-                var saved_goods_list = response.saved_goods_list;
-                savedGoodsList = saved_goods_list; // 전역 변수에 저장
-
+        fetch("/collect/brandshop?input_code=" + brandCode + "&input_brand=" + brandName)
+            .then(response => response.json())
+            .then(response => {
+                saved_goods_list = response.saved_goods_list;
+                updateGoodsCodes(saved_goods_list); // 상품 코드 업데이트
 
                 if (!saved_goods_list || saved_goods_list.length === 0) {
                     alert("수집된 상품이 없습니다.");
@@ -118,7 +133,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     return;
                 }
 
-                tableBody.innerHTML = ""; // 기존 테이블 내용 초기화
+                tableBody.innerHTML = ""; // 테이블 내용 초기화
 
                 saved_goods_list.forEach(function (item) {
                     var row = document.createElement("tr");
@@ -135,47 +150,72 @@ document.addEventListener("DOMContentLoaded", function () {
                     tableBody.appendChild(row);
                 });
 
-            },
-            error: function (err) {
-                console.error(err);
+                // 상품 수집 버튼 활성화
+                collectBtn.disabled = false;
+            })
+            .catch(error => {
+                console.error(error);
                 alert("상품 수집 중 오류가 발생했습니다.");
                 tableBody.innerHTML = "";
-            }
-        });
+            });
     });
 
+    // 백그라운드 작업 시작
+    function startBackgroundTask(brandCode, brandName, goods_codes) {
+        console.log("Brand Code:", brandCode);
+        console.log("Brand Name:", brandName);
+        console.log("Goods Codes:", goods_codes);
+        fetch("/collect/brandgoodsdetail", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ brandCode: brandCode, brandName: brandName, goodsCodes: goods_codes })
+        })
+            .then(response => response.json())
+            .then(response => {
+                if (response.record_id) {
+                    console.log("record_id:", response.record_id);
+                    var recordId = response.record_id;
+                    loadingSpinner.style.display = "none"; // 백그라운드 작업 시작 후 로딩 스피너 숨기기
+                    // 페이지 전환 허용
+                    window.onbeforeunload = null;
+                }
+            })
+            .catch(error => {
+                console.error("Error starting background task: ", error);
+                loadingSpinner.style.display = "none";
+                // 페이지 전환 허용
+                window.onbeforeunload = null;
+            });
+    }
+
+    // 상품 수집 버튼 클릭 시 백그라운드 작업 시작
     collectBtn.addEventListener("click", function () {
         var brandCode = selectedBrandCode.value;
         var brandName = brandSearch.value;
+
         if (!brandCode || !brandName) {
             alert("브랜드를 선택해주세요.");
             return;
         }
 
-        var loadingSpinner = document.getElementById("loading-spinner");
-        if (loadingSpinner) {
-            loadingSpinner.style.display = "block";
-        }
+        loadingSpinner.style.display = "block";
+        startBackgroundTask(brandCode, brandName, goodsCodes); // 백그라운드 작업 시작
+    });
 
-        var goodsCodes = savedGoodsList.map(item => item.code);
-
-        $.ajax({
-            url: "/collect/brandgoodsdetail",
-            method: "POST",
-            contentType: "application/json",
-            data: JSON.stringify({ goodsCodes: goodsCodes, brandCode: brandCode, brandName: brandName }), // 변경된 부분
-            success: function (response) {
-                console.log("상품 수집이 완료되었습니다.");
-                if (loadingSpinner) {
-                    loadingSpinner.style.display = "none";
-                }
-            },
-            error: function (err) {
-                console.error("상품 수집 중 오류가 발생했습니다.");
-                if (loadingSpinner) {
-                    loadingSpinner.style.display = "none";
-                }
-            }
+    // 모든 메뉴 항목에 이벤트 리스너 추가하여 페이지 전환 허용
+    document.querySelectorAll(".menu a").forEach(function (menuLink) {
+        menuLink.addEventListener("click", function () {
+            // 백그라운드 작업 시작 후 페이지 전환 허용
+            window.onbeforeunload = null;
         });
     });
+
+    // goodsCodes를 업데이트하는 함수
+    function updateGoodsCodes(savedGoodsList) {
+        goodsCodes = savedGoodsList.map(function (item) {
+            return item.code;
+        });
+    }
 });

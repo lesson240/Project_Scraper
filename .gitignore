@@ -1,2 +1,4 @@
 secrets.json
-venv/bin/chrome-win64/chrome.dll
+.env
+dcker-compose.yml
+node_modules
