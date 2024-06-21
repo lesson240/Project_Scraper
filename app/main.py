@@ -1,35 +1,43 @@
+# 프로젝트의 루트 디렉토리를 구하기
+import sys
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+sys.path.append(str(BASE_DIR))
+
+# 프로젝트 Module 불러오기
+from app.utils.logging_config import setup_logger
+from utils.router_utils import include_routers
+from app.routers import (
+    func_autocomplete,
+    func_inquiry,
+    index,
+    page_admin,
+    page_order_management,
+    page_product_collection,
+    page_product_management,
+    page_user_setting,
+    user_account,
+)  # , user 사용자 서비스를 비활성화합니다.
+from app.services.mongodb import mongodb_service
+from app.utils.router_utils import get_versioned_prefix, include_routers
+
+# 라이브러리 불러오기
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-from pathlib import Path
-from app.routers import (
-    collect,
-    index,
-    autocomplete,
-    inquiry,
-    pagecollect,
-    pagemanage,
-    pageorder,
-    pagesetting,
-    pageuser,
-    pagemanager,
-    ep_collect,
-)  # , user 사용자 서비스를 비활성화합니다.
-from datetime import datetime
-from app.services.mongodb import mongodb_service
 from fastapi.middleware.cors import CORSMiddleware
-import logging
-from logging.handlers import RotatingFileHandler
-from dotenv import load_dotenv
+from datetime import datetime
 import os
 
-# from app.tasks.test import my_task
-# .env 파일 로드
-load_dotenv(".env")
+# 파일명 자동 추출
+file_name = os.path.basename(__file__)
+logger_name = os.path.splitext(file_name)[0]
 
+# 로거 설정, __file__을 전달
+logger = setup_logger(logger_name, __file__)
 app = FastAPI()
 
 # 정적 파일 경로 설정
-BASE_DIR = Path(__file__).resolve().parent.parent  # Project_Scraper 폴더로 수정
 app.mount(
     "/static", StaticFiles(directory=BASE_DIR / "path/tabler/static"), name="static"
 )
@@ -43,59 +51,25 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# AWS 환경 확인
-AWS_EXECUTION_ENV = os.getenv("AWS_EXECUTION_ENV", "local")
+# 버전 설정
+api_version = "v1"
+prefix = get_versioned_prefix(api_version)
 
-log_format = "%(asctime)s - %(levelname)s - %(message)s"
-logging.basicConfig(level=logging.ERROR, format=log_format)
-logger = logging.getLogger(__name__)
+# 라우터 목록
+routers = [
+    (func_autocomplete.router, ["FuncAutocomplete"]),
+    (func_inquiry.router, ["FuncInquiry"]),
+    (index.router, ["PageHome"]),
+    (page_admin.router, ["PageAdmin"]),
+    (page_order_management.router, ["PageOrderManagement"]),
+    (page_product_collection.router, ["PageProductCollection"]),
+    (page_product_management.router, ["PageProductManagement"]),
+    (page_user_setting.router, ["PageUserSetting"]),
+    (user_account.router, ["UserAccount"]),
+]
 
-
-# 로깅 디렉토리 설정
-if AWS_EXECUTION_ENV == "local":
-    log_dir = BASE_DIR / "tmp"
-    if not log_dir.exists():
-        log_dir.mkdir(parents=True, exist_ok=True)
-    # 로컬 개발 환경
-    info_handler = RotatingFileHandler(
-        log_dir / "main_info.log", maxBytes=2000, backupCount=10, encoding="utf-8"
-    )
-    info_handler.setLevel(logging.INFO)
-    info_handler.setFormatter(logging.Formatter(log_format))
-
-    error_handler = RotatingFileHandler(
-        log_dir / "main_error.log", maxBytes=2000, backupCount=10, encoding="utf-8"
-    )
-    error_handler.setLevel(logging.ERROR)
-    error_handler.setFormatter(logging.Formatter(log_format))
-
-    console_handler = logging.StreamHandler()
-    console_handler.setLevel(logging.ERROR)
-    console_handler.setFormatter(logging.Formatter(log_format))
-
-    logger.addHandler(info_handler)
-    logger.addHandler(error_handler)
-else:
-    # AWS Lambda 환경
-    stream_handler = logging.StreamHandler()
-    stream_handler.setLevel(logging.INFO)
-    logger.addHandler(stream_handler)
-    logger.setLevel(logging.INFO)
-
-# 라우터 추가
-app.include_router(index.router)
-app.include_router(collect.router)
-app.include_router(autocomplete.router)
-app.include_router(inquiry.router)
-app.include_router(pagecollect.router)
-app.include_router(pagemanage.router)
-app.include_router(pageorder.router)
-app.include_router(pagesetting.router)
-app.include_router(pageuser.router)
-app.include_router(pagemanager.router)
-app.include_router(ep_collect.router)
-
-# app.include_router(user.router)  # 사용자 서비스를 비활성화합니다.
+# 라우터 포함
+include_routers(app, routers, prefix=prefix)
 
 
 # 앱 시작 및 종료 이벤트 핸들러
@@ -110,7 +84,7 @@ async def startup_event():
 async def shutdown_event():
     """앱 종료 후 실행되는 이벤트 핸들러"""
     logger.info("정상적으로 서버에 연결 해제되었습니다.")
-    logging.info(f"Application shutdown: {datetime.now()}")
+    logger.info(f"Application shutdown: {datetime.now()}")
     await mongodb_service.close()
 
 

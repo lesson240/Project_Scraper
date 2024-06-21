@@ -29,15 +29,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # .env 파일 로드
 load_dotenv(".env")
 
-# AWS 환경 확인
-AWS_EXECUTION_ENV = os.getenv("AWS_EXECUTION_ENV", "local")
+# CLOUD 환경 확인
+CLOUD_EXECUTION_ENV = os.getenv("CLOUD_EXECUTION_ENV", "local")
 
 log_format = "%(asctime)s - %(levelname)s - %(message)s"
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)  # 로거의 기본 레벨을 DEBUG로 설정
 
 # 로깅 디렉토리 설정
-if AWS_EXECUTION_ENV == "local":
+if CLOUD_EXECUTION_ENV == "local":
     log_dir = BASE_DIR / "tmp"
     if not log_dir.exists():
         log_dir.mkdir(parents=True, exist_ok=True)
@@ -62,7 +62,7 @@ if AWS_EXECUTION_ENV == "local":
     logger.addHandler(info_handler)
     logger.addHandler(error_handler)
 else:
-    # AWS Lambda 환경
+    # CLOUD 환경
     stream_handler = logging.StreamHandler()
     stream_handler.setLevel(logging.INFO)
     logger.addHandler(stream_handler)
