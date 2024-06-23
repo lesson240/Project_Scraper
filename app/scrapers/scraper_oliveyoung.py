@@ -1,3 +1,15 @@
+# 프로젝트의 루트 디렉토리를 구하기
+import sys
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+sys.path.append(str(BASE_DIR))
+
+# 프로젝트 Module 불러오기
+from app.utils.logging_config import setup_logger
+from app.scrapers.scraper_settings import ScraperSettings
+
+# 라이브러리 불러오기
 import re
 import math
 from selenium import webdriver
@@ -13,60 +25,19 @@ import asyncio
 import nest_asyncio
 from datetime import date, datetime
 import json
-import logging
-from logging.handlers import RotatingFileHandler
-from pathlib import Path
 import os
-from dotenv import load_dotenv
+
+# 파일명 자동 추출
+file_name = os.path.basename(__file__)
+logger_name = os.path.splitext(file_name)[0]
+
+# 로거 설정, __file__을 전달
+logger = setup_logger(logger_name, __file__)
 
 if "uvloop" in str(type(asyncio.get_event_loop())):
     asyncio.set_event_loop_policy(asyncio.DefaultEventLoopPolicy())
 
 nest_asyncio.apply()
-
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-# .env 파일 로드
-load_dotenv(".env")
-
-# CLOUD 환경 확인
-CLOUD_EXECUTION_ENV = os.getenv("CLOUD_EXECUTION_ENV", "local")
-
-log_format = "%(asctime)s - %(levelname)s - %(message)s"
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)  # 로거의 기본 레벨을 DEBUG로 설정
-
-# 로깅 디렉토리 설정
-if CLOUD_EXECUTION_ENV == "local":
-    log_dir = BASE_DIR / "tmp"
-    if not log_dir.exists():
-        log_dir.mkdir(parents=True, exist_ok=True)
-    # 로컬 개발 환경
-    info_handler = RotatingFileHandler(
-        log_dir / "scraper_info.log", maxBytes=2000, backupCount=10, encoding="utf-8"
-    )
-    info_handler.setLevel(logging.INFO)
-    info_handler.addFilter(lambda record: record.levelno == logging.INFO)
-    info_handler.setFormatter(logging.Formatter(log_format))
-
-    error_handler = RotatingFileHandler(
-        log_dir / "scraper_error.log", maxBytes=2000, backupCount=10, encoding="utf-8"
-    )
-    error_handler.setLevel(logging.ERROR)
-    error_handler.setFormatter(logging.Formatter(log_format))
-
-    console_handler = logging.StreamHandler()
-    console_handler.setLevel(logging.ERROR)
-    console_handler.setFormatter(logging.Formatter(log_format))
-
-    logger.addHandler(info_handler)
-    logger.addHandler(error_handler)
-else:
-    # CLOUD 환경
-    stream_handler = logging.StreamHandler()
-    stream_handler.setLevel(logging.INFO)
-    logger.addHandler(stream_handler)
-    logger.setLevel(logging.INFO)
 
 # import os
 # import aiofiles
@@ -347,7 +318,7 @@ class BrandGoodsDetail:
             price_class = self.driver.find_elements(By.CLASS_NAME, "price")
             if len(price_class) == 1:
                 goodspricelist = self.driver.find_element(By.CLASS_NAME, "price").text
-                goodstotal = re.sub("(원|,|\n)", "", goodspricelist)
+                goodstotal = self.extract_price(goodspricelist)
                 elementlist["total_price"] = f"{goodstotal}"
             else:
                 # 혜택 정보 추출 함수
@@ -559,7 +530,7 @@ class BrandGoodsDetail:
             return elementlist
 
         except Exception as e:
-            logging.error(f"An error occurred during fetching: {e}")
+            logger.error(f"An error occurred during fetching: {e}")
             return None
 
     async def run(self):
@@ -593,7 +564,7 @@ async def scrape_goods(goods_codes):
 
 # class BrandGoodsDetail 출력 test
 if __name__ == "__main__":
-    INPUT_CODES = ["A000000114002"]
+    INPUT_CODES = ["A000000174401"]
     loop = asyncio.get_event_loop()
     products = loop.run_until_complete(scrape_goods(INPUT_CODES))
     print(json.dumps(products, indent=2, ensure_ascii=False))

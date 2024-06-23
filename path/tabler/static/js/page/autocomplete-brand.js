@@ -2,6 +2,9 @@
 var brandCode = "";
 var brandName = "";
 var goodsCodes = [];
+if (typeof window.apiVersion === 'undefined') {
+    window.apiVersion = "v1"; // window.apiVersion을 사용하고, 없으면 "v1"을 기본값으로 설정
+}
 
 document.addEventListener("DOMContentLoaded", function () {
     var brandSearch = document.getElementById("brand-search");
@@ -21,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
     document.body.appendChild(loadingSpinner);
 
     // brandSearch 입력 시 드롭다운에 브랜드 옵션 표시
-    brandSearch.addEventListener("input", function () {
+    brandSearch.addEventListener("input", async function () {
         var query = this.value;
 
         if (query.length === 0) {
@@ -29,26 +32,24 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        fetch("/autocomplete/brands?query=" + query)
-            .then(response => response.json())
-            .then(data => {
-                dropdown.innerHTML = "";
-                if (data.brands.length > 0) {
-                    data.brands.forEach(function (brand) {
-                        var option = document.createElement("option");
-                        option.text = brand.brand;
-                        option.value = brand.code;
-                        dropdown.appendChild(option);
-                    });
-                    dropdown.style.display = "block";
-                } else {
-                    dropdown.style.display = "none";
-                }
-            })
-            .catch(error => {
-                console.error(error);
+        try {
+            const data = await fetchData(`/${window.apiVersion}/autocomplete/brands?query=${query}`);
+            dropdown.innerHTML = "";
+            if (data.brands.length > 0) {
+                data.brands.forEach(function (brand) {
+                    var option = document.createElement("option");
+                    option.text = brand.brand;
+                    option.value = brand.code;
+                    dropdown.appendChild(option);
+                });
+                dropdown.style.display = "block";
+            } else {
                 dropdown.style.display = "none";
-            });
+            }
+        } catch (error) {
+            console.error(error);
+            dropdown.style.display = "none";
+        }
     });
 
     // 드롭다운에서 옵션을 클릭하여 브랜드 선택
@@ -121,7 +122,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         tableBody.innerHTML = `<tr><td colspan="7" style="text-align:center;"><img src="/static/images/loading.gif" id="loading-spinner"></td></tr>`;
 
-        fetch("/collect/brandshop?input_code=" + brandCode + "&input_brand=" + brandName)
+        fetch(`/${window.apiVersion}/collect/brandshop?input_code=${brandCode}&input_brand=${brandName}`)
             .then(response => response.json())
             .then(response => {
                 saved_goods_list = response.saved_goods_list;
@@ -165,7 +166,7 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log("Brand Code:", brandCode);
         console.log("Brand Name:", brandName);
         console.log("Goods Codes:", goods_codes);
-        fetch("/collect/brandgoodsdetail", {
+        fetch(`/${window.apiVersion}/collect/brandgoodsdetail`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

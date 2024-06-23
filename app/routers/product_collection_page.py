@@ -13,7 +13,7 @@ from app.models.oliveyoung_model import (
     OriginGoodsDetailModel,
 )
 from app.models.records_model import CollectionRecordsModel
-from app.oliveyoung_scraper import BrandList, BrandShop, BrandGoodsDetail
+from app.scrapers.scraper_oliveyoung import BrandList, BrandShop, BrandGoodsDetail
 from app.services.mongodb import mongodb_service
 
 # 라이브러리 불러오기

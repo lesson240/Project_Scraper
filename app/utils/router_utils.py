@@ -1,9 +1,14 @@
 from fastapi import FastAPI
 
 
-def get_versioned_prefix(version: str) -> str:
+def set_version():
+    api_version = "v1"
+    return api_version
+
+
+def get_versioned_prefix():
     """API 버전 prefix 생성 함수"""
-    return f"/{version}"
+    return f"/{set_version()}"
 
 
 def include_routers(app: FastAPI, routers: list, prefix: str):

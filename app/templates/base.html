@@ -13,6 +13,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <!-- jQuery 로드 -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- axios 로드 -->
+    <script src="https://cdn.jsdelivr.net/npm/axios@0.24.0/dist/axios.min.js"></script>
+    <script>
+        window.apiVersion = "{{ api_version }}";  // 전역 변수로 API 버전 설정
+    </script>
 </head>
 
 <body>
@@ -39,22 +44,29 @@
     <!-- Navbar -->
     <div class="navbar">
         <div class="logo">
-            <a href="/" style="color: white; text-decoration: none;">Project Scraper</a>
+            <a href="/{{ api_version }}/" style="color: white; text-decoration: none;">Project Scraper</a>
         </div>
         <div class="menu">
-            <a href="/v1/">Home <div class="dropdown"><a href="#">Submenu 1</a><a href="#">Submenu 2</a></div>
+            <a href="/{{ api_version }}/">Home <div class="dropdown"><a href="#">Submenu 1</a><a href="#">Submenu 2</a>
+                </div>
             </a>
-            <a href="/v1/product-collect">상품수집 <div class="dropdown"><a href="#">Submenu 1</a><a href="#">Submenu
+            <a href="/{{ api_version }}/product-collect">상품수집 <div class="dropdown"><a href="#">Submenu 1</a><a
+                        href="#">Submenu
                         2</a></div></a>
-            <a href="/v1/product-manage">상품관리 <div class="dropdown"><a href="#">Submenu 1</a><a href="#">Submenu 2</a>
+            <a href="/{{ api_version }}/product-manage">상품관리 <div class="dropdown"><a href="#">Submenu 1</a><a
+                        href="#">Submenu 2</a>
                 </div></a>
-            <a href="/v1/product-order">주문관리 <div class="dropdown"><a href="#">Submenu 1</a><a href="#">Submenu 2</a>
+            <a href="/{{ api_version }}/product-order">주문관리 <div class="dropdown"><a href="#">Submenu 1</a><a
+                        href="#">Submenu 2</a>
                 </div></a>
-            <a href="/v1/user-inform">User <div class="dropdown"><a href="#">Submenu 1</a><a href="#">Submenu 2</a>
+            <a href="/{{ api_version }}/user-inform">User <div class="dropdown"><a href="#">Submenu 1</a><a
+                        href="#">Submenu 2</a>
                 </div></a>
-            <a href="/v1/user-setting">Setting <div class="dropdown"><a href="#">Submenu 1</a><a href="#">Submenu
+            <a href="/{{ api_version }}/user-setting">Setting <div class="dropdown"><a href="#">Submenu 1</a><a
+                        href="#">Submenu
                         2</a></div></a>
-            <a href="/v1/manager">Admin <div class="dropdown"><a href="#">Submenu 1</a><a href="#">Submenu 2</a></div>
+            <a href="/{{ api_version }}/manager">Admin <div class="dropdown"><a href="#">Submenu 1</a><a
+                        href="#">Submenu 2</a></div>
             </a>
         </div>
     </div>
@@ -73,7 +85,9 @@
     <!-- Tabler JS -->
     <script src="/static/js/tabler.min.js"></script>
     <!-- Custom Scripts -->
-    <script src="/static/js/base.js"></script>
+    <script type="module" src="/static/js/base.js"></script>
+
+
 </body>
 
 </html>

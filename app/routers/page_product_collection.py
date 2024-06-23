@@ -13,8 +13,9 @@ from app.models.oliveyoung_model import (
     OriginGoodsDetailModel,
 )
 from app.models.records_model import CollectionRecordsModel
-from app.oliveyoung_scraper import BrandList, BrandShop, BrandGoodsDetail
+from app.scrapers.scraper_oliveyoung import BrandList, BrandShop, BrandGoodsDetail
 from app.services.mongodb import mongodb_service
+from app.utils.router_utils import set_version
 
 # 라이브러리 불러오기
 from fastapi import APIRouter, Request, HTTPException, Query, BackgroundTasks
@@ -44,7 +45,14 @@ templates = Jinja2Templates(directory=templates_directory)
 
 @router.get("/product-collect", response_class=HTMLResponse)
 async def product_collect(request: Request):
-    return templates.TemplateResponse("product-collect.html", {"request": request})
+    return templates.TemplateResponse(
+        "product-collect.html",
+        {
+            "request": request,
+            "title": "올리브영 수집기",
+            "api_version": set_version(),
+        },
+    )
 
 
 @router.get("/manager/brandlist", response_class=HTMLResponse)

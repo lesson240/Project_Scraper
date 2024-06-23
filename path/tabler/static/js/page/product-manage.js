@@ -1,14 +1,21 @@
+// 전역 변수 선언
+var brandCode = "";
+var brandName = "";
+var goodsCodes = [];
+var apiVersion = window.apiVersion || "v1"; // window.apiVersion을 사용하고, 없으면 "v1"을 기본값으로 설정
+
 document.addEventListener("DOMContentLoaded", function () {
     console.log("Document loaded"); // 로그 추가
     var brandSearch = document.getElementById("brand-search");
     var dropdown = document.getElementById("brand-dropdown");
     var searchBtn = document.getElementById("search-btn"); // id로 선택자 변경
+    var saveBtn = document.getElementById("save-btn");  // Save 버튼 선택자 추가
     var selectedBrandCode = document.createElement("input");
     selectedBrandCode.type = "hidden";
     selectedBrandCode.id = "selected-brand-code";
     document.body.appendChild(selectedBrandCode);
 
-    brandSearch.addEventListener("input", function () {
+    brandSearch.addEventListener("input", async function () {
         var query = this.value;
 
         if (query.length === 0) {
@@ -16,29 +23,24 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        $.ajax({
-            url: "/autocomplete/collectedbrands",
-            method: "GET",
-            data: { query: query },
-            success: function (response) {
-                dropdown.innerHTML = "";
-                if (response.brands.length > 0) {
-                    response.brands.forEach(function (brand) {
-                        var option = document.createElement("option");
-                        option.text = brand.brand;
-                        option.value = brand.brand_code;
-                        dropdown.appendChild(option);
-                    });
-                    dropdown.style.display = "block";
-                } else {
-                    dropdown.style.display = "none";
-                }
-            },
-            error: function (err) {
-                console.error(err);
+        try {
+            const response = await fetchData(`/${apiVersion}/autocomplete/collectedbrands?query=${query}`);
+            dropdown.innerHTML = "";
+            if (response.brands.length > 0) {
+                response.brands.forEach(function (brand) {
+                    var option = document.createElement("option");
+                    option.text = brand.brand;
+                    option.value = brand.brand_code;
+                    dropdown.appendChild(option);
+                });
+                dropdown.style.display = "block";
+            } else {
                 dropdown.style.display = "none";
             }
-        });
+        } catch (err) {
+            console.error(err);
+            dropdown.style.display = "none";
+        }
     });
 
     dropdown.addEventListener("click", function (event) {
@@ -88,7 +90,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    searchBtn.addEventListener("click", function () { // searchBtn 변수 사용
+    searchBtn.addEventListener("click", function () {
         var brandCode = selectedBrandCode.value;
         var brandName = brandSearch.value;
         console.log(brandCode); // 로그 추가
@@ -97,12 +99,8 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        $.ajax({
-            url: "/product-data",
-            method: "POST",
-            contentType: "application/json", // JSON 형식으로 보냄
-            data: JSON.stringify({ brandCode: brandCode }), // brandCode를 데이터로 추가
-            success: function (saved_goods_list) {
+        postData(`/${apiVersion}/product-data`, { brandCode: brandCode })
+            .then(saved_goods_list => {
                 console.log("Received data:", saved_goods_list); // 로그 추가
                 if (!saved_goods_list || saved_goods_list.length === 0) {
                     alert("조회할 상품이 없습니다.");
@@ -175,7 +173,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     tableBody.appendChild(expandedRow);
                 });
 
-
                 // 확장 버튼에 이벤트 리스너 추가
                 var expandButtons = document.querySelectorAll(".expand-btn");
                 expandButtons.forEach(function (button) {
@@ -191,11 +188,46 @@ document.addEventListener("DOMContentLoaded", function () {
                         }
                     });
                 });
-            },
-            error: function (err) {
+            })
+            .catch(err => {
                 console.error(err);
                 alert("상품 조회 중 오류가 발생했습니다.");
+            });
+    });
+
+    // Save 버튼 클릭 이벤트 리스너
+    saveBtn.addEventListener("click", async function () {
+        const tableRows = document.querySelectorAll("#product-tbody tr.expandable");
+        const requestData = [];
+
+        tableRows.forEach(row => {
+            const parentCheckbox = row.querySelector(".parent-checkbox");
+            if (parentCheckbox && parentCheckbox.checked) {  // 체크된 줄만 추가
+                const data = {
+                    market: row.querySelector("td:nth-child(3) input").value,
+                    origin_goods_code: row.querySelector("td:nth-child(4) input").value,
+                    origin_goods_name: row.querySelector("td:nth-child(5) input").value,
+                    stock_option: row.querySelector("td:nth-child(6) input").value,
+                    total_price: parseInt(row.querySelector("td:nth-child(7) input").value),
+                    selling_price: parseInt(row.querySelector("td:nth-child(8) input").value),
+                    winner_price: parseInt(row.querySelector("td:nth-child(9) input").value),
+                    lowest_price: parseInt(row.querySelector("td:nth-child(10) input").value),
+                    maximum_price: parseInt(row.querySelector("td:nth-child(11) input").value),
+                    stock_status: row.querySelector("td:nth-child(12) input").value,
+                    promotion_period: row.querySelector("td:nth-child(13) input").value
+                };
+                requestData.push(data);
             }
         });
+
+        try {
+            const response = await axios.post(`/${apiVersion}/save-goods-table`, requestData);
+            console.log(response.data);
+            alert("Data successfully saved!");
+        } catch (error) {
+            console.error("Error saving data:", error);
+            alert("Error saving data.");
+        }
     });
 });
+

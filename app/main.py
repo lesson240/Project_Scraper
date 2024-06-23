@@ -23,9 +23,10 @@ from app.services.mongodb import mongodb_service
 from app.utils.router_utils import get_versioned_prefix, include_routers
 
 # 라이브러리 불러오기
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.templating import Jinja2Templates
 from datetime import datetime
 import os
 
@@ -52,8 +53,8 @@ app.add_middleware(
 )
 
 # 버전 설정
-api_version = "v1"
-prefix = get_versioned_prefix(api_version)
+
+prefix = get_versioned_prefix()
 
 # 라우터 목록
 routers = [
@@ -70,6 +71,9 @@ routers = [
 
 # 라우터 포함
 include_routers(app, routers, prefix=prefix)
+
+# 템플릿 설정
+templates = Jinja2Templates(directory=BASE_DIR / "templates")
 
 
 # 앱 시작 및 종료 이벤트 핸들러
@@ -88,6 +92,8 @@ async def shutdown_event():
     await mongodb_service.close()
 
 
-@app.get("/")
-def read_root():
-    return {"message": "Welcome to the FastAPI application!"}
+@app.get(f"/{prefix}")
+def get_page(request: Request):
+    return templates.TemplateResponse(
+        "index.html", {"request": request, "api_version": prefix}
+    )

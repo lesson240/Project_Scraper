@@ -9,6 +9,7 @@ sys.path.append(str(BASE_DIR))
 from app.utils.logging_config import setup_logger
 from app.services.mongodb import mongodb_service
 from app.models.oliveyoung_model import BrandListModel, OriginGoodsDetailModel
+from app.utils.router_utils import set_version
 
 # 라이브러리 불러오기
 from fastapi import APIRouter, Query

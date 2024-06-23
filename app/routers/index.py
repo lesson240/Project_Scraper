@@ -7,6 +7,7 @@ sys.path.append(str(BASE_DIR))
 
 # 프로젝트 Module 불러오기
 from app.utils.logging_config import setup_logger
+from app.utils.router_utils import set_version
 
 # 라이브러리 불러오기
 from fastapi import APIRouter, Request
@@ -39,5 +40,10 @@ def root(request: Request):
         return HTMLResponse(content="Template not found", status_code=404)
 
     return templates.TemplateResponse(
-        "index.html", {"request": request, "title": "올리브영 수집기"}
+        "index.html",
+        {
+            "request": request,
+            "title": "올리브영 수집기",
+            "api_version": set_version(),
+        },
     )

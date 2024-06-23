@@ -1,0 +1,1 @@
+2024-06-23 16:38:30,583 - ERROR - collect_brand_shop, An error occurred while fetching saved goods_/collect/brandshop: 'OriginGoodsDetailModel' object has no attribute 'code'
