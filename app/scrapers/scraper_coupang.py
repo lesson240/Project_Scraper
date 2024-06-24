@@ -38,11 +38,15 @@ class WinnerPriceInquiry:
 
     BASE_URL = "https://www.coupang.com"
 
-    def __init__(self, goodscode, site_key, settings: ScraperSettings):
+    def __init__(self, goodscode, site_key):
         self.goodscode = goodscode
         self.site_key = site_key
-        self.settings = settings
+        self.settings = self.get_settings()
         self.today = datetime.today()
+
+    def get_settings(self):
+        settings = ScraperSettings()
+        return settings
 
     def unit_url(self):
         url = f"{self.BASE_URL}/vp/products/{self.goodscode}"
@@ -133,7 +137,7 @@ class WinnerPriceInquiry:
             goodsdelivery_element = area_info.select_one(
                 "div[class=prod-shipping-fee]"
             ).text.split()
-            if len(goodsdelivery_element) > 1:
+            if len(goodsdelivery_element) > 0:
                 goodsdelivery = goodsdelivery_element[0]
             else:
                 goodsdelivery = "none"
@@ -167,11 +171,10 @@ class WinnerPriceInquiry:
         return result
 
 
-# class BrandShop 출력 test
+# class WinnerPriceInquiry 출력 test
 if __name__ == "__main__":
-    INPUNT_CODE = "27471644"
+    INPUNT_CODE = "8168223189"
     SITE_KEY = "coupang"
-    settings = ScraperSettings()
-    scrap_func = WinnerPriceInquiry(INPUNT_CODE, SITE_KEY, settings)
+    scrap_func = WinnerPriceInquiry(INPUNT_CODE, SITE_KEY)
     products = asyncio.run(scrap_func.run())
     print(products)

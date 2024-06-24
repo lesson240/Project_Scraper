@@ -1,3 +1,4 @@
+/* 전체 페이지 스타일 설정 */
 body {
     font-family: "Arial", sans-serif;
     margin: 0;
@@ -8,6 +9,7 @@ body {
     overflow-x: hidden;
 }
 
+/* 메인 컨테이너 스타일 */
 .container {
     margin: 20px;
     transition: margin-right 0.5s, margin-left 0.5s;
@@ -15,11 +17,15 @@ body {
     /* Updated to take full width minus margins */
 }
 
+/* 테이블 컨테이너 스타일 */
 .table-container {
-    max-height: 400px;
+    max-height: 600px;
     overflow-y: auto;
+    width: 100%;
+    /* 상위 요소의 너비를 100%로 설정 */
 }
 
+/* 테이블 스타일 */
 .table {
     width: 100%;
     table-layout: fixed;
@@ -35,6 +41,7 @@ body {
     font-size: 14px;
 }
 
+/* 확장 가능한 행 스타일 */
 .expandable {
     cursor: pointer;
 }
@@ -47,6 +54,7 @@ body {
     display: table-row;
 }
 
+/* 입력 셀 스타일 */
 .input-cell {
     border: none;
     width: 100%;
@@ -57,6 +65,7 @@ body {
     font-family: inherit;
 }
 
+/* 확장 버튼 스타일 */
 .expand-btn {
     background-color: transparent;
     border: none;
@@ -64,6 +73,7 @@ body {
     font-size: 16px;
 }
 
+/* 필터 컨테이너 스타일 */
 .filter-container {
     margin-bottom: 20px;
     display: flex;
@@ -76,10 +86,12 @@ body {
     gap: 10px;
 }
 
+/* 여백 설정 */
 .spacer {
     margin-bottom: 20px;
 }
 
+/* 버튼 그룹 스타일 */
 .btn-group {
     display: flex;
     justify-content: flex-end;
@@ -87,6 +99,7 @@ body {
     margin-bottom: 20px;
 }
 
+/* 테이블 버튼 스타일 */
 .btn-table {
     font-size: 0.75em;
     padding: 5px 10px;
@@ -99,6 +112,7 @@ body {
     width: 70px;
 }
 
+/* 네비게이션 바 스타일 */
 .navbar {
     width: 100%;
     background-color: #343a40;
@@ -123,6 +137,7 @@ body {
     display: block;
 }
 
+/* 드롭다운 메뉴 스타일 */
 .dropdown {
     display: none;
     position: absolute;
@@ -146,10 +161,12 @@ body {
     background-color: #ddd;
 }
 
+/* 선택된 행 스타일 */
 .selected-row {
     background-color: #e0e0e0;
 }
 
+/* 푸터 스타일 */
 .footer {
     background-color: #343a40;
     color: white;
@@ -162,6 +179,7 @@ body {
     height: 30px;
 }
 
+/* 사이드바 스타일 */
 .sidebar {
     height: 100%;
     width: 250px;
@@ -208,11 +226,13 @@ body {
     z-index: 2;
 }
 
+/* 메인 콘텐츠 스타일 */
 #main-content {
     transition: margin-right 0.5s, margin-left 0.5s;
     padding: 20px;
 }
 
+/* 폼 그룹 스타일 */
 .form-group {
     margin-bottom: 15px;
 }

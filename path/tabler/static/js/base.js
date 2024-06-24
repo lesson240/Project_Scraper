@@ -15,33 +15,33 @@ window.postData = async function (url, data) {
     }
 };
 
-window.openNav = function (event, button) {
-    event.stopPropagation();
-    const sidebar = document.getElementById("mySidebar");
-    const mainContent = document.getElementById("main-content");
+// window.openNav = function (event, button) {
+//     event.stopPropagation();
+//     const sidebar = document.getElementById("mySidebar");
+//     const mainContent = document.getElementById("main-content");
 
-    if (button.classList.contains("active")) {
-        sidebar.style.right = "-250px";
-        mainContent.style.marginRight = "0";
-        mainContent.style.marginLeft = "0";
-        button.classList.remove("active");
-    } else {
-        document.querySelectorAll('.detail-btn').forEach(btn => btn.classList.remove("active"));
-        button.classList.add("active");
-        sidebar.style.right = "0";
-        mainContent.style.marginRight = "250px";
-        mainContent.style.marginLeft = "-250px";
-    }
-};
+//     if (button.classList.contains("active")) {
+//         sidebar.style.right = "-250px";
+//         mainContent.style.marginRight = "0";
+//         mainContent.style.marginLeft = "0";
+//         button.classList.remove("active");
+//     } else {
+//         document.querySelectorAll('.detail-btn').forEach(btn => btn.classList.remove("active"));
+//         button.classList.add("active");
+//         sidebar.style.right = "0";
+//         mainContent.style.marginRight = "250px";
+//         mainContent.style.marginLeft = "-250px";
+//     }
+// };
 
-window.closeNav = function () {
-    const sidebar = document.getElementById("mySidebar");
-    const mainContent = document.getElementById("main-content");
-    sidebar.style.right = "-250px";
-    mainContent.style.marginRight = "0";
-    mainContent.style.marginLeft = "0";
-    document.querySelectorAll('.detail-btn').forEach(btn => btn.classList.remove("active"));
-};
+// window.closeNav = function () {
+//     const sidebar = document.getElementById("mySidebar");
+//     const mainContent = document.getElementById("main-content");
+//     sidebar.style.right = "-250px";
+//     mainContent.style.marginRight = "0";
+//     mainContent.style.marginLeft = "0";
+//     document.querySelectorAll('.detail-btn').forEach(btn => btn.classList.remove("active"));
+// };
 
 window.handleExpandButtons = function (event, button) {
     event.stopPropagation();

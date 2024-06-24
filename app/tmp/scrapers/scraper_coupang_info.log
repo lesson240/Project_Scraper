@@ -1,0 +1,11 @@
+2024-06-24 23:45:34,769 - ERROR - Failed to scrap the goodsdelivery
+2024-06-24 23:46:31,119 - ERROR - Failed to scrap the goodsdelivery
+2024-06-24 23:50:05,000 - ERROR - Failed to scrap the goodsdelivery
+2024-06-24 23:50:32,686 - ERROR - Failed to scrap the goodsdelivery
+2024-06-25 01:49:04,694 - ERROR - Failed to retrieve content: 404
+2024-06-25 01:49:04,700 - INFO - Retrying (1/3)...
+2024-06-25 01:49:06,389 - ERROR - Failed to retrieve content: 404
+2024-06-25 01:49:06,393 - INFO - Retrying (2/3)...
+2024-06-25 01:49:09,243 - ERROR - Failed to retrieve content: 404
+2024-06-25 01:49:09,245 - INFO - Retrying (3/3)...
+2024-06-25 01:49:10,495 - ERROR - Failed to retrieve content after retries

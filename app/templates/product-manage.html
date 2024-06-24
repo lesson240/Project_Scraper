@@ -2,117 +2,167 @@
 
 {% block title %}Product Management{% endblock %}
 
-{% block content %}
-<h1>Product Management</h1>
-<div class="filter-container">
-    <div class="filter-row">
-        <!-- 자동완성 기능을 위한 입력 필드 -->
-        <input type="text" id="brand-search" class="dropdown-content" placeholder="브랜드 검색" autocomplete="off">
+<body>
+    <!-- Sidebar -->
+    <!-- <div id="mySidebar" class="sidebar">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+        <div id="group_1">
+            <form id="sidebarForm">
+                <div class="form-group">
+                    <label for="exposure-product-id">노출상품ID</label>
+                    <input type="text" id="exposure-product-id" name="exposure-product-id">
+                </div>
+                <div class="form-group">
+                    <label for="option-id">옵션ID</label>
+                    <input type="text" id="option-id" name="option-id">
+                </div>
+                <div class="form-group">
+                    <label for="matching-option-id">매칭옵션ID</label>
+                    <textarea id="matching-option-id" name="matching-option-id" rows="4"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" id="save-group-1">Save</button>
+            </form>
+        </div>
+        <div id="group_2">
+            <label for="unmatched-items">Unmatched DB Items:</label>
+            <div id="unmatched-items" class="unmatched-items"></div>
+        </div>
+    </div> -->
 
-        <!-- 드롭다운 메뉴 -->
-        <select id="brand-dropdown" size="5" class="dropdown-content"></select>
+    <div id="main-content" class="container">
+        {% block content %}
+        <h1>Product Management</h1>
+        <div class="filter-container">
+            <!-- HTML 파일에서 자동완성 기능을 위한 스크립트 파일 연결 -->
+            <link rel="stylesheet" href="/static/css/product-manage/table.css">
+            <script src="/static/js/page/product-manage.js"></script>
 
-        <input type="text" placeholder="Filter by Division" class="form-control">
-        <input type="text" placeholder="Filter by Location" class="form-control">
+            <div class="filter-row">
+                <!-- 자동완성 기능을 위한 입력 필드 -->
+                <input type="text" id="brand-search" class="brand-search" placeholder="브랜드 검색" autocomplete="off">
+
+                <!-- 드롭다운 메뉴 -->
+                <select id="brand-dropdown" size="5" class="brand-dropdown"></select>
+
+                <input type="text" placeholder="Filter by Division" class="form-control">
+                <input type="text" placeholder="Filter by Location" class="form-control">
+            </div>
+            <div class="filter-row">
+                <input type="text" placeholder="Filter by Status" class="form-control">
+                <input type="text" placeholder="Filter by Transaction" class="form-control">
+                <input type="text" placeholder="Filter by Date" class="form-control">
+                <button class="btn btn-primary" id="search-btn">조희</button>
+            </div>
+        </div>
+        <div class="spacer"></div>
+        <div class="btn-group">
+            <button id="add-btn" class="btn btn-primary">Add</button>
+            <button id="edit-btn" class="btn btn-secondary">Edit</button>
+            <button id="save-btn" class="btn btn-success">Save</button>
+            <button id="collect-btn" class="btn btn-danger">수집동기화</button>
+            <button id="sales-btn" class="btn btn-warning">판매동기화</button>
+            <button id="export-btn" class="btn btn-info">Export</button>
+        </div>
+
+        <div class="table-container">
+            <table id="product-table" class="table">
+                <thead>
+                    <tr>
+                        <th><button class="parent-expand-btn">&#9660;</button></th>
+                        <th><input type="checkbox" class="grandparent-checkbox"></th>
+                        <th>수집마켓</th>
+                        <th>브랜드</th>
+                        <th>브랜드코드</th>
+                        <th>상품코드</th>
+                        <th>상품명</th>
+                        <th>노출상품ID</th>
+                        <th>옵션ID</th>
+                        <th>매칭옵션ID</th>
+                        <th>재고옵션</th>
+                        <th>구매가</th>
+                        <th>할인가</th>
+                        <th>위너가</th>
+                        <th>최저가</th>
+                        <th>최고가</th>
+                        <th>재고</th>
+                        <th>행사기간</th>
+                        <th>상품정보</th>
+                        <th>비고</th>
+                    </tr>
+                </thead>
+                <tbody id="product-tbody">
+                    <tr class="expandable">
+                        <td><button class="expand-btn">&#9660;</button></td>
+                        <td><input type="checkbox" class="parent-checkbox"></td>
+                        <td id="market" class="table-cell"></td>
+                        <td id="brand" class="table-cell"></td>
+                        <td id="brand_code" class="table-cell"></td>
+                        <td id="origin_goods_code" class="table-cell"></td>
+                        <td><input type="text" id="origin_goods_name" class="input-cell"></td>
+                        <td><input type="text" id="exposure_product_id" class="input-cell"></td>
+                        <td><input type="text" id="option_id" class="input-cell"></td>
+                        <td><input type="text" id="matching_option_id" class="input-cell"></td>
+                        <td><input type="text" id="stock_option" class="input-cell"></td>
+                        <td><input type="text" id="total_price" class="input-cell"></td>
+                        <td><input type="text" id="selling_price" class="input-cell"></td>
+                        <td><input type="text" id="winner_price" class="input-cell"></td>
+                        <td><input type="text" id="lowest_price" class="input-cell"></td>
+                        <td><input type="text" id="maximum_price" class="input-cell"></td>
+                        <td><input type="text" id="stock_status" class="input-cell"></td>
+                        <td id="promotion_period" class="table-cell"></td>
+                        <td><button class="btn btn-warning btn-table detail-btn">Details</button></td>
+                        <td><button class="btn btn-info btn-table">Action</button></td>
+                    </tr>
+                    <tr class="expanded-row">
+                        <td colspan="14">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <td></td>
+                                        <th><input type="checkbox" class="grandparent-checkbox"></th>
+                                        <td></td>
+                                        <td></td>
+                                        <th>옵션명</th>
+                                        <th>재고옵션</th>
+                                        <th>옵션가</th>
+                                        <th>할인가</th>
+                                        <th>위너가</th>
+                                        <th>최저가</th>
+                                        <th>최고가</th>
+                                        <th>재고</th>
+                                        <td></td>
+                                        <th>상품정보</th>
+                                        <th>비고</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="expanded-tbody">
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td><input type="text" id="origrin_option_name" class="input-cell"></td>
+                                        <td><input type="text" id="stock_option" class="input-cell"></td>
+                                        <td><input type="text" id="total_price" class="input-cell"></td>
+                                        <td><input type="text" id="selling_price" class="input-cell"></td>
+                                        <td><input type="text" id="winner_price" class="input-cell"></td>
+                                        <td><input type="text" id="lowest_price" class="input-cell"></td>
+                                        <td><input type="text" id="maximum_price" class="input-cell"></td>
+                                        <td><input type="text" id="stock_status" class="input-cell"></td>
+                                        <td></td>
+                                        <td><button class="btn btn-warning btn-table detail-btn">Details</button></td>
+                                        <td><button class="btn btn-info btn-table">Action</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        {% endblock %}
     </div>
-    <div class="filter-row">
-        <input type="text" placeholder="Filter by Status" class="form-control">
-        <input type="text" placeholder="Filter by Transaction" class="form-control">
-        <input type="text" placeholder="Filter by Date" class="form-control">
-        <button class="btn btn-primary" id="search-btn">조희</button>
-    </div>
-</div>
-<div class="spacer"></div>
-<div class="btn-group">
-    <button id="add-btn" class="btn btn-primary">Add</button>
-    <button id="edit-btn" class="btn btn-secondary">Edit</button>
-    <button id="save-btn" class="btn btn-success">Save</button>
-    <button id="collect-btn" class="btn btn-danger">수집동기화</button>
-    <button id="sales-btn" class="btn btn-warning">판매동기화</button>
-    <button id="export-btn" class="btn btn-info">Export</button>
-</div>
 
-<!-- HTML 파일에서 자동완성 기능을 위한 스크립트 파일 연결 -->
-<link rel="stylesheet" href="/static/css/product-manage/table.css">
-<script src="/static/js/page/product-manage.js"></script>
+</body>
 
-
-
-
-<div class="table-container">
-    <table id="product-table" class="table">
-        <thead>
-            <tr>
-                <th><button class="parent-expand-btn">&#9660;</button></th>
-                <th><input type="checkbox" class="grandparent-checkbox"></th>
-                <th>수집마켓</th>
-                <th>상품코드</th>
-                <th>상품명</th>
-                <th>재고옵션</th>
-                <th>구매가</th>
-                <th>할인가</th>
-                <th>위너가</th>
-                <th>최저가</th>
-                <th>최고가</th>
-                <th>재고</th>
-                <th>행사기간</th>
-                <th>상품정보</th>
-                <th>비고</th>
-            </tr>
-        </thead>
-        <tbody id="product-tbody">
-            <tr class="expandable">
-                <td><button class="expand-btn">&#9660;</button></td>
-                <td><input type="checkbox" class="parent-checkbox"></td>
-                <td><input type="text" id="market" class="input-cell"></td>
-                <td><input type="text" id="origin_goods_code" class="input-cell"></td>
-                <td><input type="text" id="origin_goods_name" class="input-cell"></td>
-                <td><input type="text" id="stock_option" class="input-cell"></td>
-                <td><input type="text" id="total_price" class="input-cell"></td>
-                <td><input type="text" id="selling_price" class="input-cell"></td>
-                <td><input type="text" id="winner_price" class="input-cell"></td>
-                <td><input type="text" id="lowest_price" class="input-cell"></td>
-                <td><input type="text" id="maximum_price" class="input-cell"></td>
-                <td><input type="text" id="stock_status" class="input-cell"></td>
-                <td><input type="text" id="promotion_period" class="input-cell"></td>
-                <td><button class="btn btn-warning btn-table detail-btn">Details</button></td>
-                <td><button class="btn btn-info btn-table">Action</button></td>
-            </tr>
-            <tr class="expanded-row">
-                <td colspan="14">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>옵션명</th>
-                                <th>재고옵션</th>
-                                <th>옵션가</th>
-                                <th>할인가</th>
-                                <th>위너가</th>
-                                <th>최저가</th>
-                                <th>최고가</th>
-                                <th>재고</th>
-                                <th>상품정보</th>
-                                <th>비고</th>
-                            </tr>
-                        </thead>
-                        <tbody id="expanded-tbody">
-                            <tr>
-                                <td><input type="checkbox" class="child-checkbox"></td>
-                                <td><input type="text" id="origrin_option_name" class="input-cell"></td>
-                                <td><input type="text" id="stock_option" class="input-cell"></td>
-                                <td><input type="text" id="total_price" class="input-cell"></td>
-                                <td><input type="text" id="selling_price" class="input-cell"></td>
-                                <td><input type="text" id="winner_price" class="input-cell"></td>
-                                <td><input type="text" id="maximum_price" class="input-cell"></td>
-                                <td><input type="text" id="stock_status" class="input-cell"></td>
-                                <td><button class="btn btn-warning btn-table detail-btn">Details</button></td>
-                                <td><button class="btn btn-info btn-table">Action</button></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-{% endblock %}
+</html>
