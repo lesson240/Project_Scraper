@@ -8,6 +8,7 @@ sys.path.append(str(BASE_DIR))
 # 프로젝트 Module 불러오기
 from app.utils.logging_config import setup_logger
 from app.scrapers.scraper_settings import ScraperSettings
+from app.models.oliveyoung_model import SpecialTodayModel
 
 # 라이브러리 불러오기
 import re
@@ -20,10 +21,12 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
+from aiohttp import ClientTimeout, ClientSession
 import aiohttp
 import asyncio
 import nest_asyncio
 from datetime import date, datetime
+import random
 import json
 import os
 
@@ -170,13 +173,15 @@ class BrandShop:
                                     "idx": idx,
                                     "brand": self.brand,
                                     "brand_code": self.code,
-                                    "code": goods_code,
-                                    "name": goods_name,
-                                    "price": self.extract_price(goods_total),
+                                    "origin_goods_code": goods_code,
+                                    "origin_goods_name": goods_name,
+                                    "total_price": self.extract_price(goods_total),
                                     "sold_out": goods_soldout,
                                     "sale": goods_sale,
                                     "coupon": goods_coupon,
-                                    "time": collectiontime.strftime("%Y년 %m월 %d일"),
+                                    "collection_time": collectiontime.strftime(
+                                        "%Y년 %m월 %d일"
+                                    ),
                                 }
                             )
                             accumulated_idx += 1
@@ -244,7 +249,136 @@ class BrandShop:
 
 
 class SpecialToday:
-    pass
+    """Function for scraping the page of the oliveryoung special today"""
+
+    BASE_URL = "https://www.oliveyoung.co.kr"
+
+    def __init__(self, site_key):
+        self.site_key = site_key
+        self.settings = self.get_settings()
+
+    def get_settings(self):
+        settings = ScraperSettings()
+        return settings
+
+    def unit_urls(self, page_idx):
+        url = [
+            f"{self.BASE_URL}/store/main/getHotdealList.do",
+            f"{self.BASE_URL}/store/main/getHotdealPagingListAjax.do?pageIdx={page_idx}",
+        ]
+        return url
+
+    async def fetch_with_retries(
+        self, url: str, max_retries: int = 3, delay_range: tuple = (1, 3)
+    ):
+        for attempt in range(max_retries):
+            headers = self.settings.get_headers(self.site_key)
+            try:
+                timeout = ClientTimeout(total=3)
+                async with ClientSession(timeout=timeout) as session:
+                    async with session.get(url, headers=headers) as response:
+                        if response.status == 200:
+                            self.settings.save_successful_user_agent(
+                                self.site_key, headers["User-Agent"]
+                            )
+                            html_content = await response.text()
+                            if not html_content:
+                                raise Exception("Empty content")
+                            return html_content
+                        else:
+                            logger.error(
+                                f"Failed to retrieve content: {response.status}"
+                            )
+                            self.settings.remove_user_agent(
+                                self.site_key, headers["User-Agent"]
+                            )
+            except asyncio.TimeoutError:
+                logger.error("The request timed out")
+                self.settings.remove_user_agent(self.site_key, headers["User-Agent"])
+            except Exception as e:
+                logger.error(f"An error occurred while fetching data: {e}")
+                self.settings.remove_user_agent(self.site_key, headers["User-Agent"])
+
+            logger.info(f"Retrying ({attempt + 1}/{max_retries})...")
+            await asyncio.sleep(random.uniform(*delay_range))
+
+    async def fetch01(self, url: str):
+        """Fetches product information from the given URL."""
+        html_content = await self.fetch_with_retries(url)
+        if html_content:
+            soup = BeautifulSoup(html_content, "html.parser")
+            area_info = soup.select("div.prod-info")
+
+            elementlist = []
+
+            for info in area_info:
+                # 상품명 정보 추출하는 함수
+                goods_name_element = info.select_one("span.prod-name.double-line").text
+                # 가격 정보 추출하는 함수 (할인가)
+                goods_total_price_element = re.sub(
+                    "(원|,|~|\n)", "", info.select_one("strong.total").text
+                )
+                # 가격 정보 추출하는 함수 (원가)
+                goods_origin_price_element = re.sub(
+                    "(원|,|\n)", "", info.select_one("span.origin").text
+                )
+                # BaseModel 인스턴스 생성
+                special_model = SpecialTodayModel(
+                    origin_goods_name=goods_name_element,
+                    total_price=int(goods_total_price_element),
+                    goods_origin=int(goods_origin_price_element),
+                )
+
+                elementlist.append(special_model.dict())
+            return elementlist
+
+    async def fetch02(self, url: str):
+        """Fetches product information from the given URL."""
+        html_content = await self.fetch_with_retries(url)
+        if html_content:
+            soup = BeautifulSoup(html_content, "html.parser")
+            area_info = soup.select("div.prod-info")
+
+            elementlist = []
+
+            for info in area_info:
+                # 상품명 정보 추출하는 함수
+                goods_name_element = info.select_one("span.prod-name.double-line").text
+                # 가격 정보 추출하는 함수 (할인가)
+                goods_total_price_element = re.sub(
+                    "(원|,|~|\n)", "", info.select_one("strong.total").text
+                )
+                # 가격 정보 추출하는 함수 (원가)
+                goods_origin_price_element = re.sub(
+                    "(원|,|\n)", "", info.select_one("span.origin").text
+                )
+                # BaseModel 인스턴스 생성
+                special_model = SpecialTodayModel(
+                    origin_goods_name=goods_name_element,
+                    total_price=int(goods_total_price_element),
+                    goods_origin=int(goods_origin_price_element),
+                )
+
+                elementlist.append(special_model.dict())
+
+                return elementlist
+
+    async def run(self):
+        """Runs the scraping process."""
+        max_pages = 3
+        all_results = []
+        for page_idx in range(1, max_pages + 1):
+            urls = self.unit_urls(page_idx)
+            tasks = [self.fetch01(urls[0]), self.fetch02(urls[1])]
+            results = await asyncio.gather(*tasks)
+
+            if not any(results):
+                break
+
+            for result in results:
+                if result:
+                    all_results.extend(result)
+        return all_results
 
 
 class BrandGoodsDetail:
@@ -295,7 +429,7 @@ class BrandGoodsDetail:
 
         # DB 적재용 'key : value' setting
         elementlist = {
-            "code": f"{self.goodscode}",
+            "origin_goods_code": f"{self.goodscode}",
             "collection_time": f"{date.today()}",
         }
         try:
@@ -306,7 +440,7 @@ class BrandGoodsDetail:
                 )
             )
             goodsname = goodsname_element.text.strip()
-            elementlist["name"] = f"{goodsname}"
+            elementlist["origin_goods_name"] = f"{goodsname}"
 
             # # 상품 url 추출하는 함수
             # elementlist["goods_url"] = f"{self.unit_url()}"
@@ -564,7 +698,14 @@ async def scrape_goods(goods_codes):
 
 # class BrandGoodsDetail 출력 test
 if __name__ == "__main__":
-    INPUT_CODES = ["A000000174401"]
+    INPUT_CODES = ["A000000174400"]
     loop = asyncio.get_event_loop()
     products = loop.run_until_complete(scrape_goods(INPUT_CODES))
     print(json.dumps(products, indent=2, ensure_ascii=False))
+
+# class WinnerPriceInquiry 출력 test
+# if __name__ == "__main__":
+#     SITE_KEY = "oliveyoung"
+#     scrap_func = SpecialToday(SITE_KEY)
+#     products = asyncio.run(scrap_func.run())
+#     print(products)

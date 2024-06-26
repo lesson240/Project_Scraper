@@ -140,9 +140,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     var row = document.createElement("tr");
                     row.innerHTML = `
                         <td>${item.idx}</td>
-                        <td>${item.name}</td>
-                        <td>${item.code}</td>
-                        <td>${item.price}</td>
+                        <td>${item.origin_goods_name}</td>
+                        <td>${item.origin_goods_code}</td>
+                        <td>${item.total_price}</td>
                         <td>${item.sold_out}</td>
                         <td>${item.sale}</td>
                         <td>${item.coupon}</td>
@@ -161,17 +161,47 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     });
 
+    // origin_goods_code를 업데이트하는 함수
+    function updateGoodsCodes(savedGoodsList) {
+        origin_goods_code = savedGoodsList.map(function (item) {
+            return item.origin_goods_code;
+        });
+    }
+
+    // 상품 수집 버튼 클릭 시 백그라운드 작업 시작
+    collectBtn.addEventListener("click", function () {
+        var brandCode = selectedBrandCode.value;
+        var brandName = brandSearch.value;
+
+        if (!brandCode || !brandName) {
+            alert("브랜드를 선택해주세요.");
+            return;
+        }
+
+        loadingSpinner.style.display = "block";
+        startBackgroundTask(brandCode, brandName, origin_goods_code); // 백그라운드 작업 시작
+    });
+
+    // 모든 메뉴 항목에 이벤트 리스너 추가하여 페이지 전환 허용
+    document.querySelectorAll(".menu a").forEach(function (menuLink) {
+        menuLink.addEventListener("click", function () {
+            // 백그라운드 작업 시작 후 페이지 전환 허용
+            window.onbeforeunload = null;
+        });
+    });
+
+
     // 백그라운드 작업 시작
-    function startBackgroundTask(brandCode, brandName, goods_codes) {
+    function startBackgroundTask(brandCode, brandName, origin_goods_code) {
         console.log("Brand Code:", brandCode);
         console.log("Brand Name:", brandName);
-        console.log("Goods Codes:", goods_codes);
+        console.log("Goods Codes:", origin_goods_code);
         fetch(`/${window.apiVersion}/collect/brandgoodsdetail`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ brandCode: brandCode, brandName: brandName, goodsCodes: goods_codes })
+            body: JSON.stringify({ brandCode: brandCode, brandName: brandName, goodsCodes: origin_goods_code })
         })
             .then(response => response.json())
             .then(response => {
@@ -189,34 +219,5 @@ document.addEventListener("DOMContentLoaded", function () {
                 // 페이지 전환 허용
                 window.onbeforeunload = null;
             });
-    }
-
-    // 상품 수집 버튼 클릭 시 백그라운드 작업 시작
-    collectBtn.addEventListener("click", function () {
-        var brandCode = selectedBrandCode.value;
-        var brandName = brandSearch.value;
-
-        if (!brandCode || !brandName) {
-            alert("브랜드를 선택해주세요.");
-            return;
-        }
-
-        loadingSpinner.style.display = "block";
-        startBackgroundTask(brandCode, brandName, goodsCodes); // 백그라운드 작업 시작
-    });
-
-    // 모든 메뉴 항목에 이벤트 리스너 추가하여 페이지 전환 허용
-    document.querySelectorAll(".menu a").forEach(function (menuLink) {
-        menuLink.addEventListener("click", function () {
-            // 백그라운드 작업 시작 후 페이지 전환 허용
-            window.onbeforeunload = null;
-        });
-    });
-
-    // goodsCodes를 업데이트하는 함수
-    function updateGoodsCodes(savedGoodsList) {
-        goodsCodes = savedGoodsList.map(function (item) {
-            return item.code;
-        });
     }
 });

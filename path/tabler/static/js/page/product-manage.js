@@ -12,9 +12,11 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("Document loaded"); // 로그 추가
     var brandSearch = document.getElementById("brand-search");
     var dropdown = document.getElementById("brand-dropdown");
-    var searchBtn = document.getElementById("search-btn"); // id로 선택자 변경
-    var saveBtn = document.getElementById("save-btn");  // Save 버튼 선택자 추가
-    var syncSalesBtn = document.getElementById("sales-btn"); // 판매동기화 버튼 선택자 추가
+    var searchBtn = document.getElementById("search-btn"); //  조회 버튼 선택자
+    var saveBtn = document.getElementById("save-btn");  // Save 버튼 선택자
+    var syncCollectBtn = document.getElementById("sync-collect-btn"); // 수집동기화 버튼 선택자 추가
+    var syncSalesBtn = document.getElementById("sync-sales-btn"); // 판매동기화 버튼 선택자 추가
+    var syncMarketBtn = document.getElementById("sync-market-btn"); // 마켓동기화 버튼 선택자 추가 
     var selectedBrandCode = document.createElement("input");
     selectedBrandCode.type = "hidden";
     selectedBrandCode.id = "selected-brand-code";
@@ -126,6 +128,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
+    // searchBtn 조회 버튼 클릭 이벤트 리스너
     searchBtn.addEventListener("click", async function () {
         var brandCode = selectedBrandCode.value;
         var brandName = brandSearch.value;
@@ -146,7 +149,22 @@ document.addEventListener("DOMContentLoaded", function () {
             var tableBody = document.querySelector("#product-tbody");
             tableBody.innerHTML = ""; // 기존 테이블 내용 초기화
 
+            function getPromotionPeriod(item) {
+                if (item.coupon_end && item.coupon_end !== 'null') {
+                    return item.coupon_end;
+                }
+                if (item.sale_end && item.sale_end !== 'null') {
+                    return item.sale_end;
+                }
+                if (item.sale && item.sale !== 'null') {
+                    return item.sale;
+                }
+                return '';
+            }
+
+
             saved_goods_list.forEach(function (item, index) {
+                var promotionPeriod = getPromotionPeriod(item);
                 var row = document.createElement("tr");
                 row.classList.add("expandable");
                 row.setAttribute("data-origin-goods-code", item.origin_goods_code); // 속성 추가
@@ -161,14 +179,15 @@ document.addEventListener("DOMContentLoaded", function () {
                     <td><input type="text" class="input-cell" value="${item.exposure_product_id || ''}"></td>
                     <td><input type="text" class="input-cell" value="${item.option_id || ''}"></td>
                     <td><input type="text" class="input-cell" value="${item.matching_option_id || ''}"></td>
+                    <td class="table-cell">${item.sold_out}</td>
                     <td><input type="text" class="input-cell" value="${item.stock_option || ''}"></td>
-                    <td><input type="text" class="input-cell" value="${item.total_price || 0}"></td>
+                    <td class="table-cell">${item.total_price}</td>
+                    <td><input type="text" class="input-cell" value="${item.origin_selling_price || 0}"></td>
                     <td><input type="text" class="input-cell" value="${item.selling_price || 0}"></td>
                     <td><input type="text" class="input-cell" value="${item.winner_price || 0}"></td>
                     <td><input type="text" class="input-cell" value="${item.lowest_price || 0}"></td>
                     <td><input type="text" class="input-cell" value="${item.maximum_price || 0}"></td>
-                    <td><input type="text" class="input-cell" value="${item.stock_status || ''}"></td>
-                    <td class="table-cell">${item.promotion_period}</td>
+                    <td class="table-cell">${promotionPeriod}</td>
                     <td><button class="btn btn-warning btn-table detail-btn">Details</button></td>
                     <td><button class="btn btn-info btn-table">Action</button></td>
                 `;
@@ -207,13 +226,13 @@ document.addEventListener("DOMContentLoaded", function () {
                                     <td></td>
                                     <td></td>
                                     <td><input type="text" class="input-cell" value="${item.origin_goods_name}"></td>
-                                    <td><input type="text" value="origin_option_name" class="input-cell"></td>
-                                    <td><input type="text" value="stock_option" class="input-cell"></td>
+                                    <td><input type="text" value="" class="input-cell"></td>
+                                    <td><input type="text" value="" class="input-cell"></td>
                                     <td><input type="text" class="input-cell" value="${item.market}"></td>
-                                    <td><input type="text" value="selling_price" class="input-cell"></td>
-                                    <td><input type="text" value="winner_price" class="input-cell"></td>
-                                    <td><input type="text" value="maximum_price" class="input-cell"></td>
-                                    <td><input type="text" value="stock_status" class="input-cell"></td>
+                                    <td><input type="text" value="" class="input-cell"></td>
+                                    <td><input type="text" value="" class="input-cell"></td>
+                                    <td><input type="text" value="" class="input-cell"></td>
+                                    <td><input type="text" value="" class="input-cell"></td>
                                     <td></td>
                                     <td><button class="btn btn-warning btn-table detail-btn">Details</button></td>
                                     <td><button class="btn btn-info btn-table">Action</button></td>
@@ -254,12 +273,73 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
+    // 수집동기화 버튼 클릭 이벤트 리스너
+    syncCollectBtn.addEventListener("click", async function () {
+        const checkedRows = document.querySelectorAll("#product-tbody tr.expandable .parent-checkbox:checked");
+        const requestData = Array.from(checkedRows).map(row => {
+            const tr = row.closest("tr");
+            return {
+                origin_goods_code: tr.querySelector("td:nth-child(6)").textContent.trim()
+            };
+        });
+
+        if (requestData.length === 0) {
+            alert("상품을 선택해주세요.");
+            return;
+        }
+
+        // 콘솔에 인자 로깅
+        console.log("Request Data:", requestData);
+
+        try {
+            const response = await postData(`/${window.apiVersion}/sync-collect-market`, requestData);
+            const syncCollect = response.data;
+
+            // 콘솔에 인자 로깅
+            console.log("SyncReceived Data:", syncCollect);
+
+            function getPromotionPeriod(item) {
+                if (item.coupon_end && item.coupon_end !== 'null') {
+                    return item.coupon_end;
+                }
+                if (item.sale_end && item.sale_end !== 'null') {
+                    return item.sale_end;
+                }
+                if (item.sale && item.sale !== 'null') {
+                    return item.sale;
+                }
+                return '';
+            }
+
+            // 수집 동기화된 데이터를 테이블에 반영
+            for (const origin_goods_code in syncCollect) {
+                if (syncCollect.hasOwnProperty(origin_goods_code)) {
+                    const item = syncCollect[origin_goods_code];
+                    console.log("Item Data:", item);
+                    var promotionPeriod = getPromotionPeriod(item);  // item을 전달하여 promotionPeriod 계산
+                    const row = document.querySelector(`#product-tbody tr[data-origin-goods-code="${origin_goods_code}"]`);
+                    if (row) {
+                        row.querySelector("td:nth-child(11)").textContent = item.sold_out || '';
+                        row.querySelector("td:nth-child(13)").textContent = item.total_price || '';
+                        row.querySelector("td:nth-child(19)").textContent = promotionPeriod || '';
+                    }
+                }
+            }
+
+            alert("수집 동기화 완료!");
+        } catch (error) {
+            console.error("Error syncing collec data:", error);
+            alert("수집 동기화 중 오류가 발생했습니다.");
+        }
+    });
+
     // 판매동기화 버튼 클릭 이벤트 리스너
     syncSalesBtn.addEventListener("click", async function () {
         const checkedRows = document.querySelectorAll("#product-tbody tr.expandable .parent-checkbox:checked");
         const requestData = Array.from(checkedRows).map(row => {
             const tr = row.closest("tr");
             return {
+                brand_code: tr.querySelector("td:nth-child(5)").textContent.trim(),
                 origin_goods_code: tr.querySelector("td:nth-child(6)").textContent.trim(),
                 matching_option_id: tr.querySelector("td:nth-child(10) input")?.value || ""
             };
@@ -267,6 +347,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (requestData.length === 0) {
             alert("상품을 선택해주세요.");
+            return;
+        }
+
+        // 빈값 또는 숫자가 아닌 경우 확인
+        const invalidItems = requestData.filter(item => !item.matching_option_id || isNaN(parseInt(item.matching_option_id)));
+        if (invalidItems.length > 0) {
+            alert("일부 상품의 매칭 옵션 ID가 잘못되었습니다. 모든 매칭 옵션 ID를 올바르게 입력해주세요.");
             return;
         }
 
@@ -282,15 +369,15 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (winnerPrices.hasOwnProperty(origin_goods_code)) {
                     const row = document.querySelector(`#product-tbody tr[data-origin-goods-code="${origin_goods_code}"]`);
                     if (row) {
-                        row.querySelector("td:nth-child(14) input").value = winnerPrices[origin_goods_code].total_price || '';
+                        row.querySelector("td:nth-child(16) input").value = winnerPrices[origin_goods_code].total_price || '';
                     }
                 }
             }
 
-            alert("위너가 동기화 완료!");
+            alert("판매 동기화 완료!");
         } catch (error) {
             console.error("Error syncing winner prices:", error);
-            alert("위너가 동기화 중 오류가 발생했습니다.");
+            alert("판매 동기화 중 오류가 발생했습니다.");
         }
     });
 
@@ -311,14 +398,15 @@ document.addEventListener("DOMContentLoaded", function () {
                     exposure_product_id: row.querySelector("td:nth-child(8) input")?.value || "",
                     option_id: row.querySelector("td:nth-child(9) input")?.value || "",
                     matching_option_id: row.querySelector("td:nth-child(10) input")?.value || "",
-                    stock_option: row.querySelector("td:nth-child(11) input")?.value || "",
-                    total_price: parseInt(row.querySelector("td:nth-child(12) input")?.value) || 0,
-                    selling_price: parseInt(row.querySelector("td:nth-child(13) input")?.value) || 0,
-                    winner_price: parseInt(row.querySelector("td:nth-child(14) input")?.value) || 0,
-                    lowest_price: parseInt(row.querySelector("td:nth-child(15) input")?.value) || 0,
-                    maximum_price: parseInt(row.querySelector("td:nth-child(16) input")?.value) || 0,
-                    stock_status: row.querySelector("td:nth-child(17) input")?.value || "",
-                    promotion_period: row.querySelector("td:nth-child(18)").textContent.trim(),
+                    stock_status: row.querySelector("td:nth-child(11)").textContent.trim(),
+                    stock_option: row.querySelector("td:nth-child(12) input")?.value || "",
+                    total_price: row.querySelector("td:nth-child(13)").textContent.trim(),
+                    origin_selling_price: parseInt(row.querySelector("td:nth-child(14) input")?.value) || 0,
+                    selling_price: parseInt(row.querySelector("td:nth-child(15) input")?.value) || 0,
+                    winner_price: parseInt(row.querySelector("td:nth-child(16) input")?.value) || 0,
+                    lowest_price: parseInt(row.querySelector("td:nth-child(17) input")?.value) || 0,
+                    maximum_price: parseInt(row.querySelector("td:nth-child(18) input")?.value) || 0,
+                    promotion_period: row.querySelector("td:nth-child(19)").textContent.trim(),
                 };
                 requestData.push(data);
             }

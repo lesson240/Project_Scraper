@@ -59,9 +59,9 @@
             <button id="add-btn" class="btn btn-primary">Add</button>
             <button id="edit-btn" class="btn btn-secondary">Edit</button>
             <button id="save-btn" class="btn btn-success">Save</button>
-            <button id="collect-btn" class="btn btn-danger">수집동기화</button>
-            <button id="sales-btn" class="btn btn-warning">판매동기화</button>
-            <button id="export-btn" class="btn btn-info">Export</button>
+            <button id="sync-collect-btn" class="btn btn-danger">수집동기화</button>
+            <button id="sync-sales-btn" class="btn btn-warning">판매동기화</button>
+            <button id="sync-market-btn" class="btn btn-info">마켓동기화</button>
         </div>
 
         <div class="table-container">
@@ -78,13 +78,14 @@
                         <th>노출상품ID</th>
                         <th>옵션ID</th>
                         <th>매칭옵션ID</th>
+                        <th>재고</th>
                         <th>재고옵션</th>
                         <th>구매가</th>
+                        <th>정상가</th>
                         <th>할인가</th>
                         <th>위너가</th>
                         <th>최저가</th>
                         <th>최고가</th>
-                        <th>재고</th>
                         <th>행사기간</th>
                         <th>상품정보</th>
                         <th>비고</th>
@@ -102,13 +103,14 @@
                         <td><input type="text" id="exposure_product_id" class="input-cell"></td>
                         <td><input type="text" id="option_id" class="input-cell"></td>
                         <td><input type="text" id="matching_option_id" class="input-cell"></td>
+                        <td id="stock_status" class="table-cell"></td>
                         <td><input type="text" id="stock_option" class="input-cell"></td>
-                        <td><input type="text" id="total_price" class="input-cell"></td>
+                        <td id="total_price" class="table-cell"></td>
+                        <td><input type="text" id="origin_selling_price" class="input-cell"></td>
                         <td><input type="text" id="selling_price" class="input-cell"></td>
                         <td><input type="text" id="winner_price" class="input-cell"></td>
                         <td><input type="text" id="lowest_price" class="input-cell"></td>
                         <td><input type="text" id="maximum_price" class="input-cell"></td>
-                        <td><input type="text" id="stock_status" class="input-cell"></td>
                         <td id="promotion_period" class="table-cell"></td>
                         <td><button class="btn btn-warning btn-table detail-btn">Details</button></td>
                         <td><button class="btn btn-info btn-table">Action</button></td>

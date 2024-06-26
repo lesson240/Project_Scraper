@@ -167,7 +167,8 @@ async def collect_brand_shop(
         # DB에 이미 있는 데이터인지 확인
         try:
             existing_codes = {
-                item.code for item in await mongodb_service.engine.find(BrandShopModel)
+                item.origin_goods_code
+                for item in await mongodb_service.engine.find(BrandShopModel)
             }
         except Exception as e:
             logger.error(
@@ -183,25 +184,27 @@ async def collect_brand_shop(
         for good in goods:
             if isinstance(good, dict):
                 # value 값이 None 일 경우 기본 값으로 처리
-                price = 0 if good.get("price") is None else good.get("price")
+                price = (
+                    0 if good.get("total_price") is None else good.get("total_price")
+                )
                 sold_out = (
                     "판매" if good.get("sold_out") is None else good.get("sold_out")
                 )
                 sale = "없음" if good.get("sale") is None else good.get("sale")
                 coupon = "없음" if good.get("coupon") is None else good.get("coupon")
 
-                if good["code"] not in existing_codes:
+                if good["origin_goods_code"] not in existing_codes:
                     try:
                         oliveyoung_model = BrandShopModel(
                             idx=good["idx"],
                             market="올리브영",
                             brand=good["brand"],
                             brand_code=good["brand_code"],
-                            code=good["code"],
-                            name=good["name"],
-                            price=price,
+                            origin_goods_code=good["origin_goods_code"],
+                            origin_goods_name=good["origin_goods_name"],
+                            total_price=price,
                             sold_out=sold_out,
-                            collection_time=good["time"],
+                            collection_time=good["collection_time"],
                             sale=sale,
                             coupon=coupon,
                         )
@@ -224,7 +227,7 @@ async def collect_brand_shop(
             model_dict = model.dict(exclude={"id"})
             bulk_operations.append(
                 UpdateOne(
-                    {"code": model.code},
+                    {"origin_goods_code": model.origin_goods_code},
                     {"$set": model_dict},
                     upsert=True,
                 )
@@ -250,7 +253,13 @@ async def collect_brand_shop(
         try:
             saved_goods = await mongodb_service.engine.find(
                 BrandShopModel,
-                {"code": {"$in": [model.code for model in new_oliveyoung_models]}},
+                {
+                    "origin_goods_code": {
+                        "$in": [
+                            model.origin_goods_code for model in new_oliveyoung_models
+                        ]
+                    }
+                },
             )
             saved_goods_list = []
             for item in saved_goods:
@@ -419,8 +428,8 @@ async def process_collect_data(record_id: str):
                 # goods_url=["goods_url"],
                 brand=brand_name,
                 brand_code=brand_code,
-                origin_goods_code=good["code"],
-                origin_goods_name=good["name"],
+                origin_goods_code=good["origin_goods_code"],
+                origin_goods_name=good["origin_goods_name"],
                 total_price=total_price,
                 goods_origin=goods_origin,
                 sale_start=sale_start,
@@ -467,7 +476,11 @@ async def process_collect_data(record_id: str):
     try:
         saved_goods = await mongodb_service.engine.find(
             OriginGoodsDetailModel,
-            {"code": {"$in": [model.code for model in new_oliveyoung_models]}},
+            {
+                "origin_goods_code": {
+                    "$in": [model.origin_goods_code for model in new_oliveyoung_models]
+                }
+            },
         )
         saved_goods_list = []
         for item in saved_goods:
@@ -482,7 +495,7 @@ async def process_collect_data(record_id: str):
         return JSONResponse(content={"saved_goods_list": saved_goods_list})
     except Exception as e:
         logger.error(
-            f"collect_brand_shop, An error occurred while fetching saved goods_/collect/brandshop: {e}"
+            f"collect_brand_goods_detail, An error occurred while fetching saved goods_/collect/brandgoodsdetail: {e}"
         )
         raise HTTPException(
             status_code=500,

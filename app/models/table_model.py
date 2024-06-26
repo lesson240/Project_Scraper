@@ -6,15 +6,15 @@ from pydantic import BaseModel, Field
 
 
 class BrandCodeRequestModel(BaseModel):
-    brandCode: str
+    brandCode: Optional[str]
 
 
 class InputGoodsTableRequestModel(BaseModel):
-    market: str
-    brand: str
-    brand_code: str
-    origin_goods_code: str
-    origin_goods_name: str
+    market: Optional[str]
+    brand: Optional[str]
+    brand_code: Optional[str]
+    origin_goods_code: Optional[str]
+    origin_goods_name: Optional[str]
     exposure_product_id: Optional[str]
     option_id: Optional[str]
     matching_option_id: Optional[str]
@@ -30,11 +30,11 @@ class InputGoodsTableRequestModel(BaseModel):
 
 # 작성중
 class InputGoodsManagementTableModel(Model):
-    market: str
-    brand: str
-    brand_code: str
-    origin_goods_code: str
-    origin_goods_name: str
+    market: Optional[str]
+    brand: Optional[str]
+    brand_code: Optional[str]
+    origin_goods_code: Optional[str]
+    origin_goods_name: Optional[str]
     exposure_product_id: Optional[str]
     option_id: Optional[str]
     matching_option_id: Optional[str]
@@ -47,13 +47,29 @@ class InputGoodsManagementTableModel(Model):
     stock_status: Optional[str]
     promotion_period: Optional[str]
     winner_delivery: Optional[str]
-    winner_deliveryday: int
+    winner_deliveryday: Optional[int]
+    sale: Optional[str]
+    sold_out: Optional[str]
+    goods_origin: Optional[int]
+    sale_start: Optional[str]
+    sale_end: Optional[str]
+    sale_price: Optional[int]
+    coupon_start: Optional[str]
+    coupon_end: Optional[str]
+    coupon_price: Optional[int]
 
     # options: Optional[List[Dict[str, str]]] = None
 
     model_config = {"collection": "ModifiedGoodsDetail"}
 
 
+# 판매동기화 버튼 클릭 시 get BaseModel
 class MatchingOptionIdModel(BaseModel):
-    origin_goods_code: str
-    matching_option_id: str
+    origin_goods_code: Optional[str]
+    matching_option_id: Optional[str]
+    brand_code: Optional[str]
+
+
+# 수집동기화 버튼 클릭 시 get BaseModel
+class OriginGoodsCodeModel(BaseModel):
+    origin_goods_code: Optional[str]

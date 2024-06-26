@@ -1,1 +1,6 @@
-2024-06-23 16:38:30,583 - ERROR - collect_brand_shop, An error occurred while fetching saved goods_/collect/brandshop: 'OriginGoodsDetailModel' object has no attribute 'code'
+2024-06-26 23:18:54,774 - ERROR - collect_brand_shop, An error occurred while collecting /collect/brandshop: 'code'
+2024-06-26 23:20:20,600 - ERROR - collect_brand_shop, An error occurred while collecting /collect/brandshop: 'code'
+2024-06-26 23:21:25,916 - ERROR - collect_brand_shop, An error occurred while collecting /collect/brandshop: 'code'
+2024-06-26 23:24:19,536 - ERROR - collect_brand_shop, An error occurred while collecting /collect/brandshop: 'code'
+2024-06-26 23:26:29,379 - ERROR - collect_brand_shop, An error occurred while collecting /collect/brandshop: 'BrandShopModel' object has no attribute 'code'
+2024-06-26 23:42:59,461 - ERROR - collect_brand_shop, An error occurred while fetching saved goods_/collect/brandshop: 'OriginGoodsDetailModel' object has no attribute 'code'

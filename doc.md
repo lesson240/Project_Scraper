@@ -1,7 +1,7 @@
 # DB 연결
 
 1. 올리브영 수집동기화
-1) 오특page scraper 모듈 작성
+1) 완료: 오특page scraper 모듈 작성
 2) router.post 스크립트 작성, return 올리브영 관여 db 객체 생성
 3) 클라이언트 js 작성_서버로 호출하여 테이블에 input 처리
 
