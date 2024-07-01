@@ -6,10 +6,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 sys.path.append(str(BASE_DIR))
 
 # 프로젝트 Module 불러오기
-from app.utils.logging_config import setup_logger
-from app.services.mongodb import mongodb_service
-from app.models.oliveyoung_model import OriginGoodsDetailModel
-from app.models.table_model import (
+from app.utils.util_logging import setup_logger
+from app.services.service_mongodb import mongodb_service
+from app.models.model_oliveyoung import OriginGoodsDetailModel
+from app.models.model_table import (
     InputGoodsTableRequestModel,
     InputGoodsManagementTableModel,
     BrandCodeRequestModel,
@@ -18,7 +18,7 @@ from app.models.table_model import (
 )
 from app.scrapers.scraper_coupang import WinnerPriceInquiry
 from app.scrapers.scraper_oliveyoung import BrandGoodsDetail
-from app.utils.router_utils import set_version
+from app.utils.util_router import set_version
 
 # 라이브러리 불러오기
 from fastapi import APIRouter, Request, HTTPException

@@ -84,6 +84,7 @@ sqs_client = boto3.client(
 
 MONGO_DB_NAME = "scrapmarket"
 MONGO_DB_NAME_RECORDS = "records"
+MONGO_DB_NAME_USERS = "users"
 MONGO_DB_URL = get_secret("MONGO_URL")
 NAVER_API_ID = get_secret("NAVER_API_ID")
 NAVER_API_SECRET = get_secret("NAVER_API_SECRET")

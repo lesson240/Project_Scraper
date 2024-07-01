@@ -1,4 +1,95 @@
-2024-06-27 01:57:23,516 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
-2024-06-27 01:57:25,109 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
-2024-06-27 01:58:42,477 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
-2024-06-27 01:58:43,946 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
+2024-06-29 18:21:12,002 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
+2024-06-29 18:57:10,059 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
+2024-06-29 18:57:13,203 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
+2024-06-29 18:58:21,344 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
+2024-06-29 18:58:24,378 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
+2024-06-29 19:17:10,305 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
+2024-06-29 19:17:15,607 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
+2024-06-29 19:20:47,869 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
+2024-06-29 19:21:03,222 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
+2024-06-29 19:26:10,750 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
+2024-06-29 19:26:12,302 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
+2024-06-29 19:30:30,152 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
+2024-06-29 19:30:34,676 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
+2024-06-29 19:31:19,219 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
+2024-06-29 19:31:20,718 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
+2024-06-29 19:35:24,748 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
+2024-06-29 19:35:26,101 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
+2024-06-29 19:37:54,368 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
+2024-06-29 19:37:55,959 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
+2024-06-29 19:40:55,084 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
+2024-06-29 19:40:57,341 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
+2024-06-29 19:50:34,714 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
+2024-06-29 19:50:36,989 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
+2024-06-29 20:52:22,367 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
+2024-06-29 20:52:25,396 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
+2024-06-29 20:56:38,525 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
+2024-06-29 20:56:39,969 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
+2024-06-29 21:02:06,774 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
+2024-06-29 21:02:08,554 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
+2024-06-29 21:04:38,639 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
+2024-06-29 21:04:40,187 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
+2024-06-29 21:09:27,337 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
+2024-06-29 21:09:29,611 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
+2024-06-29 21:13:47,744 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
+2024-06-29 21:13:49,340 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
+2024-06-29 21:15:25,110 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
+2024-06-29 21:15:26,734 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
+2024-06-29 21:18:06,377 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
+2024-06-29 21:18:07,854 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
+2024-06-29 21:24:51,213 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
+2024-06-29 21:24:54,357 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
+2024-06-29 21:35:24,513 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
+2024-06-29 21:35:25,976 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
+2024-06-29 21:36:05,974 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
+2024-06-29 21:36:07,259 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
+2024-06-29 21:46:31,996 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
+2024-06-29 21:46:35,247 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
+2024-06-29 21:47:58,276 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
+2024-06-29 21:48:00,321 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
+2024-06-29 21:49:21,389 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
+2024-06-29 21:49:23,999 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
+2024-06-29 21:50:46,234 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
+2024-06-29 21:50:49,650 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
+2024-06-29 21:51:51,345 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
+2024-06-29 21:51:55,160 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
+2024-06-29 21:59:56,562 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
+2024-06-29 21:59:58,020 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
+2024-06-29 22:04:04,934 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
+2024-06-29 22:04:06,526 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
+2024-06-29 22:06:01,354 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
+2024-06-29 22:06:02,704 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
+2024-06-29 22:07:25,776 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
+2024-06-29 22:07:27,630 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
+2024-06-29 22:11:22,159 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
+2024-06-29 22:11:24,275 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
+2024-06-29 22:13:29,040 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
+2024-06-29 22:13:33,979 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
+2024-06-29 22:19:55,074 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
+2024-06-29 22:19:56,981 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
+2024-06-29 22:26:08,846 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
+2024-06-29 22:26:10,102 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
+2024-06-29 22:32:49,917 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
+2024-06-29 22:32:52,357 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
+2024-06-29 22:36:55,131 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
+2024-06-29 22:36:57,793 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
+2024-06-29 22:38:19,129 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
+2024-06-29 22:38:20,436 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
+2024-06-29 22:41:06,850 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
+2024-06-29 22:41:08,150 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
+2024-06-29 23:09:53,865 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
+2024-06-29 23:09:54,992 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
+2024-06-29 23:11:02,516 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
+2024-06-29 23:11:03,888 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
+2024-06-29 23:14:54,103 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
+2024-06-29 23:14:55,255 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
+2024-06-29 23:15:51,036 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
+2024-06-29 23:15:53,199 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
+2024-06-29 23:19:35,128 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
+2024-06-29 23:19:36,540 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
+2024-06-29 23:22:02,940 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
+2024-06-29 23:22:04,255 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
+2024-06-29 23:24:18,000 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
+2024-06-29 23:24:19,111 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html
+2024-06-29 23:28:50,331 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\templates
+2024-06-29 23:28:51,590 - INFO - Looking for template at: C:\Users\user\Desktop\Project_Scraper\app\templates\index.html

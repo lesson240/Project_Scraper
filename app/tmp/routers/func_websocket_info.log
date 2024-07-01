@@ -1,0 +1,187 @@
+2024-06-27 23:00:02,458 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\websocket
+2024-06-27 23:04:32,152 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\websocket
+2024-06-27 23:17:27,742 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\websocket
+2024-06-27 23:24:33,282 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\websocket
+2024-06-27 23:24:43,481 - ERROR - Error creating or retrieving client account: username
+2024-06-27 23:27:45,349 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\websocket
+2024-06-27 23:27:49,906 - ERROR - Error creating or retrieving client account: socket_coupang.html
+2024-06-27 23:33:20,675 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\websocket
+2024-06-27 23:33:25,278 - ERROR - Error creating or retrieving client account: socket_coupang.html
+2024-06-27 23:47:12,958 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\websockets
+2024-06-28 00:47:00,939 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\websockets
+2024-06-28 00:52:10,223 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\websockets
+2024-06-28 00:54:44,036 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\websockets
+2024-06-28 00:56:43,818 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\websockets
+2024-06-28 00:57:49,609 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\websockets
+2024-06-28 01:02:43,030 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\websockets
+2024-06-28 01:03:12,034 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\websockets
+2024-06-28 01:08:20,704 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\websockets
+2024-06-28 01:10:10,284 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\websockets
+2024-06-28 01:26:27,330 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\websockets
+2024-06-28 01:39:48,189 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\websockets
+2024-06-28 01:48:00,263 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\websockets
+2024-06-28 02:04:25,431 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\websockets
+2024-06-28 02:11:26,162 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\websockets
+2024-06-28 02:14:40,640 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\websockets
+2024-06-28 02:16:51,998 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\websockets
+2024-06-28 02:18:16,088 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\websockets
+2024-06-28 02:23:16,463 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\websockets
+2024-06-28 02:24:38,930 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\websockets
+2024-06-28 02:26:38,207 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\websockets
+2024-06-28 02:37:11,960 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\websockets
+2024-06-28 02:40:56,524 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\websockets
+2024-06-28 02:43:28,515 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\websockets
+2024-06-28 02:47:47,156 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\websockets
+2024-06-28 02:48:36,738 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\websockets
+2024-06-28 02:49:08,170 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\websockets
+2024-06-28 02:50:36,292 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\websockets
+2024-06-28 02:52:10,365 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\websockets
+2024-06-28 02:55:12,945 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\websockets
+2024-06-28 16:56:37,494 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\websockets
+2024-06-28 16:58:11,917 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\websockets
+2024-06-28 17:03:53,386 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\websockets
+2024-06-28 17:06:39,138 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\websockets
+2024-06-28 17:13:25,008 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\websockets
+2024-06-28 17:19:24,463 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\websockets
+2024-06-28 17:20:01,252 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\websockets
+2024-06-28 17:34:00,587 - INFO - Templates directory: C:\Users\user\Desktop\Project_Scraper\app\websockets
+2024-06-28 18:03:13,894 - INFO - WebSocket disconnected
+2024-06-28 18:03:22,714 - INFO - WebSocket disconnected
+2024-06-28 18:26:45,455 - ERROR - Error opening new tab: Chromium downloadable not found at https://storage.googleapis.com/chromium-browser-snapshots/Win_x64/1181205/chrome-win.zip: Received <?xml version='1.0' encoding='UTF-8'?><Error><Code>NoSuchKey</Code><Message>The specified key does not exist.</Message><Details>No such object: chromium-browser-snapshots/Win_x64/1181205/chrome-win.zip</Details></Error>.
+
+2024-06-28 18:26:49,757 - ERROR - Error opening new tab: Chromium downloadable not found at https://storage.googleapis.com/chromium-browser-snapshots/Win_x64/1181205/chrome-win.zip: Received <?xml version='1.0' encoding='UTF-8'?><Error><Code>NoSuchKey</Code><Message>The specified key does not exist.</Message><Details>No such object: chromium-browser-snapshots/Win_x64/1181205/chrome-win.zip</Details></Error>.
+
+2024-06-28 18:30:58,506 - ERROR - Error opening new tab: [WinError 2] 지정된 파일을 찾을 수 없습니다
+2024-06-28 19:08:51,981 - ERROR - Error opening new tab: Session.__init__() missing 1 required positional argument: 'user_id'
+2024-06-28 19:44:31,511 - ERROR - Error in websocket-coupang endpoint: http://localhost:54779 isn't a valid URI: scheme isn't ws or wss
+2024-06-28 19:44:34,960 - ERROR - Error in websocket-coupang endpoint: http://localhost:54802 isn't a valid URI: scheme isn't ws or wss
+2024-06-28 19:44:38,467 - ERROR - Error in websocket-coupang endpoint: http://localhost:54816 isn't a valid URI: scheme isn't ws or wss
+2024-06-28 19:50:24,103 - ERROR - Error in websocket-coupang endpoint: Message: session not created: cannot connect to chrome at localhost:9222
+from chrome not reachable
+Stacktrace:
+	GetHandleVerifier [0x00007FF6F07DEEA2+31554]
+	(No symbol) [0x00007FF6F0757ED9]
+	(No symbol) [0x00007FF6F0618559]
+	(No symbol) [0x00007FF6F0603BE4]
+	(No symbol) [0x00007FF6F0655E02]
+	(No symbol) [0x00007FF6F064B420]
+	(No symbol) [0x00007FF6F0698794]
+	(No symbol) [0x00007FF6F0697DF0]
+	(No symbol) [0x00007FF6F068CDD3]
+	(No symbol) [0x00007FF6F065A33B]
+	(No symbol) [0x00007FF6F065AED1]
+	GetHandleVerifier [0x00007FF6F0AE8B1D+3217341]
+	GetHandleVerifier [0x00007FF6F0B35AE3+3532675]
+	GetHandleVerifier [0x00007FF6F0B2B0E0+3489152]
+	GetHandleVerifier [0x00007FF6F088E776+750614]
+	(No symbol) [0x00007FF6F076375F]
+	(No symbol) [0x00007FF6F075EB14]
+	(No symbol) [0x00007FF6F075ECA2]
+	(No symbol) [0x00007FF6F074E16F]
+	BaseThreadInitThunk [0x00007FFE4E68257D+29]
+	RtlUserThreadStart [0x00007FFE4F44AF28+40]
+
+2024-06-28 19:51:31,247 - ERROR - Error in websocket-coupang endpoint: Message: session not created: cannot connect to chrome at localhost:9222
+from chrome not reachable
+Stacktrace:
+	GetHandleVerifier [0x00007FF6F07DEEA2+31554]
+	(No symbol) [0x00007FF6F0757ED9]
+	(No symbol) [0x00007FF6F0618559]
+	(No symbol) [0x00007FF6F0603BE4]
+	(No symbol) [0x00007FF6F0655E02]
+	(No symbol) [0x00007FF6F064B420]
+	(No symbol) [0x00007FF6F0698794]
+	(No symbol) [0x00007FF6F0697DF0]
+	(No symbol) [0x00007FF6F068CDD3]
+	(No symbol) [0x00007FF6F065A33B]
+	(No symbol) [0x00007FF6F065AED1]
+	GetHandleVerifier [0x00007FF6F0AE8B1D+3217341]
+	GetHandleVerifier [0x00007FF6F0B35AE3+3532675]
+	GetHandleVerifier [0x00007FF6F0B2B0E0+3489152]
+	GetHandleVerifier [0x00007FF6F088E776+750614]
+	(No symbol) [0x00007FF6F076375F]
+	(No symbol) [0x00007FF6F075EB14]
+	(No symbol) [0x00007FF6F075ECA2]
+	(No symbol) [0x00007FF6F074E16F]
+	BaseThreadInitThunk [0x00007FFE4E68257D+29]
+	RtlUserThreadStart [0x00007FFE4F44AF28+40]
+
+2024-06-28 19:52:38,258 - ERROR - Error in websocket-coupang endpoint: Message: session not created: cannot connect to chrome at localhost:9222
+from chrome not reachable
+Stacktrace:
+	GetHandleVerifier [0x00007FF6F07DEEA2+31554]
+	(No symbol) [0x00007FF6F0757ED9]
+	(No symbol) [0x00007FF6F0618559]
+	(No symbol) [0x00007FF6F0603BE4]
+	(No symbol) [0x00007FF6F0655E02]
+	(No symbol) [0x00007FF6F064B420]
+	(No symbol) [0x00007FF6F0698794]
+	(No symbol) [0x00007FF6F0697DF0]
+	(No symbol) [0x00007FF6F068CDD3]
+	(No symbol) [0x00007FF6F065A33B]
+	(No symbol) [0x00007FF6F065AED1]
+	GetHandleVerifier [0x00007FF6F0AE8B1D+3217341]
+	GetHandleVerifier [0x00007FF6F0B35AE3+3532675]
+	GetHandleVerifier [0x00007FF6F0B2B0E0+3489152]
+	GetHandleVerifier [0x00007FF6F088E776+750614]
+	(No symbol) [0x00007FF6F076375F]
+	(No symbol) [0x00007FF6F075EB14]
+	(No symbol) [0x00007FF6F075ECA2]
+	(No symbol) [0x00007FF6F074E16F]
+	BaseThreadInitThunk [0x00007FFE4E68257D+29]
+	RtlUserThreadStart [0x00007FFE4F44AF28+40]
+
+2024-06-28 20:31:10,436 - ERROR - Error in websocket-coupang endpoint: 'NoneType' object has no attribute 'setCookie'
+2024-06-29 14:11:38,061 - ERROR - Error in websocket-coupang endpoint: 'NoneType' object has no attribute 'setCookie'
+2024-06-29 14:48:28,952 - ERROR - Error in websocket-coupang endpoint: 'NoneType' object has no attribute 'setCookie'
+2024-06-29 14:55:00,328 - ERROR - Error in websocket-coupang endpoint: 'NoneType' object has no attribute 'setCookie'
+2024-06-29 15:48:06,095 - ERROR - Error in websocket-coupang endpoint: 'NoneType' object has no attribute 'setCookie'
+2024-06-29 15:58:56,870 - ERROR - Error in websocket-coupang endpoint: 'NoneType' object has no attribute 'setCookie'
+2024-06-29 16:15:07,918 - ERROR - Error in websocket-coupang endpoint: 'NoneType' object has no attribute 'setCookie'
+2024-06-29 16:18:49,450 - ERROR - Error in websocket-coupang endpoint: 'NoneType' object has no attribute 'setCookie'
+2024-06-29 16:21:49,200 - ERROR - Error in websocket-coupang endpoint: 'NoneType' object has no attribute 'setCookie'
+2024-06-29 16:48:59,036 - ERROR - Error in websocket-coupang endpoint: Chromium downloadable not found at https://storage.googleapis.com/chromium-browser-snapshots/Win_x64/1181205/chrome-win.zip: Received <?xml version='1.0' encoding='UTF-8'?><Error><Code>NoSuchKey</Code><Message>The specified key does not exist.</Message><Details>No such object: chromium-browser-snapshots/Win_x64/1181205/chrome-win.zip</Details></Error>.
+
+2024-06-29 16:49:27,943 - ERROR - Error in websocket-coupang endpoint: Chromium downloadable not found at https://storage.googleapis.com/chromium-browser-snapshots/Win_x64/1181205/chrome-win.zip: Received <?xml version='1.0' encoding='UTF-8'?><Error><Code>NoSuchKey</Code><Message>The specified key does not exist.</Message><Details>No such object: chromium-browser-snapshots/Win_x64/1181205/chrome-win.zip</Details></Error>.
+
+2024-06-29 18:21:16,550 - ERROR - Error in websocket-coupang endpoint: 'Session' object has no attribute 'cookies_manager'
+2024-06-29 18:57:30,713 - ERROR - Error in websocket-coupang endpoint: 'NoneType' object has no attribute 'setCookie'
+2024-06-29 18:58:41,918 - ERROR - Error in websocket-coupang endpoint: 'NoneType' object has no attribute 'setCookie'
+2024-06-29 19:17:35,326 - ERROR - Error in websocket-coupang endpoint: 'NoneType' object has no attribute 'setCookie'
+2024-06-29 19:21:23,293 - ERROR - Error in websocket-coupang endpoint: 'NoneType' object has no attribute 'setCookie'
+2024-06-29 19:26:31,668 - ERROR - Error in websocket-coupang endpoint: 'NoneType' object has no attribute 'setCookie'
+2024-06-29 19:31:01,401 - ERROR - Error in websocket-coupang endpoint: 'NoneType' object has no attribute 'setCookie'
+2024-06-29 19:31:39,371 - ERROR - Error in websocket-coupang endpoint: 'NoneType' object has no attribute 'setCookie'
+2024-06-29 19:35:45,870 - ERROR - Error in websocket-coupang endpoint: 'NoneType' object has no attribute 'setCookie'
+2024-06-29 19:38:14,595 - ERROR - Error in websocket-coupang endpoint: 'NoneType' object has no attribute 'setCookie'
+2024-06-29 19:41:17,173 - ERROR - Error in websocket-coupang endpoint: 'NoneType' object has no attribute 'setCookie'
+2024-06-29 19:50:57,198 - ERROR - Error in websocket-coupang endpoint: 'NoneType' object has no attribute 'setCookie'
+2024-06-29 21:25:01,254 - ERROR - Error in websocket-coupang endpoint: name 'ProfileDataModel' is not defined
+2024-06-29 21:46:43,022 - ERROR - Error in websocket-coupang endpoint: name 'ProfileDataModel' is not defined
+2024-06-29 21:48:06,820 - ERROR - Error in websocket-coupang endpoint: name 'ProfileDataModel' is not defined
+2024-06-29 21:59:52,256 - ERROR - Error in websocket-coupang endpoint: name 'ProfileDataModel' is not defined
+2024-06-29 22:00:00,372 - ERROR - Error in websocket-coupang endpoint: 2 validation errors for ChromeProfilePathModel
+user_id
+  Field required [type=missing, input_value={}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.7/v/missing
+profile_path
+  Field required [type=missing, input_value={}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.7/v/missing
+2024-06-29 22:05:58,272 - ERROR - Error in websocket-coupang endpoint: name 'ProfileDataModel' is not defined
+2024-06-29 22:07:23,448 - ERROR - Error in websocket-coupang endpoint: name 'ProfileDataModel' is not defined
+2024-06-29 22:11:19,629 - ERROR - Error in websocket-coupang endpoint: name 'ProfileDataModel' is not defined
+2024-06-29 22:11:33,722 - ERROR - Error in websocket-coupang endpoint: name 'ProfileDataModel' is not defined
+2024-06-29 22:13:48,142 - ERROR - Error in websocket-coupang endpoint: name 'ProfileDataModel' is not defined
+2024-06-29 22:20:08,666 - ERROR - Error in websocket-coupang endpoint: name 'ProfileDataModel' is not defined
+2024-06-29 22:26:14,840 - ERROR - Error in websocket-coupang endpoint: name 'ProfileDataModel' is not defined
+2024-06-29 22:32:57,306 - ERROR - Error in websocket-coupang endpoint: name 'ProfileDataModel' is not defined
+2024-06-29 22:37:01,915 - ERROR - Error in websocket-coupang endpoint: name 'ProfileDataModel' is not defined
+2024-06-29 22:38:24,774 - ERROR - Error in websocket-coupang endpoint: name 'ProfileDataModel' is not defined
+2024-06-29 22:41:14,067 - ERROR - Error in websocket-coupang endpoint: name 'ProfileDataModel' is not defined
+2024-06-29 23:09:57,295 - ERROR - Error in websocket-coupang endpoint: name 'ProfileDataModel' is not defined
+2024-06-29 23:11:07,886 - ERROR - Error in websocket-coupang endpoint: name 'ProfileDataModel' is not defined
+2024-06-29 23:14:59,500 - ERROR - Error in websocket-coupang endpoint: name 'ProfileDataModel' is not defined
+2024-06-29 23:19:45,825 - ERROR - Error in websocket-coupang endpoint: name 'ProfileDataModel' is not defined
+2024-06-29 23:22:13,959 - ERROR - Error in websocket-coupang endpoint: name 'ProfileDataModel' is not defined
+2024-06-29 23:24:28,502 - ERROR - Error in websocket-coupang endpoint: name 'ProfileDataModel' is not defined
+2024-06-29 23:29:19,171 - ERROR - Error in websocket-coupang endpoint: name 'ProfileDataModel' is not defined

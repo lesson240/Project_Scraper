@@ -6,11 +6,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.append(str(BASE_DIR))
 
 # 프로젝트 Module 불러오기
-from app.utils.logging_config import setup_logger
-from utils.router_utils import include_routers
+from app.utils.util_logging import setup_logger
+from app.utils.util_router import include_routers
 from app.routers import (
     func_autocomplete,
     func_inquiry,
+    func_websocket,
     index,
     page_admin,
     page_order_management,
@@ -19,8 +20,8 @@ from app.routers import (
     page_user_setting,
     user_account,
 )  # , user 사용자 서비스를 비활성화합니다.
-from app.services.mongodb import mongodb_service
-from app.utils.router_utils import get_versioned_prefix, include_routers
+from app.services.service_mongodb import mongodb_service
+from app.utils.util_router import get_versioned_prefix, include_routers
 
 # 라이브러리 불러오기
 from fastapi import FastAPI, Request
@@ -42,6 +43,9 @@ app = FastAPI()
 app.mount(
     "/static", StaticFiles(directory=BASE_DIR / "path/tabler/static"), name="static"
 )
+app.mount(
+    "/websockets", StaticFiles(directory=BASE_DIR / "app/websockets"), name="websockets"
+)
 
 # CORS 설정
 app.add_middleware(
@@ -60,6 +64,7 @@ prefix = get_versioned_prefix()
 routers = [
     (func_autocomplete.router, ["FuncAutocomplete"]),
     (func_inquiry.router, ["FuncInquiry"]),
+    (func_websocket.router, ["FuncWebsocket"]),
     (index.router, ["PageHome"]),
     (page_admin.router, ["PageAdmin"]),
     (page_order_management.router, ["PageOrderManagement"]),

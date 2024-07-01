@@ -6,16 +6,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 sys.path.append(str(BASE_DIR))
 
 # 프로젝트 Module 불러오기
-from app.utils.logging_config import setup_logger
-from app.models.oliveyoung_model import (
+from app.utils.util_logging import setup_logger
+from app.models.model_oliveyoung import (
     BrandListModel,
     BrandShopModel,
     OriginGoodsDetailModel,
 )
-from app.models.records_model import CollectionRecordsModel
+from app.models.model_records import CollectionRecordsModel
 from app.scrapers.scraper_oliveyoung import BrandList, BrandShop, BrandGoodsDetail
-from app.services.mongodb import mongodb_service
-from app.utils.router_utils import set_version
+from app.services.service_mongodb import mongodb_service
+from app.utils.util_router import set_version
 
 # 라이브러리 불러오기
 from fastapi import APIRouter, Request, HTTPException, Query, BackgroundTasks
@@ -94,7 +94,7 @@ async def collect_brand_list(request: Request):
             if new_oliveyoung_models:
                 await mongodb_service.engine.save_all(new_oliveyoung_models)
         except Exception as e:
-            logging.error(
+            logger.error(
                 f"An error occurred while saving new models_/manager/brandlist: {e}"
             )
             raise HTTPException(

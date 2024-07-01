@@ -1,5 +1,5 @@
 import uvicorn
-from app.utils.logging_config import custom_logger
+from app.utils.util_logging import custom_logger
 
 # 주요 설정
 host = "localhost"

@@ -1,0 +1,4 @@
+2024-06-29 23:29:07,070 - WARNING - Attempt 1/3 failed to find login session.
+2024-06-29 23:29:13,125 - WARNING - Attempt 2/3 failed to find login session.
+2024-06-29 23:29:19,169 - WARNING - Attempt 3/3 failed to find login session.
+2024-06-29 23:29:19,170 - ERROR - Login not completed within the timeout period after retries.

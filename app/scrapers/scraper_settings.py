@@ -6,7 +6,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 sys.path.append(str(BASE_DIR))
 
 # 프로젝트 Module 불러오기
-from app.utils.logging_config import setup_logger
+from app.utils.util_logging import setup_logger
 
 # 라이브러리 불러오기
 import json

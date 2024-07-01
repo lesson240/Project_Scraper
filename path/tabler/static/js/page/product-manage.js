@@ -423,4 +423,16 @@ document.addEventListener("DOMContentLoaded", function () {
             alert("Error saving data.");
         }
     });
+
+    // 마켓동기화 버튼 클릭 이벤트 리스너
+    syncMarketBtn.addEventListener("click", async function () {
+        try {
+            const response = await fetch(`/${window.apiVersion}/websocket-coupang`, {
+                method: "POST",
+            });
+        } catch (error) {
+            console.error("Error:", error);
+            alert("오류가 발생했습니다.");
+        }
+    });
 });

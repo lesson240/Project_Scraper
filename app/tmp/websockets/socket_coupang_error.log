@@ -1,0 +1,109 @@
+2024-06-28 20:31:06,311 - ERROR - Error starting browser: Message: session not created: cannot connect to chrome at localhost:9222
+from chrome not reachable
+Stacktrace:
+	GetHandleVerifier [0x00007FF6F07DEEA2+31554]
+	(No symbol) [0x00007FF6F0757ED9]
+	(No symbol) [0x00007FF6F0618559]
+	(No symbol) [0x00007FF6F0603BE4]
+	(No symbol) [0x00007FF6F0655E02]
+	(No symbol) [0x00007FF6F064B420]
+	(No symbol) [0x00007FF6F0698794]
+	(No symbol) [0x00007FF6F0697DF0]
+	(No symbol) [0x00007FF6F068CDD3]
+	(No symbol) [0x00007FF6F065A33B]
+	(No symbol) [0x00007FF6F065AED1]
+	GetHandleVerifier [0x00007FF6F0AE8B1D+3217341]
+	GetHandleVerifier [0x00007FF6F0B35AE3+3532675]
+	GetHandleVerifier [0x00007FF6F0B2B0E0+3489152]
+	GetHandleVerifier [0x00007FF6F088E776+750614]
+	(No symbol) [0x00007FF6F076375F]
+	(No symbol) [0x00007FF6F075EB14]
+	(No symbol) [0x00007FF6F075ECA2]
+	(No symbol) [0x00007FF6F074E16F]
+	BaseThreadInitThunk [0x00007FFE4E68257D+29]
+	RtlUserThreadStart [0x00007FFE4F44AF28+40]
+
+2024-06-29 14:11:33,939 - ERROR - Error starting browser: Message: session not created: cannot connect to chrome at localhost:9222
+from unknown error: unable to discover open pages
+Stacktrace:
+	GetHandleVerifier [0x00007FF7C614EEA2+31554]
+	(No symbol) [0x00007FF7C60C7ED9]
+	(No symbol) [0x00007FF7C5F8872A]
+	(No symbol) [0x00007FF7C5FC5F57]
+	(No symbol) [0x00007FF7C5FBB420]
+	(No symbol) [0x00007FF7C6008794]
+	(No symbol) [0x00007FF7C6007DF0]
+	(No symbol) [0x00007FF7C5FFCDD3]
+	(No symbol) [0x00007FF7C5FCA33B]
+	(No symbol) [0x00007FF7C5FCAED1]
+	GetHandleVerifier [0x00007FF7C6458B1D+3217341]
+	GetHandleVerifier [0x00007FF7C64A5AE3+3532675]
+	GetHandleVerifier [0x00007FF7C649B0E0+3489152]
+	GetHandleVerifier [0x00007FF7C61FE776+750614]
+	(No symbol) [0x00007FF7C60D375F]
+	(No symbol) [0x00007FF7C60CEB14]
+	(No symbol) [0x00007FF7C60CECA2]
+	(No symbol) [0x00007FF7C60BE16F]
+	BaseThreadInitThunk [0x00007FF83513257D+29]
+	RtlUserThreadStart [0x00007FF835C6AF28+40]
+
+2024-06-29 14:48:28,943 - ERROR - Error connecting to browser with Pyppeteer: 
+2024-06-29 14:55:00,318 - ERROR - Error connecting to browser with Pyppeteer: 
+2024-06-29 15:48:06,083 - ERROR - Error connecting to browser with Pyppeteer: 
+2024-06-29 15:58:56,865 - ERROR - Error starting browser: 'NoneType' object has no attribute 'pages'
+2024-06-29 16:15:07,911 - ERROR - Error starting browser: 'NoneType' object has no attribute 'pages'
+2024-06-29 16:18:49,443 - ERROR - Error starting browser: 'NoneType' object has no attribute 'pages'
+2024-06-29 16:21:49,192 - ERROR - Error starting browser: 'NoneType' object has no attribute 'pages'
+2024-06-29 18:21:16,549 - ERROR - Error starting browser: BrowserManager.start_chrome_with_profile() takes 2 positional arguments but 3 were given
+2024-06-29 18:57:30,707 - ERROR - Error getting WebSocket URL: 
+2024-06-29 18:57:30,707 - ERROR - Error starting browser: Need `browserWSEndpoint` or `browserURL` option.
+2024-06-29 18:58:41,911 - ERROR - Error getting WebSocket URL: 
+2024-06-29 18:58:41,911 - ERROR - Error starting browser: Need `browserWSEndpoint` or `browserURL` option.
+2024-06-29 19:17:35,317 - ERROR - Error getting WebSocket URL: 
+2024-06-29 19:17:35,318 - ERROR - Error starting browser: Need `browserWSEndpoint` or `browserURL` option.
+2024-06-29 19:21:23,285 - ERROR - Error getting WebSocket URL: 
+2024-06-29 19:21:23,285 - ERROR - Error starting browser: Need `browserWSEndpoint` or `browserURL` option.
+2024-06-29 19:26:31,661 - ERROR - Error getting WebSocket URL: 
+2024-06-29 19:26:31,662 - ERROR - Error starting browser: Need `browserWSEndpoint` or `browserURL` option.
+2024-06-29 19:31:01,395 - ERROR - Error getting WebSocket URL: 
+2024-06-29 19:31:01,395 - ERROR - Error starting browser: Need `browserWSEndpoint` or `browserURL` option.
+2024-06-29 19:31:39,364 - ERROR - Error getting WebSocket URL: 
+2024-06-29 19:31:39,365 - ERROR - Error starting browser: Need `browserWSEndpoint` or `browserURL` option.
+2024-06-29 19:35:45,864 - ERROR - Error getting WebSocket URL: 
+2024-06-29 19:35:45,864 - ERROR - Error starting browser: Need `browserWSEndpoint` or `browserURL` option.
+2024-06-29 19:38:14,583 - ERROR - Error getting WebSocket URL: 
+2024-06-29 19:38:14,583 - ERROR - Error starting browser: Need `browserWSEndpoint` or `browserURL` option.
+2024-06-29 19:41:17,161 - ERROR - Error getting WebSocket URL: 
+2024-06-29 19:41:17,162 - ERROR - Error starting browser: Need `browserWSEndpoint` or `browserURL` option.
+2024-06-29 19:50:57,191 - ERROR - Error getting WebSocket URL: 
+2024-06-29 19:50:57,191 - ERROR - Error starting browser: Need `browserWSEndpoint` or `browserURL` option.
+2024-06-29 21:25:01,253 - ERROR - Error starting browser: BrowserManager.start_chrome_with_profile() got an unexpected keyword argument 'headless'
+2024-06-29 21:46:43,020 - ERROR - Error starting browser: Need `browserWSEndpoint` or `browserURL` option.
+2024-06-29 21:48:06,819 - ERROR - Error starting browser: Need `browserWSEndpoint` or `browserURL` option.
+2024-06-29 21:59:52,256 - ERROR - Error starting browser: Need `browserWSEndpoint` or `browserURL` option.
+2024-06-29 22:05:58,271 - ERROR - Error starting browser: Need `browserWSEndpoint` or `browserURL` option.
+2024-06-29 22:07:23,443 - ERROR - Error starting browser: Need `browserWSEndpoint` or `browserURL` option.
+2024-06-29 22:11:19,628 - ERROR - Error starting browser: Need `browserWSEndpoint` or `browserURL` option.
+2024-06-29 22:11:33,718 - ERROR - Error starting browser: Need `browserWSEndpoint` or `browserURL` option.
+2024-06-29 22:13:48,139 - ERROR - Error starting browser: Need `browserWSEndpoint` or `browserURL` option.
+2024-06-29 22:20:08,665 - ERROR - Error starting browser: Need `browserWSEndpoint` or `browserURL` option.
+2024-06-29 22:26:14,840 - ERROR - Error starting browser: Protocol error (Target.getBrowserContexts): Not allowed
+2024-06-29 22:32:57,305 - ERROR - Error starting browser: Protocol error (Target.getBrowserContexts): Not allowed
+2024-06-29 22:37:01,914 - ERROR - Error connecting to the headless Chrome browser: Protocol error (Target.getBrowserContexts): Not allowed
+2024-06-29 22:37:01,915 - ERROR - Error starting browser: 'NoneType' object has no attribute 'pages'
+2024-06-29 22:38:24,772 - ERROR - Error connecting to the headless Chrome browser: Protocol error (Target.getBrowserContexts): Not allowed
+2024-06-29 22:38:24,773 - ERROR - Error starting browser: 'NoneType' object has no attribute 'pages'
+2024-06-29 22:41:14,066 - ERROR - Error connecting to the headless Chrome browser: Protocol error (Target.getBrowserContexts): Not allowed
+2024-06-29 22:41:14,066 - ERROR - Error starting browser: 'NoneType' object has no attribute 'pages'
+2024-06-29 23:09:57,294 - ERROR - Error starting browser: BrowserManager.start_chrome_with_profile() got an unexpected keyword argument 'headless'
+2024-06-29 23:11:07,885 - ERROR - Error starting browser: BrowserManager.load_browser_data() missing 2 required positional arguments: 'user_id' and 'site_name'
+2024-06-29 23:14:59,500 - ERROR - Error starting browser: Session.close_browser() takes 1 positional argument but 2 were given
+2024-06-29 23:15:59,605 - ERROR - Browser is not initialized for user temp_user_id.
+2024-06-29 23:19:40,794 - ERROR - Browser is not initialized for user temp_user_id.
+2024-06-29 23:19:45,821 - ERROR - Error starting browser: BrowserManager.save_browser_data() missing 2 required positional arguments: 'user_id' and 'site_name'
+2024-06-29 23:22:08,924 - ERROR - Browser is not initialized for user temp_user_id.
+2024-06-29 23:22:13,955 - ERROR - Error starting browser: BrowserManager.save_browser_data() missing 2 required positional arguments: 'user_id' and 'site_name'
+2024-06-29 23:24:23,465 - ERROR - Browser is not initialized for user temp_user_id.
+2024-06-29 23:24:28,501 - ERROR - Failed to obtain login session data.
+2024-06-29 23:28:56,022 - ERROR - Browser is not initialized for user temp_user_id.
+2024-06-29 23:29:19,171 - ERROR - Failed to obtain login session data.

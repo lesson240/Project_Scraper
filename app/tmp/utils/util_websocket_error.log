@@ -1,0 +1,38 @@
+2024-06-29 14:48:28,942 - ERROR - Failed to connect to the browser using WebSocket URL ws://localhost:51361: 
+2024-06-29 14:55:00,317 - ERROR - Failed to connect to the browser using WebSocket URL ws://localhost:51426: 
+2024-06-29 15:48:06,083 - ERROR - Failed to connect to the browser using WebSocket URL ws://localhost:51598: 
+2024-06-29 15:58:56,864 - ERROR - Connection attempt to WebSocket URL ws://localhost:51665 timed out.
+2024-06-29 16:15:07,911 - ERROR - Connection attempt to WebSocket URL ws://localhost:52060 timed out.
+2024-06-29 16:18:49,442 - ERROR - Connection attempt to WebSocket URL ws://localhost:52190 timed out.
+2024-06-29 16:21:49,192 - ERROR - Connection attempt to WebSocket URL ws://localhost:52298 timed out.
+2024-06-29 18:21:16,507 - ERROR - Error reading cookies from profile: no such table: cookies
+2024-06-29 18:57:15,695 - ERROR - Error reading cookies from profile: no such table: cookies
+2024-06-29 18:57:15,696 - ERROR - Local Storage path not found at C:\Users\user\AppData\Local\Google\Chrome\User Data\Local Storage\leveldb
+2024-06-29 18:58:26,898 - ERROR - Error reading cookies from profile: no such table: cookies
+2024-06-29 18:58:26,899 - ERROR - Local Storage path not found at C:\Users\user\AppData\Local\Google\Chrome\User Data\Local Storage\leveldb
+2024-06-29 19:17:20,286 - ERROR - Error reading cookies from profile: unable to open database file
+2024-06-29 19:21:08,289 - ERROR - Error reading cookies from profile: unable to open database file
+2024-06-29 19:26:16,635 - ERROR - SQLite error: unable to open database file
+2024-06-29 19:30:46,356 - ERROR - SQLite error: unable to open database file
+2024-06-29 19:31:24,346 - ERROR - SQLite error: unable to open database file
+2024-06-29 19:35:30,825 - ERROR - SQLite error: unable to open database file
+2024-06-29 19:37:59,563 - ERROR - Error reading cookies from profile: [Errno 13] Permission denied: 'C:\\Users\\user\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Network\\Cookies'
+2024-06-29 19:41:02,134 - ERROR - Cookies database file not found at C:\Users\user\AppData\Local\Google\Chrome\User Data\Default\Network\Network\Cookies
+2024-06-29 19:50:47,172 - ERROR - Error reading cookies from profile: [WinError 32] 다른 프로세스가 파일을 사용 중이기 때문에 프로세스가 액세스 할 수 없습니다
+2024-06-29 21:13:51,916 - ERROR - Error starting Chrome in debug mode: sequence item 0: expected str instance, list found
+2024-06-29 21:25:01,252 - ERROR - No session data found for user temp_user_id and site coupang.
+2024-06-29 21:36:13,543 - ERROR - No session data found for user temp_user_id and site coupang.
+2024-06-29 21:37:31,922 - ERROR - No session data found for user temp_user_id and site coupang.
+2024-06-29 21:46:41,017 - ERROR - Error starting Chrome in debug mode: 'cp949' codec can't decode byte 0x81 in position 75: illegal multibyte sequence
+2024-06-29 21:48:04,806 - ERROR - Error starting Chrome in debug mode: 'str' object has no attribute 'decode'
+2024-06-29 22:11:31,698 - ERROR - WebSocket URL not found in the process output.
+2024-06-29 22:13:46,125 - ERROR - WebSocket URL not found in the process output.
+2024-06-29 22:20:06,648 - ERROR - Error starting Chrome in debug mode: Command '['C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe', '--user-data-dir=C:\\Users\\user\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Network', '--remote-debugging-port=9222', '--load-extension=C:\\Users\\user\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Extensions\\ieelmcmcagommplceebfedjlakkhpden\\3.0.0_0', '--disable-web-security', '--disable-features=IsolateOrigins,site-per-process', '--disable-site-isolation-trials', '--disable-gpu', '--no-sandbox', '--disable-setuid-sandbox', 'https://wing.coupang.com/']' timed out after 5 seconds
+2024-06-29 23:14:59,498 - ERROR - No session data found for user temp_user_id and site coupang.
+2024-06-29 23:15:59,604 - ERROR - No session data found for user temp_user_id and site coupang.
+2024-06-29 23:19:40,793 - ERROR - No session data found for user temp_user_id and site coupang.
+2024-06-29 23:22:08,923 - ERROR - No session data found for user temp_user_id and site coupang.
+2024-06-29 23:24:23,464 - ERROR - No session data found for user temp_user_id and site coupang.
+2024-06-29 23:24:28,500 - ERROR - Error saving browser data: Protocol error (Target.getBrowserContexts): Not allowed
+2024-06-29 23:28:56,021 - ERROR - No session data found for user temp_user_id and site coupang.
+2024-06-29 23:29:19,170 - ERROR - Login not completed within the timeout period after retries.
