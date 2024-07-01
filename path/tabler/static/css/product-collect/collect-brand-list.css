@@ -1,4 +1,118 @@
 /* app/static/css/product-collect/autocomplete-brand.css */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f7fa;
+    margin: 0;
+    padding: 0;
+}
+
+nav ul {
+    list-style-type: none;
+    padding: 10px 20px;
+    background-color: #ffffff;
+    display: flex;
+    /* border-bottom: 1px solid #ccc; */
+    margin: 0;
+}
+
+nav ul li {
+    margin-right: 20px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: #333;
+    padding: 10px 20px;
+    display: block;
+    border-radius: 5px;
+}
+
+nav ul li a.active,
+nav ul li a:hover {
+    background-color: #ddd;
+}
+
+.tab-container {
+    margin: 20px;
+}
+
+.tab {
+    overflow: hidden;
+    border-bottom: 1px solid #ccc;
+    background-color: #fff;
+    display: flex;
+}
+
+.tab button {
+    background-color: inherit;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+    font-size: 16px;
+}
+
+.tab button.active,
+.tab button:hover {
+    background-color: #ddd;
+}
+
+.tabcontent {
+    display: none;
+    padding: 20px;
+    /* border: 1px solid #ccc; */
+    border-top: none;
+    background-color: #fff;
+}
+
+.form-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+    flex: 1;
+    min-width: 200px;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    margin-bottom: 5px;
+    color: #333
+}
+
+.form-group input,
+.form-group select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.form-actions button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
 
 #brand-dropdown {
     display: none;
@@ -24,19 +138,23 @@
 }
 
 /* Additional styles for better alignment */
-#brand-search {
+/* #brand-search {
     width: calc(250px);
     height: 35px;
     margin-right: 20px;
-}
+} */
 
 #collect-btn,
+#reset-btn,
+#special-today-btn,
 #search-btn {
     width: 70px;
 }
 
 /* "수집" 버튼 스타일링 */
 #collect-btn,
+#reset-btn,
+#special-today-btn,
 #search-btn {
     background-color: #4CAF50;
     border: none;
@@ -53,6 +171,8 @@
 }
 
 #collect-btn:hover,
+#reset-btn:hover,
+#special-today-btn,
 #search-btn:hover {
     background-color: #45a049;
 }

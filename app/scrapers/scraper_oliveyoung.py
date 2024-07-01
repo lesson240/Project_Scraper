@@ -697,15 +697,16 @@ async def scrape_goods(goods_codes):
 #     print(products)
 
 # class BrandGoodsDetail 출력 test
-if __name__ == "__main__":
-    INPUT_CODES = ["A000000174400"]
-    loop = asyncio.get_event_loop()
-    products = loop.run_until_complete(scrape_goods(INPUT_CODES))
-    print(json.dumps(products, indent=2, ensure_ascii=False))
-
-# class WinnerPriceInquiry 출력 test
 # if __name__ == "__main__":
-#     SITE_KEY = "oliveyoung"
-#     scrap_func = SpecialToday(SITE_KEY)
-#     products = asyncio.run(scrap_func.run())
-#     print(products)
+#     INPUT_CODES = ["A000000174400"]
+#     loop = asyncio.get_event_loop()
+#     products = loop.run_until_complete(scrape_goods(INPUT_CODES))
+#     print(json.dumps(products, indent=2, ensure_ascii=False))
+
+# class SpecialToday 출력 test
+if __name__ == "__main__":
+    SITE_KEY = "oliveyoung"
+    scrap_func = SpecialToday(SITE_KEY)
+    products = asyncio.run(scrap_func.run())
+    print(products)
+

@@ -2,3 +2,31 @@
 2024-06-26 23:48:31,700 - INFO - class of BrandShop:Total pages: 1
 2024-06-26 23:48:31,751 - INFO - class of BrandShop:Fetched 4 products from URL: https://www.oliveyoung.co.kr/store/display/getBrandShopDetailGoodsPagingAjax.do?onlBrndCd=A010792&rowsPerPage=48&pageIdx=1
 2024-06-26 23:48:31,752 - INFO - class of BrandShop:Total products fetched: 4
+2024-07-01 16:10:01,132 - INFO - class of BrandShop:Total pages: 1
+2024-07-01 16:10:01,207 - INFO - class of BrandShop:Fetched 31 products from URL: https://www.oliveyoung.co.kr/store/display/getBrandShopDetailGoodsPagingAjax.do?onlBrndCd=A004651&rowsPerPage=48&pageIdx=1
+2024-07-01 16:10:01,208 - INFO - class of BrandShop:Total products fetched: 31
+2024-07-01 16:38:45,322 - INFO - class of BrandShop:Total pages: 1
+2024-07-01 16:38:45,386 - INFO - class of BrandShop:Fetched 14 products from URL: https://www.oliveyoung.co.kr/store/display/getBrandShopDetailGoodsPagingAjax.do?onlBrndCd=A002517&rowsPerPage=48&pageIdx=1
+2024-07-01 16:38:45,387 - INFO - class of BrandShop:Total products fetched: 14
+2024-07-01 19:54:19,646 - INFO - class of BrandShop:Total pages: 2
+2024-07-01 19:54:19,725 - INFO - class of BrandShop:Fetched 48 products from URL: https://www.oliveyoung.co.kr/store/display/getBrandShopDetailGoodsPagingAjax.do?onlBrndCd=A000552&rowsPerPage=48&pageIdx=1
+2024-07-01 19:54:19,726 - INFO - class of BrandShop:Total products fetched: 48
+2024-07-01 19:54:19,796 - INFO - class of BrandShop:Fetched 6 products from URL: https://www.oliveyoung.co.kr/store/display/getBrandShopDetailGoodsPagingAjax.do?onlBrndCd=A000552&rowsPerPage=48&pageIdx=2
+2024-07-01 19:54:19,796 - INFO - class of BrandShop:Total products fetched: 54
+2024-07-01 20:47:42,158 - INFO - class of BrandShop:Total pages: 1
+2024-07-01 20:47:42,223 - INFO - class of BrandShop:Fetched 21 products from URL: https://www.oliveyoung.co.kr/store/display/getBrandShopDetailGoodsPagingAjax.do?onlBrndCd=A003455&rowsPerPage=48&pageIdx=1
+2024-07-01 20:47:42,224 - INFO - class of BrandShop:Total products fetched: 21
+2024-07-01 21:39:34,376 - INFO - class of BrandShop:Total pages: 1
+2024-07-01 21:39:34,547 - INFO - class of BrandShop:Fetched 10 products from URL: https://www.oliveyoung.co.kr/store/display/getBrandShopDetailGoodsPagingAjax.do?onlBrndCd=A007391&rowsPerPage=48&pageIdx=1
+2024-07-01 21:39:34,548 - INFO - class of BrandShop:Total products fetched: 10
+2024-07-01 21:56:48,267 - INFO - class of BrandShop:Total pages: 1
+2024-07-01 21:56:48,324 - INFO - class of BrandShop:Fetched 19 products from URL: https://www.oliveyoung.co.kr/store/display/getBrandShopDetailGoodsPagingAjax.do?onlBrndCd=A003493&rowsPerPage=48&pageIdx=1
+2024-07-01 21:56:48,326 - INFO - class of BrandShop:Total products fetched: 19
+2024-07-01 22:29:53,093 - INFO - class of BrandShop:Total pages: 2
+2024-07-01 22:29:53,191 - INFO - class of BrandShop:Fetched 48 products from URL: https://www.oliveyoung.co.kr/store/display/getBrandShopDetailGoodsPagingAjax.do?onlBrndCd=A003055&rowsPerPage=48&pageIdx=1
+2024-07-01 22:29:53,192 - INFO - class of BrandShop:Total products fetched: 48
+2024-07-01 22:29:53,301 - INFO - class of BrandShop:Fetched 19 products from URL: https://www.oliveyoung.co.kr/store/display/getBrandShopDetailGoodsPagingAjax.do?onlBrndCd=A003055&rowsPerPage=48&pageIdx=2
+2024-07-01 22:29:53,301 - INFO - class of BrandShop:Total products fetched: 67
+2024-07-01 23:00:12,406 - INFO - class of BrandShop:Total pages: 1
+2024-07-01 23:00:12,460 - INFO - class of BrandShop:Fetched 11 products from URL: https://www.oliveyoung.co.kr/store/display/getBrandShopDetailGoodsPagingAjax.do?onlBrndCd=A002848&rowsPerPage=48&pageIdx=1
+2024-07-01 23:00:12,460 - INFO - class of BrandShop:Total products fetched: 11

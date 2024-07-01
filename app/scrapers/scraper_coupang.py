@@ -134,11 +134,18 @@ class WinnerPriceInquiry:
                 logger.error("Failed to scrap the goodstotalprice")
 
             # 배송 정보 추출하는 함수
-            goodsdelivery_element = area_info.select_one(
+            goodsdelivery_element_01 = area_info.select_one(
                 "div[class=prod-shipping-fee]"
-            ).text.split()
-            if len(goodsdelivery_element) > 0:
-                goodsdelivery = goodsdelivery_element[0]
+            )
+            goodsdelivery_element_02 = area_info.select_one(
+                "div[class=delivery-fee-info]"
+            )
+            if goodsdelivery_element_01 is not None:
+                goodsdelivery_element_01 = goodsdelivery_element_01.text.split()
+                goodsdelivery = goodsdelivery_element_01[0]
+            elif goodsdelivery_element_02 is not None:
+                goodsdelivery_element_02 = goodsdelivery_element_02.text.split()
+                goodsdelivery = goodsdelivery_element_02[1]
             else:
                 goodsdelivery = "none"
                 logger.error("Failed to scrap the goodsdelivery")
@@ -173,7 +180,7 @@ class WinnerPriceInquiry:
 
 # class WinnerPriceInquiry 출력 test
 if __name__ == "__main__":
-    INPUNT_CODE = "8168223189"
+    INPUNT_CODE = "7680060245"
     SITE_KEY = "coupang"
     scrap_func = WinnerPriceInquiry(INPUNT_CODE, SITE_KEY)
     products = asyncio.run(scrap_func.run())

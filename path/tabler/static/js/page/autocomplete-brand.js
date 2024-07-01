@@ -9,6 +9,7 @@ if (typeof window.apiVersion === 'undefined') {
 document.addEventListener("DOMContentLoaded", function () {
     var brandSearch = document.getElementById("brand-search");
     var dropdown = document.getElementById("brand-dropdown");
+    var specialTodayBtn = document.getElementById("special-today-btn");
     var searchBtn = document.getElementById("search-btn");
     var collectBtn = document.getElementById("collect-btn");
     var selectedBrandCode = document.createElement("input");
@@ -160,6 +161,59 @@ document.addEventListener("DOMContentLoaded", function () {
                 tableBody.innerHTML = "";
             });
     });
+
+    // 오늘의 특가 검색 버튼 클릭 시 상품 수집
+    specialTodayBtn.addEventListener("click", function () {
+
+        // 이전에 저장된 상품 리스트 초기화
+        saved_goods_list = [];
+
+        var tableBody = document.querySelector("#product-table tbody");
+        if (!tableBody) {
+            tableBody = document.createElement("tbody");
+            document.querySelector("#product-table").appendChild(tableBody);
+        }
+        tableBody.innerHTML = `<tr><td colspan="7" style="text-align:center;"><img src="/static/images/loading.gif" id="loading-spinner"></td></tr>`;
+
+        fetch(`/${window.apiVersion}/collect/specialtoday`)
+            .then(response => response.json())
+            .then(response => {
+                saved_goods_list = response.saved_goods_list;
+                updateGoodsCodes(saved_goods_list); // 상품 코드 업데이트
+
+                if (!saved_goods_list || saved_goods_list.length === 0) {
+                    alert("수집된 상품이 없습니다.");
+                    tableBody.innerHTML = "";
+                    return;
+                }
+
+                tableBody.innerHTML = ""; // 테이블 내용 초기화
+
+                saved_goods_list.forEach(function (item) {
+                    var row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${item.idx}</td>
+                        <td>${item.origin_goods_name}</td>
+                        <td>${item.origin_goods_code}</td>
+                        <td>${item.total_price}</td>
+                        <td>${item.sold_out}</td>
+                        <td>${item.sale}</td>
+                        <td>${item.coupon}</td>
+                        <td>${item.collection_time}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+
+                // 상품 수집 버튼 활성화
+                collectBtn.disabled = false;
+            })
+            .catch(error => {
+                console.error(error);
+                alert("상품 수집 중 오류가 발생했습니다.");
+                tableBody.innerHTML = "";
+            });
+    });
+
 
     // origin_goods_code를 업데이트하는 함수
     function updateGoodsCodes(savedGoodsList) {

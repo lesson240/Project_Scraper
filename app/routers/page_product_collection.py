@@ -13,7 +13,12 @@ from app.models.model_oliveyoung import (
     OriginGoodsDetailModel,
 )
 from app.models.model_records import CollectionRecordsModel
-from app.scrapers.scraper_oliveyoung import BrandList, BrandShop, BrandGoodsDetail
+from app.scrapers.scraper_oliveyoung import (
+    BrandList,
+    BrandShop,
+    BrandGoodsDetail,
+    SpecialToday,
+)
 from app.services.service_mongodb import mongodb_service
 from app.utils.util_router import set_version
 
@@ -500,4 +505,141 @@ async def process_collect_data(record_id: str):
         raise HTTPException(
             status_code=500,
             detail="An error occurred while fetching saved goods.",
+        )
+
+
+@router.post("/collect/specialtoday", response_class=JSONResponse)
+async def special_today(background_tasks: BackgroundTasks):
+    try:
+        SITE_KEY = "oliveyoung"
+        special_today = SpecialToday(SITE_KEY)
+        goods = await special_today.run()
+
+        if not goods:
+            logger.error("special_today, No goods found for /collect/specialtoday")
+
+        # DB에 이미 있는 데이터인지 확인
+        try:
+            existing_codes = {
+                item.origin_goods_code
+                for item in await mongodb_service.engine.find(BrandShopModel)
+            }
+        except Exception as e:
+            logger.error(
+                f"special_today, An error occurred while finding existing codes_/collect/specialtoday: {e}"
+            )
+            raise HTTPException(
+                status_code=500,
+                detail="An error occurred while finding existing codes.",
+            )
+
+        # 새로운 데이터만 저장할 모델 리스트
+        new_oliveyoung_models = []
+        for good in goods:
+            if isinstance(good, dict):
+                # value 값이 None 일 경우 기본 값으로 처리
+                price = (
+                    0 if good.get("total_price") is None else good.get("total_price")
+                )
+                sold_out = (
+                    "판매" if good.get("sold_out") is None else good.get("sold_out")
+                )
+                sale = "없음" if good.get("sale") is None else good.get("sale")
+                coupon = "없음" if good.get("coupon") is None else good.get("coupon")
+
+                if good["origin_goods_code"] not in existing_codes:
+                    try:
+                        oliveyoung_model = BrandShopModel(
+                            idx=good["idx"],
+                            market="올리브영",
+                            brand=good["brand"],
+                            brand_code=good["brand_code"],
+                            origin_goods_code=good["origin_goods_code"],
+                            origin_goods_name=good["origin_goods_name"],
+                            total_price=price,
+                            sold_out=sold_out,
+                            collection_time=good["collection_time"],
+                            sale=sale,
+                            coupon=coupon,
+                        )
+                        new_oliveyoung_models.append(oliveyoung_model)
+                    except Exception as e:
+                        logger.error(
+                            f"special_today, An error occurred while creating model: {e}"
+                        )
+                        raise HTTPException(
+                            status_code=500,
+                            detail="An error occurred while creating model instance.",
+                        )
+
+        # MongoDB collection 가져오기
+        collection = mongodb_service.engine.get_collection(BrandShopModel)
+
+        # bulk update operations 생성
+        bulk_operations = []
+        for model in new_oliveyoung_models:
+            model_dict = model.dict(exclude={"id"})
+            bulk_operations.append(
+                UpdateOne(
+                    {"origin_goods_code": model.origin_goods_code},
+                    {"$set": model_dict},
+                    upsert=True,
+                )
+            )
+
+        # bulk update 실행
+        if bulk_operations:
+            try:
+                result = await collection.bulk_write(bulk_operations)
+                logger.info(
+                    f"special_today, Bulk write result: {result.bulk_api_result}"
+                )
+            except Exception as e:
+                logger.error(
+                    f"special_today, An error occurred while saving new models: {e}"
+                )
+                raise HTTPException(
+                    status_code=500,
+                    detail="special_today, An error occurred while saving new models.",
+                )
+
+        # MongoDB에서 데이터 가져오기
+        try:
+            saved_goods = await mongodb_service.engine.find(
+                BrandShopModel,
+                {
+                    "origin_goods_code": {
+                        "$in": [
+                            model.origin_goods_code for model in new_oliveyoung_models
+                        ]
+                    }
+                },
+            )
+            saved_goods_list = []
+            for item in saved_goods:
+                item_dict = item.dict()
+                # '_id' 및 'id' 필드 제거
+                item_dict.pop("_id", None)
+                item_dict.pop("id", None)
+                saved_goods_list.append(item_dict)
+            logger.info(f"{saved_goods_list}")
+
+            # JSON 응답 생성
+            return JSONResponse(content={"saved_goods_list": saved_goods_list})
+
+        except Exception as e:
+            logger.error(
+                f"special_today, An error occurred while fetching saved goods: {e}"
+            )
+            raise HTTPException(
+                status_code=500,
+                detail="An error occurred while fetching saved goods.",
+            )
+
+    except Exception as e:
+        logger.error(
+            f"special_today, An error occurred while collecting: {e}"
+        )
+        raise HTTPException(
+            status_code=500, detail="An error occurred while collecting special_today."
         )

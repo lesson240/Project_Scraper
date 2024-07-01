@@ -1,4 +1,4 @@
-from odmantic import Model
+from odmantic import Model, Field
 from typing import Dict, Optional
 from pydantic import BaseModel
 
@@ -30,28 +30,28 @@ class BrandShopModel(Model):
 
 
 class OriginGoodsDetailModel(Model):  # naming에 따른 연동된 코드 수정필요
-    market: Optional[str]
-    brand: Optional[str]
-    brand_code: Optional[str]
+    market: Optional[str] = Field(None)
+    brand: Optional[str] = Field(None)
+    brand_code: Optional[str] = Field(None)
     # goods_url: str
-    origin_goods_code: Optional[str]
-    origin_goods_name: Optional[str]
-    total_price: Optional[int]
-    goods_origin: Optional[int]
-    sale_start: Optional[str]
-    sale_end: Optional[str]
-    sale_price: Optional[int]
-    coupon_start: Optional[str]
-    coupon_end: Optional[str]
-    coupon_price: Optional[int]
+    origin_goods_code: Optional[str] = Field(None)
+    origin_goods_name: Optional[str] = Field(None)
+    total_price: Optional[int] = Field(None)
+    goods_origin: Optional[int] = Field(None)
+    sale_start: Optional[str] = Field(None)
+    sale_end: Optional[str] = Field(None)
+    sale_price: Optional[int] = Field(None)
+    coupon_start: Optional[str] = Field(None)
+    coupon_end: Optional[str] = Field(None)
+    coupon_price: Optional[int] = Field(None)
     # goods_promotion: Dict[str, str]
-    delivery: Dict[str, str]
-    sold_out: Optional[str]
-    option: Dict[str, str]
-    thumb: Dict[str, str]
-    collection_time: Optional[str]
-    sale: Optional[str]
-    coupon: Optional[str]
+    delivery: Dict[str, str] = Field(None)
+    sold_out: Optional[str] = Field(None)
+    option: Dict[str, str] = Field(None)
+    thumb: Dict[str, str] = Field(None)
+    collection_time: Optional[str] = Field(None)
+    sale: Optional[str] = Field(None)
+    coupon: Optional[str] = Field(None)
 
     model_config = {"collection": "OriginGoodsDetail"}
 

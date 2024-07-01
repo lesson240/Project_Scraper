@@ -121,10 +121,25 @@ async def save_goods_table(request: Request, data: List[InputGoodsTableRequestMo
                     InputGoodsManagementTableModel, query
                 )
                 if existing_document:
+                    update_data["id"] = existing_document.id  # 기존 문서의 ID를 유지
                     update_data["winner_delivery"] = existing_document.winner_delivery
                     update_data["winner_deliveryday"] = (
                         existing_document.winner_deliveryday
                     )
+
+                else:
+                    # OriginGoodsDetailModel에서 데이터 가져오기
+                    origin_goods_detail = await mongodb_service.engine.find_one(
+                        OriginGoodsDetailModel, query
+                    )
+                    if origin_goods_detail:
+                        origin_goods_data = origin_goods_detail.dict(
+                            exclude={"id", "_id"}
+                        )
+                        update_data = {
+                            **origin_goods_data,
+                            **update_data,
+                        }  # OriginGoodsDetailModel 데이터와 병합
             except Exception as e:
                 print(
                     f"Error finding document for origin_goods_code {item.origin_goods_code}: {str(e)}"
@@ -135,9 +150,7 @@ async def save_goods_table(request: Request, data: List[InputGoodsTableRequestMo
                 result = await mongodb_service.engine.get_collection(
                     InputGoodsManagementTableModel
                 ).update_one(query, {"$set": update_data}, upsert=True)
-                logger.info(
-                    f"Upsert result for {item.origin_goods_code}: {result.raw_result}"
-                )  # 결과 로그 추가
+                logger.info(f"Upsert result for {item.origin_goods_code}: {result}")
 
             except Exception as e:
                 logger.error(
@@ -157,49 +170,71 @@ async def save_goods_table(request: Request, data: List[InputGoodsTableRequestMo
 @router.post("/sync-winner-price", response_class=JSONResponse)
 async def synch_winner_price(request: Request, data: List[MatchingOptionIdModel]):
     try:
-        brand_codes = [item.brand_code for item in data]
-        origin_goods_codes = [item.origin_goods_code for item in data]
-        matching_option_ids = [item.matching_option_id for item in data]
-        # WinnerPriceInquiry 호출
         winner_prices = {}
-        for matching_option_id, origin_goods_code, brand_code in zip(
-            matching_option_ids,
-            origin_goods_codes,
-            brand_codes,
-        ):
-            scrap_func = WinnerPriceInquiry(matching_option_id, "coupang")
+
+        # WinnerPriceInquiry 호출
+        for item in data:
+            scrap_func = WinnerPriceInquiry(item.matching_option_id, "coupang")
             result = await scrap_func.run()
             if result:
-                result["brand_code"] = brand_code
-                winner_prices[origin_goods_code] = result
+                result["brand_code"] = item.brand_code
+                winner_prices[item.origin_goods_code] = result
             else:
                 logger.warning(
-                    f"No data found for origin_goods_code: {origin_goods_code}"
+                    f"No data found for origin_goods_code: {item.origin_goods_code}"
                 )
-        # MongoDB 업데이트
-        for code, price_info in winner_prices.items():
-            price_info.pop("id", None)
-            price_info.pop("_id", None)
+
+        for origin_goods_code, price_info in winner_prices.items():
+            query = {"origin_goods_code": origin_goods_code}
             update_data = {
                 "winner_price": price_info.get("total_price"),
                 "winner_delivery": price_info.get("delivery"),
                 "winner_deliveryday": price_info.get("deliveryday"),
                 "brand_code": price_info.get("brand_code"),
             }
+            # update_data = {k: v for k, v in update_data.items() if v is not None}
+
             try:
-                await mongodb_service.engine.get_collection(
-                    InputGoodsManagementTableModel
-                ).update_one(
-                    {"origin_goods_code": code}, {"$set": update_data}, upsert=True
+                existing_document = await mongodb_service.engine.find_one(
+                    InputGoodsManagementTableModel, query
                 )
+                if existing_document:
+                    # 기존 문서에서 특정 필드 유지 및 ID 유지
+                    update_data["id"] = existing_document.id  # 기존 문서의 ID를 유지
+                    existing_data = existing_document.dict(exclude={"id", "_id"})
+                    update_data = {**existing_data, **update_data}
+                else:
+                    # OriginGoodsDetailModel에서 데이터 가져오기
+                    origin_goods_detail = await mongodb_service.engine.find_one(
+                        OriginGoodsDetailModel, query
+                    )
+                    if origin_goods_detail:
+                        origin_goods_data = origin_goods_detail.dict(
+                            exclude={"id", "_id"}
+                        )
+                        update_data = {
+                            **origin_goods_data,
+                            **update_data,
+                        }  # OriginGoodsDetailModel 데이터와 병합
+
+                result = await mongodb_service.engine.get_collection(
+                    InputGoodsManagementTableModel
+                ).update_one(query, {"$set": update_data}, upsert=True)
+                logger.info(f"Upsert result for {origin_goods_code}")
             except Exception as e:
                 logger.error(
-                    f"Error updating MongoDB for origin_goods_code {code}: {str(e)}"
+                    f"Error updating MongoDB for origin_goods_code {origin_goods_code}: {str(e)}"
                 )
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"Error updating MongoDB for origin_goods_code {origin_goods_code}: {str(e)}",
+                )
+
         return JSONResponse(
             content={"message": "Winner price synchronized", "data": winner_prices}
         )
     except Exception as e:
+        logger.error(f"Failed to fetch data: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to fetch data: {str(e)}")
 
 

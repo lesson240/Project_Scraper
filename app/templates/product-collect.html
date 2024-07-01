@@ -3,73 +3,137 @@
 {% extends "base.html" %}
 
 {% block content %}
-<!-- 페이지 내용 -->
-<h1>상품 수집 페이지</h1>
-<p>여기에 상품 수집과 관련된 내용을 추가하세요.</p>
 
-<!-- 자동완성 기능을 위한 입력 필드 -->
-<input type="text" id="brand-search" placeholder="브랜드 검색" autocomplete="off">
+<body>
+    <!-- HTML 파일에서 자동완성 기능을 위한 스크립트 파일 연결 -->
+    <link rel="stylesheet" href="/static/css/product-collect/collect-brand-list.css">
+    <script src="/static/js/page/autocomplete-brand.js"></script>
+    <!-- 페이지 내용 -->
+    <nav>
+        <ul>
+            <li><a href="#" class="active" data-site="oliveyoung">올리브영</a></li>
+            <li><a href="#" data-site="musinsa">무신사</a></li>
+        </ul>
+    </nav>
 
-<!-- 드롭다운 메뉴 -->
-<select id="brand-dropdown" size="5" class="dropdown-content"></select>
-<button id="search-btn">검색</button>
-<button id="collect-btn">수집</button>
+    <div class="tab-container">
+        <div class="tab">
+            <button class="tablinks active" onclick="openTab(event, 'Brand')">브랜드</button>
+            <button class="tablinks" onclick="openTab(event, 'Single')">단일수집</button>
+            <button class="tablinks" onclick="openTab(event, 'Multi')">대량수집</button>
+        </div>
 
-<!-- HTML 파일에서 자동완성 기능을 위한 스크립트 파일 연결 -->
-<link rel="stylesheet" href="/static/css/product-collect/collect-brand-list.css">
-<script src="/static/js/page/autocomplete-brand.js"></script>
+        <div id="Brand" class="tabcontent" style="display: block;">
+            <div class="form-container">
+                <div class="form-group">
+                    <label for="product-group">상품 그룹명</label>
+                    <input type="text" id="product-group" placeholder="상품 그룹명을 입력해주세요">
+                </div>
+                <div class="form-group">
+                    <label for="brand-search">브랜드명</label>
+                    <input type="text" id="brand-search" placeholder="브랜드명을 입력해주세요">
+                    <!-- 드롭다운 메뉴 -->
+                    <select id="brand-dropdown" size="5" class="dropdown-content"></select>
+                </div>
+                <div class="form-group">
+                    <label for="memo">메모</label>
+                    <input type="text" id="memo" placeholder="메모를 입력해주세요">
+                </div>
+                <div class="form-group">
+                    <label for="representative-option">대표 옵션 선택</label>
+                    <select id="representative-option">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="2">3</option>
+                        <option value="2">4</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="duplicate-handling">중복상품 처리</label>
+                    <select id="duplicate-handling">
+                        <option value="skip">건너뛰기</option>
+                        <option value="overwrite">업데이트</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button id="reset-btn">초기화</button>
+                    <button id="special-today-btn">오특</button>
+                    <button id="search-btn">검색</button>
+                    <button id="collect-btn">수집</button>
+                </div>
+            </div>
+        </div>
 
-<!-- Tabler의 테이블 코드 -->
-<div class="table-responsive">
-    <table class="table table-hover table-vcenter" id="product-table">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>상품명</th>
-                <th>상품코드</th>
-                <th>상품가격</th>
-                <th>품절</th>
-                <th>세일</th>
-                <th>쿠폰</th>
-                <th>수집 시간</th>
-            </tr>
-        </thead>
-    </table>
-</div>
+        <div id="Single" class="tabcontent">
 
-{% if goods %}
-<!-- 수집된 상품 목록을 표시 -->
-<h2>수집된 상품 목록</h2>
-<div class="table-responsive">
-    <table class="table table-hover table-vcenter">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>상품명</th>
-                <th>상품코드</th>
-                <th>상품가격</th>
-                <th>품절</th>
-                <th>세일</th>
-                <th>쿠폰</th>
-                <th>수집 시간</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for good in goods %}
-            <tr>
-                <td>{{ good.idx }}</td>
-                <td>{{ good.origin_goods_name }}</td>
-                <td>{{ good.origin_goods_code }}</td>
-                <td>{{ good.total_price }}</td>
-                <td>{{ good.sold_out }}</td>
-                <td>{{ good.sale }}</td>
-                <td>{{ good.coupon }}</td>
-                <td>{{ good.collection_time }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
+            <div class="form-container">
+                <div class="form-group">
+                    <label for="single-product-url">단일상품URL</label>
+                    <input type="text" id="single-product-url" placeholder="단일상품URL을 입력해주세요">
+                </div>
+                <div class="form-actions">
+                    <button id="reset-btn">초기화</button>
+                    <button id="search-btn">검색</button>
+                    <button id="collect-btn">수집</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Tabler의 테이블 코드 -->
+    <div class="table-responsive">
+        <table class="table table-hover table-vcenter" id="product-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>상품명</th>
+                    <th>상품코드</th>
+                    <th>상품가격</th>
+                    <th>품절</th>
+                    <th>세일</th>
+                    <th>쿠폰</th>
+                    <th>수집 시간</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+
+    {% if goods %}
+    <!-- 수집된 상품 목록을 표시 -->
+    <h2>수집된 상품 목록</h2>
+    <div class="table-responsive">
+        <table class="table table-hover table-vcenter">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>상품명</th>
+                    <th>상품코드</th>
+                    <th>상품가격</th>
+                    <th>품절</th>
+                    <th>세일</th>
+                    <th>쿠폰</th>
+                    <th>수집 시간</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for good in goods %}
+                <tr>
+                    <td>{{ good.idx }}</td>
+                    <td>{{ good.origin_goods_name }}</td>
+                    <td>{{ good.origin_goods_code }}</td>
+                    <td>{{ good.total_price }}</td>
+                    <td>{{ good.sold_out }}</td>
+                    <td>{{ good.sale }}</td>
+                    <td>{{ good.coupon }}</td>
+                    <td>{{ good.collection_time }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+
 {% endif %}
 
 {% endblock %}
