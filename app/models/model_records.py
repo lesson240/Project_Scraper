@@ -5,8 +5,8 @@ from typing import List, Optional
 
 class CollectionRecordsModel(Model):
     goodsCodes: List[str]
-    brandCode: str
-    brandName: str
+    memo: str
+    group_name: str
     status: str
     request_count: int
     success_count: int

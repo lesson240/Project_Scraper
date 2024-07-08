@@ -24,11 +24,12 @@
 }
 
 /* Additional styles for better alignment */
-#brand-search {
+#brand-search #group-name-serch #product-name-serch #memo-search #unuploaded-market-serch #collect-job-number-serch #upload-job-number-serch #goods-codes-serch {
     width: calc(150px);
     height: 35px;
     margin-right: 20px;
 }
+
 
 
 /* 테이블 설정 */

@@ -8,7 +8,6 @@ sys.path.append(str(BASE_DIR))
 # 프로젝트 Module 불러오기
 from app.utils.util_logging import setup_logger
 from app.scrapers.scraper_settings import ScraperSettings
-from app.models.model_oliveyoung import SpecialTodayModel
 
 # 라이브러리 불러오기
 import re
@@ -20,6 +19,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
 from bs4 import BeautifulSoup
 from aiohttp import ClientTimeout, ClientSession
 import aiohttp
@@ -28,6 +28,7 @@ import nest_asyncio
 from datetime import date, datetime
 import random
 import json
+import time
 import os
 
 # 파일명 자동 추출
@@ -256,129 +257,113 @@ class SpecialToday:
     def __init__(self, site_key):
         self.site_key = site_key
         self.settings = self.get_settings()
+        self.driver = None
 
     def get_settings(self):
         settings = ScraperSettings()
         return settings
 
-    def unit_urls(self, page_idx):
-        url = [
-            f"{self.BASE_URL}/store/main/getHotdealList.do",
-            f"{self.BASE_URL}/store/main/getHotdealPagingListAjax.do?pageIdx={page_idx}",
-        ]
+    def unit_urls(self):
+        url = f"{self.BASE_URL}/store/main/getHotdealList.do"
         return url
 
-    async def fetch_with_retries(
-        self, url: str, max_retries: int = 3, delay_range: tuple = (1, 3)
-    ):
-        for attempt in range(max_retries):
-            headers = self.settings.get_headers(self.site_key)
-            try:
-                timeout = ClientTimeout(total=3)
-                async with ClientSession(timeout=timeout) as session:
-                    async with session.get(url, headers=headers) as response:
-                        if response.status == 200:
-                            self.settings.save_successful_user_agent(
-                                self.site_key, headers["User-Agent"]
-                            )
-                            html_content = await response.text()
-                            if not html_content:
-                                raise Exception("Empty content")
-                            return html_content
-                        else:
-                            logger.error(
-                                f"Failed to retrieve content: {response.status}"
-                            )
-                            self.settings.remove_user_agent(
-                                self.site_key, headers["User-Agent"]
-                            )
-            except asyncio.TimeoutError:
-                logger.error("The request timed out")
-                self.settings.remove_user_agent(self.site_key, headers["User-Agent"])
-            except Exception as e:
-                logger.error(f"An error occurred while fetching data: {e}")
-                self.settings.remove_user_agent(self.site_key, headers["User-Agent"])
+    def create_driver(self):
+        if not self.driver:
+            options = webdriver.ChromeOptions()
+            options.add_argument("headless")  # no browser
+            options.add_argument("window_size=1920x1080")  # --window-size=x,y
+            options.add_argument("lang=ko_KR")
+            options.add_argument("disable-gpu")  # gpu err 발생시 , --disable-gpu로 변경
+            options.add_argument("mute-audio")  # --mute-audio
+            options.add_experimental_option("excludeSwitches", ["enable-logging"])
+            options.add_experimental_option("detach", True)
+            self.driver = webdriver.Chrome(
+                service=ChromeService(ChromeDriverManager().install()), options=options
+            )
 
-            logger.info(f"Retrying ({attempt + 1}/{max_retries})...")
-            await asyncio.sleep(random.uniform(*delay_range))
+    def close_driver(self):
+        if self.driver:
+            self.driver.quit()
+            self.driver = None
 
-    async def fetch01(self, url: str):
-        """Fetches product information from the given URL."""
-        html_content = await self.fetch_with_retries(url)
-        if html_content:
-            soup = BeautifulSoup(html_content, "html.parser")
-            area_info = soup.select("div.prod-info")
+    def scroll_down(self):
+        """Scroll down the page to load all contents."""
+        last_height = self.driver.execute_script("return document.body.scrollHeight")
 
-            elementlist = []
-
-            for info in area_info:
-                # 상품명 정보 추출하는 함수
-                goods_name_element = info.select_one("span.prod-name.double-line").text
-                # 가격 정보 추출하는 함수 (할인가)
-                goods_total_price_element = re.sub(
-                    "(원|,|~|\n)", "", info.select_one("strong.total").text
-                )
-                # 가격 정보 추출하는 함수 (원가)
-                goods_origin_price_element = re.sub(
-                    "(원|,|\n)", "", info.select_one("span.origin").text
-                )
-                # BaseModel 인스턴스 생성
-                special_model = SpecialTodayModel(
-                    origin_goods_name=goods_name_element,
-                    total_price=int(goods_total_price_element),
-                    goods_origin=int(goods_origin_price_element),
-                )
-
-                elementlist.append(special_model.dict())
-            return elementlist
-
-    async def fetch02(self, url: str):
-        """Fetches product information from the given URL."""
-        html_content = await self.fetch_with_retries(url)
-        if html_content:
-            soup = BeautifulSoup(html_content, "html.parser")
-            area_info = soup.select("div.prod-info")
-
-            elementlist = []
-
-            for info in area_info:
-                # 상품명 정보 추출하는 함수
-                goods_name_element = info.select_one("span.prod-name.double-line").text
-                # 가격 정보 추출하는 함수 (할인가)
-                goods_total_price_element = re.sub(
-                    "(원|,|~|\n)", "", info.select_one("strong.total").text
-                )
-                # 가격 정보 추출하는 함수 (원가)
-                goods_origin_price_element = re.sub(
-                    "(원|,|\n)", "", info.select_one("span.origin").text
-                )
-                # BaseModel 인스턴스 생성
-                special_model = SpecialTodayModel(
-                    origin_goods_name=goods_name_element,
-                    total_price=int(goods_total_price_element),
-                    goods_origin=int(goods_origin_price_element),
-                )
-
-                elementlist.append(special_model.dict())
-
-                return elementlist
-
-    async def run(self):
-        """Runs the scraping process."""
-        max_pages = 3
-        all_results = []
-        for page_idx in range(1, max_pages + 1):
-            urls = self.unit_urls(page_idx)
-            tasks = [self.fetch01(urls[0]), self.fetch02(urls[1])]
-            results = await asyncio.gather(*tasks)
-
-            if not any(results):
+        while True:
+            self.driver.execute_script(
+                "window.scrollTo(0, document.body.scrollHeight);"
+            )
+            time.sleep(2)  # Wait for the page to load
+            new_height = self.driver.execute_script("return document.body.scrollHeight")
+            if new_height == last_height:
                 break
+            last_height = new_height
 
-            for result in results:
-                if result:
-                    all_results.extend(result)
-        return all_results
+    def fetch(self):
+        """Fetches product information from the given URL."""
+        url = self.unit_urls()
+        self.driver.get(url)
+        self.scroll_down()
+        html_content = self.driver.page_source
+
+        soup = BeautifulSoup(html_content, "html.parser")
+        area_info = soup.find_all("div", class_="prod")
+        # DB 적재용 'key : value' setting
+        elementlist = []
+        for idx_element, info in enumerate(area_info):
+            brand_element = info.find("button", {"data-ref-goodsbrand": True}).get(
+                "data-ref-goodsbrand", ""
+            )
+            origin_goods_code_element = info.find(
+                "button", {"data-ref-goodsno": True}
+            ).get("data-ref-goodsno", "")
+            origin_goods_name_element = info.find(
+                "span", class_="prod-name double-line"
+            ).text.strip()
+            goods_total_price_element = re.sub(
+                r"(원|,|~|\n)", "", info.find("strong", class_="total").text.strip()
+            )
+            sold_out_element = (
+                info.find("span", class_="status_flag soldout").text
+                if info.find("span", class_="status_flag soldout")
+                else "판매"
+            )
+            sale_element = (
+                info.find("span", class_="flag sale").text
+                if info.find("span", class_="flag sale")
+                else "없음"
+            )
+            coupon_element = (
+                info.find("span", class_="flag coupon").text
+                if info.find("span", class_="flag coupon")
+                else "없음"
+            )
+
+            product_info = {
+                "idx": f"{idx_element + 1}",
+                "market": "올리브영",
+                "brand": brand_element,
+                "origin_goods_code": origin_goods_code_element,
+                "origin_goods_name": origin_goods_name_element,
+                "total_price": goods_total_price_element,
+                "sold_out": sold_out_element,
+                "sale": sale_element,
+                "coupon": coupon_element,
+                "collection_time": date.today(),
+            }
+
+            elementlist.append(product_info)
+        return elementlist
+
+    def run(self):
+        """Runs the scraping process."""
+        self.create_driver()
+        try:
+            result = self.fetch()  # 동기 함수 fetch를 비동기로 호출
+        finally:
+            self.close_driver()
+        return result
 
 
 class BrandGoodsDetail:
@@ -386,12 +371,14 @@ class BrandGoodsDetail:
 
     OLIVEYOUNG_URL = "https://www.oliveyoung.co.kr"
 
-    def __init__(self, goodscode):
-        self.goodscode = goodscode
+    def __init__(self, goods_codes):
+        self.goods_codes = goods_codes
         self.driver = None
 
-    def unit_url(self):
-        url = f"{self.OLIVEYOUNG_URL}/store/goods/getGoodsDetail.do?goodsNo={self.goodscode}"
+    def unit_url(self, goods_code):
+        url = (
+            f"{self.OLIVEYOUNG_URL}/store/goods/getGoodsDetail.do?goodsNo={goods_code}"
+        )
         return url
 
     async def create_driver(self):
@@ -413,6 +400,15 @@ class BrandGoodsDetail:
             self.driver.quit()
             self.driver = None
 
+    async def retry_fetch(self, failed_codes):
+        logger.info(f"Retrying for failed codes: {failed_codes}")
+        retry_results = []
+        for goods_code in failed_codes:
+            result = await self.fetch(goods_code)
+            if result:
+                retry_results.append(result)
+        return retry_results
+
     @staticmethod
     def extract_price(price_str):
         """Extracts price from string and converts to integer."""
@@ -420,21 +416,32 @@ class BrandGoodsDetail:
         cleaned_price = price_str.replace(",", "").replace("원", "").replace("~", "")
         return int(cleaned_price)
 
-    async def fetch(self):
-        """Fetches product information from the given URL."""
-
+    async def fetch(self, goods_code):
         """scraping from a page of oliveyoung goods detail"""
         await self.create_driver()
-        self.driver.get(self.unit_url())
-
+        self.driver.get(self.unit_url(goods_code))
+        waiting_time = 10
         # DB 적재용 'key : value' setting
         elementlist = {
-            "origin_goods_code": f"{self.goodscode}",
+            "origin_goods_code": f"{goods_code}",
             "collection_time": f"{date.today()}",
         }
         try:
+            # 브랜드명/브랜드 코드 추출하는 함수
+            brandname_element = WebDriverWait(self.driver, waiting_time).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, "#onlBrndNm"))
+            )
+            brandname = brandname_element.get_attribute("value")
+            elementlist["brand_name"] = f"{brandname}"
+
+            brandcode_element = WebDriverWait(self.driver, waiting_time).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, "#onlBrndCd"))
+            )
+            brandcode = brandcode_element.get_attribute("value")
+            elementlist["brand_code"] = f"{brandcode}"
+
             # 상품명 추출하는 함수
-            goodsname_element = WebDriverWait(self.driver, 10).until(
+            goodsname_element = WebDriverWait(self.driver, waiting_time).until(
                 EC.presence_of_element_located(
                     (By.XPATH, '//*[@id="Contents"]/div[2]/div[2]/div/p[2]')
                 )
@@ -442,11 +449,11 @@ class BrandGoodsDetail:
             goodsname = goodsname_element.text.strip()
             elementlist["origin_goods_name"] = f"{goodsname}"
 
-            # # 상품 url 추출하는 함수
+            # 상품 url 추출하는 함수
             # elementlist["goods_url"] = f"{self.unit_url()}"
 
             # 가격 정보 추출하는 함수
-            WebDriverWait(self.driver, 10).until(
+            WebDriverWait(self.driver, waiting_time).until(
                 EC.presence_of_element_located((By.CLASS_NAME, "price"))
             )
             price_class = self.driver.find_elements(By.CLASS_NAME, "price")
@@ -459,7 +466,7 @@ class BrandGoodsDetail:
                 self.driver.find_element(By.ID, "btnSaleOpen").click()
 
                 # saleLayer가 나타날 때까지 대기
-                WebDriverWait(self.driver, 10).until(
+                WebDriverWait(self.driver, waiting_time).until(
                     EC.presence_of_element_located((By.ID, "saleLayer"))
                 )
 
@@ -505,6 +512,9 @@ class BrandGoodsDetail:
                             elementlist["coupon_start"] = f"{extract_value[4]}"
                             elementlist["coupon_end"] = f"{extract_value[5]}"
                             elementlist["coupon_price"] = f"{extract_value[6]}"
+                            elementlist["sale"] = "세일"
+                            elementlist["coupon"] = "쿠폰"
+
                         else:
                             logger.warning(
                                 "class of BranGoodsDetail:len_extract_value does not match"
@@ -516,6 +526,9 @@ class BrandGoodsDetail:
                             elementlist["coupon_start"] = f"{extract_value[1]}"
                             elementlist["coupon_end"] = f"{extract_value[2]}"
                             elementlist["coupon_price"] = f"{extract_value[3]}"
+                            elementlist["coupon"] = "쿠폰"
+                            elementlist["sale"] = "없음"
+
                         else:
                             logger.warning(
                                 "class of BranGoodsDetail:len_extract_value does not match"
@@ -529,13 +542,16 @@ class BrandGoodsDetail:
                         elementlist["sale_start"] = f"{extract_value[1]}"
                         elementlist["sale_end"] = f"{extract_value[2]}"
                         elementlist["sale_price"] = f"{extract_value[3]}"
+                        elementlist["coupon"] = "없음"
+                        elementlist["sale"] = "없음"
+
                     else:
                         logger.warning(
                             "class of BranGoodsDetail:len_extract_value does not match"
                         )
 
             # # 2+1, 세일, 쿠폰, 증정 등 행사 유무 정보를 추출하는 함수
-            # goods_promotion_element = WebDriverWait(self.driver, 10).until(
+            # goods_promotion_element = WebDriverWait(self.driver, waiting_time).until(
             #     EC.presence_of_element_located((By.XPATH, '//*[@id="icon_area"]'))
             # )
             # goods_promotion_dict = {}
@@ -551,7 +567,7 @@ class BrandGoodsDetail:
             # elementlist["goods_promotion"] = goods_promotion_dict
 
             # 배송 정보 추출하는 함수
-            delivery_xpath = WebDriverWait(self.driver, 10).until(
+            delivery_xpath = WebDriverWait(self.driver, waiting_time).until(
                 EC.presence_of_all_elements_located(
                     (
                         By.XPATH,
@@ -564,7 +580,7 @@ class BrandGoodsDetail:
             goodsdelivery_dict = {}
 
             if len(delivery_xpath) == 1:
-                goodsdelivery_element = WebDriverWait(self.driver, 10).until(
+                goodsdelivery_element = WebDriverWait(self.driver, waiting_time).until(
                     EC.presence_of_element_located(
                         (
                             By.XPATH,
@@ -574,7 +590,7 @@ class BrandGoodsDetail:
                 )
                 delivery_text = goodsdelivery_element.text
             else:
-                goodsdelivery_element = WebDriverWait(self.driver, 10).until(
+                goodsdelivery_element = WebDriverWait(self.driver, waiting_time).until(
                     EC.presence_of_element_located(
                         (
                             By.XPATH,
@@ -597,7 +613,7 @@ class BrandGoodsDetail:
             goodsoptions = {}
             if len(option_class) == 1:
                 self.driver.find_element(By.ID, "buy_option_box").click()
-                WebDriverWait(self.driver, 10).until(
+                WebDriverWait(self.driver, waiting_time).until(
                     EC.presence_of_element_located((By.CLASS_NAME, "option_value"))
                 )
                 options_list = self.driver.find_element(By.ID, "option_list")
@@ -620,7 +636,7 @@ class BrandGoodsDetail:
                 elementlist["option"] = goodsoptions
 
             # 일시품절 text 추출 함수
-            soldout_css_element = WebDriverWait(self.driver, 10).until(
+            soldout_css_element = WebDriverWait(self.driver, waiting_time).until(
                 EC.presence_of_element_located(
                     (By.CSS_SELECTOR, "div.prd_btn_area.new-style.type1")
                 )
@@ -632,7 +648,7 @@ class BrandGoodsDetail:
             )
 
             # 썸네일(5개) src 추출 함수
-            thumbcount_element = WebDriverWait(self.driver, 10).until(
+            thumbcount_element = WebDriverWait(self.driver, waiting_time).until(
                 EC.presence_of_all_elements_located(
                     (By.XPATH, '//*[@id="prd_thumb_list"]/li')
                 )
@@ -640,12 +656,12 @@ class BrandGoodsDetail:
             thumbcount = len(thumbcount_element)
             goodsthumb = {}
             for thumb in range(1, thumbcount + 1):
-                WebDriverWait(self.driver, 10).until(
+                WebDriverWait(self.driver, waiting_time).until(
                     EC.presence_of_element_located(
                         (By.XPATH, f'//*[@id="prd_thumb_list"]/li[{thumb}]')
                     )
                 ).click()
-                thumburl_element = WebDriverWait(self.driver, 10).until(
+                thumburl_element = WebDriverWait(self.driver, waiting_time).until(
                     EC.presence_of_element_located((By.ID, "mainImg"))
                 )
                 thumburl = thumburl_element.get_attribute("src")
@@ -663,22 +679,58 @@ class BrandGoodsDetail:
 
             return elementlist
 
+        except TimeoutException as e:
+            logger.error(
+                f"Timeout occurred during fetching for goods_code: {goods_code} - {e}"
+            )
+            return None
         except Exception as e:
-            logger.error(f"An error occurred during fetching: {e}")
+            logger.error(
+                f"An error occurred during fetching for goods_code: {goods_code} - {e}"
+            )
             return None
 
     async def run(self):
         await self.create_driver()
         try:
-            result = await self.fetch()  # 동기 함수 fetch를 비동기로 호출
+            # print(self.goods_codes)
+            goods_codes_list = list(self.goods_codes)
+            tasks = [self.fetch(goods_code) for goods_code in goods_codes_list]
+            results = await asyncio.gather(*tasks, return_exceptions=True)
+            failed_codes = []
+            successful_results = []
+            for idx, result in enumerate(results):
+                if isinstance(result, Exception) or result is None:
+                    logger.error(
+                        f"Failed to fetch details for goods_code: {goods_codes_list[idx]} - {result}"
+                    )
+                    failed_codes.append(goods_codes_list[idx])
+                else:
+                    successful_results.append(result)
+            # print(failed_codes)
+            # Retry fetching for failed codes
+            max_retries = 2
+            attempt = 1
+            while attempt <= max_retries and failed_codes:
+                logger.info(f"Retry attempt {attempt} for failed codes: {failed_codes}")
+                retry_results = await self.retry_fetch(failed_codes)
+                logger.debug(f"Retry results: {retry_results}")
+
+                successful_results.extend(
+                    [result for result in retry_results if result is not None]
+                )
+
+                # Update failed_codes with those that failed again
+                new_failed_codes = []
+                for idx, code in enumerate(failed_codes):
+                    if idx < len(retry_results) and retry_results[idx] is None:
+                        new_failed_codes.append(code)
+                failed_codes = new_failed_codes
+                logger.info(f"Failed codes after attempt {attempt}: {failed_codes}")
+                attempt += 1
+            return successful_results
         finally:
             await self.close_driver()
-        return result
-
-
-async def scrape_goods(goods_codes):
-    tasks = [BrandGoodsDetail(code).run() for code in goods_codes]
-    return await asyncio.gather(*tasks)
 
 
 # class BrandList 출력 test
@@ -697,16 +749,45 @@ async def scrape_goods(goods_codes):
 #     print(products)
 
 # class BrandGoodsDetail 출력 test
-# if __name__ == "__main__":
-#     INPUT_CODES = ["A000000174400"]
-#     loop = asyncio.get_event_loop()
-#     products = loop.run_until_complete(scrape_goods(INPUT_CODES))
-#     print(json.dumps(products, indent=2, ensure_ascii=False))
+if __name__ == "__main__":
+    # INPUT_CODES = ["B000000140968"]
+    INPUT_CODES = [
+        "A000000180506",
+        "A000000190321",
+        "B000000140968",
+        "A000000159504",
+        "B000000206526",
+        "A000000204123",
+        "A000000202491",
+        "A000000206474",
+        "A000000207130",
+        "A000000202343",
+        "A000000200397",
+        "A000000207456",
+        "A000000191798",
+        "A000000206971",
+        "A000000128051",
+        "A000000188737",
+        "A000000205407",
+        "A000000159648",
+        "A000000158469",
+        "A000000200646",
+        "A000000181223",
+        "A000000207112",
+        "A000000206155",
+        "A000000205746",
+        "A000000201103",
+    ]
+    scrap_func = BrandGoodsDetail(INPUT_CODES)
+    loop = asyncio.get_event_loop()
+    successful_results = loop.run_until_complete(scrap_func.run())
+    products = json.dumps(successful_results, indent=2, ensure_ascii=False)
+
+    # print(products)
 
 # class SpecialToday 출력 test
-if __name__ == "__main__":
-    SITE_KEY = "oliveyoung"
-    scrap_func = SpecialToday(SITE_KEY)
-    products = asyncio.run(scrap_func.run())
-    print(products)
-
+# if __name__ == "__main__":
+#     SITE_KEY = "oliveyoung"
+#     scrap_func = SpecialToday(SITE_KEY)
+#     products = scrap_func.run()
+#     print(products)

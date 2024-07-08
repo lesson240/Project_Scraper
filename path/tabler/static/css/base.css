@@ -7,14 +7,32 @@ body {
     flex-direction: column;
     min-height: 100vh;
     overflow-x: hidden;
+    width: 100%;
+}
+
+/* Flex 컨테이너 스타일 */
+.flex-container {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    width: calc(100% - 40px);
 }
 
 /* 메인 컨테이너 스타일 */
 .container {
     margin: 20px;
     transition: margin-right 0.5s, margin-left 0.5s;
-    width: calc(100% - 40px);
-    /* Updated to take full width minus margins */
+    width: calc(100% - 100px);
+    max-width: 100%;
+    /* 추가: 너비를 100%로 설정 */
+}
+
+/* 메인 콘텐츠 스타일 */
+#main-content {
+    padding: 20px;
+    width: 100%;
+    box-sizing: border-box;
+    transition: margin-right 0.5s, margin-left 0.5s;
 }
 
 /* 테이블 컨테이너 스타일 */
@@ -224,12 +242,6 @@ body {
     top: 70px;
     right: 20px;
     z-index: 2;
-}
-
-/* 메인 콘텐츠 스타일 */
-#main-content {
-    transition: margin-right 0.5s, margin-left 0.5s;
-    padding: 20px;
 }
 
 /* 폼 그룹 스타일 */

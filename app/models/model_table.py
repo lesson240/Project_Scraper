@@ -6,7 +6,12 @@ from pydantic import BaseModel
 
 
 class BrandCodeRequestModel(BaseModel):
-    brandCode: Optional[str]
+    brand_name: Optional[str] = Field(None)
+    brand_code: Optional[str] = Field(None)
+    group_name: Optional[str] = Field(None)
+    memo_name: Optional[str] = Field(None)
+    origin_goods_code: Optional[str] = Field(None)
+    origin_goods_name: Optional[str] = Field(None)
 
 
 class InputGoodsTableRequestModel(BaseModel):
@@ -57,6 +62,8 @@ class InputGoodsManagementTableModel(Model):
     coupon_start: Optional[str] = Field(None)
     coupon_end: Optional[str] = Field(None)
     coupon_price: Optional[int] = Field(None)
+    group_name: Optional[str] = Field(None)
+    memo: Optional[str] = Field(None)
 
     # options: Optional[List[Dict[str, str]]] = None
 

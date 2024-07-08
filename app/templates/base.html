@@ -71,11 +71,15 @@
         </div>
     </div>
 
-    <div id="main-content" class="container">
-        {% block content %}
-        <!-- Content will be injected here -->
-        {% endblock %}
+    <!-- Flex 컨테이너 -->
+    <div class="flex-container">
+        <div id="main-content" class="container">
+            {% block content %}
+            <!-- Content will be injected here -->
+            {% endblock %}
+        </div>
     </div>
+
 
     <!-- Footer -->
     <div class="footer">

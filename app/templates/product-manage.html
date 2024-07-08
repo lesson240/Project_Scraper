@@ -39,19 +39,29 @@
 
             <div class="filter-row">
                 <!-- 자동완성 기능을 위한 입력 필드 -->
-                <input type="text" id="brand-search" class="brand-search" placeholder="브랜드 검색" autocomplete="off">
-
+                <input type="text" id="brand-search" class="form-control" placeholder="브랜드 검색" autocomplete="off">
                 <!-- 드롭다운 메뉴 -->
-                <select id="brand-dropdown" size="5" class="brand-dropdown"></select>
+                <select id="brand-dropdown" size="8" class="form-control"></select>
 
-                <input type="text" placeholder="Filter by Division" class="form-control">
-                <input type="text" placeholder="Filter by Location" class="form-control">
+                <input id="group-name-serch" placeholder="상품 그룹명을 선택해주세요" class="form-control">
+                <!-- <select id="group-name-serch-select" class="form-control"></select> -->
+
+                <input type="text" id="goods-name-serch" placeholder="상품명을 입력해주세요" class="form-control">
+                <input type="text" id="memo-serch" placeholder="메모를 입력해주세요" class="form-control">
+                <!-- <select id="memo-search-select" class="form-control"></select> -->
+                <input type="text" id="unuploaded-market-serch" placeholder="미업로드 마켓을 선택해주세요" class="form-control">
+                <!-- <select id="unuploaded-market-serch-select" placeholder="미업로드 마켓을 선택해주세요" class="form-control"></select> -->
             </div>
             <div class="filter-row">
-                <input type="text" placeholder="Filter by Status" class="form-control">
-                <input type="text" placeholder="Filter by Transaction" class="form-control">
-                <input type="text" placeholder="Filter by Date" class="form-control">
-                <button class="btn btn-primary" id="search-btn">조희</button>
+                <!-- <div class="form-group"> -->
+                <!-- <label for="collect-job-number-label">수집 작업번호</label> -->
+                <input type="text" id="collect-job-number-serch" placeholder="수집 작업번호를 입력해주세요" class="form-control">
+                <!-- </div> -->
+                <input type="text" id="upload-job-number-serch" placeholder="업로드 작업번호를 입력해주세요" class="form-control">
+                <input type="text" id="goods-codes-serch" placeholder="상품코드를 입력해주세요" class="form-control">
+                <button class="btn btn-outline-info" id=" initialization-btn">초기화</button>
+                <button class="btn btn-outline-info" id="period-set-btn">기간설정</button>
+                <button class="btn btn-info" id="search-btn">조희</button>
             </div>
         </div>
         <div class="spacer"></div>

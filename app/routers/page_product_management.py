@@ -8,6 +8,7 @@ sys.path.append(str(BASE_DIR))
 # 프로젝트 Module 불러오기
 from app.utils.util_logging import setup_logger
 from app.services.service_mongodb import mongodb_service
+from app.services.service_management import FilterSectionInquiry
 from app.models.model_oliveyoung import OriginGoodsDetailModel
 from app.models.model_table import (
     InputGoodsTableRequestModel,
@@ -55,57 +56,30 @@ async def product_manage(request: Request):
 
 
 @router.post("/product-data", response_class=HTMLResponse)
-async def get_product_data(request: Request, brand_code_request: BrandCodeRequestModel):
-    brandCode = brand_code_request.brandCode
-    saved_goods_list = []
+async def get_product_data(request: Request, input_data: BrandCodeRequestModel):
+    logger.info(f"Received data: {input_data.json()}")
+    brand_code = input_data.brand_code
+    brand_name = input_data.brand_name
+    group_name = input_data.group_name
+    memo_name = input_data.memo_name
+    origin_goods_code = input_data.origin_goods_code
+    origin_goods_name = input_data.origin_goods_name
+
+    filter_section_inquiry = FilterSectionInquiry(
+        brand_code,
+        brand_name,
+        group_name,
+        memo_name,
+        origin_goods_code,
+        origin_goods_name,
+    )
 
     try:
-        # InputGoodsManagementTableModel에서 데이터 가져오기
-        saved_goods_management = await mongodb_service.engine.find(
-            InputGoodsManagementTableModel,
-            {"brand_code": {"$in": [brandCode]}},
-        )
-        if saved_goods_management:
-            management_codes = set()
-            for item in saved_goods_management:
-                item_dict = item.dict()
-                # '_id' 및 'id' 필드 제거
-                item_dict.pop("_id", None)
-                item_dict.pop("id", None)
-                saved_goods_list.append(item_dict)
-                management_codes.add(item.origin_goods_code)
-            # OriginGoodsDetailModel에서 동일하지 않은 origin_goods_code의 데이터 가져오기
-            saved_goods_detail = await mongodb_service.engine.find(
-                OriginGoodsDetailModel,
-                {
-                    "brand_code": {"$in": [brandCode]},
-                    "origin_goods_code": {"$nin": list(management_codes)},
-                },
-            )
-            for item in saved_goods_detail:
-                item_dict = item.dict()
-                # '_id' 및 'id' 필드 제거
-                item_dict.pop("_id", None)
-                item_dict.pop("id", None)
-                saved_goods_list.append(item_dict)
-        else:
-            # InputGoodsManagementTableModel에서 데이터가 없는 경우 OriginGoodsDetailModel에서 데이터 가져오기
-            saved_goods_detail = await mongodb_service.engine.find(
-                OriginGoodsDetailModel,
-                {"brand_code": {"$in": [brandCode]}},
-            )
-            for item in saved_goods_detail:
-                item_dict = item.dict()
-                # '_id' 및 'id' 필드 제거
-                item_dict.pop("_id", None)
-                item_dict.pop("id", None)
-                saved_goods_list.append(item_dict)
-        logger.info(f"{saved_goods_list}")
-
+        result = await filter_section_inquiry.run()
+        logger.info(f"FilterSectionInquiry completed successfully: {result}")
+        return JSONResponse(content=result)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to fetch data: {str(e)}")
-
-    return JSONResponse(content=saved_goods_list)
+        logger.error(f"FilterSectionInquiry failed: {e}")
 
 
 @router.post("/save-goods-table", response_class=JSONResponse)

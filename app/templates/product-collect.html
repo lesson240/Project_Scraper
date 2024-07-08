@@ -1,5 +1,3 @@
-<!-- app/templates/product-collect.html -->
-
 {% extends "base.html" %}
 
 {% block content %}
@@ -11,129 +9,270 @@
     <!-- 페이지 내용 -->
     <nav>
         <ul>
-            <li><a href="#" class="active" data-site="oliveyoung">올리브영</a></li>
-            <li><a href="#" data-site="musinsa">무신사</a></li>
+            <li><a href="#" class="tablinks active" data-site="oliveyoung" id="site-oliveyoung" value="oliveyoung"
+                    onclick="openSiteTab(event, 'Oliveyoung')">올리브영</a></li>
+            <li><a href="#" class="tablinks" data-site="musinsa" id="site-musinsa" value="musinsa"
+                    onclick="openSiteTab(event, 'Musinsa')">무신사</a></li>
         </ul>
     </nav>
 
     <div class="tab-container">
-        <div class="tab">
-            <button class="tablinks active" onclick="openTab(event, 'Brand')">브랜드</button>
-            <button class="tablinks" onclick="openTab(event, 'Single')">단일수집</button>
-            <button class="tablinks" onclick="openTab(event, 'Multi')">대량수집</button>
-        </div>
+        <div id="Oliveyoung" class="sitecontent" style="display: block;">
+            <div class="tab">
+                <button class="tablinks active" id="tab-brand-oliveyoung"
+                    onclick="openTab(event, 'BrandOliveyoung')">브랜드</button>
+                <button class="tablinks" id="tab-single-oliveyoung"
+                    onclick="openTab(event, 'SingleOliveyoung')">단일수집</button>
+                <button class="tablinks" id="tab-multi-oliveyoung"
+                    onclick="openTab(event, 'MultiOliveyoung')">대량수집</button>
+            </div>
 
-        <div id="Brand" class="tabcontent" style="display: block;">
-            <div class="form-container">
-                <div class="form-group">
-                    <label for="product-group">상품 그룹명</label>
-                    <input type="text" id="product-group" placeholder="상품 그룹명을 입력해주세요">
+            <div id="BrandOliveyoung" class="tabcontent" style="display: block;">
+                <div class="form-container">
+                    <div class="form-group">
+                        <label for="product-group-oliveyoung">상품 그룹명</label>
+                        <input type="text" id="product-group-oliveyoung" placeholder="상품 그룹명을 입력해주세요"
+                            class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="brand-search-oliveyoung">브랜드명</label>
+                        <input type="text" id="brand-search-oliveyoung" placeholder="브랜드명을 입력해주세요" class="form-control">
+                        <!-- 드롭다운 메뉴 -->
+                        <select id="brand-dropdown-oliveyoung" size="5" class="dropdown-content"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="memo-oliveyoung">메모</label>
+                        <input type="text" id="memo-oliveyoung" placeholder="메모를 입력해주세요" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="representative-option-oliveyoung">대표 옵션 선택</label>
+                        <select id="representative-option-oliveyoung" class="form-control">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="duplicate-handling-oliveyoung">중복상품 처리</label>
+                        <select id="duplicate-handling-oliveyoung" class="form-control">
+                            <option value="skip">건너뛰기</option>
+                            <option value="update">업데이트</option>
+                        </select>
+                    </div>
+                    <div class="form-actions">
+                        <button id="reset-btn-oliveyoung" class="btn btn-outline-info">초기화</button>
+                        <button id="special-today-btn-oliveyoung" class="btn btn-outline-success">오특</button>
+                        <button id="collect-btn-oliveyoung" class="btn btn-success">수집</button>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="brand-search">브랜드명</label>
-                    <input type="text" id="brand-search" placeholder="브랜드명을 입력해주세요">
-                    <!-- 드롭다운 메뉴 -->
-                    <select id="brand-dropdown" size="5" class="dropdown-content"></select>
+            </div>
+
+            <div id="SingleOliveyoung" class="tabcontent" style="display: none;">
+                <div class="form-container">
+                    <div class="form-group">
+                        <label for="product-group-oliveyoung">상품 그룹명</label>
+                        <input type="text" id="product-group-oliveyoung" placeholder="상품 그룹명을 입력해주세요"
+                            class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="single-product-url-oliveyoung">단일상품URL</label>
+                        <input type="text" id="single-product-url-oliveyoung" placeholder="단일상품URL을 입력해주세요"
+                            class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="memo-single-oliveyoung">메모</label>
+                        <input type="text" id="memo-single-oliveyoung" placeholder="메모를 입력해주세요" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="representative-option-single-oliveyoung">대표 옵션 선택</label>
+                        <select id="representative-option-single-oliveyoung" class="form-control">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="duplicate-handling-single-oliveyoung">중복상품 처리</label>
+                        <select id="duplicate-handling-single-oliveyoung" class="form-control">
+                            <option value="skip">건너뛰기</option>
+                            <option value="update">업데이트</option>
+                        </select>
+                    </div>
+                    <div class="form-actions">
+                        <button id="reset-btn-single-oliveyoung">초기화</button>
+                        <button id="collect-btn-single-oliveyoung">수집</button>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="memo">메모</label>
-                    <input type="text" id="memo" placeholder="메모를 입력해주세요">
-                </div>
-                <div class="form-group">
-                    <label for="representative-option">대표 옵션 선택</label>
-                    <select id="representative-option">
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="2">3</option>
-                        <option value="2">4</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="duplicate-handling">중복상품 처리</label>
-                    <select id="duplicate-handling">
-                        <option value="skip">건너뛰기</option>
-                        <option value="overwrite">업데이트</option>
-                    </select>
-                </div>
-                <div class="form-actions">
-                    <button id="reset-btn">초기화</button>
-                    <button id="special-today-btn">오특</button>
-                    <button id="search-btn">검색</button>
-                    <button id="collect-btn">수집</button>
+            </div>
+
+            <div id="MultiOliveyoung" class="tabcontent" style="display: none;">
+                <div class="form-container">
+                    <div class="form-group">
+                        <label for="product-group-oliveyoung">상품 그룹명</label>
+                        <input type="text" id="product-group-oliveyoung" placeholder="상품 그룹명을 입력해주세요"
+                            class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="multi-product-url-oliveyoung">목록URL</label>
+                        <input type="text" id="multi-product-url-oliveyoung" placeholder="목록URL을 입력해주세요"
+                            class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="memo-multi-oliveyoung">메모</label>
+                        <input type="text" id="memo-multi-oliveyoung" placeholder="메모를 입력해주세요" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="representative-option-multi-oliveyoung">대표 옵션 선택</label>
+                        <select id="representative-option-multi-oliveyoung" class="form-control">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="duplicate-handling-multi-oliveyoung">중복상품 처리</label>
+                        <select id="duplicate-handling-multi-oliveyoung" class="form-control">
+                            <option value="skip">건너뛰기</option>
+                            <option value="update">업데이트</option>
+                        </select>
+                    </div>
+                    <div class="form-actions">
+                        <button id="reset-btn-multi-oliveyoung">초기화</button>
+                        <button id="search-btn-multi-oliveyoung">검색</button>
+                        <button id="collect-btn-multi-oliveyoung">수집</button>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div id="Single" class="tabcontent">
+        <div id="Musinsa" class="sitecontent" style="display: none;">
+            <div class="tab">
+                <button class="tablinks active" id="tab-brand-musinsa"
+                    onclick="openTab(event, 'BrandMusinsa')">브랜드</button>
+                <button class="tablinks" id="tab-single-musinsa" onclick="openTab(event, 'SingleMusinsa')">단일수집</button>
+                <button class="tablinks" id="tab-multi-musinsa" onclick="openTab(event, 'MultiMusinsa')">대량수집</button>
+            </div>
 
-            <div class="form-container">
-                <div class="form-group">
-                    <label for="single-product-url">단일상품URL</label>
-                    <input type="text" id="single-product-url" placeholder="단일상품URL을 입력해주세요">
+            <div id="BrandMusinsa" class="tabcontent" style="display: block;">
+                <div class="form-container">
+                    <div class="form-group">
+                        <label for="product-group-musinsa">상품 그룹명</label>
+                        <input type="text" id="product-group-musinsa" placeholder="상품 그룹명을 입력해주세요" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="brand-search-musinsa">브랜드명</label>
+                        <input type="text" id="brand-search-musinsa" placeholder="브랜드명을 입력해주세요" class="form-control">
+                        <!-- 드롭다운 메뉴 -->
+                        <select id="brand-dropdown-musinsa" size="5" class="dropdown-content"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="memo-musinsa">메모</label>
+                        <input type="text" id="memo-musinsa" placeholder="메모를 입력해주세요" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="representative-option-musinsa">대표 옵션 선택</label>
+                        <select id="representative-option-musinsa" class="form-control">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="duplicate-handling-musinsa">중복상품 처리</label>
+                        <select id="duplicate-handling-musinsa" class="form-control">
+                            <option value="skip">건너뛰기</option>
+                            <option value="update">업데이트</option>
+                        </select>
+                    </div>
+                    <div class="form-actions">
+                        <button id="reset-btn-musinsa">초기화</button>
+                        <button id="special-today-btn-musinsa">오특</button>
+                        <button id="collect-btn-musinsa">수집</button>
+                    </div>
                 </div>
-                <div class="form-actions">
-                    <button id="reset-btn">초기화</button>
-                    <button id="search-btn">검색</button>
-                    <button id="collect-btn">수집</button>
+            </div>
+
+            <div id="SingleMusinsa" class="tabcontent" style="display: none;">
+                <div class="form-container">
+                    <div class="form-group">
+                        <label for="product-group-musinsa">상품 그룹명</label>
+                        <input type="text" id="product-group-musinsa" placeholder="상품 그룹명을 입력해주세요" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="single-product-url-musinsa">단일상품URL</label>
+                        <input type="text" id="single-product-url-musinsa" placeholder="단일상품URL을 입력해주세요"
+                            class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="memo-single-musinsa">메모</label>
+                        <input type="text" id="memo-single-musinsa" placeholder="메모를 입력해주세요" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="representative-option-single-musinsa">대표 옵션 선택</label>
+                        <select id="representative-option-single-musinsa" class="form-control">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="duplicate-handling-single-musinsa">중복상품 처리</label>
+                        <select id="duplicate-handling-single-musinsa" class="form-control">
+                            <option value="skip">건너뛰기</option>
+                            <option value="update">업데이트</option>
+                        </select>
+                    </div>
+                    <div class="form-actions">
+                        <button id="reset-btn-single-musinsa">초기화</button>
+                        <button id="collect-btn-single-musinsa">수집</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="MultiMusinsa" class="tabcontent" style="display: none;">
+                <div class="form-container">
+                    <div class="form-group">
+                        <label for="product-group-musinsa">상품 그룹명</label>
+                        <input type="text" id="product-group-musinsa" placeholder="상품 그룹명을 입력해주세요" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="multi-product-url-musinsa">목록URL</label>
+                        <input type="text" id="multi-product-url-musinsa" placeholder="목록URL을 입력해주세요"
+                            class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="memo-multi-musinsa">메모</label>
+                        <input type="text" id="memo-multi-musinsa" placeholder="메모를 입력해주세요" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="representative-option-multi-musinsa">대표 옵션 선택</label>
+                        <select id="representative-option-multi-musinsa" class="form-control">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="duplicate-handling-multi-musinsa">중복상품 처리</label>
+                        <select id="duplicate-handling-multi-musinsa" class="form-control">
+                            <option value="skip">건너뛰기</option>
+                            <option value="update">업데이트</option>
+                        </select>
+                    </div>
+                    <div class="form-actions">
+                        <button id="reset-btn-multi-musinsa">초기화</button>
+                        <button id="search-btn-multi-musinsa">검색</button>
+                        <button id="collect-btn-multi-musinsa">수집</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-
-
-    <!-- Tabler의 테이블 코드 -->
-    <div class="table-responsive">
-        <table class="table table-hover table-vcenter" id="product-table">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>상품명</th>
-                    <th>상품코드</th>
-                    <th>상품가격</th>
-                    <th>품절</th>
-                    <th>세일</th>
-                    <th>쿠폰</th>
-                    <th>수집 시간</th>
-                </tr>
-            </thead>
-        </table>
-    </div>
-
-    {% if goods %}
-    <!-- 수집된 상품 목록을 표시 -->
-    <h2>수집된 상품 목록</h2>
-    <div class="table-responsive">
-        <table class="table table-hover table-vcenter">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>상품명</th>
-                    <th>상품코드</th>
-                    <th>상품가격</th>
-                    <th>품절</th>
-                    <th>세일</th>
-                    <th>쿠폰</th>
-                    <th>수집 시간</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for good in goods %}
-                <tr>
-                    <td>{{ good.idx }}</td>
-                    <td>{{ good.origin_goods_name }}</td>
-                    <td>{{ good.origin_goods_code }}</td>
-                    <td>{{ good.total_price }}</td>
-                    <td>{{ good.sold_out }}</td>
-                    <td>{{ good.sale }}</td>
-                    <td>{{ good.coupon }}</td>
-                    <td>{{ good.collection_time }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
     </div>
 </body>
-
-{% endif %}
-
 {% endblock %}

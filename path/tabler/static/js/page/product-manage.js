@@ -12,6 +12,10 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("Document loaded"); // 로그 추가
     var brandSearch = document.getElementById("brand-search");
     var dropdown = document.getElementById("brand-dropdown");
+    var groupNameSearch = document.getElementById("group-name-serch");
+    var goodsNameSearch = document.getElementById("goods-name-serch");
+    var memoSearch = document.getElementById("memo-serch");
+    var goodsCodesSearch = document.getElementById("goods-codes-serch");
     var searchBtn = document.getElementById("search-btn"); //  조회 버튼 선택자
     var saveBtn = document.getElementById("save-btn");  // Save 버튼 선택자
     var syncCollectBtn = document.getElementById("sync-collect-btn"); // 수집동기화 버튼 선택자 추가
@@ -131,15 +135,25 @@ document.addEventListener("DOMContentLoaded", function () {
     // searchBtn 조회 버튼 클릭 이벤트 리스너
     searchBtn.addEventListener("click", async function () {
         var brandCode = selectedBrandCode.value;
+        var groupName = groupNameSearch.value;
+        var goodsName = goodsNameSearch.value;
+        var memo = memoSearch.value;
+        var goodsCode = goodsCodesSearch.value;
         var brandName = brandSearch.value;
-        console.log(brandCode); // 로그 추가
-        if (!brandCode || !brandName) {
-            alert("브랜드를 선택해주세요.");
-            return;
-        }
+        console.log(brandName, brandCode, groupName, goodsName, memo, goodsCode); // 로그 추가
 
         try {
-            const saved_goods_list = await postData(`/${window.apiVersion}/product-data`, { brandCode: brandCode });
+            // 필요한 모든 값을 포함한 객체를 생성
+            const requestData = {
+                brand_code: brandCode,
+                group_name: groupName,
+                brand_name: goodsName,
+                memo_name: memo,
+                origin_goods_code: goodsCode,
+                origin_goods_name: brandName
+            };
+
+            const saved_goods_list = await postData(`/${window.apiVersion}/product-data`, requestData);
             console.log("Received data:", saved_goods_list); // 로그 추가
             if (!saved_goods_list || saved_goods_list.length === 0) {
                 alert("조회할 상품이 없습니다.");
@@ -169,28 +183,28 @@ document.addEventListener("DOMContentLoaded", function () {
                 row.classList.add("expandable");
                 row.setAttribute("data-origin-goods-code", item.origin_goods_code); // 속성 추가
                 row.innerHTML = `
-                    <td><button class="expand-btn" data-index="${index}">&#9660;</button></td>    
-                    <td><input type="checkbox" class="parent-checkbox"></td>
-                    <td class="table-cell">${item.market}</td>
-                    <td class="table-cell">${item.brand}</td>
-                    <td class="table-cell">${item.brand_code}</td>
-                    <td class="table-cell">${item.origin_goods_code}</td>
-                    <td><input type="text" class="input-cell" value="${item.origin_goods_name}"></td>
-                    <td><input type="text" class="input-cell" value="${item.exposure_product_id || ''}"></td>
-                    <td><input type="text" class="input-cell" value="${item.option_id || ''}"></td>
-                    <td><input type="text" class="input-cell" value="${item.matching_option_id || ''}"></td>
-                    <td class="table-cell">${item.sold_out}</td>
-                    <td><input type="text" class="input-cell" value="${item.stock_option || ''}"></td>
-                    <td class="table-cell">${item.total_price}</td>
-                    <td><input type="text" class="input-cell" value="${item.origin_selling_price || 0}"></td>
-                    <td><input type="text" class="input-cell" value="${item.selling_price || 0}"></td>
-                    <td><input type="text" class="input-cell" value="${item.winner_price || 0}"></td>
-                    <td><input type="text" class="input-cell" value="${item.lowest_price || 0}"></td>
-                    <td><input type="text" class="input-cell" value="${item.maximum_price || 0}"></td>
-                    <td class="table-cell">${promotionPeriod}</td>
-                    <td><button class="btn btn-warning btn-table detail-btn">Details</button></td>
-                    <td><button class="btn btn-info btn-table">Action</button></td>
-                `;
+                <td><button class="expand-btn" data-index="${index}">&#9660;</button></td>    
+                <td><input type="checkbox" class="parent-checkbox"></td>
+                <td class="table-cell">${item.market}</td>
+                <td class="table-cell">${item.brand}</td>
+                <td class="table-cell">${item.brand_code}</td>
+                <td class="table-cell">${item.origin_goods_code}</td>
+                <td><input type="text" class="input-cell" value="${item.origin_goods_name}"></td>
+                <td><input type="text" class="input-cell" value="${item.exposure_product_id || ''}"></td>
+                <td><input type="text" class="input-cell" value="${item.option_id || ''}"></td>
+                <td><input type="text" class="input-cell" value="${item.matching_option_id || ''}"></td>
+                <td class="table-cell">${item.sold_out}</td>
+                <td><input type="text" class="input-cell" value="${item.stock_option || ''}"></td>
+                <td class="table-cell">${item.total_price}</td>
+                <td><input type="text" class="input-cell" value="${item.origin_selling_price || 0}"></td>
+                <td><input type="text" class="input-cell" value="${item.selling_price || 0}"></td>
+                <td><input type="text" class="input-cell" value="${item.winner_price || 0}"></td>
+                <td><input type="text" class="input-cell" value="${item.lowest_price || 0}"></td>
+                <td><input type="text" class="input-cell" value="${item.maximum_price || 0}"></td>
+                <td class="table-cell">${promotionPeriod}</td>
+                <td><button class="btn btn-warning btn-table detail-btn">Details</button></td>
+                <td><button class="btn btn-info btn-table">Action</button></td>
+            `;
                 tableBody.appendChild(row);
 
                 // 확장된 행 추가
@@ -198,49 +212,49 @@ document.addEventListener("DOMContentLoaded", function () {
                 expandedRow.className = "expanded-row";
                 expandedRow.style.display = "none";
                 expandedRow.innerHTML = `
-                    <td colspan="14">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <th>옵션명</th>
-                                    <th>재고옵션</th>
-                                    <th>옵션가</th>
-                                    <th>할인가</th>
-                                    <th>위너가</th>
-                                    <th>최저가</th>
-                                    <th>최고가</th>
-                                    <th>재고</th>
-                                    <td></td>
-                                    <th>상품정보</th>
-                                    <th>비고</th>
-                                </tr>
-                            </thead>
-                            <tbody id="expanded-tbody">
-                                <tr>
-                                    <td><input type="checkbox" class="child-checkbox"></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td><input type="text" class="input-cell" value="${item.origin_goods_name}"></td>
-                                    <td><input type="text" value="" class="input-cell"></td>
-                                    <td><input type="text" value="" class="input-cell"></td>
-                                    <td><input type="text" class="input-cell" value="${item.market}"></td>
-                                    <td><input type="text" value="" class="input-cell"></td>
-                                    <td><input type="text" value="" class="input-cell"></td>
-                                    <td><input type="text" value="" class="input-cell"></td>
-                                    <td><input type="text" value="" class="input-cell"></td>
-                                    <td></td>
-                                    <td><button class="btn btn-warning btn-table detail-btn">Details</button></td>
-                                    <td><button class="btn btn-info btn-table">Action</button></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </td>
-                `;
+                <td colspan="14">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <th>옵션명</th>
+                                <th>재고옵션</th>
+                                <th>옵션가</th>
+                                <th>할인가</th>
+                                <th>위너가</th>
+                                <th>최저가</th>
+                                <th>최고가</th>
+                                <th>재고</th>
+                                <td></td>
+                                <th>상품정보</th>
+                                <th>비고</th>
+                            </tr>
+                        </thead>
+                        <tbody id="expanded-tbody">
+                            <tr>
+                                <td><input type="checkbox" class="child-checkbox"></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td><input type="text" class="input-cell" value="${item.origin_goods_name}"></td>
+                                <td><input type="text" value="" class="input-cell"></td>
+                                <td><input type="text" value="" class="input-cell"></td>
+                                <td><input type="text" class="input-cell" value="${item.market}"></td>
+                                <td><input type="text" value="" class="input-cell"></td>
+                                <td><input type="text" value="" class="input-cell"></td>
+                                <td><input type="text" value="" class="input-cell"></td>
+                                <td><input type="text" value="" class="input-cell"></td>
+                                <td></td>
+                                <td><button class="btn btn-warning btn-table detail-btn">Details</button></td>
+                                <td><button class="btn btn-info btn-table">Action</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+            `;
                 tableBody.appendChild(expandedRow);
             });
 

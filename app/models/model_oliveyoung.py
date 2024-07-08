@@ -26,12 +26,16 @@ class BrandShopModel(Model):
     coupon: Optional[str]
     collection_time: Optional[str]
 
-    model_config = {"collection": "OYBrandShop"}
+
+class SpecialTodayModel(BaseModel):
+    redundant: Optional[str]
+    group_name: Optional[str]
+    memo: Optional[str]
 
 
 class OriginGoodsDetailModel(Model):  # naming에 따른 연동된 코드 수정필요
     market: Optional[str] = Field(None)
-    brand: Optional[str] = Field(None)
+    brand_name: Optional[str] = Field(None)
     brand_code: Optional[str] = Field(None)
     # goods_url: str
     origin_goods_code: Optional[str] = Field(None)
@@ -52,6 +56,8 @@ class OriginGoodsDetailModel(Model):  # naming에 따른 연동된 코드 수정
     collection_time: Optional[str] = Field(None)
     sale: Optional[str] = Field(None)
     coupon: Optional[str] = Field(None)
+    group_name: Optional[str] = Field(None)
+    memo: Optional[str] = Field(None)
 
     model_config = {"collection": "OriginGoodsDetail"}
 
@@ -73,9 +79,3 @@ class GoodsDetailModel(Model):
     collection_time: Optional[str]
 
     model_config = {"collection": "OriginGoodsDetail"}
-
-
-class SpecialTodayModel(BaseModel):
-    origin_goods_name: Optional[str]
-    total_price: Optional[int]
-    goods_origin: Optional[int]
