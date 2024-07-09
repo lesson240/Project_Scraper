@@ -5,6 +5,7 @@ from typing import Optional, List, Dict
 from pydantic import BaseModel
 
 
+# 필터구간 조회 버튼 클릭 시 get BaseModel
 class BrandCodeRequestModel(BaseModel):
     brand_name: Optional[str] = Field(None)
     brand_code: Optional[str] = Field(None)
@@ -12,6 +13,18 @@ class BrandCodeRequestModel(BaseModel):
     memo_name: Optional[str] = Field(None)
     origin_goods_code: Optional[str] = Field(None)
     origin_goods_name: Optional[str] = Field(None)
+
+
+# 판매동기화 버튼 클릭 시 get BaseModel
+class MatchingOptionIdModel(BaseModel):
+    origin_goods_code: Optional[str] = Field(None)
+    matching_option_id: Optional[str] = Field(None)
+    brand_code: Optional[str] = Field(None)
+
+
+# 수집동기화 버튼 클릭 시 get BaseModel
+class OriginGoodsCodeModel(BaseModel):
+    origin_goods_code: Optional[str]
 
 
 class InputGoodsTableRequestModel(BaseModel):
@@ -36,7 +49,7 @@ class InputGoodsTableRequestModel(BaseModel):
 # 작성중
 class InputGoodsManagementTableModel(Model):
     market: Optional[str] = Field(None)
-    brand: Optional[str] = Field(None)
+    brand_name: Optional[str] = Field(None)
     brand_code: Optional[str] = Field(None)
     origin_goods_code: Optional[str] = Field(None)
     origin_goods_name: Optional[str] = Field(None)
@@ -68,15 +81,3 @@ class InputGoodsManagementTableModel(Model):
     # options: Optional[List[Dict[str, str]]] = None
 
     model_config = {"collection": "ModifiedGoodsDetail"}
-
-
-# 판매동기화 버튼 클릭 시 get BaseModel
-class MatchingOptionIdModel(BaseModel):
-    origin_goods_code: Optional[str] = Field(None)
-    matching_option_id: Optional[str] = Field(None)
-    brand_code: Optional[str] = Field(None)
-
-
-# 수집동기화 버튼 클릭 시 get BaseModel
-class OriginGoodsCodeModel(BaseModel):
-    origin_goods_code: Optional[str]

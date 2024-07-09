@@ -18,6 +18,7 @@ document.addEventListener("DOMContentLoaded", function () {
     var goodsCodesSearch = document.getElementById("goods-codes-serch");
     var searchBtn = document.getElementById("search-btn"); //  조회 버튼 선택자
     var saveBtn = document.getElementById("save-btn");  // Save 버튼 선택자
+    var deleteBtn = document.getElementById("delete-btn");  // Delete 버튼 선택자
     var syncCollectBtn = document.getElementById("sync-collect-btn"); // 수집동기화 버튼 선택자 추가
     var syncSalesBtn = document.getElementById("sync-sales-btn"); // 판매동기화 버튼 선택자 추가
     var syncMarketBtn = document.getElementById("sync-market-btn"); // 마켓동기화 버튼 선택자 추가 
@@ -147,10 +148,10 @@ document.addEventListener("DOMContentLoaded", function () {
             const requestData = {
                 brand_code: brandCode,
                 group_name: groupName,
-                brand_name: goodsName,
+                brand_name: brandName,
                 memo_name: memo,
                 origin_goods_code: goodsCode,
-                origin_goods_name: brandName
+                origin_goods_name: goodsName
             };
 
             const saved_goods_list = await postData(`/${window.apiVersion}/product-data`, requestData);
@@ -186,7 +187,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 <td><button class="expand-btn" data-index="${index}">&#9660;</button></td>    
                 <td><input type="checkbox" class="parent-checkbox"></td>
                 <td class="table-cell">${item.market}</td>
-                <td class="table-cell">${item.brand}</td>
+                <td class="table-cell">${item.brand_name}</td>
                 <td class="table-cell">${item.brand_code}</td>
                 <td class="table-cell">${item.origin_goods_code}</td>
                 <td><input type="text" class="input-cell" value="${item.origin_goods_name}"></td>
@@ -435,6 +436,46 @@ document.addEventListener("DOMContentLoaded", function () {
         } catch (error) {
             console.error("Error saving data:", error);
             alert("Error saving data.");
+        }
+    });
+
+    // Delete 버튼 클릭 이벤트 리스너
+    deleteBtn.addEventListener("click", async function () {
+        const checkedRows = document.querySelectorAll("#product-tbody tr.expandable .parent-checkbox:checked");
+        const requestData = Array.from(checkedRows).map(row => {
+            const tr = row.closest("tr");
+            return {
+                origin_goods_code: tr.querySelector("td:nth-child(6)").textContent.trim()
+            };
+        });
+
+        if (requestData.length === 0) {
+            alert("상품을 선택해주세요.");
+            return;
+        }
+
+        // 콘솔에 인자 로깅
+        console.log("Request Data:", requestData);
+
+        try {
+            const response = await postData(`/${window.apiVersion}/delete-goods-table`, requestData);
+            const deleteGoods = response.data;
+
+            // 콘솔에 인자 로깅
+            console.log("Deleted Data:", deleteGoods);
+
+            // 삭제된 행은 테이블에서 제거
+            requestData.forEach(data => {
+                const row = document.querySelector(`#product-tbody tr[data-origin-goods-code="${data.origin_goods_code}"]`);
+                if (row) {
+                    row.remove();
+                }
+            });
+
+            alert("삭제 완료!");
+        } catch (error) {
+            console.error("Error deleting data:", error);
+            alert("삭제하는 중에 오류가 발생했습니다.");
         }
     });
 

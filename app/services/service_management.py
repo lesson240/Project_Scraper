@@ -8,15 +8,13 @@ sys.path.append(str(BASE_DIR))
 from app.utils.util_logging import setup_logger
 from app.models.model_oliveyoung import OriginGoodsDetailModel
 from app.models.model_table import InputGoodsManagementTableModel
+from app.scrapers.scraper_oliveyoung import BrandGoodsDetail
 from app.services.service_mongodb import mongodb_service
 
 # 라이브러리 불러오기
 from fastapi import HTTPException
 import asyncio
-from typing import List, Dict, Any, Set, Optional
-from pymongo import UpdateOne
 import os
-from pydantic import BaseModel, Field
 
 # 파일명 자동 추출
 file_name = os.path.basename(__file__)
@@ -47,7 +45,6 @@ class FilterSectionInquiry:
             raise ValueError("MongoDB engine is not initialized")
 
     async def fetch_inquiry(self):
-        print("01")
         saved_goods_list = []
 
         # 필터 조건 생성
@@ -66,7 +63,6 @@ class FilterSectionInquiry:
             filters["origin_goods_name"] = {"$in": [self.origin_goods_name]}
 
         try:
-            print("02")
             # 모든 인자가 없으면 모든 데이터를 가져옴
             if not filters:
                 saved_goods_management = await self.mongodb_service.engine.find(
@@ -146,8 +142,7 @@ class FilterSectionInquiry:
 
     async def run(self):
         try:
-            print("00")
-            inquiry = self.fetch_inquiry()
+            inquiry = await self.fetch_inquiry()
             if not inquiry:
                 logger.error("No inquiry found from fetch_inquiry")
                 return
@@ -157,6 +152,120 @@ class FilterSectionInquiry:
             raise HTTPException(
                 status_code=500,
                 detail="An error occurred occurred during fetch_inquiry from mongoDB",
+            )
+
+
+class ButtonSectionSyncCollect:
+    def __init__(self, origin_goods_codes) -> None:
+        self.origin_goods_codes = origin_goods_codes
+        self.mongodb_service = mongodb_service
+        if mongodb_service and mongodb_service.engine is None:
+            raise ValueError("MongoDB engine is not initialized")
+
+    async def fetch_sync_collect(self):
+        goods_detail = BrandGoodsDetail(self.origin_goods_codes)
+        results = await goods_detail.run()
+
+        goods_detail_list = {
+            code: result
+            for code, result in zip(self.origin_goods_codes, results)
+            if result
+        }
+
+        # MongoDB 업데이트 및 데이터 결합
+        combined_data_list = []
+        for code, price_info in goods_detail_list.items():
+            price_info.pop("id", None)
+            price_info.pop("_id", None)
+            print(price_info)
+            if isinstance(price_info, dict):
+                sale = (
+                    "세일"
+                    if price_info.get("sale_price", "null") not in ["null", None, ""]
+                    else "없음"
+                )
+            update_data = {
+                "sold_out": price_info.get("sold_out"),
+                "total_price": price_info.get("total_price"),
+                "goods_origin": price_info.get("goods_origin"),
+                "sale_start": price_info.get("sale_start"),
+                "sale_end": price_info.get("sale_end"),
+                "sale_price": price_info.get("sale_price"),
+                "coupon_start": price_info.get("coupon_start"),
+                "coupon_end": price_info.get("coupon_end"),
+                "coupon_price": price_info.get("coupon_price"),
+                "sale": sale,
+            }
+
+            # 기존 데이터 조회
+            existing_data = await self.mongodb_service.engine.find_one(
+                InputGoodsManagementTableModel, {"origin_goods_code": code}
+            )
+
+            if not existing_data:
+                # 기존 데이터가 없으면 OriginGoodsDetailModel에서 데이터 가져오기
+                origin_goods_detail = await self.mongodb_service.engine.find_one(
+                    OriginGoodsDetailModel, {"origin_goods_code": code}
+                )
+                if origin_goods_detail:
+                    origin_goods_detail_dict = origin_goods_detail.dict()
+                    origin_goods_detail_dict.pop("id", None)
+                    origin_goods_detail_dict.pop("_id", None)
+                    update_data.update(origin_goods_detail_dict)
+
+            try:
+                await mongodb_service.engine.get_collection(
+                    InputGoodsManagementTableModel
+                ).update_one(
+                    {"origin_goods_code": code}, {"$set": update_data}, upsert=True
+                )
+                # combined_data_list에 합친 데이터 추가
+                combined_data = {**price_info, **update_data}
+                combined_data_list.append(combined_data)
+            except Exception as e:
+                logger.error(
+                    f"Error updating MongoDB for origin_goods_code {code}: {str(e)}"
+                )
+        return combined_data_list
+
+    async def run(self):
+        try:
+            sync_collect = await self.fetch_sync_collect()
+            if not sync_collect:
+                logger.error("No inquiry found from sync_collect")
+                return
+            return sync_collect
+        except Exception as e:
+            logger.error(f"An error occurred during sync_collect: {e}")
+            raise HTTPException(
+                status_code=500,
+                detail=f"An error occurred occurred during sync_collect: {str(e)}",
+            )
+
+
+class ButtonSectionDeleteGoods:
+    def __init__(self, origin_goods_codes) -> None:
+        self.origin_goods_codes = origin_goods_codes
+        self.mongodb_service = mongodb_service
+        if mongodb_service and mongodb_service.engine is None:
+            raise ValueError("MongoDB engine is not initialized")
+
+    async def run(self):
+        try:
+            for code in self.origin_goods_codes:
+                query = {"origin_goods_code": code}
+                # InputGoodsManagementTableModel에서 문서 삭제
+                await self.mongodb_service.engine.remove(
+                    InputGoodsManagementTableModel, query
+                )
+                # OriginGoodsDetailModel에서 문서 삭제
+                await self.mongodb_service.engine.remove(OriginGoodsDetailModel, query)
+            return {"message": "Data successfully deleted"}
+        except Exception as e:
+            logger.error(f"An error occurred during delete_goods: {e}")
+            raise HTTPException(
+                status_code=500,
+                detail=f"An error occurred occurred during delete_goods: {str(e)}",
             )
 
 

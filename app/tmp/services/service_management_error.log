@@ -1,0 +1,8 @@
+2024-07-09 21:24:25,561 - ERROR - No inquiry found from sync_collect
+2024-07-09 22:10:13,613 - ERROR - An error occurred during sync_collect: not enough values to unpack (expected 2, got 1)
+2024-07-09 23:13:44,726 - ERROR - An error occurred during sync_collect: 500: An error occurred while deleting data: 'str' object has no attribute 'origin_goods_code'
+2024-07-09 23:15:14,400 - ERROR - An error occurred during sync_collect: 500: An error occurred while deleting data: 'str' object has no attribute 'origin_goods_code'
+2024-07-09 23:24:18,750 - ERROR - No inquiry found from fetch_inquiry
+2024-07-09 23:49:39,240 - ERROR - No inquiry found from fetch_inquiry
+2024-07-10 00:09:59,082 - ERROR - No inquiry found from fetch_inquiry
+2024-07-10 00:14:13,444 - ERROR - No inquiry found from fetch_inquiry

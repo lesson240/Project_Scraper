@@ -8,7 +8,11 @@ sys.path.append(str(BASE_DIR))
 # 프로젝트 Module 불러오기
 from app.utils.util_logging import setup_logger
 from app.services.service_mongodb import mongodb_service
-from app.services.service_management import FilterSectionInquiry
+from app.services.service_management import (
+    FilterSectionInquiry,
+    ButtonSectionSyncCollect,
+    ButtonSectionDeleteGoods,
+)
 from app.models.model_oliveyoung import OriginGoodsDetailModel
 from app.models.model_table import (
     InputGoodsTableRequestModel,
@@ -213,60 +217,37 @@ async def synch_winner_price(request: Request, data: List[MatchingOptionIdModel]
 
 
 @router.post("/sync-collect-market", response_class=JSONResponse)
-async def synch_collect_market(request: Request, data: List[OriginGoodsCodeModel]):
+async def synch_collect_market(input_data: List[OriginGoodsCodeModel]):
+    origin_goods_codes = [data.origin_goods_code for data in input_data]
+    logger.info(f"Parsed origin goods codes: {origin_goods_codes}")
+    button_section_sync_collect = ButtonSectionSyncCollect(origin_goods_codes)
     try:
-        origin_goods_codes = [item.origin_goods_code for item in data]
-        # BrandGoodsDetail 호출
-        goods_detail_list = {}
-        for origin_goods_code in origin_goods_codes:
-            scrap_func = BrandGoodsDetail(origin_goods_code)
-            result = await scrap_func.run()
-            if result:
-                goods_detail_list[origin_goods_code] = result
-            else:
-                logger.warning(
-                    f"No data found for origin_goods_code: {origin_goods_code}"
-                )
-
-        # MongoDB 업데이트 및 데이터 결합
-        combined_data_list = []
-        for code, price_info in goods_detail_list.items():
-            price_info.pop("id", None)
-            price_info.pop("_id", None)
-            print(price_info)
-            if isinstance(price_info, dict):
-                sale = (
-                    "세일"
-                    if price_info.get("sale_price", "null") not in ["null", None, ""]
-                    else "없음"
-                )
-            update_data = {
-                "sold_out": price_info.get("sold_out"),
-                "total_price": price_info.get("total_price"),
-                "goods_origin": price_info.get("goods_origin"),
-                "sale_start": price_info.get("sale_start"),
-                "sale_end": price_info.get("sale_end"),
-                "sale_price": price_info.get("sale_price"),
-                "coupon_start": price_info.get("coupon_start"),
-                "coupon_end": price_info.get("coupon_end"),
-                "coupon_price": price_info.get("coupon_price"),
-                "sale": sale,
-            }
-            try:
-                await mongodb_service.engine.get_collection(
-                    InputGoodsManagementTableModel
-                ).update_one(
-                    {"origin_goods_code": code}, {"$set": update_data}, upsert=True
-                )
-                # combined_data_list에 합친 데이터 추가
-                combined_data = {**price_info, **update_data}
-                combined_data_list.append(combined_data)
-            except Exception as e:
-                logger.error(
-                    f"Error updating MongoDB for origin_goods_code {code}: {str(e)}"
-                )
+        result = await button_section_sync_collect.run()
+        logger.info(f"ButtonSectionSyncCollect completed successfully: {result}")
         return JSONResponse(
-            content={"message": "Collect data synchronized", "data": combined_data_list}
+            content={"message": "Collect data synchronized", "data": result}
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to fetch data: {str(e)}")
+        logger.error(f"ButtonSectionSyncCollect failed: {e}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to ButtonSectionSyncCollect: {str(e)}"
+        )
+
+
+@router.post("/delete-goods-table", response_class=JSONResponse)
+async def delete_goods_table(input_data: List[OriginGoodsCodeModel]):
+    origin_goods_codes = [data.origin_goods_code for data in input_data]
+    logger.info(f"Parsed origin goods codes: {origin_goods_codes}")
+    button_section_delete_goods = ButtonSectionDeleteGoods(origin_goods_codes)
+    try:
+        result = await button_section_delete_goods.run()
+        logger.info(f"ButtonSectionDeleteGoods completed successfully: {result}")
+        return JSONResponse(
+            content={"message": "Data successfully deleted"}, status_code=200
+        )
+
+    except Exception as e:
+        logger.error(f"ButtonSectionDeleteGoods failed: {e}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to ButtonSectionDeleteGoods: {str(e)}"
+        )
