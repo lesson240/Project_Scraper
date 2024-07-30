@@ -12,20 +12,35 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("Document loaded"); // 로그 추가
     var brandSearch = document.getElementById("brand-search");
     var dropdown = document.getElementById("brand-dropdown");
-    var groupNameSearch = document.getElementById("group-name-serch");
-    var goodsNameSearch = document.getElementById("goods-name-serch");
-    var memoSearch = document.getElementById("memo-serch");
-    var goodsCodesSearch = document.getElementById("goods-codes-serch");
+    var groupNameSearch = document.getElementById("group-name-search");
+    var goodsNameSearch = document.getElementById("goods-name-search");
+    var memoSearch = document.getElementById("memo-search");
+    var goodsCodesSearch = document.getElementById("goods-codes-search");
+    var promotionStartDate = document.getElementById("promotion-start-date"); // 프로모션 시작일
+    var promotionEndDate = document.getElementById("promotion-end-date"); // 프로모션 종료일
+    var promotionDateRange = document.getElementById("promotion-date-range"); // 프로모션 기간 선택
+    var soldOutSearch = document.getElementById("sold-out-search"); // 품절 유무 선택
     var searchBtn = document.getElementById("search-btn"); //  조회 버튼 선택자
     var saveBtn = document.getElementById("save-btn");  // Save 버튼 선택자
     var deleteBtn = document.getElementById("delete-btn");  // Delete 버튼 선택자
     var syncCollectBtn = document.getElementById("sync-collect-btn"); // 수집동기화 버튼 선택자 추가
     var syncSalesBtn = document.getElementById("sync-sales-btn"); // 판매동기화 버튼 선택자 추가
     var syncMarketBtn = document.getElementById("sync-market-btn"); // 마켓동기화 버튼 선택자 추가 
+    var priceOnBtn = document.getElementById("price-on-btn"); //  가격 설정 버튼 선택자
     var selectedBrandCode = document.createElement("input");
     selectedBrandCode.type = "hidden";
     selectedBrandCode.id = "selected-brand-code";
     document.body.appendChild(selectedBrandCode);
+
+    // Grandparent Checkbox 클릭 이벤트 리스너
+    const grandparentCheckbox = document.querySelector(".grandparent-checkbox");
+    grandparentCheckbox.addEventListener("change", function () {
+        const parentCheckboxes = document.querySelectorAll(".parent-checkbox");
+        parentCheckboxes.forEach(checkbox => {
+            checkbox.checked = this.checked;
+        });
+    });
+
 
     // openNav 함수 추가
     window.openNav = function (event, button) {
@@ -132,6 +147,7 @@ document.addEventListener("DOMContentLoaded", function () {
             dropdown.style.display = "none";
         }
     });
+
 
     // searchBtn 조회 버튼 클릭 이벤트 리스너
     searchBtn.addEventListener("click", async function () {
@@ -327,19 +343,16 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             // 수집 동기화된 데이터를 테이블에 반영
-            for (const origin_goods_code in syncCollect) {
-                if (syncCollect.hasOwnProperty(origin_goods_code)) {
-                    const item = syncCollect[origin_goods_code];
-                    console.log("Item Data:", item);
-                    var promotionPeriod = getPromotionPeriod(item);  // item을 전달하여 promotionPeriod 계산
-                    const row = document.querySelector(`#product-tbody tr[data-origin-goods-code="${origin_goods_code}"]`);
-                    if (row) {
-                        row.querySelector("td:nth-child(11)").textContent = item.sold_out || '';
-                        row.querySelector("td:nth-child(13)").textContent = item.total_price || '';
-                        row.querySelector("td:nth-child(19)").textContent = promotionPeriod || '';
-                    }
+            syncCollect.forEach(item => {
+                const origin_goods_code = item.origin_goods_code;
+                console.log("Item Data:", item);
+                const row = document.querySelector(`#product-tbody tr[data-origin-goods-code="${origin_goods_code}"]`);
+                if (row) {
+                    row.querySelector("td:nth-child(11)").textContent = item.sold_out || '';
+                    row.querySelector("td:nth-child(13)").textContent = item.total_price || '';
+                    row.querySelector("td:nth-child(19)").textContent = getPromotionPeriod(item) || '';
                 }
-            }
+            });
 
             alert("수집 동기화 완료!");
         } catch (error) {

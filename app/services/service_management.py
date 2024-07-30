@@ -177,11 +177,16 @@ class ButtonSectionSyncCollect:
         for code, price_info in goods_detail_list.items():
             price_info.pop("id", None)
             price_info.pop("_id", None)
-            print(price_info)
+            print(f"price_info:{price_info}")  # 순수 수집 data
             if isinstance(price_info, dict):
                 sale = (
                     "세일"
                     if price_info.get("sale_price", "null") not in ["null", None, ""]
+                    else "없음"
+                )
+                coupon = (
+                    "쿠폰"
+                    if price_info.get("coupon_price", "null") not in ["null", None, ""]
                     else "없음"
                 )
             update_data = {
@@ -195,14 +200,26 @@ class ButtonSectionSyncCollect:
                 "coupon_end": price_info.get("coupon_end"),
                 "coupon_price": price_info.get("coupon_price"),
                 "sale": sale,
+                "coupon": coupon,
             }
+
+            print(f"update_data:{update_data}")  # 1차 여과된 수집 data
 
             # 기존 데이터 조회
             existing_data = await self.mongodb_service.engine.find_one(
                 InputGoodsManagementTableModel, {"origin_goods_code": code}
             )
 
-            if not existing_data:
+            if existing_data:
+                existing_data_dict = existing_data.dict()
+                existing_data_dict.pop("id", None)
+                existing_data_dict.pop("_id", None)
+                existing_data_dict.update(
+                    update_data
+                )  # 기존 데이터에 새로운 데이터 업데이트
+                update_data = existing_data_dict
+
+            elif not existing_data:
                 # 기존 데이터가 없으면 OriginGoodsDetailModel에서 데이터 가져오기
                 origin_goods_detail = await self.mongodb_service.engine.find_one(
                     OriginGoodsDetailModel, {"origin_goods_code": code}
@@ -211,7 +228,8 @@ class ButtonSectionSyncCollect:
                     origin_goods_detail_dict = origin_goods_detail.dict()
                     origin_goods_detail_dict.pop("id", None)
                     origin_goods_detail_dict.pop("_id", None)
-                    update_data.update(origin_goods_detail_dict)
+                    origin_goods_detail_dict.update(update_data)
+                    update_data = origin_goods_detail_dict
 
             try:
                 await mongodb_service.engine.get_collection(
@@ -220,8 +238,8 @@ class ButtonSectionSyncCollect:
                     {"origin_goods_code": code}, {"$set": update_data}, upsert=True
                 )
                 # combined_data_list에 합친 데이터 추가
-                combined_data = {**price_info, **update_data}
-                combined_data_list.append(combined_data)
+                # combined_data = {**price_info, **update_data}
+                combined_data_list.append(update_data)
             except Exception as e:
                 logger.error(
                     f"Error updating MongoDB for origin_goods_code {code}: {str(e)}"

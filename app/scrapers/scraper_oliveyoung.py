@@ -543,12 +543,17 @@ class BrandGoodsDetail:
                         elementlist["sale_end"] = f"{extract_value[2]}"
                         elementlist["sale_price"] = f"{extract_value[3]}"
                         elementlist["coupon"] = "없음"
-                        elementlist["sale"] = "없음"
+                        elementlist["sale"] = "세일"
 
                     else:
                         logger.warning(
                             "class of BranGoodsDetail:len_extract_value does not match"
                         )
+                else:
+                    elementlist["total_price"] = f"{extract_value[4]}"
+                    elementlist["goods_origin"] = f"{extract_value[0]}"
+                    elementlist["coupon"] = "없음"
+                    elementlist["sale"] = "없음"
 
             # # 2+1, 세일, 쿠폰, 증정 등 행사 유무 정보를 추출하는 함수
             # goods_promotion_element = WebDriverWait(self.driver, waiting_time).until(
@@ -750,40 +755,40 @@ class BrandGoodsDetail:
 
 # class BrandGoodsDetail 출력 test
 if __name__ == "__main__":
-    # INPUT_CODES = ["B000000140968"]
-    INPUT_CODES = [
-        "A000000180506",
-        "A000000190321",
-        "B000000140968",
-        "A000000159504",
-        "B000000206526",
-        "A000000204123",
-        "A000000202491",
-        "A000000206474",
-        "A000000207130",
-        "A000000202343",
-        "A000000200397",
-        "A000000207456",
-        "A000000191798",
-        "A000000206971",
-        "A000000128051",
-        "A000000188737",
-        "A000000205407",
-        "A000000159648",
-        "A000000158469",
-        "A000000200646",
-        "A000000181223",
-        "A000000207112",
-        "A000000206155",
-        "A000000205746",
-        "A000000201103",
-    ]
+    INPUT_CODES = ["A000000206782"]
+    # INPUT_CODES = [
+    #     "A000000180506",
+    #     "A000000190321",
+    #     "B000000140968",
+    #     "A000000159504",
+    #     "B000000206526",
+    #     "A000000204123",
+    #     "A000000202491",
+    #     "A000000206474",
+    #     "A000000207130",
+    #     "A000000202343",
+    #     "A000000200397",
+    #     "A000000207456",
+    #     "A000000191798",
+    #     "A000000206971",
+    #     "A000000128051",
+    #     "A000000188737",
+    #     "A000000205407",
+    #     "A000000159648",
+    #     "A000000158469",
+    #     "A000000200646",
+    #     "A000000181223",
+    #     "A000000207112",
+    #     "A000000206155",
+    #     "A000000205746",
+    #     "A000000201103",
+    # ]
     scrap_func = BrandGoodsDetail(INPUT_CODES)
     loop = asyncio.get_event_loop()
     successful_results = loop.run_until_complete(scrap_func.run())
     products = json.dumps(successful_results, indent=2, ensure_ascii=False)
 
-    # print(products)
+    print(products)
 
 # class SpecialToday 출력 test
 # if __name__ == "__main__":

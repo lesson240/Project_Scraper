@@ -5,3 +5,5 @@
 2024-07-09 22:10:13,625 - ERROR - ButtonSectionSyncCollect failed: 500: An error occurred occurred during sync_collect: not enough values to unpack (expected 2, got 1)
 2024-07-09 23:13:44,733 - ERROR - ButtonSectionDeleteGoods failed: 500: An error occurred occurred during sync_collect: 500: An error occurred while deleting data: 'str' object has no attribute 'origin_goods_code'
 2024-07-09 23:15:14,401 - ERROR - ButtonSectionDeleteGoods failed: 500: An error occurred occurred during sync_collect: 500: An error occurred while deleting data: 'str' object has no attribute 'origin_goods_code'
+2024-07-11 00:39:20,618 - ERROR - Failed to fetch data: Empty area_info
+2024-07-11 00:39:48,647 - ERROR - Failed to fetch data: Empty area_info

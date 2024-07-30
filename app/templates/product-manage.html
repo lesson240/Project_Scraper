@@ -43,22 +43,35 @@
                 <!-- 드롭다운 메뉴 -->
                 <select id="brand-dropdown" size="8" class="form-control"></select>
 
-                <input id="group-name-serch" placeholder="상품 그룹명을 선택해주세요" class="form-control">
+                <input id="group-name-search" placeholder="상품 그룹명을 선택해주세요" class="form-control">
                 <!-- <select id="group-name-serch-select" class="form-control"></select> -->
 
-                <input type="text" id="goods-name-serch" placeholder="상품명을 입력해주세요" class="form-control">
-                <input type="text" id="memo-serch" placeholder="메모를 입력해주세요" class="form-control">
+                <input type="text" id="goods-name-search" placeholder="상품명을 입력해주세요" class="form-control">
+                <input type="text" id="memo-search" placeholder="메모를 입력해주세요" class="form-control">
                 <!-- <select id="memo-search-select" class="form-control"></select> -->
-                <input type="text" id="unuploaded-market-serch" placeholder="미업로드 마켓을 선택해주세요" class="form-control">
+                <input type="text" id="unuploaded-market-saerch" placeholder="미업로드 마켓을 선택해주세요" class="form-control">
                 <!-- <select id="unuploaded-market-serch-select" placeholder="미업로드 마켓을 선택해주세요" class="form-control"></select> -->
             </div>
             <div class="filter-row">
                 <!-- <div class="form-group"> -->
                 <!-- <label for="collect-job-number-label">수집 작업번호</label> -->
-                <input type="text" id="collect-job-number-serch" placeholder="수집 작업번호를 입력해주세요" class="form-control">
+                <input type="text" id="collect-job-number-search" placeholder="수집 작업번호를 입력해주세요" class="form-control">
                 <!-- </div> -->
-                <input type="text" id="upload-job-number-serch" placeholder="업로드 작업번호를 입력해주세요" class="form-control">
-                <input type="text" id="goods-codes-serch" placeholder="상품코드를 입력해주세요" class="form-control">
+                <input type="text" id="upload-job-number-search" placeholder="업로드 작업번호를 입력해주세요" class="form-control">
+                <input type="text" id="goods-codes-search" placeholder="상품코드를 입력해주세요" class="form-control">
+                <input type="date" id="promotion-start-date" class="form-control">
+                <input type="date" id="promotion-end-date" class="form-control">
+                <select id="promotion-date-range" class="form-control">
+                    <option value="">프로모션 기간</option>
+                    <option value="today">오늘</option>
+                    <option value="last-1week">지난 1주일</option>
+                    <option value="next-1week">향후 1주일</option>
+                </select>
+                <select id="sold-out-search" class="form-control">
+                    <option value="">품절 유무</option>
+                    <option value="sold-out">품절</option>
+                    <option value="on-sale">판매</option>
+                </select>
                 <button class="btn btn-outline-info" id=" initialization-btn">초기화</button>
                 <button class="btn btn-outline-info" id="period-set-btn">기간설정</button>
                 <button class="btn btn-info" id="search-btn">조회</button>
@@ -66,7 +79,7 @@
         </div>
         <div class="spacer">
             <div class="btn-group">
-                <button id="add-btn" class="btn btn-secondary">Add</button>
+                <button id="price-set-btn" class="btn btn-secondary">가격설정</button>
                 <button id="sync-collect-btn" class="btn btn-primary">수집동기화</button>
                 <button id="sync-sales-btn" class="btn btn-primary">판매동기화</button>
                 <button id="sync-market-btn" class="btn btn-warning">마켓동기화</button>
@@ -79,7 +92,7 @@
                 <thead>
                     <tr>
                         <th><button class="parent-expand-btn">&#9660;</button></th>
-                        <th><input type="checkbox" class="grandparent-checkbox"></th>
+                        <th><input type="checkbox" class="grandparent-checkbox" id="grandparent-checkbox"></th>
                         <th>수집마켓</th>
                         <th>브랜드</th>
                         <th>브랜드코드</th>

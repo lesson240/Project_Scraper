@@ -24,7 +24,14 @@
 }
 
 /* Additional styles for better alignment */
-#brand-search #group-name-serch #product-name-serch #memo-search #unuploaded-market-serch #collect-job-number-serch #upload-job-number-serch #goods-codes-serch {
+#memo-search #unuploaded-market-serch #collect-job-number-search #upload-job-number-search #goods-codes-search #promotion-start-date #promotion-end-date {
+    width: calc(100px);
+    height: 35px;
+    margin-right: 20px;
+}
+
+
+#brand-search #group-name-search #product-name-search {
     width: calc(150px);
     height: 35px;
     margin-right: 20px;
