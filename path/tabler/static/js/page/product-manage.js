@@ -16,9 +16,9 @@ document.addEventListener("DOMContentLoaded", function () {
     var goodsNameSearch = document.getElementById("goods-name-search");
     var memoSearch = document.getElementById("memo-search");
     var goodsCodesSearch = document.getElementById("goods-codes-search");
-    var promotionStartDate = document.getElementById("promotion-start-date"); // 프로모션 시작일
-    var promotionEndDate = document.getElementById("promotion-end-date"); // 프로모션 종료일
-    var promotionDateRange = document.getElementById("promotion-date-range"); // 프로모션 기간 선택
+    var promotionStartDateSearch = document.getElementById("promotion-start-date"); // 프로모션 시작일
+    var promotionEndDateSearch = document.getElementById("promotion-end-date"); // 프로모션 종료일
+    var promotionDateRangeSearch = document.getElementById("promotion-date-range"); // 프로모션 기간 선택
     var soldOutSearch = document.getElementById("sold-out-search"); // 품절 유무 선택
     var searchBtn = document.getElementById("search-btn"); //  조회 버튼 선택자
     var saveBtn = document.getElementById("save-btn");  // Save 버튼 선택자
@@ -157,7 +157,9 @@ document.addEventListener("DOMContentLoaded", function () {
         var memo = memoSearch.value;
         var goodsCode = goodsCodesSearch.value;
         var brandName = brandSearch.value;
-        console.log(brandName, brandCode, groupName, goodsName, memo, goodsCode); // 로그 추가
+        var promotionStartDate = promotionStartDateSearch.value;
+        var promotionEndDate = promotionEndDateSearch.value;
+        console.log(brandName, brandCode, groupName, goodsName, memo, goodsCode, promotionEndDate, promotionStartDate); // 로그 추가
 
         try {
             // 필요한 모든 값을 포함한 객체를 생성
@@ -167,7 +169,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 brand_name: brandName,
                 memo_name: memo,
                 origin_goods_code: goodsCode,
-                origin_goods_name: goodsName
+                origin_goods_name: goodsName,
+                promotion_period: promotionEndDate
             };
 
             const saved_goods_list = await postData(`/${window.apiVersion}/product-data`, requestData);
@@ -180,13 +183,39 @@ document.addEventListener("DOMContentLoaded", function () {
             var tableBody = document.querySelector("#product-tbody");
             tableBody.innerHTML = ""; // 기존 테이블 내용 초기화
 
+            function parseCustomDate(dateString) {
+                if (!dateString) {
+                    return null; // dateString이 null 또는 undefined일 경우 null 반환
+                }
+                const parts = dateString.split('-');
+                if (parts.length === 3) {
+                    const year = parseInt(parts[0], 10) + 2000; // '24'를 2024로 변환
+                    const month = parseInt(parts[1], 10) - 1;  // JavaScript의 월은 0부터 시작하므로 1을 빼줍니다.
+                    const day = parseInt(parts[2], 10);
+                    return new Date(year, month, day);
+                }
+                return null; // 유효하지 않은 날짜 형식일 경우
+            }
+
             function getPromotionPeriod(item) {
-                if (item.coupon_end && item.coupon_end !== 'null') {
-                    return item.coupon_end;
+                // 날짜 형식의 문자열을 Date 객체로 변환하여 비교
+                const couponEnd = parseCustomDate(item.coupon_end);
+                const saleEnd = parseCustomDate(item.sale_end);
+
+                if (couponEnd instanceof Date && !isNaN(couponEnd)) {
+                    return couponEnd.toISOString().split('T')[0]; // ISO 형식에서 날짜 부분만 추출
                 }
-                if (item.sale_end && item.sale_end !== 'null') {
-                    return item.sale_end;
+                
+                if (saleEnd instanceof Date && !isNaN(saleEnd)) {
+                    return saleEnd.toISOString().split('T')[0];
                 }
+
+                // if (item.coupon_end && item.coupon_end !== 'null') {
+                //     return item.coupon_end;
+                // }
+                // if (item.sale_end && item.sale_end !== 'null') {
+                //     return item.sale_end;
+                // }
                 if (item.sale && item.sale !== 'null') {
                     return item.sale;
                 }

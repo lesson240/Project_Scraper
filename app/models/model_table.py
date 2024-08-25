@@ -2,8 +2,21 @@
 from odmantic import Model, Field
 from datetime import datetime
 from typing import Optional, List, Dict
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 
+
+# 입력된 문자열을 날짜로 파싱
+class DatetimeParseModel(BaseModel):
+    inquiry_datetime: datetime
+    @validator("inquiry_datetime", pre=True)
+    def parse_datetime(cls, date_value):
+
+        if isinstance(date_value, str):
+            try:
+                return datetime.strptime(date_value, "%Y-%m-%d")
+            except ValueError:
+                raise ValueError("Incorrect date format, should be YY-MM-DD")
+        return date_value
 
 # 필터구간 조회 버튼 클릭 시 get BaseModel
 class BrandCodeRequestModel(BaseModel):
@@ -13,6 +26,7 @@ class BrandCodeRequestModel(BaseModel):
     memo_name: Optional[str] = Field(None)
     origin_goods_code: Optional[str] = Field(None)
     origin_goods_name: Optional[str] = Field(None)
+    promotion_period: Optional[str] = Field(None)
 
 
 # 판매동기화 버튼 클릭 시 get BaseModel

@@ -389,8 +389,11 @@ class BrandGoodsDetail:
             options.add_argument("lang=ko_KR")
             options.add_argument("disable-gpu")  # gpu err 발생시 , --disable-gpu로 변경
             options.add_argument("mute-audio")  # --mute-audio
+            options.add_argument("--disable-extensions")
+            options.add_argument("--disable-dev-shm-usage")
             options.add_experimental_option("excludeSwitches", ["enable-logging"])
             options.add_experimental_option("detach", True)
+
             self.driver = webdriver.Chrome(
                 service=ChromeService(ChromeDriverManager().install()), options=options
             )

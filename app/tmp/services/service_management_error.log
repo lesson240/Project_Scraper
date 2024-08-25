@@ -6,3 +6,41 @@
 2024-07-09 23:49:39,240 - ERROR - No inquiry found from fetch_inquiry
 2024-07-10 00:09:59,082 - ERROR - No inquiry found from fetch_inquiry
 2024-07-10 00:14:13,444 - ERROR - No inquiry found from fetch_inquiry
+2024-08-22 02:13:40,645 - ERROR - An error occurred during sync_collect: [WinError 193] %1은(는) 올바른 Win32 응용 프로그램이 아닙니다
+2024-08-22 02:16:40,982 - ERROR - An error occurred during sync_collect: [WinError 193] %1은(는) 올바른 Win32 응용 프로그램이 아닙니다
+2024-08-22 02:16:48,507 - ERROR - An error occurred during sync_collect: [WinError 193] %1은(는) 올바른 Win32 응용 프로그램이 아닙니다
+2024-08-22 02:17:01,837 - ERROR - An error occurred during sync_collect: [WinError 193] %1은(는) 올바른 Win32 응용 프로그램이 아닙니다
+2024-08-22 15:50:05,236 - ERROR - An error occurred during sync_collect: [WinError 193] %1은(는) 올바른 Win32 응용 프로그램이 아닙니다
+2024-08-22 15:51:07,430 - ERROR - An error occurred during sync_collect: [WinError 193] %1은(는) 올바른 Win32 응용 프로그램이 아닙니다
+2024-08-22 15:51:12,679 - ERROR - An error occurred during sync_collect: [WinError 193] %1은(는) 올바른 Win32 응용 프로그램이 아닙니다
+2024-08-22 15:57:57,323 - ERROR - An error occurred during sync_collect: [WinError 193] %1은(는) 올바른 Win32 응용 프로그램이 아닙니다
+2024-08-23 00:48:56,560 - ERROR - An error occurred during sync_collect: ChromeDriverManager.__init__() got an unexpected keyword argument 'version'
+2024-08-23 00:54:38,047 - ERROR - No inquiry found from sync_collect
+2024-08-23 03:00:20,040 - ERROR - An error occurred during fetch_inquiry: BaseModel.__init__() takes 1 positional argument but 2 were given
+2024-08-23 03:00:31,408 - ERROR - An error occurred during fetch_inquiry: BaseModel.__init__() takes 1 positional argument but 2 were given
+2024-08-23 03:03:57,261 - ERROR - An error occurred during fetch_inquiry: BaseModel.__init__() takes 1 positional argument but 2 were given
+2024-08-23 03:07:18,399 - ERROR - An error occurred during fetch_inquiry: descriptor 'strftime' for 'datetime.date' objects doesn't apply to a 'str' object
+2024-08-23 03:13:32,168 - ERROR - An error occurred during fetch_inquiry: 500: Failed to fetch data: cannot encode object: DatetimeParseModel(inquiry_datetime=datetime.datetime(2024, 7, 31, 0, 0)), of type: <class 'app.models.model_table.DatetimeParseModel'>
+2024-08-23 03:25:29,481 - ERROR - No inquiry found from fetch_inquiry
+2024-08-23 03:31:59,072 - ERROR - No inquiry found from fetch_inquiry
+2024-08-23 03:38:39,801 - ERROR - An error occurred during fetch_inquiry: 500: Failed to fetch data: 1 validation error for InputGoodsManagementTableModel
+promotion_period
+  Input should be a valid datetime or date, input is too short [type=datetime_from_date_parsing, input_value='없음', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.7/v/datetime_from_date_parsing
+2024-08-25 18:49:30,141 - ERROR - An error occurred during fetch_inquiry: 500: Failed to fetch data: 1 validation error for InputGoodsManagementTableModel
+promotion_period
+  Input should be a valid datetime or date, input is too short [type=datetime_from_date_parsing, input_value='없음', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.7/v/datetime_from_date_parsing
+2024-08-25 18:50:01,176 - ERROR - An error occurred during fetch_inquiry: 500: Failed to fetch data: 1 validation error for InputGoodsManagementTableModel
+promotion_period
+  Input should be a valid datetime or date, input is too short [type=datetime_from_date_parsing, input_value='없음', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.7/v/datetime_from_date_parsing
+2024-08-25 18:50:18,286 - ERROR - No inquiry found from fetch_inquiry
+2024-08-25 18:51:05,234 - ERROR - An error occurred during fetch_inquiry: 500: Failed to fetch data: 1 validation error for InputGoodsManagementTableModel
+promotion_period
+  Input should be a valid datetime or date, input is too short [type=datetime_from_date_parsing, input_value='없음', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.7/v/datetime_from_date_parsing
+2024-08-25 18:54:20,062 - ERROR - An error occurred during fetch_inquiry: 500: Failed to fetch data: 1 validation error for InputGoodsManagementTableModel
+promotion_period
+  Input should be a valid datetime or date, input is too short [type=datetime_from_date_parsing, input_value='없음', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.7/v/datetime_from_date_parsing

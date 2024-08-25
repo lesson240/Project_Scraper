@@ -68,6 +68,7 @@ async def get_product_data(request: Request, input_data: BrandCodeRequestModel):
     memo_name = input_data.memo_name
     origin_goods_code = input_data.origin_goods_code
     origin_goods_name = input_data.origin_goods_name
+    promotion_period = input_data.promotion_period
 
     filter_section_inquiry = FilterSectionInquiry(
         brand_code,
@@ -76,6 +77,7 @@ async def get_product_data(request: Request, input_data: BrandCodeRequestModel):
         memo_name,
         origin_goods_code,
         origin_goods_name,
+        promotion_period,
     )
 
     try:

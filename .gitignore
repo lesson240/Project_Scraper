@@ -2,3 +2,5 @@ secrets.json
 .env
 dcker-compose.yml
 node_modules
+.venv/
+venv/

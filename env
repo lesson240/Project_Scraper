@@ -1,0 +1,14 @@
+# 로컬 환경 변수를 전반적으로 정의 및 수정 예정. 관련 파일 모두 검토 예정. 
+
+AWS_REGION=ap-southeast-1
+SQS_QUEUE_URL=https://sqs.ap-southeast-1.amazonaws.com/590183984790/my_queue
+AWS_ACCOUNT_ID=590183984790
+LAMBDA_REPO_NAME=my-lambda-repo
+WORKER_REPO_NAME=my-worker-repo
+AWS_EXECUTION_ENV=local
+ECR_URL=590183984790.dkr.ecr.ap-southeast-1.amazonaws.com
+STACK_NAME=my_stack
+COLLECT_SERVICE_URL=http://localhost:8000
+
+# 실행 환경 설정, cloud 배포 후 값을 cloud로 변경 필요.
+CLOUD_EXECUTION_ENV=local

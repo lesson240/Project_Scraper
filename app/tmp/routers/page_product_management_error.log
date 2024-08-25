@@ -7,3 +7,27 @@
 2024-07-09 23:15:14,401 - ERROR - ButtonSectionDeleteGoods failed: 500: An error occurred occurred during sync_collect: 500: An error occurred while deleting data: 'str' object has no attribute 'origin_goods_code'
 2024-07-11 00:39:20,618 - ERROR - Failed to fetch data: Empty area_info
 2024-07-11 00:39:48,647 - ERROR - Failed to fetch data: Empty area_info
+2024-08-22 02:13:40,677 - ERROR - ButtonSectionSyncCollect failed: 500: An error occurred occurred during sync_collect: [WinError 193] %1은(는) 올바른 Win32 응용 프로그램이 아닙니다
+2024-08-22 02:16:40,984 - ERROR - ButtonSectionSyncCollect failed: 500: An error occurred occurred during sync_collect: [WinError 193] %1은(는) 올바른 Win32 응용 프로그램이 아닙니다
+2024-08-22 02:16:48,508 - ERROR - ButtonSectionSyncCollect failed: 500: An error occurred occurred during sync_collect: [WinError 193] %1은(는) 올바른 Win32 응용 프로그램이 아닙니다
+2024-08-22 02:17:01,842 - ERROR - ButtonSectionSyncCollect failed: 500: An error occurred occurred during sync_collect: [WinError 193] %1은(는) 올바른 Win32 응용 프로그램이 아닙니다
+2024-08-22 15:50:05,298 - ERROR - ButtonSectionSyncCollect failed: 500: An error occurred occurred during sync_collect: [WinError 193] %1은(는) 올바른 Win32 응용 프로그램이 아닙니다
+2024-08-22 15:51:07,490 - ERROR - ButtonSectionSyncCollect failed: 500: An error occurred occurred during sync_collect: [WinError 193] %1은(는) 올바른 Win32 응용 프로그램이 아닙니다
+2024-08-22 15:51:12,681 - ERROR - ButtonSectionSyncCollect failed: 500: An error occurred occurred during sync_collect: [WinError 193] %1은(는) 올바른 Win32 응용 프로그램이 아닙니다
+2024-08-22 15:57:57,346 - ERROR - ButtonSectionSyncCollect failed: 500: An error occurred occurred during sync_collect: [WinError 193] %1은(는) 올바른 Win32 응용 프로그램이 아닙니다
+2024-08-23 00:48:56,586 - ERROR - ButtonSectionSyncCollect failed: 500: An error occurred occurred during sync_collect: ChromeDriverManager.__init__() got an unexpected keyword argument 'version'
+2024-08-23 03:00:20,067 - ERROR - FilterSectionInquiry failed: 500: An error occurred occurred during fetch_inquiry from mongoDB
+2024-08-23 03:00:31,410 - ERROR - FilterSectionInquiry failed: 500: An error occurred occurred during fetch_inquiry from mongoDB
+2024-08-23 03:03:57,295 - ERROR - FilterSectionInquiry failed: 500: An error occurred occurred during fetch_inquiry from mongoDB
+2024-08-23 03:07:18,423 - ERROR - FilterSectionInquiry failed: 500: An error occurred occurred during fetch_inquiry from mongoDB
+2024-08-23 03:13:32,196 - ERROR - FilterSectionInquiry failed: 500: An error occurred occurred during fetch_inquiry from mongoDB
+2024-08-23 03:38:39,821 - ERROR - FilterSectionInquiry failed: 500: An error occurred occurred during fetch_inquiry from mongoDB
+2024-08-25 18:49:30,175 - ERROR - FilterSectionInquiry failed: 500: An error occurred occurred during fetch_inquiry from mongoDB
+2024-08-25 18:50:01,180 - ERROR - FilterSectionInquiry failed: 500: An error occurred occurred during fetch_inquiry from mongoDB
+2024-08-25 18:51:05,262 - ERROR - FilterSectionInquiry failed: 500: An error occurred occurred during fetch_inquiry from mongoDB
+2024-08-25 18:54:20,065 - ERROR - FilterSectionInquiry failed: 500: An error occurred occurred during fetch_inquiry from mongoDB
+2024-08-25 19:03:52,594 - ERROR - FilterSectionInquiry failed: Object of type datetime is not JSON serializable
+2024-08-25 19:04:06,131 - ERROR - FilterSectionInquiry failed: Object of type datetime is not JSON serializable
+2024-08-25 19:25:54,817 - ERROR - FilterSectionInquiry failed: Object of type datetime is not JSON serializable
+2024-08-25 19:26:38,969 - ERROR - FilterSectionInquiry failed: Object of type datetime is not JSON serializable
+2024-08-25 19:30:35,814 - ERROR - FilterSectionInquiry failed: Object of type datetime is not JSON serializable
