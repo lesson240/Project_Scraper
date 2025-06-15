@@ -31,3 +31,6 @@
 2024-08-25 19:25:54,817 - ERROR - FilterSectionInquiry failed: Object of type datetime is not JSON serializable
 2024-08-25 19:26:38,969 - ERROR - FilterSectionInquiry failed: Object of type datetime is not JSON serializable
 2024-08-25 19:30:35,814 - ERROR - FilterSectionInquiry failed: Object of type datetime is not JSON serializable
+2025-06-15 16:19:17,019 - ERROR - ButtonSectionSyncCollect failed: 500: An error occurred occurred during sync_collect: [WinError 193] %1은(는) 올바른 Win32 응용 프로그램이 아닙니다
+2025-06-15 16:19:25,984 - ERROR - ButtonSectionSyncCollect failed: 500: An error occurred occurred during sync_collect: [WinError 193] %1은(는) 올바른 Win32 응용 프로그램이 아닙니다
+2025-06-15 17:35:46,571 - ERROR - Failed to fetch data: Empty area_info

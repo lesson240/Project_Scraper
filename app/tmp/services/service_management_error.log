@@ -44,3 +44,5 @@ promotion_period
 promotion_period
   Input should be a valid datetime or date, input is too short [type=datetime_from_date_parsing, input_value='없음', input_type=str]
     For further information visit https://errors.pydantic.dev/2.7/v/datetime_from_date_parsing
+2025-06-15 16:19:17,013 - ERROR - An error occurred during sync_collect: [WinError 193] %1은(는) 올바른 Win32 응용 프로그램이 아닙니다
+2025-06-15 16:19:25,983 - ERROR - An error occurred during sync_collect: [WinError 193] %1은(는) 올바른 Win32 응용 프로그램이 아닙니다

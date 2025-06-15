@@ -15,6 +15,7 @@ import math
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service as ChromeService
+from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support.ui import WebDriverWait
@@ -384,19 +385,23 @@ class BrandGoodsDetail:
     async def create_driver(self):
         if not self.driver:
             options = webdriver.ChromeOptions()
-            options.add_argument("headless")  # no browser
-            options.add_argument("window_size=1920x1080")  # --window-size=x,y
-            options.add_argument("lang=ko_KR")
-            options.add_argument("disable-gpu")  # gpu err 발생시 , --disable-gpu로 변경
-            options.add_argument("mute-audio")  # --mute-audio
+            options.add_argument("--headless")  # no browser
+            options.add_argument("--window_size=1920x1080")  # --window-size=x,y
+            options.add_argument("--lang=ko_KR")
+            options.add_argument(
+                "--disable-gpu"
+            )  # gpu err 발생시 , --disable-gpu로 변경
+            options.add_argument("--mute-audio")  # --mute-audio
             options.add_argument("--disable-extensions")
             options.add_argument("--disable-dev-shm-usage")
             options.add_experimental_option("excludeSwitches", ["enable-logging"])
             options.add_experimental_option("detach", True)
 
-            self.driver = webdriver.Chrome(
-                service=ChromeService(ChromeDriverManager().install()), options=options
-            )
+            # self.driver = webdriver.Chrome(
+            #     service=ChromeService(ChromeDriverManager().install()), options=options
+            # )
+            service = Service()
+            self.driver = webdriver.Chrome(service=service, options=options)
 
     async def close_driver(self):
         if self.driver:
@@ -758,7 +763,7 @@ class BrandGoodsDetail:
 
 # class BrandGoodsDetail 출력 test
 if __name__ == "__main__":
-    INPUT_CODES = ["A000000206782"]
+    INPUT_CODES = ["A000000223761"]
     # INPUT_CODES = [
     #     "A000000180506",
     #     "A000000190321",
