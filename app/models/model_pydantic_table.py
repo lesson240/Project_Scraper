@@ -62,38 +62,38 @@ class InputGoodsTableRequestModel(BaseModel):
     promotion_period: Optional[str]
 
 
-# 작성중
-class InputGoodsManagementTableModel(Model):
-    market: Optional[str] = Field(None)
-    brand_name: Optional[str] = Field(None)
-    brand_code: Optional[str] = Field(None)
-    origin_goods_code: Optional[str] = Field(None)
-    origin_goods_name: Optional[str] = Field(None)
-    exposure_product_id: Optional[str] = Field(None)
-    option_id: Optional[str] = Field(None)
-    matching_option_id: Optional[str] = Field(None)
-    stock_option: Optional[str] = Field(None)
-    total_price: Optional[int] = Field(None)
-    selling_price: Optional[int] = Field(None)
-    winner_price: Optional[int] = Field(None)
-    lowest_price: Optional[int] = Field(None)
-    maximum_price: Optional[int] = Field(None)
-    stock_status: Optional[str] = Field(None)
-    promotion_period: Optional[str] = Field(None)
-    winner_delivery: Optional[str] = Field(None)
-    winner_deliveryday: Optional[int] = Field(None)
-    sale: Optional[str] = Field(None)
-    sold_out: Optional[str] = Field(None)
-    goods_origin: Optional[int] = Field(None)
-    sale_start: Optional[str] = Field(None)
-    sale_end: Optional[str] = Field(None)
-    sale_price: Optional[int] = Field(None)
-    coupon_start: Optional[str] = Field(None)
-    coupon_end: Optional[str] = Field(None)
-    coupon_price: Optional[int] = Field(None)
-    group_name: Optional[str] = Field(None)
-    memo: Optional[str] = Field(None)
+# # 작성중
+# class InputGoodsManagementTableModel(Model):
+#     market: Optional[str] = Field(None)
+#     brand_name: Optional[str] = Field(None)
+#     brand_code: Optional[str] = Field(None)
+#     origin_goods_code: Optional[str] = Field(None)
+#     origin_goods_name: Optional[str] = Field(None)
+#     exposure_product_id: Optional[str] = Field(None)
+#     option_id: Optional[str] = Field(None)
+#     matching_option_id: Optional[str] = Field(None)
+#     stock_option: Optional[str] = Field(None)
+#     total_price: Optional[int] = Field(None)
+#     selling_price: Optional[int] = Field(None)
+#     winner_price: Optional[int] = Field(None)
+#     lowest_price: Optional[int] = Field(None)
+#     maximum_price: Optional[int] = Field(None)
+#     stock_status: Optional[str] = Field(None)
+#     promotion_period: Optional[str] = Field(None)
+#     winner_delivery: Optional[str] = Field(None)
+#     winner_deliveryday: Optional[int] = Field(None)
+#     sale: Optional[str] = Field(None)
+#     sold_out: Optional[str] = Field(None)
+#     goods_origin: Optional[int] = Field(None)
+#     sale_start: Optional[str] = Field(None)
+#     sale_end: Optional[str] = Field(None)
+#     sale_price: Optional[int] = Field(None)
+#     coupon_start: Optional[str] = Field(None)
+#     coupon_end: Optional[str] = Field(None)
+#     coupon_price: Optional[int] = Field(None)
+#     group_name: Optional[str] = Field(None)
+#     memo: Optional[str] = Field(None)
 
-    # options: Optional[List[Dict[str, str]]] = None
+#     # options: Optional[List[Dict[str, str]]] = None
 
-    model_config = {"collection": "ModifiedGoodsDetail"}
+#     model_config = {"collection": "ModifiedGoodsDetail"}

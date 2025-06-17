@@ -13,14 +13,14 @@ from app.services.service_management import (
     ButtonSectionSyncCollect,
     ButtonSectionDeleteGoods,
 )
-from app.models.model_pydantic_oliveyoung import OriginGoodsDetailModel
 from app.models.model_pydantic_table import (
     InputGoodsTableRequestModel,
-    InputGoodsManagementTableModel,
     BrandCodeRequestModel,
     MatchingOptionIdModel,
     OriginGoodsCodeModel,
 )
+from app.models.model_odmantic_oliveyoung import OriginGoodsDetailModel
+from app.models.model_odmantic_table import InputGoodsManagementTableModel
 from app.scrapers.scraper_coupang import WinnerPriceInquiry
 from app.scrapers.scraper_oliveyoung import BrandGoodsDetail
 from app.utils.util_router import set_version

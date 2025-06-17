@@ -1,65 +1,67 @@
 # 라이브러리 불러오기
 from odmantic import Model, Field
-from datetime import datetime
+
+# from datetime import datetime
 from typing import Optional, List, Dict
-from pydantic import BaseModel, validator, Field
+
+# from pydantic import BaseModel, validator, Field
 
 
-# 입력된 문자열을 날짜로 파싱
-class DatetimeParseModel(BaseModel):
-    inquiry_datetime: datetime
+# # 입력된 문자열을 날짜로 파싱
+# class DatetimeParseModel(BaseModel):
+#     inquiry_datetime: datetime
 
-    @validator("inquiry_datetime", pre=True)
-    def parse_datetime(cls, date_value):
+#     @validator("inquiry_datetime", pre=True)
+#     def parse_datetime(cls, date_value):
 
-        if isinstance(date_value, str):
-            try:
-                return datetime.strptime(date_value, "%Y-%m-%d")
-            except ValueError:
-                raise ValueError("Incorrect date format, should be YY-MM-DD")
-        return date_value
-
-
-# 필터구간 조회 버튼 클릭 시 get BaseModel
-class BrandCodeRequestModel(BaseModel):
-    brand_name: Optional[str] = Field(None)
-    brand_code: Optional[str] = Field(None)
-    group_name: Optional[str] = Field(None)
-    memo_name: Optional[str] = Field(None)
-    origin_goods_code: Optional[str] = Field(None)
-    origin_goods_name: Optional[str] = Field(None)
-    promotion_period: Optional[str] = Field(None)
+#         if isinstance(date_value, str):
+#             try:
+#                 return datetime.strptime(date_value, "%Y-%m-%d")
+#             except ValueError:
+#                 raise ValueError("Incorrect date format, should be YY-MM-DD")
+#         return date_value
 
 
-# 판매동기화 버튼 클릭 시 get BaseModel
-class MatchingOptionIdModel(BaseModel):
-    origin_goods_code: Optional[str] = Field(None)
-    matching_option_id: Optional[str] = Field(None)
-    brand_code: Optional[str] = Field(None)
+# # 필터구간 조회 버튼 클릭 시 get BaseModel
+# class BrandCodeRequestModel(BaseModel):
+#     brand_name: Optional[str] = Field(None)
+#     brand_code: Optional[str] = Field(None)
+#     group_name: Optional[str] = Field(None)
+#     memo_name: Optional[str] = Field(None)
+#     origin_goods_code: Optional[str] = Field(None)
+#     origin_goods_name: Optional[str] = Field(None)
+#     promotion_period: Optional[str] = Field(None)
 
 
-# 수집동기화 버튼 클릭 시 get BaseModel
-class OriginGoodsCodeModel(BaseModel):
-    origin_goods_code: Optional[str]
+# # 판매동기화 버튼 클릭 시 get BaseModel
+# class MatchingOptionIdModel(BaseModel):
+#     origin_goods_code: Optional[str] = Field(None)
+#     matching_option_id: Optional[str] = Field(None)
+#     brand_code: Optional[str] = Field(None)
 
 
-class InputGoodsTableRequestModel(BaseModel):
-    market: Optional[str]
-    brand: Optional[str]
-    brand_code: Optional[str]
-    origin_goods_code: Optional[str]
-    origin_goods_name: Optional[str]
-    exposure_product_id: Optional[str]
-    option_id: Optional[str]
-    matching_option_id: Optional[str]
-    stock_option: Optional[str]
-    total_price: Optional[int]
-    selling_price: Optional[int]
-    winner_price: Optional[int]
-    lowest_price: Optional[int]
-    maximum_price: Optional[int]
-    stock_status: Optional[str]
-    promotion_period: Optional[str]
+# # 수집동기화 버튼 클릭 시 get BaseModel
+# class OriginGoodsCodeModel(BaseModel):
+#     origin_goods_code: Optional[str]
+
+
+# class InputGoodsTableRequestModel(BaseModel):
+#     market: Optional[str]
+#     brand: Optional[str]
+#     brand_code: Optional[str]
+#     origin_goods_code: Optional[str]
+#     origin_goods_name: Optional[str]
+#     exposure_product_id: Optional[str]
+#     option_id: Optional[str]
+#     matching_option_id: Optional[str]
+#     stock_option: Optional[str]
+#     total_price: Optional[int]
+#     selling_price: Optional[int]
+#     winner_price: Optional[int]
+#     lowest_price: Optional[int]
+#     maximum_price: Optional[int]
+#     stock_status: Optional[str]
+#     promotion_period: Optional[str]
 
 
 # 작성중

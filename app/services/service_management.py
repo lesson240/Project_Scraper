@@ -6,11 +6,9 @@ sys.path.append(str(BASE_DIR))
 
 # 프로젝트 Module 불러오기
 from app.utils.util_logging import setup_logger
-from app.models.model_pydantic_oliveyoung import OriginGoodsDetailModel
-from app.models.model_pydantic_table import (
-    InputGoodsManagementTableModel,
-    DatetimeParseModel,
-)
+from app.models.model_odmantic_oliveyoung import OriginGoodsDetailModel
+from app.models.model_pydantic_table import DatetimeParseModel
+from app.models.model_odmantic_table import InputGoodsManagementTableModel
 from app.scrapers.scraper_oliveyoung import BrandGoodsDetail
 from app.services.service_mongodb import mongodb_service
 

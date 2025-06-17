@@ -37,8 +37,8 @@ export default function ProductManagePage() {
             {loading && <p>로딩 중...</p>}
             <div style={{ whiteSpace: "pre-wrap", marginTop: "16px", background: "#f4f4f4", padding: "10px" }}>
                 <strong>API 응답결과:</strong>
-                <div>
-                    {result}
+                <div style={{ background: "#f5f5f5", padding: "1rem" }}>
+                    <pre>{result ? JSON.stringify(result, null, 2) : "검색 결과가 없습니다."}</pre>
                 </div>
             </div>
         </div>

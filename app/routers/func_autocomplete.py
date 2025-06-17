@@ -8,7 +8,7 @@ sys.path.append(str(BASE_DIR))
 # 프로젝트 Module 불러오기
 from app.utils.util_logging import setup_logger
 from app.services.service_mongodb import mongodb_service
-from app.models.model_pydantic_oliveyoung import BrandListModel, OriginGoodsDetailModel
+from app.models.model_odmantic_oliveyoung import BrandListModel, OriginGoodsDetailModel
 from app.utils.util_router import set_version
 
 # 라이브러리 불러오기
