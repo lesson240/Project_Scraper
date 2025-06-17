@@ -13,8 +13,8 @@ from app.services.service_management import (
     ButtonSectionSyncCollect,
     ButtonSectionDeleteGoods,
 )
-from app.models.model_oliveyoung import OriginGoodsDetailModel
-from app.models.model_table import (
+from app.models.model_pydantic_oliveyoung import OriginGoodsDetailModel
+from app.models.model_pydantic_table import (
     InputGoodsTableRequestModel,
     InputGoodsManagementTableModel,
     BrandCodeRequestModel,

@@ -6,8 +6,11 @@ sys.path.append(str(BASE_DIR))
 
 # 프로젝트 Module 불러오기
 from app.utils.util_logging import setup_logger
-from app.models.model_oliveyoung import OriginGoodsDetailModel
-from app.models.model_table import InputGoodsManagementTableModel, DatetimeParseModel
+from app.models.model_pydantic_oliveyoung import OriginGoodsDetailModel
+from app.models.model_pydantic_table import (
+    InputGoodsManagementTableModel,
+    DatetimeParseModel,
+)
 from app.scrapers.scraper_oliveyoung import BrandGoodsDetail
 from app.services.service_mongodb import mongodb_service
 
@@ -64,9 +67,13 @@ class FilterSectionInquiry:
         if self.origin_goods_name:
             filters["origin_goods_name"] = {"$in": [self.origin_goods_name]}
         if self.promotion_period:
-            parse_promotion_period = DatetimeParseModel(inquiry_datetime=self.promotion_period)
+            parse_promotion_period = DatetimeParseModel(
+                inquiry_datetime=self.promotion_period
+            )
             print(parse_promotion_period.inquiry_datetime)
-            filters["promotion_period"] = {"$gte": [parse_promotion_period.inquiry_datetime]}
+            filters["promotion_period"] = {
+                "$gte": [parse_promotion_period.inquiry_datetime]
+            }
 
         try:
             # 모든 인자가 없으면 모든 데이터를 가져옴

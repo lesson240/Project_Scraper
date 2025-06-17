@@ -46,3 +46,7 @@ promotion_period
     For further information visit https://errors.pydantic.dev/2.7/v/datetime_from_date_parsing
 2025-06-15 16:19:17,013 - ERROR - An error occurred during sync_collect: [WinError 193] %1은(는) 올바른 Win32 응용 프로그램이 아닙니다
 2025-06-15 16:19:25,983 - ERROR - An error occurred during sync_collect: [WinError 193] %1은(는) 올바른 Win32 응용 프로그램이 아닙니다
+2025-06-17 11:57:27,025 - ERROR - An error occurred during fetch_inquiry: 1 validation error for DatetimeParseModel
+inquiry_datetime
+  Value error, Incorrect date format, should be YY-MM-DD [type=value_error, input_value='string', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.7/v/value_error

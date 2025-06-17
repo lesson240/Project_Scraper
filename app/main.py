@@ -38,6 +38,9 @@ logger_name = os.path.splitext(file_name)[0]
 # 로거 설정, __file__을 전달
 logger = setup_logger(logger_name, __file__)
 
+# 버전 설정
+prefix = get_versioned_prefix()
+
 # 라우터 목록
 routers = [
     (func_autocomplete.router, ["FuncAutocomplete"]),
@@ -73,8 +76,15 @@ async def lifespan(app: FastAPI):
 # app 객체 선언
 app = FastAPI(lifespan=lifespan)
 
-# 버전 설정
-prefix = get_versioned_prefix()
+# CORS 설정
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    # allow_origins=["http://localhost:5173"],  # React dev server adress
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # 정적 파일 경로 설정
 app.mount(
@@ -82,15 +92,6 @@ app.mount(
 )
 app.mount(
     "/websockets", StaticFiles(directory=BASE_DIR / "app/websockets"), name="websockets"
-)
-
-# CORS 설정
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
 )
 
 # 라우터 포함

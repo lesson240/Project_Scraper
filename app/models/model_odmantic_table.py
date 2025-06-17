@@ -2,12 +2,13 @@
 from odmantic import Model, Field
 from datetime import datetime
 from typing import Optional, List, Dict
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, validator, Field
 
 
 # 입력된 문자열을 날짜로 파싱
 class DatetimeParseModel(BaseModel):
     inquiry_datetime: datetime
+
     @validator("inquiry_datetime", pre=True)
     def parse_datetime(cls, date_value):
 
@@ -17,6 +18,7 @@ class DatetimeParseModel(BaseModel):
             except ValueError:
                 raise ValueError("Incorrect date format, should be YY-MM-DD")
         return date_value
+
 
 # 필터구간 조회 버튼 클릭 시 get BaseModel
 class BrandCodeRequestModel(BaseModel):
