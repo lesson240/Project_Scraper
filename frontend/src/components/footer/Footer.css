@@ -1,0 +1,212 @@
+.footer {
+    width: 100%;
+}
+
+@media (min-width: 1400px) {
+    .footer {
+        padding: 3rem 15rem;
+    }
+}
+
+@media (max-width: 1400px) {
+    .footer {
+        padding: 3rem 10rem;
+    }
+}
+
+@media (max-width: 1100px) {
+    .footer {
+        padding: 3rem 7rem;
+    }
+}
+
+@media (max-width: 900px) {
+    .policy-modal {
+        width: 90%;
+    }
+
+    .landing-pc {
+        display: none;
+    }
+
+    .footer {
+        padding: 3rem 2rem;
+    }
+
+    .footer img {
+        width: 20%;
+    }
+
+    .policy-container {
+        flex-wrap: wrap;
+    }
+
+    .footer-contents {
+        font-size: 8px;
+    }
+
+    .policybutton {
+        border-radius: 7px;
+        font-size: 6px;
+    }
+
+    .policybutton-container {
+        gap: 0.3rem;
+    }
+
+    .textDivider {
+        margin: 0 0.5rem;
+    }
+}
+
+@media (min-width: 900px) {
+    .footer-mobile {
+        display: none;
+    }
+
+    .footer-contents {
+        font-size: 18px;
+    }
+
+    .policybutton {
+        border-radius: 50px;
+        font-size: 10px;
+    }
+
+    .policybutton-container {
+        gap: 1rem;
+    }
+
+    .textDivider {
+        margin: 0 1rem;
+    }
+}
+
+@media (min-width: 1400px) {
+    .policybutton {
+        display: none;
+    }
+}
+
+@media (max-width: 1400px) {
+    .policybutton2 {
+        display: none;
+    }
+}
+
+.footer-divider {
+    margin: 1.2rem 0;
+    border: 1px solid #0e353550;
+}
+
+.footer-contents {
+    color: #39415c80;
+    font-family: "SCDream3";
+    margin: 0;
+}
+
+.policy-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.policybutton-container {
+    display: flex;
+}
+
+.policybutton {
+    border: 1px solid #00c2b9;
+    padding: 0.1rem 1rem;
+    color: #39415c80;
+    font-family: "SCDream3";
+    box-sizing: border-box;
+}
+
+.policybutton2 {
+    padding: 0;
+    text-align: center;
+    border: 1px solid #00c2b9;
+    border-radius: 50px;
+    width: 182px;
+    height: 35px;
+    font-size: 18px;
+    font-family: "SCDream3" !important;
+    color: #39415c80;
+    box-sizing: border-box;
+}
+
+.policybutton2:hover,
+.policybutton:hover {
+    border: none;
+    background-color: #00c2b9;
+    color: #fff;
+}
+
+.policybutton:hover {
+    border: none !important;
+}
+
+.policy-modal {
+    height: 80%;
+    border-radius: 20px;
+    padding: 0rem 1rem 1rem 2rem;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    overflow-y: auto;
+    transform: translate(-50%, -50%);
+    max-width: 900px;
+    background-color: #fff;
+    border: 1px solid #00000040;
+    box-shadow: 0px 4px 4px 0px #00000040;
+    color: #39415c80;
+    font-family: "SCDream3";
+    z-index: 2;
+}
+
+.policy-modal>p {
+    margin: 0;
+}
+
+.policy-confirm-button {
+    padding: 0.5rem 4rem;
+    margin-right: 20px;
+    border-radius: 50px;
+    background-color: #44c0ba;
+    color: #000;
+    font-family: "SCDream5";
+}
+
+.policy-modal-sticky {
+    position: sticky;
+    top: 0;
+}
+
+.policymodalHeader {
+    display: flex;
+    justify-content: space-between;
+    padding: 2rem 0;
+    width: 100%;
+    height: 3rem;
+    background-color: #fff;
+    z-index: 3;
+}
+
+.earth-button-box {
+    width: 70%;
+    position: absolute;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: space-around;
+    background-color: #ffffff80;
+    border-radius: 50px;
+    padding: 1rem 0;
+}
+
+.earth-button-box button {
+    font-family: "SCDream7" !important;
+    font-size: 20px;
+}
