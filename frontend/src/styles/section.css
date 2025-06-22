@@ -1,0 +1,61 @@
+/* .root {
+  
+} */
+
+
+/* 1. grid 설정 */
+.columns-auto-fit {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+    padding: 10px;
+}
+
+.columns-auto-fit-large {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 10px;
+    padding: 10px;
+}
+
+/* 2. section 설정 */
+.section-block {
+  display: flex;
+  flex-direction: column;
+  height: 240px;
+  min-width: 0; /*overflow 방지용 */
+  width: 100%;
+  /* background: #e49999;  */
+  border-radius: 5%;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.03);
+  padding: 10px 15px;
+  margin-bottom: 5px;
+  transition: box-shadow 0.2s;
+  font-size: x-small;
+  /* position: relative; */
+}
+
+/* 그리드 내부 섹션이 커질 때 반응형 처리 예시 */
+@media (max-width: 500px) {
+  .columns-auto-fit {
+    grid-template-columns: 1fr;
+    padding: 10px;
+  }
+  .section-block-large {
+    min-width: 0;
+  }
+}
+
+.section-head {
+  flex: 0.1;
+  /* background: #d0ff00; */
+  /* border: 5px solid #bea0ff; */
+  box-sizing: border-box; 
+}
+
+.section-body {
+  flex: 1;
+  /* background: #d0ff00; */
+  /* border: 5px solid #4dd0e1; */
+  box-sizing: border-box;
+}

@@ -1,7 +1,10 @@
+import "@/styles/section.css"
+
 export default function UserInformSection() {
     return (
-        <section>
-            <h2>계정정보</h2>
+        <section className="section-block">
+            <main className="section-head"><h2>계정정보</h2></main>
+            <main className="section-body"></main>
             {/* 계정정보 하위 ui 존재 */}
         </section>
     );
