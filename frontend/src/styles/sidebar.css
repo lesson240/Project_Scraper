@@ -1,0 +1,132 @@
+/* sidebar.css */
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 200px;
+    height: 100vh;
+    background: #ffc107;
+    transition: width 0.3s ease;
+    z-index: 1002;
+    overflow-y: auto;
+}
+
+.sidebar.collapsed {
+    width: 80px;
+}
+
+.sidebar.animating {
+    transition: width 0.3s ease;
+}
+
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+}
+
+.sidebar-logo {
+    height: 28px;
+}
+
+.sidebar-close-icon {
+    background: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.sidebar-close-icon:hover {
+    background: #ffe066;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 22px;
+    margin: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: 20px 0 0 20px;
+    font-weight: 600;
+    text-decoration: none;
+    background: transparent;
+    transition: background 0.2s, color 0.2s;
+    color: #000;
+}
+
+.sidebar-link .icon-wrapper {
+    color: #f8f9fa;
+    transition: color 0.2s;
+}
+
+.sidebar-link .text-wrapper {
+    color: #f8f9fa;
+    transition: color 0.2s, opacity 0.3s, width 0.3s;
+    white-space: nowrap;
+}
+
+.sidebar.collapsed .text-wrapper {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+}
+
+.sidebar-link:hover {
+    background: #f8f9fa;
+}
+
+.sidebar-link:hover .icon-wrapper {
+    color: #20c997;
+}
+
+.sidebar-link:hover .text-wrapper {
+    color: #000000;
+}
+
+.sidebar-link-active {
+    background: #f8f9fa;
+    padding-left: 30px;
+}
+
+.sidebar-link-active .icon-wrapper {
+    color: #20c997;
+}
+
+.sidebar-link-active .text-wrapper {
+    color: #000000;
+}
+
+.sidebar-footer {
+    margin: 2rem 0 0 0;
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}
+
+.sidebar-footer a {
+    background: #f8f9fa;
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.sidebar-overlay {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1001;
+}

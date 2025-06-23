@@ -18,7 +18,7 @@ body,
 
 /* 2. 바탕색, 폰트 등 전체 레이아웃에 적용 */
 body {
-  background: #fff;
+  background: #f8f9fa;
   color: #222;
   font-family: 'Pretendard', 'Noto Sans KR', Arial, sans-serif;
   line-height: 1.5;

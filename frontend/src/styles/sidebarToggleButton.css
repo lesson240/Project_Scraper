@@ -1,0 +1,19 @@
+.sidebar-toggle-button {
+    padding: 0.5rem;
+    border-radius: 0.375rem;
+    background-color: transparent;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border: none;
+    outline: none;
+}
+
+.sidebar-toggle-button:hover {
+    background-color: #ffc107;
+    /* 노란 hover 효과 */
+}
+
+.sidebar-toggle-button:active {
+    transform: scale(0.95);
+    /* 클릭 애니메이션 */
+}
