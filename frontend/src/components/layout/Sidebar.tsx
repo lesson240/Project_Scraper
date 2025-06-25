@@ -43,74 +43,78 @@ export default function Sidebar({ open, onClose }: Props) {
     return (
         <>
             <aside
-                className={`sidebar ${open ? "open" : "collapsed"} ${isAnimating ? "animating" : ""}`}
+                className={`sidebar ${open ? "open" : "collapsed"} ${isAnimating ? "animating" : ""} ${isMobile ? "mobile" : ""}`}
                 onAnimationEnd={() => {
                     if (!open) stopAnimation();
                 }}
             >
-                {/* 상단 로고 및 토글 */}
-                <div className="sidebar-header">
-                    <div className="sidebar-logo">
-                        <Link to="/">
-                            <img src="logo.png" alt="logo" />
-                        </Link>
-                    </div>
+                {!isMobile || open ? (
+                    <>
+                        {/* 상단 로고 및 토글 */}
+                        <div className="sidebar-header">
+                            <div className="sidebar-logo">
+                                <Link to="/">
+                                    <img src="logo.png" alt="logo" />
+                                </Link>
+                            </div>
 
-                    <div className="sidebar-toggle-wrapper">
-                        <button
-                            className="sidebar-close-icon"
-                            onClick={onClose}
-                            aria-label={open ? "사이드바 닫기" : "사이드바 열기"}
-                            title={open ? "사이드바 닫기" : "사이드바 열기"}
-                        >
-                            <PiSidebarSimpleDuotone size={18} />
-                        </button>
-                    </div>
-                </div>
-                {/* 네비게이션 메뉴 */}
-                <nav>
-                    {menu.map((item) => (
-                        <NavLink
-                            key={item.path}
-                            to={item.path}
-                            className={({ isActive }) =>
-                                `sidebar-link ${isActive ? "sidebar-link-active" : ""}`
-                            }
-                        >
-                            <span className="icon-wrapper">{item.icon}</span>
-                            <span className="text-wrapper">{item.label}</span>
-                        </NavLink>
-                    ))}
-                </nav>
+                            <div className="sidebar-toggle-wrapper">
+                                <button
+                                    className="sidebar-close-icon"
+                                    onClick={onClose}
+                                    aria-label={open ? "사이드바 닫기" : "사이드바 열기"}
+                                    title={open ? "사이드바 닫기" : "사이드바 열기"}
+                                >
+                                    <PiSidebarSimpleDuotone size={18} />
+                                </button>
+                            </div>
+                        </div>
+                        {/* 네비게이션 메뉴 */}
+                        <nav>
+                            {menu.map((item) => (
+                                <NavLink
+                                    key={item.path}
+                                    to={item.path}
+                                    className={({ isActive }) =>
+                                        `sidebar-link ${isActive ? "sidebar-link-active" : ""}`
+                                    }
+                                >
+                                    <span className="icon-wrapper">{item.icon}</span>
+                                    <span className="text-wrapper">{item.label}</span>
+                                </NavLink>
+                            ))}
+                        </nav>
 
-                {/* 하단 아이콘 링크 */}
-                <div className="sidebar-footer">
-                    <a
-                        href="https://youtube.com" target="_blank" rel="noreferrer"
-                        className="sidebar-footer-icon" title="YouTube"
-                    >
-                        <img
-                            src="/src/assets/images/sidebar/youtubeIconRed.png"
-                            alt="유튜브"
-                            className="footer-icon-img default" />
-                        <img
-                            src="/src/assets/images/sidebar/youtubeIconWhite.png"
-                            alt="유튜브-hover"
-                            className="footer-icon-img hover" />
-                    </a>
-                    <a
-                        href="https://cafe.naver.com" target="_blank" rel="noreferrer"
-                        className="sidebar-footer-icon naver-icon" title="NaverCafe"
-                    >
-                        <img src="/src/assets/images/sidebar/naverIconGreen.png"
-                            alt="logo"
-                            className="footer-icon-img default" />
-                        <img src="/src/assets/images/sidebar/naverIconWhite.png"
-                            alt="logo"
-                            className="footer-icon-img hover" />
+                        {/* 하단 아이콘 링크 */}
+                        <div className="sidebar-footer">
+                            <a
+                                href="https://youtube.com" target="_blank" rel="noreferrer"
+                                className="sidebar-footer-icon" title="YouTube"
+                            >
+                                <img
+                                    src="/src/assets/images/sidebar/youtubeIconRed.png"
+                                    alt="유튜브"
+                                    className="footer-icon-img default" />
+                                <img
+                                    src="/src/assets/images/sidebar/youtubeIconWhite.png"
+                                    alt="유튜브-hover"
+                                    className="footer-icon-img hover" />
+                            </a>
+                            <a
+                                href="https://cafe.naver.com" target="_blank" rel="noreferrer"
+                                className="sidebar-footer-icon naver-icon" title="NaverCafe"
+                            >
+                                <img src="/src/assets/images/sidebar/naverIconGreen.png"
+                                    alt="logo"
+                                    className="footer-icon-img default" />
+                                <img src="/src/assets/images/sidebar/naverIconWhite.png"
+                                    alt="logo"
+                                    className="footer-icon-img hover" />
 
-                    </a>
-                </div>
+                            </a>
+                        </div>
+                    </>
+                ) : null}
             </aside >
             {/* 모바일일 때만 오버레이 적용 */}
             {isMobile && open && <div className="sidebar-overlay" onClick={onClose} />}

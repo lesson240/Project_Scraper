@@ -215,3 +215,19 @@
     height: 100vh;
     z-index: 1001;
 }
+
+/* 모바일 전용 숨김 처리 */
+.sidebar.mobile {
+    position: fixed;
+    width: 0;
+    overflow: hidden;
+    transition: width 0.3s ease;
+}
+
+.sidebar.mobile.open {
+    width: 200px;
+}
+
+.sidebar.mobile.collapsed {
+    width: 0;
+}

@@ -1,0 +1,27 @@
+/* 전체 레이아웃 설정 */
+.layout-wrapper {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+}
+
+/* sidebar + main-content 영역 */
+.layout-content {
+    flex: 1;
+    transition: margin-left 0.3s ease;
+    min-height: 100vh;
+    background-color: #f9fafb;
+}
+
+/* sidebar 영역에서 헤더와 본문이 밀려날 수 있도록 */
+.sidebar-open .layout-content {
+    margin-left: 200px;
+}
+
+.sidebar-collapsed .layout-content {
+    margin-left: 80px;
+}
+
+.main-content {
+    padding: 24px;
+}

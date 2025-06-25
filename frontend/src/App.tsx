@@ -2,7 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import Layout from "./components/layout/Layout";
 import DashboardPage from "./pages/DashboardPage";
 // import ProductUploadPage from "@/pages/ProductUploadPage_old";
-import ProductUpload from "@/pages/ProductUploadPage";
+import ProductCollect from "@/pages/ProductCollectPage";
 // ...etc
 
 export default function App() {
@@ -11,7 +11,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<DashboardPage />} />
         {/* <Route path="/upload_old" element={<ProductUploadPage />} /> */}
-        <Route path="/upload" element={<ProductUpload />} />
+        <Route path="/collect" element={<ProductCollect />} />
         {/* 기타 라우트 */}
       </Routes>
     </Layout>

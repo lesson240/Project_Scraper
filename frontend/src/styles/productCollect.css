@@ -1,0 +1,28 @@
+/* Tabs */
+.filter-tab-wrapper {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.filter-tab-btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: none;
+    background: #f0f0f0;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.filter-tab-btn.active {
+    background-color: #00c2aa;
+    color: white;
+}
+
+/* Filter section box */
+.filter-section-box {
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    background-color: white;
+}

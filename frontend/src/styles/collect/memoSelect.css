@@ -1,0 +1,23 @@
+/* src/styles/product/MemoSelect.css */
+.memo-selects {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.memo-input {
+    flex: 2;
+}
+
+.thumbnail-select,
+.duplicate-select {
+    flex: 1;
+}
+
+.memo-input,
+.thumbnail-select,
+.duplicate-select {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+}
