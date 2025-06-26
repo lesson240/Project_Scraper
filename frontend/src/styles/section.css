@@ -27,7 +27,7 @@
   /*overflow 방지용 */
   width: 100%;
   background: #ffffff;
-  border-radius: 5%;
+  border-radius: 3%;
   border: 1px solid #f9fafb;
   box-shadow: 5px 10px 15px 0 rgba(0, 0, 0, 0.03);
   padding: 10px 15px;
@@ -35,6 +35,13 @@
   transition: box-shadow 0.2s;
   font-size: x-small;
   /* position: relative; */
+}
+
+.section-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 5px;
+  flex-wrap: wrap;
 }
 
 /* 그리드 내부 섹션이 커질 때 반응형 처리 예시 */
@@ -61,4 +68,7 @@
   /* background: #d0ff00; */
   /* border: 5px solid #4dd0e1; */
   box-sizing: border-box;
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
 }

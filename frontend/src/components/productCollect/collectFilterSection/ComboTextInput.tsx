@@ -8,7 +8,7 @@ type Props = {
     onChange: (value: string) => void;
 };
 
-const DUMMY_OPTIONS = ["메모1", "메모2", "메모3", "메모4", "기타"];
+const DUMMY_OPTIONS = ["헬스케어", "주방용품", "패션잡화", "카테고리1", "기타"];
 
 export default function ComboTextInput({ label, value, onChange }: Props) {
     const [isDropdownOpen, setDropdownOpen] = useState(false);
