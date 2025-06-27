@@ -9,20 +9,6 @@ type Props = {
 export default function TextInput({ value, onChange }: Props) {
     return (
         <div className="input-box">
-            {/* <div className="input-group">
-                <label htmlFor="groupName" className="input-label">
-                    상품 그룹명 <span className="tooltip-icon">?</span>
-                </label>
-                <input
-                    id="groupName"
-                    type="text"
-                    className="input-field"
-                    placeholder="상품 그룹명을 입력해주세요"
-                    value={value}
-                    onChange={(e) => onChange(e.target.value)}
-                />
-            </div> */}
-
             <div className="input-group">
                 <label htmlFor="url" className="input-label">
                     단일 상품 URL <span className="tooltip-icon">?</span>

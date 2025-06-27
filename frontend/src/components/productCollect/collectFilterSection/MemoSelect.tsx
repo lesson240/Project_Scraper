@@ -45,8 +45,8 @@ export default function ComboTextInput({ label, value, onChange }: Props) {
                     type="button"
                     className="combo-text-icon"
                     onClick={() => setDropdownOpen((prev) => !prev)}
+                    aria-label="드롭다운 열기"
                 >
-                    ▼
                 </button>
             </div>
 
@@ -62,3 +62,4 @@ export default function ComboTextInput({ label, value, onChange }: Props) {
         </div>
     );
 }
+

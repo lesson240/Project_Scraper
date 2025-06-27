@@ -3,59 +3,81 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    min-width: 200px;
+    min-width: 120px;
+    gap: 6px;
+    flex: 1;
 }
 
 .combo-text-label {
     font-size: 14px;
     font-weight: 600;
     margin-bottom: 6px;
+    color: #333;
 }
 
 .combo-text-input-box {
     display: flex;
     align-items: center;
+    height: 40px;
     border: 1px solid #ddd;
     border-radius: 8px;
+    width: 100%;
+    max-width: 100%;
     overflow: hidden;
     background-color: #fff;
+    position: relative;
+    box-sizing: border-box;
+    overflow: hidden;
 }
+
+.combo-text-input-box:focus-within {
+    border: 1px solid #20c997;
+    outline: none;
+    background-color: #fff;
+}
+
 
 .combo-text-input {
-    flex: 1;
+    flex: 1 1 auto;
     padding: 10px 12px;
-    border: 1px solid transparent;
+    border: none;
     outline: none;
     font-size: 14px;
     background-color: #fff;
-
+    min-width: 0;
 }
 
-.combo-text-input:focus {
-    border-color: #20c997;
-    outline: none;
-    background-color: #fff;
+.combo-text-input::placeholder {
+    color: #adb5bd;
+    font-weight: 400;
 }
+
 
 .combo-text-icon {
-    padding: 0 12px;
-    border-left: 1px solid #eee;
-    background: #f9f9f9;
-    font-size: 14px;
-    cursor: pointer;
+    width: 40px;
     height: 100%;
+    border-left: 1px solid #eee;
+    background: url("data:image/svg+xml;utf8,<svg fill='gray' height='16' viewBox='0 0 24 24' width='16' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>") no-repeat center;
+    background-size: 16px;
+    background-repeat: no-repeat;
+    background-color: #f9f9f9;
+    cursor: pointer;
+    border: none;
+    flex-shrink: 0;
 }
 
 .combo-dropdown {
     position: absolute;
-    top: 100%;
+    top: 110%;
     left: 0;
     width: 100%;
     border: 1px solid #ccc;
-    border-radius: 0 0 8px 8px;
+    border-radius: 8px 0 0 8px;
     background-color: #fff;
     z-index: 10;
-    max-height: 180px;
+    max-height: 160px;
+    font-size: 14px;
+    /* 약 4개 */
     overflow-y: auto;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.08);
 }

@@ -42,6 +42,11 @@
     transition: border 0.2s ease;
 }
 
+.input-field::placeholder {
+    color: #adb5bd;
+    font-weight: 400;
+}
+
 .input-field:focus {
     border-color: #20c997;
     outline: none;

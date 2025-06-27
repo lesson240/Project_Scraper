@@ -1,5 +1,4 @@
-// components/productCollect/collectFilterSection/ComboInput.tsx
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import "@/styles/collect/comboInput.css";
 
 type Props = {
@@ -10,26 +9,48 @@ type Props = {
 };
 
 export default function ComboInput({ label, options, value, onChange }: Props) {
+    const [open, setOpen] = useState(false);
+    const wrapperRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+                setOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    const handleSelect = (item: string) => {
+        onChange(item);
+        setOpen(false);
+    };
+
     return (
-        <div className="combo-input-group">
-            <label className="combo-label">
-                {label}
-                <span className="tooltip-icon">?</span>
-            </label>
-            <select
-                className="combo-select"
-                value={value}
-                onChange={(e) => onChange(e.target.value)}
-            >
-                <option value="" disabled>
-                    {label}을 입력해주세요
-                </option>
-                {options.map((opt, idx) => (
-                    <option key={idx} value={opt}>
-                        {opt}
-                    </option>
-                ))}
-            </select>
+        <div className="combo-input-group" ref={wrapperRef}>
+            <label className="combo-label">{label}</label>
+            <div className="combo-box">
+                <div className="combo-box-selected" onClick={() => setOpen((prev) => !prev)}>
+                    {value}
+                </div>
+                <button
+                    type="button"
+                    className="combo-box-icon"
+                    onClick={() => setOpen((prev) => !prev)}
+                    aria-label="드롭다운 열기"
+                />
+            </div>
+
+            {open && (
+                <ul className="combo-box-dropdown">
+                    {options.map((opt, idx) => (
+                        <li key={idx} onClick={() => handleSelect(opt)}>
+                            {opt}
+                        </li>
+                    ))}
+                </ul>
+            )}
         </div>
     );
 }

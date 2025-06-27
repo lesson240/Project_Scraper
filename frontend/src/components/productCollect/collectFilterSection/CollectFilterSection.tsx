@@ -9,9 +9,10 @@ import "@/styles/section.css";
 
 export default function FilterSection() {
     const [groupName, setGroupName] = useState("");
-    const [groupType, setGroupType] = useState("카테고리1");
-    const [url, setUrl] = useState("");
     const [memo, setMemo] = useState("");
+    const [thumbOption, setThumbOption] = useState("옵션1");
+    const [duplication, setDuplication] = useState("건너뛰기");
+    const [brand, setBrand] = useState("");
 
     return (
         <div className="section-block">
@@ -24,27 +25,29 @@ export default function FilterSection() {
                 />
                 <MemoSelect
                     label="메모"
-                    value={groupName}
-                    onChange={setGroupName}
+                    value={memo}
+                    onChange={setMemo}
                 />
                 <ComboInput
-                    label="대표 옵션"
+                    label="썸네일 대표 옵션"
                     options={["옵션1", "옵션2", "옵션3", "옵션4"]}
-                    value={groupName}
-                    onChange={setGroupName}
+                    value={thumbOption}
+                    onChange={setThumbOption}
                 />
                 <ComboInput
                     label="증복 상품 처리"
                     options={["건너뛰기", "업데이트"]}
-                    value={groupName}
-                    onChange={setGroupName}
+                    value={duplication}
+                    onChange={setDuplication}
                 />
-                {/* <FilterButtons /> */}
             </div>
             <div className="section-row">
 
                 <div className="section-row">
-                    <TextInput value={url} onChange={setUrl} />
+                    <ComboTextInput
+                        label="브랜드"
+                        value={brand}
+                        onChange={setBrand} />
 
                 </div>
             </div>
