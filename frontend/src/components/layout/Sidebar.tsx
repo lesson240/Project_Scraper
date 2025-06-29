@@ -17,7 +17,7 @@ import "@/styles/sidebar.css";
 const menu = [
     { path: "/", icon: <FaHome />, label: "홈" },
     { path: "/collect", icon: <FaBoxOpen />, label: "상품 수집" },
-    { path: "/register", icon: <FaList />, label: "상품 등록" },
+    { path: "/upload", icon: <FaList />, label: "상품 등록" },
     { path: "/manage", icon: <FaShoppingCart />, label: "상품 관리" },
     { path: "/order", icon: <FaShoppingCart />, label: "주문 관리" },
     { path: "/settings", icon: <FaCog />, label: "기본 설정" },

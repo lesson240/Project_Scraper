@@ -4,7 +4,7 @@ import CollectResultSection from "@/components/productCollect/collectResultSecti
 
 import "@/styles/section.css"
 
-export default function DashboardPage() {
+export default function ProductCollectPage() {
     return (
         <div>
             <div className="columns-auto-fit-large">

@@ -1,4 +1,4 @@
-import api from "./axios";
+import api from "../lib/axios";
 import type { ProductFilter } from "./types";
 
 // POST 요청 함수

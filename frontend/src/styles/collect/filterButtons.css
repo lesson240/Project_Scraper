@@ -1,4 +1,11 @@
 /* src/styles/product/FilterButtons.css */
+.button-box {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+/* 
 .filter-buttons {
     display: flex;
     justify-content: flex-end;
@@ -23,4 +30,4 @@
 .search-button {
     background: #00b6ad;
     color: white;
-}
+} */

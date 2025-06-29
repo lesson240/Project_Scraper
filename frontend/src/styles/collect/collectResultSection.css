@@ -1,0 +1,88 @@
+.result-section {
+  padding: 20px;
+  background-color: #f9fafb;
+  border-radius: 10px;
+  margin-top: 40px;
+}
+
+.result-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.pagination {
+  flex: 1;
+  text-align: center;
+  font-weight: bold;
+  color: #444;
+}
+
+.result-buttons button {
+  margin-left: 10px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: white;
+  cursor: pointer;
+}
+
+.collect-btn {
+  background-color: #00c4c4;
+  color: white;
+  border: none;
+}
+
+.result-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 16px;
+}
+
+.result-card {
+  background-color: white;
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.result-card input[type="checkbox"] {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+
+.result-card img {
+  width: 100%;
+  border-radius: 8px;
+}
+
+.result-info {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.result-title {
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.result-price {
+  font-weight: bold;
+  color: #00c4c4;
+  margin-bottom: 5px;
+}
+
+.go-button {
+  font-size: 12px;
+  padding: 6px 10px;
+  background-color: #f1f1f1;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}

@@ -3,7 +3,7 @@ import Layout from "./components/layout/Layout";
 import DashboardPage from "./pages/DashboardPage";
 // import ProductUploadPage from "@/pages/ProductUploadPage_old";
 import ProductCollect from "@/pages/ProductCollectPage";
-// ...etc
+import ProductUpload from "@/pages/ProductUploadPage";
 
 export default function App() {
   return (
@@ -12,6 +12,7 @@ export default function App() {
         <Route path="/" element={<DashboardPage />} />
         {/* <Route path="/upload_old" element={<ProductUploadPage />} /> */}
         <Route path="/collect" element={<ProductCollect />} />
+        <Route path="/upload" element={<ProductUpload />} />
         {/* 기타 라우트 */}
       </Routes>
     </Layout>

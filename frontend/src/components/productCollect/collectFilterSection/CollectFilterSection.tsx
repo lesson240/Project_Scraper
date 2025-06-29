@@ -1,5 +1,6 @@
 // components/productCollect/collectFilterSection/FilterSection.tsx
 import React, { useState } from "react";
+import axios from "@/lib/axios";
 import ComboTextInput from "./ComboTextInput"
 import TextInput from "./TextInput";
 import MemoSelect from "./MemoSelect";
@@ -13,7 +14,48 @@ export default function FilterSection() {
     const [thumbOption, setThumbOption] = useState("옵션1");
     const [duplication, setDuplication] = useState("건너뛰기");
     const [brand, setBrand] = useState("");
+    const [filteType, setFilterType] = useState(""); //어떤 버튼을 눌렀는지 추적
 
+  const handleReset = () => {
+    setGroupName("");
+    setMemo("");
+    setThumbOption("옵션1");
+    setDuplication("건너뛰기");
+    setBrand("");
+  };
+
+  const handleCollect = () => {
+    const params = {
+      groupName,
+      memo,
+      thumbOption,
+      duplication,
+      brand,
+    };
+    console.log("검색 요청 데이터:", params);
+
+    // TODO: 여기에 fetch or axios POST 호출 (backend 연동)
+    // await axios.post('/api/collect/search', params)
+  };
+
+  const handleSpecialToday = async () => {
+    const params = {
+      group_name : groupName,
+      memo : memo,
+      redundant : duplication,
+    };
+
+    console.log("오특 요청 데이터:", params);
+
+    try {
+        const res = await axios.post('/collect/specialtoday', params);
+        console.log("오특 결과 수신됨: res.data");
+        setFilterType("special");
+    } catch (err) {
+        console.error("오특 API 호출 실패", err);
+    }    
+  }; 
+    
     return (
         <div className="section-block">
             <div className="section-row">
@@ -42,15 +84,17 @@ export default function FilterSection() {
                 />
             </div>
             <div className="section-row">
-
-                <div className="section-row">
                     <ComboTextInput
                         label="브랜드"
                         value={brand}
                         onChange={setBrand} />
-
-                </div>
             </div>
+            <div>
+        <FilterButtons
+          onReset={handleReset}
+          onCollect={handleCollect}
+          onSpecialToday={handleSpecialToday} />
+                </div>
         </div>
     );
 }

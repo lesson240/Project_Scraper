@@ -22,7 +22,7 @@
 .section-block {
   display: flex;
   flex-direction: column;
-  height: 300px;
+  height: 270px;
   min-width: 0;
   /*overflow 방지용 */
   width: 100%;

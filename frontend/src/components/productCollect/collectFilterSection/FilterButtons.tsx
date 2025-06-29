@@ -1,21 +1,23 @@
 // src/components/product/FilterButtons.tsx
 import React from "react";
+import Button from "@/components/common/Button";
 import "@/styles/collect/filterButtons.css";
 
+
 type Props = {
-    onReset: () => void;
-    onSearch: () => void;
+  onReset: () => void;
+  onSpecialToday: () => void;
+  onCollect: () => void;
 };
 
-export default function FilterButtons({ onReset, onSearch }: Props) {
-    return (
-        <div className="filter-buttons">
-            <button className="btn-reset" onClick={onReset}>
-                초기화
-            </button>
-            <button className="btn-search" onClick={onSearch}>
-                검색
-            </button>
-        </div>
-    );
+
+
+export default function FilterButtons({ onReset, onSpecialToday, onCollect }: Props) {
+  return (
+    <div className="button-box">
+      <Button variant="secondary" onClick={onReset}>초기화</Button>
+      <Button variant="third-rate" onClick={onSpecialToday}>오특</Button>
+      <Button variant="primary" onClick={onCollect}>수집</Button>
+    </div>
+  );
 }
