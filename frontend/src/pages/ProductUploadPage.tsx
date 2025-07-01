@@ -1,5 +1,6 @@
 import React from "react";
 import SearchFilterSection from "@/components/productUpload/searchFilterSection/SearchFilterSection";
+import FunctionSection from "@/components/productUpload/functionSection/FunctionSection";
 
 import "@/styles/section.css"
 
@@ -7,8 +8,9 @@ export default function ProductUploadPage() {
     return (
         <div>
             <div className="columns-auto-fit-large">
-                <SearchFilterSection />
-            </div>
+                <SearchFilterSection /></div>
+            <div>
+                <FunctionSection /></div>
         </div>
     );
 }

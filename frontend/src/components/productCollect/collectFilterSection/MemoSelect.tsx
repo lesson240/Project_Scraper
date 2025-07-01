@@ -1,6 +1,6 @@
 // components/productCollect/collectFilterSection/ComboTextInput.tsx
 import React, { useState, useRef, useEffect } from "react";
-import "@/styles/collect/comboTextInput.css";
+import "@/styles/common/comboTextInput.css";
 
 type Props = {
     label: string;

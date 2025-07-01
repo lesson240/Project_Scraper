@@ -6,23 +6,23 @@
 /* 1. grid 설정 */
 .columns-auto-fit {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 10px;
   padding: 10px;
 }
 
 .columns-auto-fit-large {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 10px;
   padding: 10px;
+  grid-auto-rows: auto;
 }
 
 /* 2. section 설정 */
 .section-block {
   display: flex;
   flex-direction: column;
-  height: 270px;
   min-width: 0;
   /*overflow 방지용 */
   width: 100%;

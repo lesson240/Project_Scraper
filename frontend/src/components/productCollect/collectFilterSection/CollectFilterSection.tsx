@@ -1,10 +1,10 @@
 // components/productCollect/collectFilterSection/FilterSection.tsx
 import React, { useState } from "react";
 import axios from "@/lib/axios";
-import ComboTextInput from "./ComboTextInput"
-import TextInput from "./TextInput";
+import ComboTextInput from "../../common/ComboTextInput"
+import TextInput from "../../common/TextInput";
 import MemoSelect from "./MemoSelect";
-import ComboInput from "./ComboInput"
+import ComboInput from "../../common/ComboInput"
 import FilterButtons from "./FilterButtons";
 import "@/styles/section.css";
 

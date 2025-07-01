@@ -1,5 +1,5 @@
 import React from "react";
-import "@/styles/collect/textInput.css";
+import "@/styles/common/textInput.css";
 
 type Props = {
     label: string;

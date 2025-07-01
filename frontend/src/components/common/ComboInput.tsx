@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import "@/styles/collect/comboInput.css";
+import "@/styles/common/comboInput.css";
 
 type Props = {
     label: string;

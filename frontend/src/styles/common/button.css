@@ -32,7 +32,7 @@
 }
 
 .btn.secondary:hover {
-  background-color: #f9fafb;
+  border: 1px solid #009b6d;
 }
 
 
@@ -46,4 +46,15 @@
 .btn.third-rate:hover {
   background-color: #009b6d;
   color: #fff;
+}
+
+.btn.fourth {
+  background-color: #fff;
+  /* 기능 버튼 컬러 */
+  color: #333;
+  border: 1px solid #ddd;
+}
+
+.btn.fourth:hover {
+  background-color: #f9fafb;
 }

@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import axios from "@/lib/axios";
-import ComboTextInput from "../../productCollect/collectFilterSection/ComboTextInput"
-import TextInput from "../../productCollect/collectFilterSection/TextInput";
+import ComboTextInput from "../../common/ComboTextInput"
+import TextInput from "../../common/TextInput";
 import MemoSelect from "../../productCollect/collectFilterSection/MemoSelect";
-import ComboInput from "../../productCollect/collectFilterSection/ComboInput"
+import ComboInput from "../../common/ComboInput"
 import FilterButtons from "../../productCollect/collectFilterSection/FilterButtons";
 import "@/styles/section.css";
 import { ProductCode } from "../uploadSearching/parts/ProductCode";
