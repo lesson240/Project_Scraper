@@ -5,9 +5,9 @@
   font-weight: 500;
   padding: 10px 24px;
   height: 40px;
-    /* min-width: 100px; */
-    width: 100px;
-    /* margin-top: 9px; */
+  /* min-width: 100px; */
+  width: 100px;
+  /* margin-top: 9px; */
   border-radius: 8px;
   border: none;
   cursor: pointer;
@@ -15,7 +15,8 @@
 }
 
 .btn.primary {
-  background-color: #20c997; /* 검색 버튼 컬러 */
+  background-color: #20c997;
+  /* 검색 버튼 컬러 */
   color: white;
 }
 
@@ -24,7 +25,8 @@
 }
 
 .btn.secondary {
-  background-color: #fff; /* 초기화 버튼 컬러 */
+  background-color: #fff;
+  /* 초기화 버튼 컬러 */
   color: #333;
   border: 1px solid #ddd;
 }
@@ -35,7 +37,8 @@
 
 
 .btn.third-rate {
-  background-color: #fff; /* 오특 버튼 컬러 */
+  background-color: #fff;
+  /* 오특 버튼 컬러 */
   color: #333;
   border: 1px solid #ddd;
 }

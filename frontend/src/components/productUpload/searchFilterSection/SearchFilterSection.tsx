@@ -23,60 +23,60 @@ export default function FilterSection() {
     const [soldOut, setsSoldOut] = useState("");
     const [filteType, setFilterType] = useState(""); //어떤 버튼을 눌렀는지 추적
 
-  const handleReset = () => {
-    setGroupName("");
-    setMemo("");
-    setGoodsName("");
-    setBrand("");
-    setUnUploadMarket("");
-    setCollectJopNumber("");
-    setUploadJopNumber("");
-    setGoodsCode("");
-    setCalendarEndDate("");
-    setCalendarStartDate("");
-    setPromotionDateRate("");
-    setsSoldOut("");
-  };
-
-  const handleSearch = () => {
-    const params = {
-      groupName,
-      memo,
-      goodsName,
-      brand,
-      unUploadedMarket,
-      collectJopNumber,
-      uploadJopNumber,
-      goodsCode,
-      calendarStartDate,
-      calendarEndDate,
-      promotionDateRate,
-      soldOut,
+    const handleReset = () => {
+        setGroupName("");
+        setMemo("");
+        setGoodsName("");
+        setBrand("");
+        setUnUploadMarket("");
+        setCollectJopNumber("");
+        setUploadJopNumber("");
+        setGoodsCode("");
+        setCalendarEndDate("");
+        setCalendarStartDate("");
+        setPromotionDateRate("");
+        setsSoldOut("");
     };
-    console.log("검색 요청 데이터:", params);
 
-    // TODO: 여기에 fetch or axios POST 호출 (backend 연동)
-    // await axios.post('/api/collect/search', params)
-  };
+    const handleSearch = () => {
+        const params = {
+            groupName,
+            memo,
+            goodsName,
+            brand,
+            unUploadedMarket,
+            collectJopNumber,
+            uploadJopNumber,
+            goodsCode,
+            calendarStartDate,
+            calendarEndDate,
+            promotionDateRate,
+            soldOut,
+        };
+        console.log("검색 요청 데이터:", params);
 
-//   const handleSpecialToday = async () => {
-//     const params = {
-//       group_name : groupName,
-//       memo : memo,
-//       redundant : duplication,
-//     };
+        // TODO: 여기에 fetch or axios POST 호출 (backend 연동)
+        // await axios.post('/api/collect/search', params)
+    };
 
-//     console.log("오특 요청 데이터:", params);
+    //   const handleSpecialToday = async () => {
+    //     const params = {
+    //       group_name : groupName,
+    //       memo : memo,
+    //       redundant : duplication,
+    //     };
 
-//     try {
-//         const res = await axios.post('/collect/specialtoday', params);
-//         console.log("오특 결과 수신됨: res.data");
-//         setFilterType("special");
-//     } catch (err) {
-//         console.error("오특 API 호출 실패", err);
-//     }    
-//   }; 
-    
+    //     console.log("오특 요청 데이터:", params);
+
+    //     try {
+    //         const res = await axios.post('/collect/specialtoday', params);
+    //         console.log("오특 결과 수신됨: res.data");
+    //         setFilterType("special");
+    //     } catch (err) {
+    //         console.error("오특 API 호출 실패", err);
+    //     }    
+    //   }; 
+
     return (
         <div className="section-block">
             <div className="section-row">
@@ -108,26 +108,26 @@ export default function FilterSection() {
                 />
             </div>
             <div className="section-row">
-                    <ComboTextInput
-                        label="브랜드"
-                        value={brand}
-                        onChange={setBrand} />
-                            <TextInput
+                <ComboTextInput
+                    label="브랜드"
+                    value={brand}
+                    onChange={setBrand} />
+                <TextInput
                     label="수집 작업번호"
                     value={collectJopNumber}
                     onChange={setCollectJopNumber}
                 />
-                            <TextInput
+                <TextInput
                     label="업로드 작업번호"
                     value={uploadJopNumber}
                     onChange={setUploadJopNumber}
                 />
-                            <TextInput
+                <TextInput
                     label="상품 코드"
                     value={goodsCode}
                     onChange={setGoodsCode}
                 />
-                                <ComboInput
+                <ComboInput
                     label="품절 유무"
                     options={["품절", "판매"]}
                     value={soldOut}
@@ -135,11 +135,11 @@ export default function FilterSection() {
                 />
             </div>
             <div>
-        <FilterButtons
-          onReset={handleReset}
-          onCollect={handleReset}
-          onSpecialToday={handleReset} />
-                </div>
+                <FilterButtons
+                    onReset={handleReset}
+                    onCollect={handleReset}
+                    onSpecialToday={handleReset} />
+            </div>
         </div>
     );
 }
