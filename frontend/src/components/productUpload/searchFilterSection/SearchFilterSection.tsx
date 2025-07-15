@@ -20,7 +20,7 @@ export default function FilterSection() {
     const [calendarStartDate, setCalendarStartDate] = useState("");
     const [calendarEndDate, setCalendarEndDate] = useState("");
     const [promotionDateRate, setPromotionDateRate] = useState("");
-    const [soldOut, setsSoldOut] = useState("");
+    const [soldOut, setsSoldOut] = useState("판매");
     const [filteType, setFilterType] = useState(""); //어떤 버튼을 눌렀는지 추적
 
     const handleReset = () => {

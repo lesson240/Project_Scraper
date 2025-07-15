@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import "@/styles/common/comboInput.css";
 
 type Props = {
-    label: string;
+    label?: string;
     options: string[];
     value: string;
     onChange: (value: string) => void;

@@ -1,60 +1,82 @@
 /* src/styles/common/button.css */
 
 .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
   font-size: 14px;
   font-weight: 500;
   padding: 10px 24px;
   height: 40px;
   /* min-width: 100px; */
-  width: 100px;
+  width: 110px;
   /* margin-top: 9px; */
   border-radius: 8px;
   border: none;
   cursor: pointer;
+  white-space: nowrap;
+  /* 줄바꿈 방지 */
+  text-overflow: ellipsis;
+  /* 말줄임 처리 */
+  margin: 6px 0 0 0;
   transition: background 0.3s ease;
 }
 
+
 .btn.primary {
-  background-color: #20c997;
+  background-color: #00b5ad;
   /* 검색 버튼 컬러 */
   color: white;
 }
 
 .btn.primary:hover {
-  background-color: #009b6d;
+  background-color: #00cfc5;
 }
 
 .btn.secondary {
   background-color: #fff;
-  /* 초기화 버튼 컬러 */
-  color: #333;
+  /* 기능 버튼 컬러 */
+  color: #596380;
   border: 1px solid #ddd;
 }
 
 .btn.secondary:hover {
-  border: 1px solid #009b6d;
+  border: 1px solid #00b5ad;
 }
 
 
 .btn.third-rate {
   background-color: #fff;
   /* 오특 버튼 컬러 */
-  color: #333;
+  color: #00b5ad;
   border: 1px solid #ddd;
 }
 
 .btn.third-rate:hover {
-  background-color: #009b6d;
+  background-color: #00b5ad;
   color: #fff;
 }
 
 .btn.fourth {
   background-color: #fff;
-  /* 기능 버튼 컬러 */
-  color: #333;
+  /* 초기화, 기타 버튼 컬러 */
+  color: #596380;
   border: 1px solid #ddd;
 }
 
 .btn.fourth:hover {
   background-color: #f9fafb;
+}
+
+.btn.sixth {
+  background-color: #fff;
+  /* 삭제 버튼 컬러 */
+  color: #d62828;
+  border: 1px solid #ddd;
+}
+
+.btn.sixth:hover {
+  background-color: #d62828;
+  color: #fff;
 }

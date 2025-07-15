@@ -12,14 +12,13 @@
     height: 40px;
     display: flex;
     flex-direction: column;
-    gap: 6px;
 }
 
 .input-label {
-    font-size: 14px;
-    font-weight: 600;
+    font-size: 12px;
+    font-weight: 400;
     margin-bottom: 6px;
-    color: #333;
+    color: #596380;
 }
 
 .tooltip-icon {
@@ -28,7 +27,7 @@
     width: 16px;
     height: 16px;
     font-size: 12px;
-    color: #333;
+    color: #596380;
     background-color: #f0f0f0;
     border-radius: 50%;
     text-align: center;
