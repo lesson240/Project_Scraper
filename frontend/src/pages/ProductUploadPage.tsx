@@ -11,8 +11,8 @@ export default function ProductUploadPage() {
                 <SearchFilterSection /></div>
             <div>
                 <FunctionSection /></div>
-            {/* <div>
-                <ItemSummaryInformSection /></div> */}
+            <div>
+                <ItemSummaryInformSection /></div>
         </div>
     );
 }

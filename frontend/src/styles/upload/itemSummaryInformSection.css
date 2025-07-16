@@ -1,0 +1,89 @@
+.product-manage-table {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    font-size: 14px;
+    color: #596380;
+}
+
+.table-head,
+.table-row {
+    display: grid;
+    grid-template-columns: 180px 1fr 240px 240px;
+    align-items: center;
+    border: 1px solid #eee;
+    padding: 10px 16px;
+    border-radius: 8px;
+    background-color: #fff;
+}
+
+.table-head {
+    background-color: #f9f9f9;
+    font-weight: 600;
+    color: #333;
+}
+
+.table-col {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.checkbox-col {
+    flex-direction: column;
+}
+
+.market-label {
+    font-size: 13px;
+    color: #ff5722;
+    font-weight: bold;
+}
+
+.thumb {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.product-details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.product-title {
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 300px;
+}
+
+.meta {
+    font-size: 13px;
+    color: #999;
+}
+
+.btn {
+    margin: 4px 0;
+}
+
+.btn--gray {
+    background-color: #f2f2f2;
+    border: 1px solid #ddd;
+    color: #333;
+    padding: 6px 12px;
+    border-radius: 6px;
+}
+
+.detail-col .price {
+    font-weight: 500;
+    color: #666;
+}
+
+.alert {
+    color: #ff5959;
+    font-size: 13px;
+    margin-top: 4px;
+}
