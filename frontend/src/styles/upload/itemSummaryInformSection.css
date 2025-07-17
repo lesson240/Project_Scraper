@@ -31,12 +31,12 @@
 }
 
 .table-col-left {
-  display: flex;
-  flex: 1;               
-  align-items: flex-start;
-  justify-content: flex-start;
-  gap: 16px;
-  margin: 0 10px 0 10px;
+    display: flex;
+    flex: 1;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 16px;
+    margin: 0 10px 0 10px;
 }
 
 
@@ -45,18 +45,18 @@
 }
 
 .button-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  align-items: center; 
-  margin-bottom: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: center;
+    margin-bottom: 6px;
 
 }
 
 
 .button-row {
-  display: flex;
-  gap: 8px;
+    display: flex;
+    gap: 8px;
 }
 
 .market-label {
@@ -78,11 +78,11 @@
 }
 
 .goods-details {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  flex: 1;    
-  min-width: 0; 
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
 }
 
 

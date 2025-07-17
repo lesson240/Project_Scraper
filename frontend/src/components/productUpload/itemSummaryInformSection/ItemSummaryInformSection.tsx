@@ -1,6 +1,3 @@
-// 상품관리 - 요약/리스트 영역 컴포넌트
-// [설명] 상품 목록(간단 테이블) 렌더링
-
 import React, { useState } from "react";
 import "@/styles/upload/itemSummaryInformSection.css";
 import TextInput from "@/components/common/TextInput";
@@ -8,42 +5,23 @@ import Button from "@/components/common/Button";
 import testImg from "@/assets/images/test.jpg";
 import testImg2 from "@/assets/images/test2.jpg";
 
-/**
- * 상품 리스트/요약 테이블
- * - 상품 썸네일, 이름, 기능 버튼, 상세정보 등 표시
- * - 실데이터 바인딩 전까지는 예시로 구현
- */
+type Item = {
+    origin_goods_name: string;
+    goods_origin: number;
+    thumb?: {
+        thumb1?: string;
+    };
+    market: string;
+    collection_time?: string;
+    priceRange?: string;
+    priceRequired?: boolean;
+    tagRequired?: boolean;
+    origin_goods_code?: string;
+};
 
-
-
-const sampleData = [
-    {
-        id: 1,
-        image: testImg,
-        title: "다프네 두꺼운 밑창 헬시 숏 부츠 여성 가을 겨울용 벨벳...",
-        memo: "",
-        market: "Taobao",
-        collectDate: "2025-10-07",
-        priceRange: "429 ~ 429",
-        tags: [],
-        priceRequired: true,
-        tagRequired: true,
-    },
-    {
-        id: 2,
-        image: testImg2,
-        title: "여성용 찰시 숏 부츠 2024년 신상품 울매치 레트로...",
-        memo: "",
-        market: "Taobao",
-        collectDate: "2025-10-07",
-        priceRange: "163 ~ 163",
-        tags: [],
-        priceRequired: true,
-        tagRequired: true,
-    },
-];
 
 type Props = {
+    items?: Item[];
     onAttributeSet: () => void;
     onOptionSet: () => void;
     onDetailPageSet: () => void;
@@ -51,19 +29,21 @@ type Props = {
 };
 
 
+
 export default function ItemSummaryInformSection({
+    items = [],
     onAttributeSet,
     onOptionSet,
     onDetailPageSet,
     onUploadSet
 }: Props) {
-    const [goodsName, setGoodsName] = useState("");
-
-    const handleInput = () => {
-        const params = {
-            goodsName,
-        };
+    if (!Array.isArray(items) || items.length === 0) {
+        return <div style={{ padding: "20px" }}>데이터가 없습니다.</div>;
     }
+    const handleTitleChange = (id: string | undefined, value: string) => {
+        console.log(`변경된 제목(${id}):`, value);
+        // 추후 개별 수정 API 연동 시 사용
+    };
 
     const handleAttributeSet = () => {
         console.log("속성 설정 API 호출 예정");
@@ -77,17 +57,6 @@ export default function ItemSummaryInformSection({
     const handleUploadLogSet = () => {
         console.log("속성 설정 API 호출 예정");
     };
-    
-
-const [items, setItems] = useState(sampleData); // sampleData는 상품 리스트
-
-const handleTitleChange = (id: number, value: string) => {
-  const updated = items.map((item) =>
-    item.id === id ? { ...item, title: value } : item
-  );
-  setItems(updated);
-};
-
 
 
     return (
@@ -101,25 +70,29 @@ const handleTitleChange = (id: number, value: string) => {
                 <div className="table-col">상세정보</div>
             </div>
 
-            {items.map((item) => (
-                <div key={item.id} className="table-row">
+            {items.map((item, index) => (
+                <div key={item.origin_goods_code || `fallback-${index}`} className="table-row">
                     <div className="table-col ">
                         <input type="checkbox" /></div>
-                    <div className="market-label">Taobao</div>
-                <div className="table-col-left">
-                    <img src={item.image} alt="상품 썸네일" className="thumb" />
-                    <div className="goods-details">
-                        <div className="goods-title">
-                            <TextInput
-                                value={item.title}
-                                onChange={(val) => handleTitleChange(item.id, val)}
-                                showTooltip={false}
-                                className="full-width"
-                            /></div>
-                        <div className="meta">메모를 입력해주세요</div>
-                        <div className="meta">업로드 마켓: {item.market}</div>
+                    <div className="market-label">{item.market}</div>
+                    <div className="table-col-left">
+                        <img
+                            src={item.thumb?.thumb1 || "/images/default-thumb.jpg"}
+                            alt="상품 썸네일"
+                            className="thumb"
+                        />
+                        <div className="goods-details">
+                            <div className="goods-title">
+                                <TextInput
+                                    value={item.origin_goods_name}
+                                    onChange={(val) => handleTitleChange(item.origin_goods_code, val)}
+                                    showTooltip={false}
+                                    className="full-width"
+                                /></div>
+                            <div className="meta">메모를 입력해주세요</div>
+                            <div className="meta">업로드 마켓: {item.market}</div>
+                        </div>
                     </div>
-                </div>
                     <div className="table-col button-group">
                         <div className="button-row">
                             <Button variant="secondary" onClick={onAttributeSet}>속성</Button>
@@ -130,9 +103,9 @@ const handleTitleChange = (id: number, value: string) => {
                             <Button variant="secondary" onClick={onUploadSet}>업로드 로그</Button>
                         </div>
                     </div>
-                    <div className="table-col detail-col">                        
-                        <div className="basic-info">상품 수집일: {item.collectDate}</div>
-                        <div className="basic-info">원본 할인가 (¥): {item.priceRange}</div>
+                    <div className="table-col detail-col">
+                        <div className="basic-info">상품 수집일: {item.collection_time}</div>
+                        <div className="basic-info">원본 할인가 (¥): {item.goods_origin}</div>
                         <div className="basic-info">설정 상품가 (￦): {item.priceRange}</div>
                         {item.priceRequired && (
                             <div className="alert">가격 설정해 주세요</div>
