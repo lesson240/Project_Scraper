@@ -1,8 +1,14 @@
 // src/components/productUpload/functionSection/FunctionSection.tsx
 import React from "react";
 import FunctionButtons from "./FunctionButtons";
+import "@/styles/upload/functionSection.css"
 
-export default function FunctionSection() {
+type Props = {
+    pageSize: string;
+    setPageSize: (size: string) => void;
+};
+
+export default function FunctionSection({ pageSize, setPageSize }: Props) {
     const handlePriceSet = () => {
         console.log("가격 설정 API 호출 예정");
     };
@@ -36,6 +42,8 @@ export default function FunctionSection() {
                 onGoodsNameSet={handleGoodsNameSet}
                 onSalesRegistrationSet={handleSalesRegistrationSet}
                 onGoodsDeleteSet={handleGoodsDeleteSet}
+                pageSize={pageSize}
+                setPageSize={setPageSize}
             />
         </nav>
     );

@@ -13,6 +13,8 @@ type Props = {
     onGoodsNameSet: () => void;
     onSalesRegistrationSet: () => void;
     onGoodsDeleteSet: () => void;
+    pageSize: string;
+    setPageSize: (size: string) => void;
 };
 
 export default function FunctionButtons({
@@ -21,13 +23,11 @@ export default function FunctionButtons({
     onDetailPageSet,
     onGoodsNameSet,
     onSalesRegistrationSet,
-    onGoodsDeleteSet
+    onGoodsDeleteSet,
+    pageSize,
+    setPageSize
 }: Props) {
 
-    const [pageSize, setPageSize] = useState("30개");
-    const handleReset = () => {
-        setPageSize("30개");
-    };
     const [layout, setLayout] = useState<"grid" | "list">("grid");
     const isGrid = layout === "grid";
 

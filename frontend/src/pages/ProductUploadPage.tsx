@@ -7,6 +7,7 @@ import axios from "@/lib/axios";
 
 export default function ProductUploadPage() {
     const [items, setItems] = useState<any[]>([]);
+    const [pageSize, setPageSize] = useState("30개");
 
     const handleSearch = async (params: any) => {
         try {
@@ -24,11 +25,12 @@ export default function ProductUploadPage() {
                 <SearchFilterSection onSearchClick={handleSearch} />
             </div>
             <div>
-                <FunctionSection />
+                <FunctionSection pageSize={pageSize} setPageSize={setPageSize}/>
             </div>
             <div>
                 <ItemSummaryInformSection
                     items={items}
+                    pageSize={pageSize}
                     onAttributeSet={() => { }}
                     onOptionSet={() => { }}
                     onDetailPageSet={() => { }}

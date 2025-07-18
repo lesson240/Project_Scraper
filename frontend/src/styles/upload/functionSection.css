@@ -1,0 +1,6 @@
+.function-section {
+  position: sticky;
+  top: 80px; /* SearchFilterSection 높이에 따라 조정 */
+  background-color: white;
+  z-index: 3;
+}
