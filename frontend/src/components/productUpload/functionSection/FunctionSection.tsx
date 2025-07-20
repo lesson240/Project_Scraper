@@ -6,9 +6,11 @@ import "@/styles/upload/functionSection.css"
 type Props = {
     pageSize: string;
     setPageSize: (size: string) => void;
+    currentCount: number;
+    totalCount: number;
 };
 
-export default function FunctionSection({ pageSize, setPageSize }: Props) {
+export default function FunctionSection({ pageSize, setPageSize, currentCount, totalCount }: Props) {
     const handlePriceSet = () => {
         console.log("가격 설정 API 호출 예정");
     };
@@ -36,6 +38,8 @@ export default function FunctionSection({ pageSize, setPageSize }: Props) {
     return (
         <nav className="product-upload-tabs">
             <FunctionButtons
+                currentCount={currentCount}
+                totalCount={totalCount}
                 onPriceSet={handlePriceSet}
                 onTagSet={handleTagSet}
                 onDetailPageSet={handleDetailPageSet}

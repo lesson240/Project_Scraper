@@ -4,3 +4,15 @@
   background-color: white;
   z-index: 3;
 }
+
+.combo-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.count-display {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}

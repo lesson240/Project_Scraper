@@ -9,6 +9,12 @@ export default function ProductUploadPage() {
     const [items, setItems] = useState<any[]>([]);
     const [pageSize, setPageSize] = useState("30개");
 
+ 
+    const pageSizeNumber = parseInt(pageSize.replace("개", ""), 10);
+    const currentItems = items.slice(0, pageSizeNumber);
+    const currentCount = currentItems.length;
+    const totalCount = items.length;   
+
     const handleSearch = async (params: any) => {
         try {
             const res = await axios.post("/product-data", params);
@@ -25,7 +31,12 @@ export default function ProductUploadPage() {
                 <SearchFilterSection onSearchClick={handleSearch} />
             </div>
             <div>
-                <FunctionSection pageSize={pageSize} setPageSize={setPageSize}/>
+                <FunctionSection 
+                pageSize={pageSize} 
+                setPageSize={setPageSize}
+                currentCount={currentCount}
+                totalCount={totalCount}
+                />
             </div>
             <div>
                 <ItemSummaryInformSection

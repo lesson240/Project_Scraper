@@ -16,6 +16,7 @@
     cursor: pointer;
     transition: all 0.2s ease;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    background-color: transparent;
 }
 
 /* 좌측 라운드만 */
@@ -38,11 +39,12 @@
     /* 올리브영 스타일 또는 원하는 강조색 */
     color: #fff;
     border-color: #00b5ad;
+
 }
 
 /* SVG 아이콘 전용 스타일 (있는 경우) */
-.toggle-button svg {
-    width: 20px;
-    height: 20px;
-    fill: currentColor;
+.toggle-button-left.active svg,
+.toggle-button-right.active svg {
+
+    fill: white;
 }
