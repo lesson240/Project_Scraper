@@ -80,3 +80,19 @@
   background-color: #d62828;
   color: #fff;
 }
+
+.btn.seventh {
+  background-color: #f9f9f9;
+  color: #596380;
+  font-size: 12px;
+  padding: 10px 10px;
+  height: 40px;
+  width: 60px;
+  margin: 0;
+
+}
+
+.btn.seventh:hover {
+  background-color: #00b5ad;
+  color: #fff;
+}

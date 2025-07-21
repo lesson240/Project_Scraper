@@ -1,0 +1,33 @@
+.input-with-button {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.input-with-button .input-container {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ddd; /* 컨테이너에 border */
+  border-radius: 8px;
+  background-color: #fff;
+  overflow: hidden;
+}
+
+.input-with-button .input-field {
+  flex: 1;
+  height: 40px;
+  padding: 10px 12px;
+  border: none; /* 기존 border 제거 */
+  font-size: 14px;
+  outline: none;
+}
+
+.input-with-button .btn {
+  height: 100%;
+  padding: 0 12px;
+  border-left: 1px solid #ddd; /* input과 구분선 */
+  border-radius: 0; /* 컨테이너와 동일하게 맞춤 */
+  font-size: 12px;
+  background-color: #f9f9f9;
+  cursor: pointer;
+}

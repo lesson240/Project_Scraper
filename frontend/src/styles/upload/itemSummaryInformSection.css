@@ -1,5 +1,5 @@
 .table-wrapper {
-  max-height: 740px; 
+  max-height: 700px; 
   overflow-y: auto;
 }
 
@@ -14,7 +14,7 @@
 .table-head,
 .table-row {
     display: grid;
-    grid-template-columns: 20px 100px 1fr 240px 240px;
+    grid-template-columns: 20px 100px 1fr 240px 200px;
     align-items: center;
     border: 1px solid #eee;
     padding: 10px 16px;
@@ -98,7 +98,8 @@
 }
 
 
-.goods-title {
+.goods-title,
+.goods-memo {
     font-weight: 500;
     /* white-space: nowrap; */
     overflow: hidden;
@@ -112,7 +113,7 @@
 
 .meta {
     font-size: 13px;
-    color: #999;
+    color: #596380;
 }
 
 
@@ -122,11 +123,29 @@
 
 .basic-info {
     font-weight: 500;
-    color: #666;
+    color: #596380;
 }
 
 .alert {
     color: #ff5959;
     font-size: 13px;
     margin-top: 4px;
+}
+
+.copy-icon svg {
+  width: 14px;
+  height: 14px;
+  margin-left: 6px;
+  cursor: pointer;
+  fill: #596380;
+  transition: fill 0.2s ease;
+}
+
+.copy-icon svg:hover {
+  fill: #333;
+  transform: scale(1.1); /* 약간 확대 효과 */
+} 
+
+.copy-icon:active {
+  fill: #007bff;       /* 클릭 시 포커스 색상 (블루톤) */
 }
