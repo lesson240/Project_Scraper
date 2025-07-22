@@ -1,0 +1,76 @@
+/* 테이블 컨테이너 */
+.table-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  padding: 8px;
+}
+
+/* 테이블 전체 레이아웃 */
+.product-manage-table {
+  width: 100%;
+  border-collapse: separate;
+  font-size: 14px;
+  color: #596380;
+  table-layout: fixed;
+}
+
+/* thead */
+.table-head tr{
+  display: grid;
+  grid-template-columns: 20px 100px 1fr 240px 180px; /* 동일한 열 비율 */
+  align-items: center;
+  background-color: #f9f9f9;
+  border-radius: 2vh;
+}
+
+.table-head th {
+  padding: 12px 10px;
+  text-align: center;
+  font-weight: 600;
+  color: #333;
+}
+
+.table-head th {
+  padding: 12px 10px;
+  text-align: center;
+  font-weight: 600;
+  color: #333;
+}
+
+/* tbody row */
+.table-body-wrapper {
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.table-row {
+  display: grid;
+  grid-template-columns: 20px 100px 1fr 240px 180px; /* 지정한 열 비율 */
+  align-items: center;
+  padding: 12px;
+  border: 1px solid #eaeaea;
+  border-radius: 2vh; /* radius 2vh 적용 */
+  background-color: #fff;
+  transition: background-color 0.2s ease;
+}
+
+.table-row.selected-row {
+  background-color: #e0f7f5;
+}
+
+/* td 내부 공통 */
+.table-row td {
+  text-align: center;
+  vertical-align: middle;
+  font-size: 13px;
+}
+
+/* Pagination */
+.pagination-container {
+  border-top: 1px;
+  padding: 12px;
+  text-align: center;
+}

@@ -5,11 +5,12 @@ import "@/styles/common/textInputWithButton.css";
 
 type Props = {
   label?: string; // 라벨이 필요한 경우
+  fieldName?: "title" | "memo";
   value: string;
   placeholder?: string;
   onChange: (value: string) => void;
   buttonLabel: string;
-  onButtonClick: () => void;
+  onButtonClick: (value: string, fieldName?: "title" | "memo") => void;
   disabledButton?: boolean;
   className?: string;
   showTooltip?: boolean; // 기존 TextInput 호환성을 위해 추가
@@ -17,6 +18,7 @@ type Props = {
 
 export default function TextInputWithButton({
   label,
+  fieldName,
   value,
   placeholder = "텍스트를 입력해주세요",
   onChange,
@@ -39,7 +41,7 @@ export default function TextInputWithButton({
         />
         <Button
           variant={disabledButton ? "fourth" : "seventh"}
-          onClick={onButtonClick}
+          onClick={() => onButtonClick(value, fieldName)}
           type="button"
           customType="set"
         >

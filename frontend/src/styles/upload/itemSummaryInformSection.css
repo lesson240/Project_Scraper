@@ -1,151 +1,146 @@
+/* styles/productUpload/itemSummary/itemSummaryInformSection.css */
+
+/* 최상위 컨테이너 스타일 */
+.item-summary-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+/* 테이블 영역 공통 */
 .table-wrapper {
-  max-height: 700px; 
-  overflow-y: auto;
+  margin-top: 10px;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .product-manage-table {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    font-size: 14px;
-    color: #596380;
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
 }
 
-.table-head,
-.table-row {
-    display: grid;
-    grid-template-columns: 20px 100px 1fr 240px 200px;
-    align-items: center;
-    border: 1px solid #eee;
-    padding: 10px 16px;
-    border-radius: 8px;
-    background-color: #fff;
+.product-manage-table th,
+.product-manage-table td {
+  padding: 8px 10px;
+  border-bottom: 1px;
+  text-align: left;
+  vertical-align: middle;
+  font-size: 14px;
 }
+
+/* 헤더 스타일 */
 
 .table-head {
   position: sticky;
   top: 0;
   background-color: rgb(255, 255, 255); /* 배경색 필수 (투명하면 밑 행이 비침) */
   z-index: 2;/* 다른 요소보다 위에 표시 */
-    background-color: #f9f9f9;
-    font-weight: 600;
-    color: #333;
+  background-color: #f9f9f9;
+  font-weight: 600;
+  color: #333;
+  
 }
 
-.table-col {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
+
+.table-head th {
+  background-color: #f4f4f4;
+  font-weight: 600;
+  font-size: 13px;
+  color: #d3e1ee;
 }
 
+/* 체크박스 헤더 */
+.table-head th input[type="checkbox"] {
+  margin: 0;
+  cursor: pointer;
+}
+
+/* 개별 Row */
+.table-row {
+  transition: background-color 0.2s ease;
+  padding: 1vh;
+  margin: 10px;
+}
+
+.selected-row {
+  background-color: #eaf6ff;
+}
+
+/* 상품 정보 썸네일 및 상세 정보 */
 .table-col-left {
-    display: flex;
-    flex: 1;
-    align-items: flex-start;
-    justify-content: flex-start;
-    gap: 16px;
-    margin: 0 10px 0 10px;
-}
-
-.table-row.selected-row {
-  background-color: #e0f7f5;
-}
-
-
-.checkbox-col {
-    flex-direction: column;
-}
-
-.button-group {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    align-items: center;
-    margin-bottom: 6px;
-
-}
-
-.button-row {
-    display: flex;
-    gap: 8px;
-}
-
-.market-label {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    font-size: 13px;
-    color: #ff5722;
-    font-weight: bold;
+  display: flex;
+  align-items: flex-start;
+  justify-items: flex-start;
+  gap: 12px;
 }
 
 .thumb {
-    width: 100px;
-    height: auto;
-    object-fit: cover;
-    border-radius: 10px;
-    cursor: pointer;
+  width: 60px;
+  height: 60px;
+  border-radius: 4px;
+  object-fit: cover;
 }
 
 .goods-details {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    flex: 1;
-    min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
-
 
 .goods-title,
 .goods-memo {
-    font-weight: 500;
-    /* white-space: nowrap; */
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100%;
-    flex: 1;
-    min-width: 0;
-    display: flex;
+  margin-bottom: 6px;
 }
-
 
 .meta {
-    font-size: 13px;
-    color: #596380;
+  font-size: 12px;
+  color: #666;
+  text-align: left;
 }
 
-
+/* 상세 정보 컬럼 */
 .detail-col {
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* 상단 정렬 */
+  align-items: center;         /* 중앙 정렬 */
+  gap: 4px;
 }
 
 .basic-info {
-    font-weight: 500;
-    color: #596380;
+  font-size: 12px;
+  color: #495057;
 }
 
 .alert {
-    color: #ff5959;
-    font-size: 13px;
-    margin-top: 4px;
+  font-size: 12px;
+  color: #d62828;
+  font-weight: 600;
 }
 
-.copy-icon svg {
-  width: 14px;
-  height: 14px;
-  margin-left: 6px;
-  cursor: pointer;
-  fill: #596380;
-  transition: fill 0.2s ease;
+/* 버튼 그룹 */
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
-.copy-icon svg:hover {
-  fill: #333;
-  transform: scale(1.1); /* 약간 확대 효과 */
-} 
+.button-row {
+  display: flex;
+  gap: 6px;
+}
 
-.copy-icon:active {
-  fill: #007bff;       /* 클릭 시 포커스 색상 (블루톤) */
+/* Pagination 영역 */
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
 }

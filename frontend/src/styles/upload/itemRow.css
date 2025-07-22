@@ -1,0 +1,49 @@
+/* styles/productUpload/itemSummary/itemRow.css */
+
+.table-row {
+  border-bottom: 1px;
+  transition: background-color 0.2s ease;
+  border-radius: 1vh;
+}
+
+
+.selected-row {
+  background-color: #eaf6ff;
+}
+
+.table-col-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px;
+}
+
+.thumb {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.goods-details {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.goods-title,
+.goods-memo {
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    flex: 1;
+    min-width: 0;
+    display: flex;
+}
+
+
+.meta {
+  font-size: 12px;
+  color: #666;
+}
