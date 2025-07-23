@@ -1,34 +1,6 @@
-/* src/styles/product/FilterButtons.css */
 .button-box {
     display: flex;
     justify-content: flex-end;
     gap: 12px;
-    margin-top: 24px;
+    margin: 10px;
 }
-
-/* 
-.filter-buttons {
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-    margin-top: 12px;
-}
-
-.reset-button,
-.search-button {
-    padding: 10px 20px;
-    font-weight: bold;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-}
-
-.reset-button {
-    background: #f4f4f4;
-    color: #333;
-}
-
-.search-button {
-    background: #00b6ad;
-    color: white;
-} */

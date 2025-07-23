@@ -68,6 +68,8 @@ export default function ItemSummaryInformSection({
     );
   };
 
+  
+    // 클립보드에 복사하는 기능
   const handleCopy = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);

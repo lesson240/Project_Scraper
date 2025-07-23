@@ -27,11 +27,11 @@
   /*overflow 방지용 */
   width: 100%;
   background: #ffffff;
-  border-radius: 3%;
+  border-radius: 2vh;
   border: 1px solid #f9fafb;
   box-shadow: 5px 10px 15px 0 rgba(0, 0, 0, 0.03);
-  padding: 10px 15px;
-  margin-bottom: 5px;
+  padding: 12px;
+  margin: 10px;
   transition: box-shadow 0.2s;
   font-size: x-small;
   /* position: relative; */
@@ -40,7 +40,8 @@
 .section-row {
   display: flex;
   gap: 15px;
-  margin-bottom: 15px;
+  margin: 10px;
+  align-items: center;
   flex-wrap: wrap;
 }
 

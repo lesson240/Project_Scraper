@@ -19,7 +19,7 @@
   /* 줄바꿈 방지 */
   text-overflow: ellipsis;
   /* 말줄임 처리 */
-  margin: 6px 0 0 0;
+  /* margin: 6px 0 0 0; */
   transition: background 0.3s ease;
 }
 

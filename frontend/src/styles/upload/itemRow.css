@@ -1,28 +1,48 @@
-/* styles/productUpload/itemSummary/itemRow.css */
-
+/* 개별 Row */
 .table-row {
-  border-bottom: 1px;
   transition: background-color 0.2s ease;
-  border-radius: 1vh;
+  padding: 1vh;
+  margin: 10px;
 }
 
+.table-row td {
+  padding: 0; /* 위아래 여백 제거 */
+  height: 100%;
+  vertical-align: stretch; /* 세로로 꽉 차게 */
+}
 
 .selected-row {
   background-color: #eaf6ff;
 }
 
+/* 공통 td */
 .table-col-left {
   display: flex;
   align-items: flex-start;
+  justify-content: center;
   gap: 10px;
   padding: 10px;
+  height: 100%;
 }
 
+.table-col-center {
+  display: flex;
+  align-items: center; 
+  justify-content: center;
+  height: 100%;
+  gap: 10px;
+  padding: 10px;
+  height: 100%;
+}
+
+
+/* 상품 정보 썸네일 및 상세 정보 */
 .thumb {
   width: 120px;
   height: 120px;
   object-fit: cover;
   border-radius: 4px;
+  cursor: pointer;
 }
 
 .goods-details {
@@ -40,10 +60,49 @@
     flex: 1;
     min-width: 0;
     display: flex;
+    margin-bottom: 10px;
 }
-
 
 .meta {
   font-size: 12px;
   color: #666;
+  text-align: left;
+}
+
+.copy-icon svg {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  fill: #666;
+  transition: fill 0.2s ease;
+}
+
+.copy-icon svg:hover {
+  fill: #000;
+}
+
+
+/* 상세 정보 컬럼 */
+.basic-info {
+  font-size: 12px;
+  color: #495057;
+}
+
+.alert {
+  font-size: 12px;
+  color: #d62828;
+  font-weight: 600;
+}
+
+
+/* 버튼 그룹 */
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.button-row {
+  display: flex;
+  gap: 6px;
 }

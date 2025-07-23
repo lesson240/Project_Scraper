@@ -1,5 +1,5 @@
 // src/components/productUpload/itemSummaryInformSection/ItemRow.tsx
-import React from "react";
+import React, { useState } from "react";
 import Tooltip from "@/components/common/Tooltip";
 import TextInputWithButton from "@/components/common/TextInputWithButton";
 import ItemActions from "./ItemActions";
@@ -54,37 +54,64 @@ export default function ItemRow({
     </svg>
   );
 
+  // Row 선택 상태 관리
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+
+  const handleRowClick = (e: React.MouseEvent, itemId: string) => {
+      const target = e.target as HTMLElement;
+          // 클릭 대상이 특정 요소(className)를 포함하면 handlerowclick 중지
+          if (
+              target.closest('.button-row') ||
+              target.closest('.copy-icon') ||   
+              target.closest('.goods-title') ||  
+              target.closest('.goods-memo') ||
+              target.closest('.thumb')         
+          ) {
+              return; // row 선택 동작 실행 안 함
+          }
+        onSelect();
+      };
+
   return (
-    <tr className={`table-row ${isSelected ? "selected-row" : ""}`}>
-      <td className="table-col">
-        <input
-          type="checkbox"
-          checked={isSelected}
-          onChange={onSelect}
-          onClick={(e) => e.stopPropagation()}
-        />
+    <tr 
+      className={`table-row ${isSelected ? "selected-row" : ""}`}
+      onClick={(e) => handleRowClick(e, item.origin_goods_code || "")}
+    >
+      <td>
+        <div className="table-col-center">
+          <input
+            type="checkbox"
+            checked={isSelected}
+            onChange={onSelect}
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
       </td>
-      <td className="market-label">{item.market}</td>
-      <td className="table-col-left">
-        <img
-          src={item.thumb?.thumb1 || "/images/default-thumb.jpg"}
-          alt="상품 썸네일"
-          className="thumb"
-        />
-        <div className="goods-details">
-          <div className="goods-title">
-            <TextInputWithButton
-              fieldName="title"
-              value={item.origin_goods_name}
-              placeholder="상품명을 입력해주세요"
-              buttonLabel="수정"
-              onChange={(value) =>
-                onModifySet(item.origin_goods_code || "", "title", value)
-              }
-              onButtonClick={(value) =>
-                onModifySet(item.origin_goods_code || "", "title", value)
-              }
-            />
+      <td>
+        <div className="table-col-center">{item.market}</div>
+      </td>
+      <td>
+        <div className="table-col-left">
+          <img
+            src={item.thumb?.thumb1 || "/images/default-thumb.jpg"}
+            alt="상품 썸네일"
+            className="thumb"
+          />
+          <div className="goods-details">
+            <div className="goods-title">
+              <TextInputWithButton
+                fieldName="title"
+                value={item.origin_goods_name}
+                placeholder="상품명을 입력해주세요"
+                buttonLabel="수정"
+                autoFocus={true}
+                onChange={(value) =>
+                  onModifySet(item.origin_goods_code || "", "title", value)
+                }
+                onButtonClick={(value) => {
+                  onModifySet(item.origin_goods_code || "", "title", value);
+                }}
+              />
           </div>
           <div className="goods-memo">
             <TextInputWithButton
@@ -112,27 +139,32 @@ export default function ItemRow({
             </Tooltip>
           </div>
           <div className="meta">업로드 마켓: {item.market}</div>
+          </div>
         </div>
       </td>
       <td>
-        <ItemActions
-          onAttributeSet={onAttributeSet}
-          onOptionSet={onOptionSet}
-          onDetailPageSet={onDetailPageSet}
-          onUploadSet={onUploadSet}
-        />
+        <div className="table-col-left">
+          <ItemActions
+            onAttributeSet={onAttributeSet}
+            onOptionSet={onOptionSet}
+            onDetailPageSet={onDetailPageSet}
+            onUploadSet={onUploadSet}
+          />
+        </div>
       </td>
       <td>
-        <div className="table-col detail-col">
-          <div className="basic-info">상품 수집일: {item.collection_time}</div>
-          <div className="basic-info">원본 할인가 (¥): {item.goods_origin}</div>
-          <div className="basic-info">설정 상품가 (￦): {item.priceRange}</div>
-          {item.priceRequired && (
-            <div className="alert">가격 설정해 주세요</div>
-          )}
-          {item.tagRequired && (
-            <div className="alert">태그 설정해 주세요</div>
-          )}
+        <div className="table-col-left">
+          <div className="goods-details">
+            <div className="basic-info">상품 수집일: {item.collection_time}</div>
+            <div className="basic-info">원본 할인가 (¥): {item.goods_origin}</div>
+            <div className="basic-info">설정 상품가 (￦): {item.priceRange}</div>
+            {item.priceRequired && (
+              <div className="alert">가격 설정해 주세요</div>
+            )}
+            {item.tagRequired && (
+              <div className="alert">태그 설정해 주세요</div>
+            )}
+          </div>
         </div>
       </td>
     </tr>

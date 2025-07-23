@@ -17,38 +17,57 @@
   table-layout: fixed;
 }
 
-/* thead */
-.table-head tr{
-  display: grid;
-  grid-template-columns: 20px 100px 1fr 240px 180px; /* 동일한 열 비율 */
-  align-items: center;
-  background-color: #f9f9f9;
-  border-radius: 2vh;
+/* 테이블 영역 공통 */
+.table-wrapper {
+  margin-top: 10px;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-.table-head th {
-  padding: 12px 10px;
-  text-align: center;
+/* thead */
+.table-head {
+  position: sticky;
+  top: 0;
+  background-color: rgb(255, 255, 255); /* 배경색 필수 (투명하면 밑 행이 비침) */
+  z-index: 2;/* 다른 요소보다 위에 표시 */
+  background-color: #f9f9f9;
   font-weight: 600;
   color: #333;
 }
 
+.table-head tr{
+  display: grid;
+  grid-template-columns: 20px 100px 1fr 200px 200px; /* 동일한 열 비율 */
+  /* align-items: center; */
+  background-color: #f4f4f4;
+  border-radius: 2vh;
+  height: 5vh;
+  padding: 0 12px 0 12px;
+  margin: 0 20px 0 10px;
+  align-items: center;
+  border-radius: 2vh; 
+  transition: background-color 0.2s ease;
+}
+
 .table-head th {
-  padding: 12px 10px;
   text-align: center;
+  justify-content: center;
   font-weight: 600;
+  font-size: 13px;
   color: #333;
 }
 
 /* tbody row */
 .table-body-wrapper {
-  max-height: 80vh;
+  max-height: 68vh;
   overflow-y: auto;
 }
 
 .table-row {
   display: grid;
-  grid-template-columns: 20px 100px 1fr 240px 180px; /* 지정한 열 비율 */
+  grid-template-columns: 20px 100px 1fr 200px 200px; /* 지정한 열 비율 */
   align-items: center;
   padding: 12px;
   border: 1px solid #eaeaea;
@@ -66,11 +85,4 @@
   text-align: center;
   vertical-align: middle;
   font-size: 13px;
-}
-
-/* Pagination */
-.pagination-container {
-  border-top: 1px;
-  padding: 12px;
-  text-align: center;
 }

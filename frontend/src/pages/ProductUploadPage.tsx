@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import SearchFilterSection from "@/components/productUpload/searchFilterSection/SearchFilterSection";
 import FunctionSection from "@/components/productUpload/functionSection/FunctionSection";
-import ItemSummaryInformSection from "@/components/productUpload/itemSummaryInformSection/ItemSummaryInformSection";
+import ItemSummaryContainer from "@/components/productUpload/itemSummaryInformSection/ItemSummaryContainer";
 import "@/styles/section.css"
 import axios from "@/lib/axios";
 
@@ -39,7 +39,7 @@ export default function ProductUploadPage() {
                 />
             </div>
             <div>
-                <ItemSummaryInformSection
+                <ItemSummaryContainer
                     items={items}
                     pageSize={pageSize}
                     onAttributeSet={() => { }}
