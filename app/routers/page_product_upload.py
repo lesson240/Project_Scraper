@@ -18,6 +18,9 @@ from app.models.model_pydantic_table import (
     BrandCodeRequestModel,
     MatchingOptionIdModel,
     OriginGoodsCodeModel,
+    GoodsPriceUpdateModel,
+    GoodsNameUpdateModel,
+    GoodsMemoUpdateModel,
 )
 from app.models.model_odmantic_oliveyoung import OriginGoodsDetailModel
 from app.models.model_odmantic_table import InputGoodsManagementTableModel
@@ -68,6 +71,7 @@ async def get_product_data(request: Request, input_data: BrandCodeRequestModel):
     memo_name = input_data.memo_name
     origin_goods_code = input_data.origin_goods_code
     origin_goods_name = input_data.origin_goods_name
+    modified_goods_name = input_data.modified_goods_name
     promotion_period = input_data.promotion_period
 
     filter_section_inquiry = FilterSectionInquiry(
@@ -77,6 +81,7 @@ async def get_product_data(request: Request, input_data: BrandCodeRequestModel):
         memo_name,
         origin_goods_code,
         origin_goods_name,
+        modified_goods_name,
         promotion_period,
     )
 
@@ -255,13 +260,12 @@ async def delete_goods_table(input_data: List[OriginGoodsCodeModel]):
         )
 
 @router.post("/save-goods-price", response_class=JSONResponse)
-async def save_goods_price(data: List[InputGoodsTableRequestModel]):
+async def save_goods_price(data: List[GoodsPriceUpdateModel]):
     try:
         for item in data:
             query = {"origin_goods_code": item.origin_goods_code}
             update_data = {
                 "selling_price": item.selling_price,
-                "total_price": item.total_price,
             }
             await mongodb_service.engine.get_collection(InputGoodsManagementTableModel)\
                 .update_one(query, {"$set": update_data}, upsert=True)
@@ -278,11 +282,11 @@ async def save_goods_page():
     return {"message": "페이지 설정 API - 구현 예정"}
 
 @router.post("/save-goods-name", response_class=JSONResponse)
-async def save_goods_name(data: List[InputGoodsTableRequestModel]):
+async def save_goods_name(data: List[GoodsNameUpdateModel]):
     try:
         for item in data:
             query = {"origin_goods_code": item.origin_goods_code}
-            update_data = {"origin_goods_name": item.origin_goods_name}
+            update_data = {"modified_goods_name": item.modified_goods_name}
             await mongodb_service.engine.get_collection(InputGoodsManagementTableModel)\
                 .update_one(query, {"$set": update_data}, upsert=True)
         return {"message": "상품명이 성공적으로 업데이트되었습니다."}
@@ -290,7 +294,7 @@ async def save_goods_name(data: List[InputGoodsTableRequestModel]):
         raise HTTPException(status_code=500, detail=f"상품명 저장 오류: {str(e)}")
 
 @router.post("/save-goods-memo", response_class=JSONResponse)
-async def save_goods_memo(data: List[InputGoodsTableRequestModel]):
+async def save_goods_memo(data: List[GoodsMemoUpdateModel]):
     try:
         for item in data:
             query = {"origin_goods_code": item.origin_goods_code}

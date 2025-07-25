@@ -34,6 +34,7 @@ class FilterSectionInquiry:
         memo_name,
         origin_goods_code,
         origin_goods_name,
+        modified_goods_name,
         promotion_period,
     ):
         self.brand_code = brand_code
@@ -42,6 +43,7 @@ class FilterSectionInquiry:
         self.memo_name = memo_name
         self.origin_goods_code = origin_goods_code
         self.origin_goods_name = origin_goods_name
+        self.modified_goods_name = modified_goods_name
         self.mongodb_service = mongodb_service
         self.promotion_period = promotion_period
         if mongodb_service and mongodb_service.engine is None:
@@ -64,6 +66,8 @@ class FilterSectionInquiry:
             filters["origin_goods_code"] = {"$in": [self.origin_goods_code]}
         if self.origin_goods_name:
             filters["origin_goods_name"] = {"$in": [self.origin_goods_name]}
+        if self.modified_goods_name:
+            filters["modified_goods_name"] = {"$in": [self.modified_goods_name]}
         if self.promotion_period:
             parse_promotion_period = DatetimeParseModel(
                 inquiry_datetime=self.promotion_period

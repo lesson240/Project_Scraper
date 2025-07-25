@@ -28,6 +28,7 @@ class BrandCodeRequestModel(BaseModel):
     memo_name: Optional[str] = Field(None)
     origin_goods_code: Optional[str] = Field(None)
     origin_goods_name: Optional[str] = Field(None)
+    modified_goods_name: Optional[str] = Field(None)
     promotion_period: Optional[str] = Field(None)
 
 
@@ -60,6 +61,21 @@ class InputGoodsTableRequestModel(BaseModel):
     maximum_price: Optional[int]
     stock_status: Optional[str]
     promotion_period: Optional[str]
+
+# 가격 업데이트 전용 모델
+class GoodsPriceUpdateModel(BaseModel):
+    origin_goods_code: str
+    selling_price: Optional[int]
+
+# 상품명 업데이트 전용 모델
+class GoodsNameUpdateModel(BaseModel):
+    origin_goods_code: str
+    modified_goods_name: str
+
+# 메모 업데이트 전용 모델
+class GoodsMemoUpdateModel(BaseModel):
+    origin_goods_code: str
+    memo: str
 
 
 # # 작성중
