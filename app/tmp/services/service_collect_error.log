@@ -1,0 +1,2 @@
+2025-06-29 15:09:15,482 - ERROR - No goods of goods_detail fetched.
+2025-06-29 16:23:36,697 - ERROR - An error occurred while collecting: cannot access local variable 'existing_codes' where it is not associated with a value
