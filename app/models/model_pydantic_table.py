@@ -27,7 +27,6 @@ class BrandCodeRequestModel(BaseModel):
     group_name: Optional[str] = Field(None)
     memo_name: Optional[str] = Field(None)
     origin_goods_code: Optional[str] = Field(None)
-    origin_goods_name: Optional[str] = Field(None)
     modified_goods_name: Optional[str] = Field(None)
     promotion_period: Optional[str] = Field(None)
 

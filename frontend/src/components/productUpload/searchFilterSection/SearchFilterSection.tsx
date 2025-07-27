@@ -50,11 +50,12 @@ export default function FilterSection({ onSearchClick }: Props) {
         const params = {
             group_name: groupName,
             memo_name: memo,
-            origin_goods_name: goodsName,
+            modified_goods_name: goodsName,
             brand_name: brand,
             un_uploaded_market: unUploadedMarket,
             origin_goods_code: goodsCode,
             sold_out: soldOut,
+            promotion_period: promotionDateRate,
         };
         onSearchClick(params);
     };

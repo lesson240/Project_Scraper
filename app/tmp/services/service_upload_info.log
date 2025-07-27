@@ -1,0 +1,13 @@
+2025-07-27 17:00:57,593 - ERROR - An error occurred during fetch_inquiry: 'FilterSectionInquiry' object has no attribute 'origin_goods_name'
+2025-07-27 17:13:26,441 - ERROR - An error occurred during fetch_inquiry: 'FilterSectionInquiry' object has no attribute 'origin_goods_name'
+2025-07-27 17:29:24,141 - ERROR - An error occurred during fetch_inquiry: 'FilterSectionInquiry' object has no attribute '_search_in_management'
+2025-07-27 18:13:17,620 - ERROR - No inquiry found from fetch_inquiry
+2025-07-27 18:17:19,226 - ERROR - No inquiry found from fetch_inquiry
+2025-07-27 18:55:47,871 - ERROR - No inquiry found from fetch_inquiry
+2025-07-27 18:56:19,443 - ERROR - No inquiry found from fetch_inquiry
+2025-07-27 18:59:12,695 - ERROR - No inquiry found from fetch_inquiry
+2025-07-27 19:09:12,383 - ERROR - Error searching InputGoodsManagementTableModel: $regex has to be a string, full error: {'ok': 0.0, 'errmsg': '$regex has to be a string', 'code': 2, 'codeName': 'BadValue', '$clusterTime': {'clusterTime': Timestamp(1753610953, 7), 'signature': {'hash': b'\x03\xd9Op\xa1|\xdd\xe8\xc6v5"\xb7m/\x15\x9b*3_', 'keyId': 7469845329232265221}}, 'operationTime': Timestamp(1753610953, 7)}
+2025-07-27 19:09:12,429 - ERROR - Error searching OriginGoodsDetailModel: $regex has to be a string, full error: {'ok': 0.0, 'errmsg': '$regex has to be a string', 'code': 2, 'codeName': 'BadValue', '$clusterTime': {'clusterTime': Timestamp(1753610953, 7), 'signature': {'hash': b'\x03\xd9Op\xa1|\xdd\xe8\xc6v5"\xb7m/\x15\x9b*3_', 'keyId': 7469845329232265221}}, 'operationTime': Timestamp(1753610953, 7)}
+2025-07-27 19:09:12,433 - ERROR - No inquiry found from fetch_inquiry
+2025-07-27 19:10:43,753 - ERROR - No inquiry found from fetch_inquiry
+2025-07-27 19:15:12,452 - ERROR - No inquiry found from fetch_inquiry
