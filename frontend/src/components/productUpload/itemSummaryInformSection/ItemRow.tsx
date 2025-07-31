@@ -105,9 +105,7 @@ export default function ItemRow({
                 placeholder="상품명을 입력해주세요"
                 buttonLabel="수정"
                 autoFocus={true}
-                onChange={(value) =>
-                  onModifySet(item.origin_goods_code || "", "title", value)
-                }
+                onChange={(value) =>{}}
                 onButtonClick={(value) => {
                   onModifySet(item.origin_goods_code || "", "title", value);
                 }}
@@ -119,9 +117,7 @@ export default function ItemRow({
               value={item.memo}
               placeholder="메모를 입력해주세요"
               buttonLabel="수정"
-              onChange={(value) =>
-                onModifySet(item.origin_goods_code || "", "memo", value)
-              }
+              onChange={(value) =>{}}
               onButtonClick={(value) =>
                 onModifySet(item.origin_goods_code || "", "memo", value)
               }

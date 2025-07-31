@@ -2,18 +2,21 @@ import React, { useState } from "react";
 import SearchFilterSection from "@/components/productUpload/searchFilterSection/SearchFilterSection";
 import FunctionSection from "@/components/productUpload/functionSection/FunctionSection";
 import ItemSummaryContainer from "@/components/productUpload/itemSummaryInformSection/ItemSummaryContainer";
+import Toast from "@/components/common/Toast";
 import "@/styles/section.css"
 import axios from "@/lib/axios";
 
 export default function ProductUploadPage() {
     const [items, setItems] = useState<any[]>([]);
     const [pageSize, setPageSize] = useState("30개");
-
  
     const pageSizeNumber = parseInt(pageSize.replace("개", ""), 10);
     const currentItems = items.slice(0, pageSizeNumber);
     const currentCount = currentItems.length;
     const totalCount = items.length;   
+
+    const [toastMessage, setToastMessage] = useState<string>("");
+
 
     const handleSearch = async (params: any) => {
         try {
@@ -24,6 +27,28 @@ export default function ProductUploadPage() {
             console.error("조회 실패", err);
         }
     };
+
+    const onModifySet = async (
+    id: string,
+    field: "title" | "memo",
+    value: string
+    ) => {
+    const url = field === "title" ? "/save-goods-name" : "/save-goods-memo";
+    const payload =
+        field === "title"
+        ? [{ origin_goods_code: id, modified_goods_name: value }]
+        : [{ origin_goods_code: id, memo: value }];
+
+    try {
+        await axios.post(url, payload);
+        setToastMessage("저장되었습니다.");
+    } catch (error) {
+        console.error("저장 실패:", error);
+        setToastMessage("저장에 실패했습니다.");
+    }
+    };
+
+
 
     return (
         <div>
@@ -46,6 +71,7 @@ export default function ProductUploadPage() {
                     onOptionSet={() => { }}
                     onDetailPageSet={() => { }}
                     onUploadSet={() => { }}
+                    onModifySet={onModifySet}
                 />
             </div>
         </div>

@@ -65,23 +65,9 @@ async def product_manage(request: Request):
 @router.post("/product-data", response_class=HTMLResponse)
 async def get_product_data(request: Request, input_data: BrandCodeRequestModel):
     logger.info(f"Received data: {input_data.json()}")
-    brand_code = input_data.brand_code
-    brand_name = input_data.brand_name
-    group_name = input_data.group_name
-    memo_name = input_data.memo_name
-    origin_goods_code = input_data.origin_goods_code
-    modified_goods_name = input_data.modified_goods_name
-    promotion_period = input_data.promotion_period
-
     filter_section_inquiry = FilterSectionInquiry(
-        brand_code,
-        brand_name,
-        group_name,
-        memo_name,
-        origin_goods_code,
-        modified_goods_name,
-        promotion_period,
-    )
+        **input_data.dict()
+)
 
     try:
         result = await filter_section_inquiry.run()
@@ -89,6 +75,7 @@ async def get_product_data(request: Request, input_data: BrandCodeRequestModel):
         return JSONResponse(content=result)
     except Exception as e:
         logger.error(f"FilterSectionInquiry failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.post("/save-goods-table", response_class=JSONResponse)

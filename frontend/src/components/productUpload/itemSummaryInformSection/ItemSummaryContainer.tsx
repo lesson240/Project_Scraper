@@ -28,6 +28,8 @@ type Props = {
   onOptionSet: () => void;
   onDetailPageSet: () => void;
   onUploadSet: () => void;
+  onModifySet: (id: string, field: "title" | "memo", value: string) => void;
+
 };
 
 
@@ -37,7 +39,7 @@ export default function ItemSummaryContainer({
   onAttributeSet,
   onOptionSet,
   onDetailPageSet,
-  onUploadSet,
+  onUploadSet
 }: Props) {
   const [toastMessage, setToastMessage] = useState("");
 
