@@ -15,7 +15,7 @@ from app.routers import (
     page_admin,
     page_order_management,
     page_product_collection,
-    page_product_management,
+    page_product_upload,
     page_user_setting,
     user_account,
 )  # , user 사용자 서비스를 비활성화합니다.
@@ -50,7 +50,7 @@ routers = [
     (page_admin.router, ["PageAdmin"]),
     (page_order_management.router, ["PageOrderManagement"]),
     (page_product_collection.router, ["PageProductCollection"]),
-    (page_product_management.router, ["PageProductManagement"]),
+    (page_product_upload.router, ["PageProductUpload"]),
     (page_user_setting.router, ["PageUserSetting"]),
     (user_account.router, ["UserAccount"]),
 ]
