@@ -24,12 +24,12 @@ type Item = {
 type Props = {
   items: Item[];
   pageSize: string;
+  onThumbClick?: (images: string[]) => void;
   onAttributeSet: () => void;
   onOptionSet: () => void;
   onDetailPageSet: () => void;
   onUploadSet: () => void;
-  onModifySet: (id: string, field: "title" | "memo", value: string) => void;
-
+  onModifySet: (id: string, field: "title" | "memo", value: string) => Promise<void>;
 };
 
 
@@ -39,7 +39,8 @@ export default function ItemSummaryContainer({
   onAttributeSet,
   onOptionSet,
   onDetailPageSet,
-  onUploadSet
+  onUploadSet,
+  onModifySet
 }: Props) {
   const [toastMessage, setToastMessage] = useState("");
 
@@ -59,10 +60,26 @@ export default function ItemSummaryContainer({
         },
       ];
 
-      await axios.post("/save-goods-table", payload);
+  //     await axios.post("/save-goods-table", payload);
+  //     setToastMessage("수정이 완료되었습니다.");
+  //   } catch (err) {
+  //     console.error("저장 실패:", err);
+  //     setToastMessage("수정에 실패했습니다.");
+  //   }
+  // };
+
+
+    // 버튼 클릭 시에만 호출되는 래퍼
+  // const handleModify = async (
+  //   id: string,
+  //   field: "title" | "memo",
+  //   value: string
+  // ) => {
+    // try {
+      await onModifySet(id, field, value);
       setToastMessage("수정이 완료되었습니다.");
-    } catch (err) {
-      console.error("저장 실패:", err);
+    } catch (e) {
+      console.error("수정 실패:", e);
       setToastMessage("수정에 실패했습니다.");
     }
   };

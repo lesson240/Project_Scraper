@@ -8,6 +8,7 @@ import "@/styles/upload/itemRow.css";
 type Item = {
   origin_goods_name: string;
   goods_origin: number;
+  modified_goods_name: string;
   thumb?: {
     thumb1?: string;
   };
@@ -19,6 +20,7 @@ type Item = {
   origin_goods_code?: string;
   memo: string;
   group_name: string;
+  thumbnailImages?: string[];
 };
 
 type Props = {
@@ -31,6 +33,7 @@ type Props = {
   onDetailPageSet: () => void;
   onUploadSet: () => void;
   onCopy: (text: string) => void;
+  onThumbClick?: (images: string[]) => void;
 };
 
 export default function ItemRow({
@@ -43,6 +46,7 @@ export default function ItemRow({
   onDetailPageSet,
   onUploadSet,
   onCopy,
+  onThumbClick,
 }: Props) {
   const CopyIcon = () => (
     <svg
@@ -95,17 +99,18 @@ export default function ItemRow({
           <img
             src={item.thumb?.thumb1 || "/images/default-thumb.jpg"}
             alt="상품 썸네일"
+            onClick={() => onThumbClick?.(item.thumbnailImages || [])}
             className="thumb"
           />
           <div className="goods-details">
             <div className="goods-title">
               <TextInputWithButton
                 fieldName="title"
-                value={item.origin_goods_name}
+                value={item.modified_goods_name}
                 placeholder="상품명을 입력해주세요"
                 buttonLabel="수정"
                 autoFocus={true}
-                onChange={(value) =>{}}
+                onChange={() =>{}}
                 onButtonClick={(value) => {
                   onModifySet(item.origin_goods_code || "", "title", value);
                 }}
@@ -117,7 +122,7 @@ export default function ItemRow({
               value={item.memo}
               placeholder="메모를 입력해주세요"
               buttonLabel="수정"
-              onChange={(value) =>{}}
+              onChange={() =>{}}
               onButtonClick={(value) =>
                 onModifySet(item.origin_goods_code || "", "memo", value)
               }

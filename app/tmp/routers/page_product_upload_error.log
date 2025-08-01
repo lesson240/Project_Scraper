@@ -4,3 +4,7 @@
 2025-07-31 18:06:49,196 - ERROR - FilterSectionInquiry failed: 500: 'FilterSectionInquiry' object has no attribute 'query_all_goods'
 2025-07-31 18:18:25,802 - ERROR - FilterSectionInquiry failed: 500: 'FilterSectionInquiry' object has no attribute 'query_all_goods'
 2025-07-31 18:18:40,964 - ERROR - FilterSectionInquiry failed: 500: 'FilterSectionInquiry' object has no attribute 'query_all_goods'
+2025-08-01 22:22:50,601 - ERROR - FilterSectionInquiry failed: 500: 'FilterSectionInquiry' object has no attribute '_search_in_management'
+2025-08-01 22:22:56,072 - ERROR - FilterSectionInquiry failed: 500: 'FilterSectionInquiry' object has no attribute '_search_in_management'
+2025-08-01 22:28:30,400 - ERROR - FilterSectionInquiry failed: 500: 'FilterSectionInquiry' object has no attribute '_search_in_management'
+2025-08-01 22:53:02,450 - ERROR - FilterSectionInquiry failed: 500: 'FilterSectionInquiry' object has no attribute '_search_in_management'

@@ -134,23 +134,23 @@ class FilterSectionInquiry:
     #         }
     #     return filters
 
-    # async def _search_in_management(self, filters):
-    #     """InputGoodsManagementTableModel에서 데이터 검색"""
-    #     try:
-    #         results = await self.mongodb_service.engine.find(InputGoodsManagementTableModel, filters)
-    #         return [item.dict(exclude={"_id", "id"}) for item in results]
-    #     except Exception as e:
-    #         logger.error(f"Error searching InputGoodsManagementTableModel: {e}")
-    #         return []
+    async def _search_in_management(self, filters):
+        """InputGoodsManagementTableModel에서 데이터 검색"""
+        try:
+            results = await self.mongodb_service.engine.find(InputGoodsManagementTableModel, filters)
+            return [item.dict(exclude={"_id", "id"}) for item in results]
+        except Exception as e:
+            logger.error(f"Error searching InputGoodsManagementTableModel: {e}")
+            return []
 
-    # async def _search_in_origin_detail(self, filters):
-    #     """OriginGoodsDetailModel에서 데이터 검색"""
-    #     try:
-    #         results = await self.mongodb_service.engine.find(OriginGoodsDetailModel, filters)
-    #         return [item.dict(exclude={"_id", "id"}) for item in results]
-    #     except Exception as e:
-    #         logger.error(f"Error searching OriginGoodsDetailModel: {e}")
-    #         return []
+    async def _search_in_origin_detail(self, filters):
+        """OriginGoodsDetailModel에서 데이터 검색"""
+        try:
+            results = await self.mongodb_service.engine.find(OriginGoodsDetailModel, filters)
+            return [item.dict(exclude={"_id", "id"}) for item in results]
+        except Exception as e:
+            logger.error(f"Error searching OriginGoodsDetailModel: {e}")
+            return []
 
 
     async def _search_all_goods(self):

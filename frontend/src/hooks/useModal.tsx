@@ -1,24 +1,19 @@
-import { useRecoilState } from "recoil";
-import { modalAtom } from "@/atom/modalAtom";
+// src/hooks/useModal.ts
+import { useState } from "react";
 
-const useModal = () => {
-  const [modalValue, setModalValue] = useRecoilState(modalAtom);
+/**
+ * 모달 열림/닫힘 상태를 관리하는 재사용 훅
+ */
+export function useModal() {
+  const [isOpen, setIsOpen] = useState(false);
 
-  const openModal = (modalContent: React.ReactNode) => {
-    setModalValue({
-      isOpen: true,
-      component: modalContent,
-    });
-  };
+  /** 모달 열기 */
+  const open = () => setIsOpen(true);
 
-  const closeModal = () => {
-    setModalValue({
-      isOpen: false,
-      component: null,
-    });
-  };
+  /** 모달 닫기 */
+  const close = () => setIsOpen(false);
 
-  return { openModal, closeModal };
-};
+  return { isOpen, open, close };
+}
 
 export default useModal;
