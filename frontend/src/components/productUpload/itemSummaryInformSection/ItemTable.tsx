@@ -2,27 +2,15 @@
 import React from "react";
 import Pagination from "@/components/common/Pagination";
 import ItemRow from "./ItemRow";
+import { Item } from "@/types/product";
 import "@/styles/upload/itemTable.css";
-
-type Item = {
-  origin_goods_name: string;
-  goods_origin: number;
-  thumb?: { thumb1?: string };
-  market: string;
-  collection_time?: string;
-  priceRange?: string;
-  priceRequired?: boolean;
-  tagRequired?: boolean;
-  origin_goods_code?: string;
-  memo: string;
-  group_name: string;
-};
 
 type Props = {
   items: Item[];
   currentPage: number;
   pageSizeNumber: number;
   selectedItems: string[];
+  onThumbClick?: (images: string[]) => void;
   onSelectAll: (checked: boolean) => void;
   onSelectItem: (id: string) => void;
   onModifySet: (id: string, field: "title" | "memo", value: string) => void;
@@ -39,6 +27,7 @@ export default function ItemTable({
   currentPage,
   pageSizeNumber,
   selectedItems,
+  onThumbClick,
   onSelectAll,
   onSelectItem,
   onModifySet,
@@ -85,6 +74,7 @@ export default function ItemTable({
                 item={item}
                 isSelected={selectedItems.includes(item.origin_goods_code || "")}
                 onSelect={() => onSelectItem(item.origin_goods_code || "")}
+                onThumbClick={onThumbClick}
                 onModifySet={onModifySet}
                 onAttributeSet={onAttributeSet}
                 onOptionSet={onOptionSet}

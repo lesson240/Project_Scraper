@@ -3,25 +3,9 @@ import React, { useState } from "react";
 import Tooltip from "@/components/common/Tooltip";
 import TextInputWithButton from "@/components/common/TextInputWithButton";
 import ItemActions from "./ItemActions";
+import { Item } from "@/types/product";
 import "@/styles/upload/itemRow.css";
-
-type Item = {
-  origin_goods_name: string;
-  goods_origin: number;
-  modified_goods_name: string;
-  thumb?: {
-    thumb1?: string;
-  };
-  market: string;
-  collection_time?: string;
-  priceRange?: string;
-  priceRequired?: boolean;
-  tagRequired?: boolean;
-  origin_goods_code?: string;
-  memo: string;
-  group_name: string;
-  thumbnailImages?: string[];
-};
+import defaultThumb from "@/assets/default_image.png";
 
 type Props = {
   item: Item;
@@ -60,6 +44,7 @@ export default function ItemRow({
 
   // Row 선택 상태 관리
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const thumbArray = Object.values(item.thumb || {}).filter(Boolean);
 
   const handleRowClick = (e: React.MouseEvent, itemId: string) => {
       const target = e.target as HTMLElement;
@@ -97,10 +82,13 @@ export default function ItemRow({
       <td>
         <div className="table-col-left">
           <img
-            src={item.thumb?.thumb1 || "/images/default-thumb.jpg"}
+            src={item.thumb?.thumb1 || defaultThumb}
             alt="상품 썸네일"
-            onClick={() => onThumbClick?.(item.thumbnailImages || [])}
             className="thumb"
+            onClick={() => {
+              const thumbs = Object.values(item.thumb || {}).filter(Boolean);
+              onThumbClick?.(thumbs.length > 0 ? thumbs : [defaultThumb]); // ✅ 안전 처리
+            }}
           />
           <div className="goods-details">
             <div className="goods-title">

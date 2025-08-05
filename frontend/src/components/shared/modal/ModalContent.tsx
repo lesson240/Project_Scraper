@@ -1,60 +1,67 @@
-import { isDeskTop } from "@/atom/atom";
-import useModal from "@/hooks/useModal";
-import { useRecoilValue } from "recoil";
+import React, { useEffect } from "react";
+import ReactDOM from "react-dom";
+import "@/styles/modal/modalContent.css";
 
-interface Props {
+type ModalContentProps = {
   children: React.ReactNode;
-  width?: number;
-  unset?: boolean;
-  fixHeight?: number;
+  onClose?: () => void; // ✅ 외부 클릭 또는 ESC 닫기용
+};
+
+function ModalOverlay({ children, onClose }: ModalContentProps) {
+  // ✅ 모달 열릴 때 body 스크롤 방지
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+
+    // ✅ ESC 키 닫기
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && onClose) {
+        onClose();
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = "";
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [onClose]);
+
+  // ✅ 배경 클릭 시 닫기
+  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget && onClose) {
+      onClose();
+    }
+  };
+
+  return (
+    <div className="modal-overlay" onClick={handleOverlayClick}>
+      <div className="modal-content">{children}</div>
+    </div>
+  );
 }
 
-const ModalContent = ({ children, width, unset = false, fixHeight }: Props) => {
-  const isDesktop = useRecoilValue(isDeskTop);
+/**
+ * ModalContent 컴포넌트
+ * - React 19 / Recoil 환경에서도 안전하게 동작
+ * - Portal을 root 내부에 렌더링
+ * - ESC 키와 배경 클릭으로 닫기 지원
+ */
+export default function ModalContent({ children, onClose }: ModalContentProps) {
+  const rootElement = document.getElementById("root");
+  if (!rootElement) return null;
 
-  const widthStyle = {
-    width: `${isDesktop ? (width ? width : "800") : "360"}px`,
-    maxWidth: `${isDesktop ? (width ? width : "800") : "360"}px`,
-  };
-
-  const unsetStyle = {
-    overflow: unset ? "unset" : "",
-    height: `${fixHeight ? `${fixHeight}px` : "none"}`,
-  };
-
-  return (
-    <div
-      style={widthStyle}
-      className={`modal-dialog1 d-flex align-items-center justify-content-center`}
-    >
-      <div
-        style={unsetStyle}
-        className="modal-content modalInner"
-        onClick={(e) => {
-          e.stopPropagation();
-        }}
-      >
-        {children}
-      </div>
-    </div>
+  return ReactDOM.createPortal(
+    <ModalOverlay onClose={onClose}>{children}</ModalOverlay>,
+    rootElement
   );
+}
+
+/** 모달 헤더 */
+ModalContent.ModalHead = function ModalHead({ children }: ModalContentProps) {
+  return <div className="modal-head">{children}</div>;
 };
 
-const ModalBody = ({ children }: { children: React.ReactNode }) => {
+/** 모달 바디 */
+ModalContent.ModalBody = function ModalBody({ children }: ModalContentProps) {
   return <div className="modal-body">{children}</div>;
 };
-
-const ModalHead = ({ children }: { children: React.ReactNode }) => {
-  const { closeModal } = useModal();
-  return (
-    <div className="modal-header modal-sticky">
-      <h5 className="d-flex align-items-center h1">{children}</h5>
-      <button type="button" className="btn-close" onClick={closeModal}></button>
-    </div>
-  );
-};
-
-ModalContent.ModalHead = ModalHead;
-ModalContent.ModalBody = ModalBody;
-
-export default ModalContent;

@@ -1,37 +1,54 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-/** 모달 열림/닫힘 관리 훅 */
-function useModal() {
-  const [isOpen, setIsOpen] = useState(false);
-  const open = () => setIsOpen(true);
-  const close = () => setIsOpen(false);
-
-  return { isOpen, open, close };
-}
-
-/** 썸네일 이미지 관리 훅 */
-function useThumbnailManager(initialImages: string[], onSave: (images: string[]) => void) {
-  const [thumbnails, setThumbnails] = useState<string[]>(initialImages);
+/**
+ * useThumbnailModal
+ * - 썸네일 모달 상태 및 이미지 배열 관리
+ * - initialImages 변경 시 thumbnails와 currentIndex를 초기화
+ */
+export function useThumbnailModal(
+  initialImages: string[],
+  onSave: (images: string[]) => void
+) {
+  const [thumbnails, setThumbnails] = useState<string[]>(initialImages || []);
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  /** ✅ initialImages 변경 시 thumbnails와 currentIndex 초기화 */
+  useEffect(() => {
+    setThumbnails(initialImages && initialImages.length > 0 ? [...initialImages] : []);
+    setCurrentIndex(0);
+  }, [initialImages]);
+
+  /** 새 이미지 추가 */
   const addImages = (newImages: string[]) => {
     setThumbnails((prev) => [...prev, ...newImages]);
+    if (thumbnails.length === 0 && newImages.length > 0) {
+      setCurrentIndex(0); // 첫 이미지부터 표시
+    }
   };
 
+  /** 이미지 삭제 */
   const removeImage = (index: number) => {
-    setThumbnails((prev) => prev.filter((_, i) => i !== index));
-    setCurrentIndex((prev) => (prev > 0 ? prev - 1 : 0));
+    setThumbnails((prev) => {
+      const updated = prev.filter((_, i) => i !== index);
+      // index 범위 보정
+      setCurrentIndex((prevIndex) => Math.min(updated.length - 1, prevIndex));
+      return updated;
+    });
   };
 
+  /** 이미지 초기화 */
   const resetImages = () => {
-    setThumbnails(initialImages);
+    const resetArray = initialImages && initialImages.length > 0 ? [...initialImages] : [];
+    setThumbnails(resetArray);
     setCurrentIndex(0);
   };
 
+  /** 이미지 저장 */
   const saveImages = (newImages?: string[]) => {
     const finalImages = newImages ?? thumbnails;
     setThumbnails(finalImages);
     onSave(finalImages);
+    setCurrentIndex(0); // 저장 후에도 첫 이미지로 초기화
   };
 
   return {
@@ -42,16 +59,7 @@ function useThumbnailManager(initialImages: string[], onSave: (images: string[])
     removeImage,
     resetImages,
     saveImages,
-    setThumbnails,
   };
-}
-
-/** 통합 훅 (Container/Modal 공용) */
-export function useThumbnailModal(initialImages: string[], onSave: (images: string[]) => void) {
-  const modal = useModal();
-  const manager = useThumbnailManager(initialImages, onSave);
-
-  return { ...modal, ...manager };
 }
 
 export default useThumbnailModal;
