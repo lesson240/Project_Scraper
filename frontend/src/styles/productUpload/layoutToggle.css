@@ -1,0 +1,49 @@
+.toggle-wrapper {
+    display: flex;
+    gap: 0;
+}
+
+/* 공통 토글 버튼 */
+.toggle-button-left,
+.toggle-button-right {
+    width: 40px;
+    height: 40px;
+    border: 1px solid #e1e1e1;
+    background-color: #ffffff;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    background-color: transparent;
+}
+
+/* 좌측 라운드만 */
+.toggle-button-left {
+    border-radius: 8px 0 0 8px;
+    border-right: none;
+
+}
+
+/* 우측 라운드만 */
+.toggle-button-right {
+    border-radius: 0 8px 8px 0;
+    border-left: none;
+}
+
+/* 활성화 상태 */
+.toggle-button-left.active,
+.toggle-button-right.active {
+    background-color: #00b5ad;
+    /* 올리브영 스타일 또는 원하는 강조색 */
+    color: #fff;
+    border-color: #00b5ad;
+
+}
+
+/* SVG 아이콘 전용 스타일 (있는 경우) */
+.toggle-button-left.active svg,
+.toggle-button-right.active svg {
+
+    fill: white;
+}

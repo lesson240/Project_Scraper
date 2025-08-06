@@ -1,0 +1,220 @@
+/* ===============================
+   Thumbnail Modal Advanced UI
+=============================== */
+
+.thumb-modal-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 8px;
+  font-family: "Noto Sans KR", sans-serif;
+}
+
+/* ---------- Title & Label ---------- */
+.modal-header h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #333;
+}
+
+.section-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 6px;
+  display: block;
+}
+
+/* ---------- Thumbnail Panel ---------- */
+.thumbnail-panel {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.thumbnail-uploader {
+  width: 72px;
+  height: 72px;
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  color: #bbb;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.thumbnail-uploader:hover {
+  border-color: #00b5ad;
+  color: #00b5ad;
+  background: #f9f9f9;
+}
+
+.thumbnail-item {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  overflow: hidden;
+  background: #fff;
+  transition: all 0.2s;
+}
+
+.thumbnail-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.thumbnail-item.active {
+  border-color: #00b5ad;
+  box-shadow: 0 0 6px rgba(0, 181, 173, 0.4);
+}
+
+.thumbnail-item:hover {
+  transform: translateY(-2px);
+}
+
+.remove-btn {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background: rgba(0, 0, 0, 0.65);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.remove-btn:hover {
+  background: rgba(255, 0, 0, 0.8);
+}
+
+/* ---------- Main Content Area ---------- */
+.thumb-main-wrapper {
+  display: flex;
+  gap: 24px;
+  min-height: 380px;
+}
+
+/* Editor (Left) */
+.editor-main {
+  flex: 2;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f9fafb;
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 4/3;
+}
+
+.editor-main img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+/* Viewer (Right) */
+.viewer-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.viewer-panel img {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid #eee;
+}
+
+/* ---------- Controls ---------- */
+.editor-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.editor-controls button {
+  width: 36px;
+  height: 36px;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.editor-controls button:hover {
+  background: #00b5ad;
+  color: white;
+  border-color: #00b5ad;
+}
+
+/* ---------- Footer Buttons ---------- */
+.thumbnail-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.thumbnail-modal-footer .btn-reset {
+  background: #fff;
+  border: 1px solid #ddd;
+  padding: 8px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.thumbnail-modal-footer .btn-reset:hover {
+  background: #f1f1f1;
+}
+
+.thumbnail-modal-footer .btn-save {
+  background: #00b5ad;
+  border: none;
+  color: #fff;
+  padding: 8px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.thumbnail-modal-footer .btn-save:hover {
+  background: #00a099;
+}
+
+.thumb-func-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.section-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 6px;
+}
+

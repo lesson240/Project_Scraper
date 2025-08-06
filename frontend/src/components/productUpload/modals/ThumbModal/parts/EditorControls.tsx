@@ -1,5 +1,4 @@
 import React from "react";
-import "@/styles/modal/thumbnailModal.css";
 
 export default function EditorControls() {
   return (

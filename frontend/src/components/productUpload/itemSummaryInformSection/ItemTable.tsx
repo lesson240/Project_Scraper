@@ -3,7 +3,7 @@ import React from "react";
 import Pagination from "@/components/common/Pagination";
 import ItemRow from "./ItemRow";
 import { Item } from "@/types/product";
-import "@/styles/upload/itemTable.css";
+import "@/styles/productUpload/itemTable.css";
 
 type Props = {
   items: Item[];

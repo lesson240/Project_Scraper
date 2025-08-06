@@ -1,6 +1,6 @@
 import { GreenMiddleButton } from "@/components/button/allttamButton/GreenMiddleButton";
 import { GreyMiddleButton } from "@/components/button/allttamButton/GreyMiddleButton";
-import ModalContent from "@/components/shared/modal/ModalContent";
+import ModalContent from "@/components/common/Modal/ModalContent";
 import useFetch from "@/hooks/useFetch";
 import { useInfoWindow } from "@/hooks/useInfoWindow";
 import useModal from "@/hooks/useModal";

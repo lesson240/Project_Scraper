@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ReactDOM from "react-dom";
-import ThumbnailModal from "./ThumbnailModal";
+import ThumbModal from "./ThumbnailModal";
 import { useThumbnailModal } from "@/hooks/useThumbnailModal";
 
 type Props = {
@@ -29,11 +29,22 @@ export default function ThumbnailModalContainer({
     onClose();
   });
 
+  /** ✅ 모달 열릴 때 defaultImages로 초기화 */
+  useEffect(() => {
+    if (isOpen) {
+      resetImages();
+      if (defaultImages?.length) {
+        addImages(defaultImages);
+      }
+      setCurrentIndex(0);
+    }
+  }, [isOpen, defaultImages]);
+
   if (!isOpen) return null;
 
   const rootElement = document.getElementById("root");
   const modalJSX = (
-    <ThumbnailModal
+    <ThumbModal
       isOpen={isOpen}
       onClose={onClose}
       thumbnails={thumbnails}

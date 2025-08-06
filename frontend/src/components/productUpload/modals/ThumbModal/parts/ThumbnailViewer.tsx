@@ -1,5 +1,5 @@
 import React from "react";
-import "@/styles/modal/thumbnailModal.css";
+import "@/styles/productUpload/thumbnailModal.css";
 
 type Props = {
   imageUrl?: string;

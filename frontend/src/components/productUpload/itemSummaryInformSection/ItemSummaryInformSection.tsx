@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "@/styles/upload/itemSummaryInformSection.css";
+import "@/styles/productUpload/itemSummaryInformSection.css";
 import ItemTable from "./ItemTable";
 import { Item } from "@/types/product";
 

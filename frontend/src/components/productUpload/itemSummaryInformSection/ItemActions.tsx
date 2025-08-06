@@ -1,7 +1,7 @@
 // src/components/productUpload/itemSummaryInformSection/ItemActions.tsx
 import React from "react";
 import Button from "@/components/common/Button";
-import "@/styles/upload/itemAction.css";
+import "@/styles/productUpload/itemAction.css";
 
 type Props = {
   onAttributeSet: () => void;

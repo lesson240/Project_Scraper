@@ -4,7 +4,7 @@ import Tooltip from "@/components/common/Tooltip";
 import TextInputWithButton from "@/components/common/TextInputWithButton";
 import ItemActions from "./ItemActions";
 import { Item } from "@/types/product";
-import "@/styles/upload/itemRow.css";
+import "@/styles/productUpload/itemRow.css";
 import defaultThumb from "@/assets/default_image.png";
 
 type Props = {

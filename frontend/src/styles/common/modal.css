@@ -1,24 +1,20 @@
-/* src/styles/modal/modalContent.css */
-
-/* 모달 전체를 덮는 어두운 배경 */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.55); /* 살짝 투명한 검은 배경 */
+  background-color: rgba(0, 0, 0, 0.55);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000; /* 다른 UI보다 항상 위 */
+  z-index: 1000;
 }
 
-/* 모달 내부 컨테이너 */
-.modal-content {
+.modal-container {
   background-color: #fff;
   border-radius: 12px;
-  width: 800px; /* 필요에 따라 조정 */
+  width: 800px;
   max-width: 90%;
   max-height: 90%;
   display: flex;
@@ -28,30 +24,39 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
 }
 
-/* 모달 헤더 */
-.modal-head {
-  font-size: 1.2rem;
-  font-weight: bold;
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: 16px 20px;
   border-bottom: 1px solid #e0e0e0;
   background-color: #fafafa;
+  font-size: 0.8rem;
+  font-weight: bold;
 }
 
-/* 모달 바디 */
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
 .modal-body {
   flex: 1;
   padding: 20px;
   overflow-y: auto;
 }
 
-/* 애니메이션: 등장 시 부드러운 페이드 */
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 12px 20px;
+  border-top: 1px solid #e0e0e0;
+}
+
 @keyframes modal-fade-in {
-  0% {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  0% { opacity: 0; transform: translateY(-10px); }
+  100% { opacity: 1; transform: translateY(0); }
 }

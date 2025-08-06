@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import SearchFilterSection from "@/components/productUpload/searchFilterSection/SearchFilterSection";
 import FunctionSection from "@/components/productUpload/functionSection/FunctionSection";
 import ItemSummaryContainer from "@/components/productUpload/itemSummaryInformSection/ItemSummaryContainer";
-import ThumbnailModalContainer from "@/components/productUpload/modal/ThumbnailModalContainer";
+import ThumbnailModalContainer from "@/components/productUpload/modals/ThumbModal/ThumbnailModalContainer";
 import "@/styles/section.css";
 import axios from "@/lib/axios";
 

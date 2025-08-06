@@ -3,8 +3,8 @@ import Button from "@/components/common/Button";
 import ComboInput from "../../common/ComboInput"
 import "@/styles/collect/filterButtons.css";
 import "@/styles/section.css"
-import "@/styles/upload/layoutToggle.css"
-import "@/styles/upload/functionSection.css"
+import "@/styles/productUpload/layoutToggle.css"
+import "@/styles/productUpload/functionSection.css"
 
 
 type Props = {
