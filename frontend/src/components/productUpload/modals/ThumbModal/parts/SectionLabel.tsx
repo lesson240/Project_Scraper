@@ -6,5 +6,10 @@ type Props = {
 };
 
 export default function SectionLabel({ text }: Props) {
-  return <div className="section-label">{text}</div>;
+  return (
+    <div className="section-label-wrapper">
+      <span className="section-label-text">{text}</span>
+      <hr className="section-label-line" />
+    </div>
+  );
 }

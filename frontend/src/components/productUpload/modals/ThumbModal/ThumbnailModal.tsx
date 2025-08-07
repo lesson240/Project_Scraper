@@ -6,6 +6,7 @@ import ViewerPanel from "./parts/ViewerPanel";
 import ThumbModalFooter from "./parts/ThumbnailModalFooter";
 import ThumbFunctionButtons from "./parts/ThumbnailFunctionButtons";
 import SectionLabel from "./parts/SectionLabel";
+import EditorControls from "./parts/EditorControls";
 import "@/styles/productUpload/thumbnailModal.css";
 
 type Props = {
@@ -53,14 +54,26 @@ export default function ThumbModal({
 
               <div className="viewer-wrapper">
                 <SectionLabel text="뷰어" />
-                <ViewerPanel image={thumbnails[currentIndex] || ""} />
+                <div className="viewer-divison-wrapper">
+                    <div className="viewer-panel">
+                    <ViewerPanel image={thumbnails[currentIndex] || ""} />
+                    </div>
+                </div>
+                <div className="editor-controls-wrapper">
+                  {/* 모달 전용 기능 버튼 */}
+                  <div className="editor-controls">
+                  <EditorControls />
+                  </div>
+                  <div className="editor-buttons-wrapper">
+                  <ThumbFunctionButtons
+                    onPriceSet={() => console.log("모달 가격 설정")}
+                    onTagSet={() => console.log("모달 태그 설정")}
+                    onDelete={() => removeImage(currentIndex)}
+                  />
+                  </div>
+                </div>
               </div>
-              {/* 모달 전용 기능 버튼 */}
-              <ThumbFunctionButtons
-                onPriceSet={() => console.log("모달 가격 설정")}
-                onTagSet={() => console.log("모달 태그 설정")}
-                onDelete={() => removeImage(currentIndex)}
-              />
+
             </div>
           </div>
         </ModalBody>
