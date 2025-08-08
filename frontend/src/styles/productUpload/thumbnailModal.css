@@ -109,8 +109,14 @@
   background: rgba(255, 0, 0, 0.8);
 }
 
+/* ---------- Editor (Left) ---------- */
+.editor-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
 
-/* Editor (Left) */
 .editor-main {
   flex: 2;
   border: 1px solid #eee;
@@ -122,6 +128,7 @@
   position: relative;
   overflow: hidden;
   aspect-ratio: 4/3;
+  width: 400px;
 }
 
 .editor-main img {
@@ -130,7 +137,24 @@
   object-fit: contain;
 }
 
-/* Viewer (Right) */
+/* ---------- Viewer (Right) ---------- */
+.viewer-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.viewer-main {
+  display: flex;
+  align-items: flex-start;
+  width: 200px;
+  justify-content: space-between;
+  background: #f9fafb;
+  border: 1px solid #eee;
+  border-radius: 10px;
+}
+
 .viewer-panel {
   flex-basis: 100%;
   display: flex;
@@ -145,39 +169,45 @@
   border-radius: 6px;
 }
 
-.viewer-wrapper {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.viewer-division-wrapper {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 12px;
-  background: #f9fafb;
-  border: 1px solid #eee;
-  border-radius: 10px;
-}
-
 .viewer-division img {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
 }
 
+/* ---------- Division-Line ---------- */
+.division-line {
+  width: 1px;
+  height: 100%;
+  background-color: #e0e0e0;
+  border: none;
+  flex-shrink: 0;
+  /* flex 환경에서 줄어들지 않도록 */
+}
 
-
-/* ---------- Controls ---------- */
-.editor-button-wrapper {
+/* ---------- Tolltip-Place ---------- */
+.tolltip-place {
   display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 12px;
+  margin: 6px 0;
+}
+
+
+/* ---------- Editor-Controls ---------- */
+.division-wrapper {
+  display: flex;
+  gap: 8px;
+}
+
+.editor-func-buttons-wrapper {
+  display: flex;
+  align-items: flex-start;
+  padding: 4px;
+}
+
+.thumb-func-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .editor-controls {
@@ -185,26 +215,30 @@
   flex-direction: column;
   gap: 8px;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   padding: 4px;
   min-width: 48px;
 }
 
 .editor-controls button {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   font-size: 14px;
-  border: 1px solid #ddd;
   border-radius: 6px;
-  background: white;
   cursor: pointer;
   transition: all 0.2s;
+  color: #596380;
+  background: #fff;
+  border: 1px solid #ddd;
 }
 
 .editor-controls button:hover {
-  background: #00b5ad;
-  color: white;
-  border-color: #00b5ad;
+  border: 1px solid #00b5ad;
+}
+
+.shapes-wrapper {
+  display: flex;
+  gap: 8px;
 }
 
 /* ---------- Footer Buttons ---------- */
@@ -244,11 +278,7 @@
   background: #00a099;
 }
 
-.thumb-func-buttons {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 12px;
-}
+
 
 /* ---------- Section Label + Divider ---------- */
 
@@ -273,5 +303,3 @@
   background-color: #e0e0e0;
   border: none;
 }
-
-

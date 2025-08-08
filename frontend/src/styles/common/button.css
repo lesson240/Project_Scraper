@@ -45,7 +45,6 @@
   border: 1px solid #00b5ad;
 }
 
-
 .btn.third-rate {
   background-color: #fff;
   /* 오특 버튼 컬러 */
@@ -94,5 +93,25 @@
 
 .btn.seventh:hover {
   background-color: #00b5ad;
+  color: #fff;
+}
+
+.btn.eighth {
+  background-color: #c9cedb;
+  color: #fff;
+}
+
+.btn.eighth:hover {
+  background-color: #00b5ad;
+  color: #fff;
+}
+
+.btn.ninth {
+  background-color: #ffc107;
+  color: #fff;
+}
+
+.btn.ninth:hover {
+  background-color: #ffb500;
   color: #fff;
 }

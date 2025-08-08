@@ -2,18 +2,31 @@ import React from "react";
 import Button from "@/components/common/Button";
 import "@/styles/productUpload/thumbnailModal.css";
 
-type Props = {
+
+type FirstProps = {
+  onPriceSet: () => void;
+  onTagSet: () => void;
+};
+export function ThumbResultButtons({ onPriceSet, onTagSet }: FirstProps) {
+  return (
+    <div className="thumb-func-buttons">
+      <Button variant="eighth" onClick={onPriceSet}>이전번역 결과</Button>
+      <Button variant="ninth" onClick={onTagSet}>올땀 스튜디오</Button>
+    </div>
+  );
+}
+
+type SecondProps = {
   onPriceSet: () => void;
   onTagSet: () => void;
   onDelete: () => void;
 };
-
-export default function ThumbFunctionButtons({ onPriceSet, onTagSet, onDelete }: Props) {
+export function ThumbEditorButtons({ onPriceSet, onTagSet, onDelete }: SecondProps) {
   return (
     <div className="thumb-func-buttons">
-      <Button variant="secondary" onClick={onPriceSet}>가격 설정</Button>
-      <Button variant="secondary" onClick={onTagSet}>태그 설정</Button>
-      <Button variant="sixth" onClick={onDelete}>이미지 삭제</Button>
+      <Button variant="eighth" onClick={onPriceSet}>이전번역 결과</Button>
+      <Button variant="ninth" onClick={onTagSet}>올땀 스튜디오</Button>
+      <Button variant="third-rate" onClick={onDelete}>에디터 +</Button>
     </div>
   );
 }
