@@ -1,7 +1,7 @@
 // src/components/productUpload/functionSection/FunctionSection.tsx
 import React from "react";
 import FunctionButtons from "./FunctionButtons";
-import "@/styles/upload/functionSection.css"
+import "@/styles/productUpload/functionSection.css"
 
 type Props = {
     pageSize: string;

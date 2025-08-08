@@ -3,23 +3,9 @@ import React, { useState } from "react";
 import Tooltip from "@/components/common/Tooltip";
 import TextInputWithButton from "@/components/common/TextInputWithButton";
 import ItemActions from "./ItemActions";
-import "@/styles/upload/itemRow.css";
-
-type Item = {
-  origin_goods_name: string;
-  goods_origin: number;
-  thumb?: {
-    thumb1?: string;
-  };
-  market: string;
-  collection_time?: string;
-  priceRange?: string;
-  priceRequired?: boolean;
-  tagRequired?: boolean;
-  origin_goods_code?: string;
-  memo: string;
-  group_name: string;
-};
+import { Item } from "@/types/product";
+import "@/styles/productUpload/itemRow.css";
+import defaultThumb from "@/assets/default_image.png";
 
 type Props = {
   item: Item;
@@ -31,6 +17,7 @@ type Props = {
   onDetailPageSet: () => void;
   onUploadSet: () => void;
   onCopy: (text: string) => void;
+  onThumbClick?: (images: string[]) => void;
 };
 
 export default function ItemRow({
@@ -43,6 +30,7 @@ export default function ItemRow({
   onDetailPageSet,
   onUploadSet,
   onCopy,
+  onThumbClick,
 }: Props) {
   const CopyIcon = () => (
     <svg
@@ -56,6 +44,7 @@ export default function ItemRow({
 
   // Row 선택 상태 관리
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const thumbArray = Object.values(item.thumb || {}).filter(Boolean);
 
   const handleRowClick = (e: React.MouseEvent, itemId: string) => {
       const target = e.target as HTMLElement;
@@ -93,21 +82,23 @@ export default function ItemRow({
       <td>
         <div className="table-col-left">
           <img
-            src={item.thumb?.thumb1 || "/images/default-thumb.jpg"}
+            src={item.thumb?.thumb1 || defaultThumb}
             alt="상품 썸네일"
             className="thumb"
+            onClick={() => {
+              const thumbs = Object.values(item.thumb || {}).filter(Boolean);
+              onThumbClick?.(thumbs.length > 0 ? thumbs : [defaultThumb]); // ✅ 안전 처리
+            }}
           />
           <div className="goods-details">
             <div className="goods-title">
               <TextInputWithButton
                 fieldName="title"
-                value={item.origin_goods_name}
+                value={item.modified_goods_name}
                 placeholder="상품명을 입력해주세요"
                 buttonLabel="수정"
                 autoFocus={true}
-                onChange={(value) =>
-                  onModifySet(item.origin_goods_code || "", "title", value)
-                }
+                onChange={() =>{}}
                 onButtonClick={(value) => {
                   onModifySet(item.origin_goods_code || "", "title", value);
                 }}
@@ -119,9 +110,7 @@ export default function ItemRow({
               value={item.memo}
               placeholder="메모를 입력해주세요"
               buttonLabel="수정"
-              onChange={(value) =>
-                onModifySet(item.origin_goods_code || "", "memo", value)
-              }
+              onChange={() =>{}}
               onButtonClick={(value) =>
                 onModifySet(item.origin_goods_code || "", "memo", value)
               }

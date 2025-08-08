@@ -3,41 +3,29 @@ import React, { useEffect, useState } from "react";
 import ItemSummaryInformSection from "./ItemSummaryInformSection";
 import Toast from "@/components/common/Toast";
 import axios from "@/lib/axios"; // axios 인스턴스 예시
-
-
-// 아이템 데이터 타입
-type Item = {
-  origin_goods_name: string;
-  goods_origin: number;
-  thumb?: { thumb1?: string };
-  market: string;
-  collection_time?: string;
-  priceRange?: string;
-  priceRequired?: boolean;
-  tagRequired?: boolean;
-  origin_goods_code?: string;
-  memo: string;
-  group_name: string;
-};
-
+import { Item } from "@/types/product";
 
 type Props = {
   items: Item[];
   pageSize: string;
+  onThumbClick?: (images: string[]) => void;
   onAttributeSet: () => void;
   onOptionSet: () => void;
   onDetailPageSet: () => void;
   onUploadSet: () => void;
+  onModifySet: (id: string, field: "title" | "memo", value: string) => Promise<void>;
 };
 
 
 export default function ItemSummaryContainer({
   items,
   pageSize,
+  onThumbClick,
   onAttributeSet,
   onOptionSet,
   onDetailPageSet,
   onUploadSet,
+  onModifySet
 }: Props) {
   const [toastMessage, setToastMessage] = useState("");
 
@@ -57,10 +45,10 @@ export default function ItemSummaryContainer({
         },
       ];
 
-      await axios.post("/save-goods-table", payload);
+      await onModifySet(id, field, value);
       setToastMessage("수정이 완료되었습니다.");
-    } catch (err) {
-      console.error("저장 실패:", err);
+    } catch (e) {
+      console.error("수정 실패:", e);
       setToastMessage("수정에 실패했습니다.");
     }
   };
@@ -75,6 +63,7 @@ export default function ItemSummaryContainer({
       <ItemSummaryInformSection
         items={items}
         pageSize={pageSize}
+        onThumbClick={onThumbClick}
         onAttributeSet={onAttributeSet}
         onOptionSet={onOptionSet}
         onDetailPageSet={onDetailPageSet}

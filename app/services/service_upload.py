@@ -11,6 +11,9 @@ from app.models.model_pydantic_table import DatetimeParseModel
 from app.models.model_odmantic_table import InputGoodsManagementTableModel
 from app.scrapers.scraper_oliveyoung import BrandGoodsDetail
 from app.services.service_mongodb import mongodb_service
+from app.services.query_logic import handle_fetch_inquiry
+from app.services.query_helpers import query_all_goods
+
 
 # 라이브러리 불러오기
 from fastapi import HTTPException
@@ -27,118 +30,109 @@ logger = setup_logger(logger_name, __file__)
 
 
 class FilterSectionInquiry:
-    def __init__(
-        self,
-        brand_code,
-        brand_name,
-        group_name,
-        memo_name,
-        origin_goods_code,
-        origin_goods_name,
-        modified_goods_name,
-        promotion_period: Optional[str] = None,
-    ):
-        self.brand_code = brand_code
-        self.brand_name = brand_name
-        self.group_name = group_name
-        self.memo_name = memo_name
-        self.origin_goods_code = origin_goods_code
-        self.origin_goods_name = origin_goods_name
-        self.modified_goods_name = modified_goods_name
+    def __init__(self, **kwargs):
+        self.brand_code = kwargs.get("brand_code", "")
+        self.brand_name = kwargs.get("brand_name", "")
+        self.group_name = kwargs.get("group_name", "")
+        self.memo_name = kwargs.get("memo_name", "")
+        self.origin_goods_code = kwargs.get("origin_goods_code", "")
+        self.modified_goods_name = kwargs.get("modified_goods_name", "")
+        self.promotion_period = kwargs.get("promotion_period", "")
+        self.origin_goods_name = kwargs.get("origin_goods_name", "")
+
         self.mongodb_service = mongodb_service
-        self.promotion_period = promotion_period
-        if mongodb_service and mongodb_service.engine is None:
+        if self.mongodb_service and self.mongodb_service.engine is None:
             raise ValueError("MongoDB engine is not initialized")
 
-    async def fetch_inquiry(self):
-        """상품 데이터를 DB에서 조회"""
-        base_filters = self._build_base_filters()
-        saved_goods_list = []
+    # async def fetch_inquiry(self):
+    #     """상품 데이터를 DB에서 조회"""
+    #     base_filters = self._build_base_filters()
+    #     saved_goods_list = []
 
-        # 1. modified_goods_name 우선 검색
-        if self.modified_goods_name and str(self.modified_goods_name).strip():
-            filters = {**base_filters, "modified_goods_name": {"$regex": self.modified_goods_name, "$options": "i"}}
+    #     # 1. modified_goods_name 우선 검색
+    #     if self.modified_goods_name and str(self.modified_goods_name).strip():
+    #         filters = {**base_filters, "modified_goods_name": {"$regex": self.modified_goods_name, "$options": "i"}}
 
-            management_goods = await self._search_in_management(filters)
-            management_codes = {item.get("origin_goods_code") for item in management_goods}
+    #         management_goods = await self._search_in_management(filters)
+    #         management_codes = {item.get("origin_goods_code") for item in management_goods}
 
-            # 결과 없으면 OriginGoodsDetailModel에서 modified_goods_name을 origin_goods_name으로 검색
-            if not management_goods:
-                filters = {**base_filters, "origin_goods_name": {"$regex": self.modified_goods_name, "$options": "i"}}
-                detail_goods = await self._search_in_origin_detail(filters)
-                return detail_goods
+    #         # 결과 없으면 OriginGoodsDetailModel에서 modified_goods_name을 origin_goods_name으로 검색
+    #         if not management_goods:
+    #             filters = {**base_filters, "origin_goods_name": {"$regex": self.modified_goods_name, "$options": "i"}}
+    #             detail_goods = await self._search_in_origin_detail(filters)
+    #             return detail_goods
             
-            # 두 테이블 모두 결과가 없으면 전체 조회
-            additional_filters = filters.copy()
-            if management_codes:
-                additional_filters["origin_goods_code"] = {"$nin": list(management_codes)}
+    #         # 두 테이블 모두 결과가 없으면 전체 조회
+    #         additional_filters = filters.copy()
+    #         if management_codes:
+    #             additional_filters["origin_goods_code"] = {"$nin": list(management_codes)}
 
-            detail_goods = await self._search_in_origin_detail(additional_filters)
-            return management_goods + detail_goods
+    #         detail_goods = await self._search_in_origin_detail(additional_filters)
+    #         return management_goods + detail_goods
 
-        # 2. origin_goods_name 검색 (modified_goods_name이 없는 경우)
-        if self.origin_goods_name and str(self.origin_goods_name).strip():
-            filters = {**base_filters, "origin_goods_name": {"$regex": self.origin_goods_name, "$options": "i"}}
+    #     # 2. origin_goods_name 검색 (modified_goods_name이 없는 경우)
+    #     if self.origin_goods_name and str(self.origin_goods_name).strip():
+    #         filters = {**base_filters, "origin_goods_name": {"$regex": self.origin_goods_name, "$options": "i"}}
 
-            management_goods = await self._search_in_management(filters)
-            management_codes = {item.get("origin_goods_code") for item in management_goods}
+    #         management_goods = await self._search_in_management(filters)
+    #         management_codes = {item.get("origin_goods_code") for item in management_goods}
 
-            additional_filters = filters.copy()
-            if management_codes:
-                additional_filters["origin_goods_code"] = {"$nin": list(management_codes)}
+    #         additional_filters = filters.copy()
+    #         if management_codes:
+    #             additional_filters["origin_goods_code"] = {"$nin": list(management_codes)}
 
-            detail_goods = await self._search_in_origin_detail(additional_filters)
-            return management_goods + detail_goods
+    #         detail_goods = await self._search_in_origin_detail(additional_filters)
+    #         return management_goods + detail_goods
 
-        # 3. 다른 인자(brand_code, brand_name 등)에 맞춰 조회
-        if base_filters:
-            management_goods = await self._search_in_management(base_filters)
-            management_codes = {item.get("origin_goods_code") for item in management_goods}
+    #     # 3. 다른 인자(brand_code, brand_name 등)에 맞춰 조회
+    #     if base_filters:
+    #         management_goods = await self._search_in_management(base_filters)
+    #         management_codes = {item.get("origin_goods_code") for item in management_goods}
 
-            additional_filters = base_filters.copy()
-            if management_codes:
-                additional_filters["origin_goods_code"] = {"$nin": list(management_codes)}
+    #         additional_filters = base_filters.copy()
+    #         if management_codes:
+    #             additional_filters["origin_goods_code"] = {"$nin": list(management_codes)}
 
-            detail_goods = await self._search_in_origin_detail(additional_filters)
-            return management_goods + detail_goods
+    #         detail_goods = await self._search_in_origin_detail(additional_filters)
+    #         return management_goods + detail_goods
 
-        # 4. 모든 인자가 비어있으면 전체 조회
-        return await self._search_all_goods()
+    #     # 4. 모든 인자가 비어있으면 전체 조회
+    #     return await self._search_all_goods()
 
 
-    async def _search_all_goods(self):
-        """전체 상품 조회 (관리 테이블 + 상세 테이블)"""
-        management_goods = await self._search_in_management({})
-        management_codes = {item.get("origin_goods_code") for item in management_goods}
+    # async def _search_all_goods(self):
+    #     """전체 상품 조회 (관리 테이블 + 상세 테이블)"""
+    #     management_goods = await self._search_in_management({})
+    #     management_codes = {item.get("origin_goods_code") for item in management_goods}
 
-        additional_filters = {}
-        if management_codes:
-            additional_filters["origin_goods_code"] = {"$nin": list(management_codes)}
+    #     additional_filters = {}
+    #     if management_codes:
+    #         additional_filters["origin_goods_code"] = {"$nin": list(management_codes)}
 
-        detail_goods = await self._search_in_origin_detail(additional_filters)
-        return management_goods + detail_goods
+    #     detail_goods = await self._search_in_origin_detail(additional_filters)
+    #     return management_goods + detail_goods
 
-    def _build_base_filters(self):
-        """공통 필터 생성"""
-        filters = {}
-        if self.brand_code and str(self.brand_code).strip():
-            filters["brand_code"] = {"$regex": self.brand_code, "$options": "i"}
-        if self.brand_name and str(self.brand_name).strip():
-            filters["brand_name"] = {"$regex": self.brand_name, "$options": "i"}
-        if self.group_name and str(self.group_name).strip():
-            filters["group_name"] = {"$regex": self.group_name, "$options": "i"}
-        if self.memo_name and str(self.memo_name).strip():
-            filters["memo"] = {"$regex": self.memo_name, "$options": "i"}
-        if self.origin_goods_code and str(self.origin_goods_code).strip():
-            filters["origin_goods_code"] = {"$regex": self.origin_goods_code, "$options": "i"}
-        if self.promotion_period and self.promotion_period.strip():
-            parse_promotion_period = DatetimeParseModel(
-                inquiry_datetime=self.promotion_period
-            )
-            filters["promotion_period"] = {
-                "$gte": [parse_promotion_period.inquiry_datetime]
-            }
-        return filters
+    # def _build_base_filters(self):
+    #     """공통 필터 생성"""
+    #     filters = {}
+    #     if self.brand_code and str(self.brand_code).strip():
+    #         filters["brand_code"] = {"$regex": self.brand_code, "$options": "i"}
+    #     if self.brand_name and str(self.brand_name).strip():
+    #         filters["brand_name"] = {"$regex": self.brand_name, "$options": "i"}
+    #     if self.group_name and str(self.group_name).strip():
+    #         filters["group_name"] = {"$regex": self.group_name, "$options": "i"}
+    #     if self.memo_name and str(self.memo_name).strip():
+    #         filters["memo"] = {"$regex": self.memo_name, "$options": "i"}
+    #     if self.origin_goods_code and str(self.origin_goods_code).strip():
+    #         filters["origin_goods_code"] = {"$regex": self.origin_goods_code, "$options": "i"}
+    #     if self.promotion_period and self.promotion_period.strip():
+    #         parse_promotion_period = DatetimeParseModel(
+    #             inquiry_datetime=self.promotion_period
+    #         )
+    #         filters["promotion_period"] = {
+    #             "$gte": [parse_promotion_period.inquiry_datetime]
+    #         }
+    #     return filters
 
     async def _search_in_management(self, filters):
         """InputGoodsManagementTableModel에서 데이터 검색"""
@@ -158,19 +152,17 @@ class FilterSectionInquiry:
             logger.error(f"Error searching OriginGoodsDetailModel: {e}")
             return []
 
+
+    async def _search_all_goods(self):
+        """전체 상품 조회 (관리 테이블 + 상세 테이블)"""
+        return await query_all_goods()
+
+
     async def run(self):
         try:
-            inquiry = await self.fetch_inquiry()
-            if not inquiry:
-                logger.error("No inquiry found from fetch_inquiry")
-                return
-            return inquiry
+            return await handle_fetch_inquiry(self)
         except Exception as e:
-            logger.error(f"An error occurred during fetch_inquiry: {e}")
-            raise HTTPException(
-                status_code=500,
-                detail="An error occurred occurred during fetch_inquiry from mongoDB",
-            )
+            raise HTTPException(status_code=500, detail=str(e))
 
 
 class ButtonSectionSyncCollect:

@@ -1,26 +1,12 @@
 import React, { useState } from "react";
-import "@/styles/upload/itemSummaryInformSection.css";
+import "@/styles/productUpload/itemSummaryInformSection.css";
 import ItemTable from "./ItemTable";
-
-type Item = {
-  origin_goods_name: string;
-  goods_origin: number;
-  thumb?: {
-    thumb1?: string;
-  };
-  market: string;
-  collection_time?: string;
-  priceRange?: string;
-  priceRequired?: boolean;
-  tagRequired?: boolean;
-  origin_goods_code?: string;
-  memo: string;
-  group_name: string;
-};
+import { Item } from "@/types/product";
 
 type Props = {
   items?: Item[];
   pageSize: string;
+  onThumbClick?: (images: string[]) => void;
   onAttributeSet: () => void;
   onOptionSet: () => void;
   onDetailPageSet: () => void;
@@ -31,6 +17,7 @@ type Props = {
 export default function ItemSummaryInformSection({
   items = [],
   pageSize,
+  onThumbClick,
   onAttributeSet,
   onOptionSet,
   onDetailPageSet,
@@ -85,6 +72,7 @@ export default function ItemSummaryInformSection({
       currentPage={currentPage}
       pageSizeNumber={pageSizeNumber}
       selectedItems={selectedItems}
+      onThumbClick={onThumbClick}
       onSelectAll={handleSelectAll}
       onSelectItem={handleSelectItem}
       onModifySet={onModifySet || (() => { })}
