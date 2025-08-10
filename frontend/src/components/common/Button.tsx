@@ -5,7 +5,7 @@ import "@/styles/common/button.css";
 type ButtonType = "button" | "submit" | "reset"; //표준 타입
 type CustomType = "special-submit" | "set" | "delete"; // 필요 시 사용
 
-type ButtonVariant = "primary" | "secondary" | "third-rate" | "fourth" | "fifth" | "sixth" | "seventh";
+type ButtonVariant = "primary" | "secondary" | "third-rate" | "fourth" | "fifth" | "sixth" | "seventh" | "eighth" | "ninth";
 
 type Props = {
   type?: ButtonType;
