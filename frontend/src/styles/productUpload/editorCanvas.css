@@ -17,11 +17,11 @@
   touch-action: none;
 }
 
-/* 이미지 트랜스폼: 훅이 채워주는 CSS 변수 사용 */
+/* 이미지 기본 스타일만 정의 (transform은 editorSelection.css에서 관리) */
 .editor-canvas-img {
   position: absolute;
   left: 50%;
   top: 50%;
   will-change: transform;
-  pointer-events: none;  /* 선택/드래그는 stage에서 처리 */
+  pointer-events: none;
 }

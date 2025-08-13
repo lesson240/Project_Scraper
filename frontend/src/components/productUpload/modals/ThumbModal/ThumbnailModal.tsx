@@ -39,15 +39,53 @@ export default function ThumbModal({
   const t = useCanvasTransform();
   const [crop, setCrop] = React.useState<Rect | null>(null);
   const readOrientation = React.useCallback<() => Orientation>(
-    () => t.getOrientation(), 
+    () => t.getOrientation(),
     [t]
   );
-  const [orientation, setOrientation] = React.useState<Orientation>(readOrientation);
+
+  // orientation 기본값 설정으로 undefined 방지
+  const [orientation, setOrientation] = React.useState<Orientation>(() => ({
+    angle: 0,
+    flipX: false,
+    flipY: false
+  }));
+
   const [transformTick, setTransformTick] = React.useState(0);
-  const bumpTick = () => {
+  const bumpTick = React.useCallback(() => {
     setTransformTick(v => v + 1);
-    setOrientation(readOrientation());
-  };
+    // transform 변경 후 orientation 즉시 동기화
+    const newOrientation = t.getOrientation();
+    // console.log('Transform changed, new orientation:', newOrientation); // 디버깅용
+    setOrientation(newOrientation);
+  }, [t]);
+
+  // ✅ orientation 변경 시 디버깅 (개발 환경에서만)
+  React.useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      // console.log('Orientation state updated:', orientation);
+    }
+  }, [orientation]);
+
+  // ✅ transform 객체 변경 감지
+  React.useEffect(() => {
+    const checkTransform = () => {
+      const currentOrientation = t.getOrientation();
+      if (
+        currentOrientation.angle !== orientation.angle ||
+        currentOrientation.flipX !== orientation.flipX ||
+        currentOrientation.flipY !== orientation.flipY
+      ) {
+        // console.log('Transform mismatch detected, updating...');
+        setOrientation(currentOrientation);
+      }
+    };
+
+    // 주기적으로 transform 상태 확인 (개발 환경에서만)
+    if (process.env.NODE_ENV === 'development') {
+      const interval = setInterval(checkTransform, 100);
+      return () => clearInterval(interval);
+    }
+  }, [t, orientation]);
 
   return (
     <ModalBase isOpen={isOpen} onClose={onClose}>
@@ -69,10 +107,21 @@ export default function ThumbModal({
               <EditorMain
                 image={thumbnails[currentIndex] || ""}
                 transform={t}
-                onCropChange={setCrop}
+                onCropChange={(r) => {
+                  if (r) {
+                    setCrop({
+                      x: r.x,
+                      y: r.y,
+                      w: r.w,
+                      h: r.h
+                    });
+                  } else {
+                    setCrop(null);
+                  }
+                }}
                 transformTick={transformTick}
-              />           
-              </div>
+              />
+            </div>
             <div className="viewer-wrapper">
               <SectionLabel text="뷰어" />
               <div className="division-wrapper">

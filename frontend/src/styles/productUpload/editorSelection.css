@@ -1,5 +1,4 @@
-/* src/styles/productUpload/editorSelection.css */
-/* ✅ 선택 박스/핸들/커서 UI, hand/move 커서, 팬 상태 시 grab/grabbing */
+/* 선택 박스/핸들/커서 UI */
 .canvas-stage {
   position: relative;
   overflow: hidden;
@@ -12,17 +11,17 @@
   cursor: grabbing !important;
 }
 
-/* 선택 레이어(스테이지 위 절대 배치) */
+/* 선택 레이어 */
 .select-layer {
   position: absolute;
   inset: 0;
-  pointer-events: none; /* 실제 드래그는 stage가 받음 */
+  pointer-events: none;
 }
 
 .select-box {
   position: absolute;
-  border: 1.5px solid #22c55e; /* 올리브영 톤 연두 */
-  box-shadow: 0 0 0 9999px rgba(0,0,0,0.25); /* 외부 마스킹 느낌 */
+  border: 1.5px solid #22c55e;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.25);
   pointer-events: none;
 }
 
@@ -30,8 +29,8 @@
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(to right, rgba(255,255,255,0.35) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255,255,255,0.35) 1px, transparent 1px);
+    linear-gradient(to right, rgba(255, 255, 255, 0.35) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.35) 1px, transparent 1px);
   background-size: calc(100%/3) 100%, 100% calc(100%/3);
 }
 
@@ -47,30 +46,63 @@
   pointer-events: none;
 }
 
-.handle.nw { left: 0%;   top: 0%;   cursor: nwse-resize; }
-.handle.n  { left: 50%;  top: 0%;   cursor: ns-resize;   }
-.handle.ne { left: 100%; top: 0%;   cursor: nesw-resize; }
-.handle.e  { left: 100%; top: 50%;  cursor: ew-resize;   }
-.handle.se { left: 100%; top: 100%; cursor: nwse-resize; }
-.handle.s  { left: 50%;  top: 100%; cursor: ns-resize;   }
-.handle.sw { left: 0%;   top: 100%; cursor: nesw-resize; }
-.handle.w  { left: 0%;   top: 50%;  cursor: ew-resize;   }
+.handle.nw {
+  left: 0%;
+  top: 0%;
+  cursor: nwse-resize;
+}
 
-/* 이미지에 적용될 CSS 변수 기반 변환 */
+.handle.n {
+  left: 50%;
+  top: 0%;
+  cursor: ns-resize;
+}
+
+.handle.ne {
+  left: 100%;
+  top: 0%;
+  cursor: nesw-resize;
+}
+
+.handle.e {
+  left: 100%;
+  top: 50%;
+  cursor: ew-resize;
+}
+
+.handle.se {
+  left: 100%;
+  top: 100%;
+  cursor: nwse-resize;
+}
+
+.handle.s {
+  left: 50%;
+  top: 100%;
+  cursor: ns-resize;
+}
+
+.handle.sw {
+  left: 0%;
+  top: 100%;
+  cursor: nesw-resize;
+}
+
+.handle.w {
+  left: 0%;
+  top: 50%;
+  cursor: ew-resize;
+}
+
+/* 이미지 변환: CSS 변수 기반 (문법 오류 수정) */
 .editor-canvas-img {
   position: absolute;
   left: 50%;
   top: 50%;
-  /* ✅ 순서가 중요: 먼저 중앙 정렬 → 그 다음 팬/회전/플립/줌 */
   transform:
-    translate(-50%, -50%)
-    translate(var(--tx, 0px), var(--ty, 0px))
-    rotate(var(--rot, 0deg))
-    scale(
-      calc(var(--flipX, 1) * var(--scale, 1)),
-      calc(var(--flipY, 1) * var(--scale, 1))
-    );
-  transform-origin: center center; /* 중심축 고정 */
+    translate(-50%, -50%) translate(var(--tx, 0px), var(--ty, 0px)) rotate(var(--rot, 0deg)) scale(calc(var(--flipX, 1) * var(--scale, 1)),
+      calc(var(--flipY, 1) * var(--scale, 1)));
+  transform-origin: center center;
   will-change: transform;
   image-rendering: auto;
   pointer-events: none;

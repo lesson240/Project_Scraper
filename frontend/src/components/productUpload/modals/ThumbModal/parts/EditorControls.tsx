@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import leftTurn from "@/assets/images/shapes/leftTurn.svg?url";
 import moveUp from "@/assets/images/shapes/moveUp.svg?url";
 import rightTurn from "@/assets/images/shapes/rightTurn.svg?url";
@@ -13,64 +13,85 @@ import flipVertically from "@/assets/images/shapes/flipVertically.svg?url";
 import zoomOut from "@/assets/images/shapes/zoomOut.svg?url";
 
 type Props = {
-  onUndo?(): void; onRedo?(): void;
-  onMoveUp(): void; onMoveDown(): void; onMoveLeft(): void; onMoveRight(): void;
-  onRotateLeft(): void; onRotateRight(): void;
-  onFlipH(): void; onFlipV(): void;
-  onZoomIn(): void; onZoomOut(): void; onFit(): void;
+  onUndo?(): void;
+  onRedo?(): void;
+  onMoveUp(): void;
+  onMoveDown(): void;
+  onMoveLeft(): void;
+  onMoveRight(): void;
+  onRotateLeft(): void;
+  onRotateRight(): void;
+  onFlipH(): void;
+  onFlipV(): void;
+  onZoomIn(): void;
+  onZoomOut(): void;
+  onFit(): void;
   onToggleSelect?(): void;
   onAfterAction?: () => void;
 };
 
 // (버튼 onClick 래핑 유틸: 중복 줄이고 안정성 확보)
 const call = (fn?: () => void, after?: () => void) => () => {
-  fn?.();
+  if (fn) fn();
   // 다음 프레임에서 보장 호출(스타일/레이라웃 반영 후)
-  requestAnimationFrame(() => after?.());
+  if (after) {
+    requestAnimationFrame(() => after());
+  }
 };
 
 export default function EditorControls(p: Props) {
+  // ✅ 버튼 클릭 시 즉시 동기화 보장
+  const handleButtonClick = useCallback((action: () => void) => {
+    action();
+    // 다음 프레임에서 afterAction 호출 보장
+    if (p.onAfterAction) {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(p.onAfterAction);
+      });
+    }
+  }, [p.onAfterAction]);
+
   return (
     <div className="editor-controls">
       <div className="shapes-wrapper">
-        <button onClick={call(p.onRotateLeft, p.onAfterAction)}>
+        <button onClick={() => handleButtonClick(p.onRotateLeft)}>
           <img
             src={leftTurn} /></button>
-        <button onClick={call(p.onMoveUp, p.onAfterAction)}>
+        <button onClick={() => handleButtonClick(p.onMoveUp)}>
           <img
             src={moveUp} /></button>
-        <button onClick={call(p.onRotateRight, p.onAfterAction)}>
+        <button onClick={() => handleButtonClick(p.onRotateRight)}>
           <img
             src={rightTurn} /></button>
-        <button onClick={call(p.onFit, p.onAfterAction)}>
+        <button onClick={() => handleButtonClick(p.onFit)}>
           <img
             src={fillTheScreen} /></button>
       </div>
       <div className="shapes-wrapper">
-        <button onClick={call(p.onMoveLeft, p.onAfterAction)}>
+        <button onClick={() => handleButtonClick(p.onMoveLeft)}>
           <img
             src={moveLeft} /></button>
-        <button onClick={() => (p.onToggleSelect ? p.onToggleSelect() : p.onFit())}>
+        <button onClick={() => handleButtonClick(p.onToggleSelect)}>
           <img
             src={square} /></button>
-        <button onClick={call(p.onMoveRight, p.onAfterAction)}>
+        <button onClick={() => handleButtonClick(p.onMoveRight)}>
           <img
             src={moveRight} /></button>
-        <button onClick={call(p.onZoomIn, p.onAfterAction)}>
+        <button onClick={() => handleButtonClick(p.onZoomIn)}>
           <img
             src={zoomIn} /></button>
       </div>
       <div className="shapes-wrapper">
-        <button onClick={call(p.onFlipH, p.onAfterAction)}>
+        <button onClick={() => handleButtonClick(p.onFlipH)}>
           <img
             src={flipHorizontally} /></button>
-        <button onClick={call(p.onMoveDown, p.onAfterAction)}>
+        <button onClick={() => handleButtonClick(p.onMoveDown)}>
           <img
             src={moveDown} /></button>
-        <button onClick={call(p.onFlipV, p.onAfterAction)}>
+        <button onClick={() => handleButtonClick(p.onFlipV)}>
           <img
             src={flipVertically} /></button>
-        <button onClick={call(p.onZoomOut, p.onAfterAction)}>
+        <button onClick={() => handleButtonClick(p.onZoomOut)}>
           <img
             src={zoomOut} /></button>
       </div>

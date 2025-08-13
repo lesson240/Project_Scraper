@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback } from "react";
 import ReactDOM from "react-dom";
 import ThumbModal from "./ThumbnailModal";
 import { useThumbnailModal } from "@/hooks/useThumbnailModal";
@@ -24,25 +24,32 @@ export default function ThumbnailModalContainer({
     removeImage,
     resetImages,
     saveImages,
-  } = useThumbnailModal(defaultImages, (imgs) => {
-    onSave(imgs);
-    onClose();
-  });
+  } = useThumbnailModal(defaultImages, onSave);
 
-  /** ✅ 모달 열릴 때 defaultImages로 초기화 */
+  // ✅ onSave 콜백을 useCallback으로 안정화
+  const handleSave = useCallback(() => {
+    onSave(thumbnails);
+    onClose();
+  }, [thumbnails, onSave, onClose]);
+
+  // ✅ 모달 열릴 때 초기화 로직을 useCallback으로 안정화
+  const initializeModal = useCallback(() => {
+    resetImages();
+    if (defaultImages?.length) {
+      addImages(defaultImages);
+    }
+    setCurrentIndex(0);
+  }, [defaultImages, resetImages, addImages, setCurrentIndex]);
+
+  // ✅ 모달 열릴 때만 초기화 (의존성 최소화)
   useEffect(() => {
     if (isOpen) {
-      resetImages();
-      if (defaultImages?.length) {
-        addImages(defaultImages);
-      }
-      setCurrentIndex(0);
+      initializeModal();
     }
-  }, [isOpen, defaultImages]);
+  }, [isOpen, initializeModal]);
 
   if (!isOpen) return null;
 
-  const rootElement = document.getElementById("root");
   const modalJSX = (
     <ThumbModal
       isOpen={isOpen}
@@ -53,10 +60,9 @@ export default function ThumbnailModalContainer({
       addImages={addImages}
       removeImage={removeImage}
       resetImages={resetImages}
-      saveImages={saveImages}
+      saveImages={handleSave}
     />
   );
 
   return ReactDOM.createPortal(modalJSX, document.body);
-  // return rootElement ? ReactDOM.createPortal(modalJSX, rootElement) : modalJSX;
 }
