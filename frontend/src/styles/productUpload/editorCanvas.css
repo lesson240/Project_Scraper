@@ -1,0 +1,27 @@
+/* 캔버스 영역 기본 레이아웃 */
+.canvas-stage {
+  position: relative;
+  width: 100%;
+  height: 360px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  background: #f9fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+
+  /* 조작감 향상 */
+  user-select: none;
+  -webkit-user-drag: none;
+  touch-action: none;
+}
+
+/* 이미지 트랜스폼: 훅이 채워주는 CSS 변수 사용 */
+.editor-canvas-img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  will-change: transform;
+  pointer-events: none;  /* 선택/드래그는 stage에서 처리 */
+}

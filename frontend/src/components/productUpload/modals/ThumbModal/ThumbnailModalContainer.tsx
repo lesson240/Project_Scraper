@@ -57,5 +57,6 @@ export default function ThumbnailModalContainer({
     />
   );
 
-  return rootElement ? ReactDOM.createPortal(modalJSX, rootElement) : modalJSX;
+  return ReactDOM.createPortal(modalJSX, document.body);
+  // return rootElement ? ReactDOM.createPortal(modalJSX, rootElement) : modalJSX;
 }

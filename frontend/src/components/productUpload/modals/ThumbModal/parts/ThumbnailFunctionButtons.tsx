@@ -10,8 +10,8 @@ type FirstProps = {
 export function ThumbResultButtons({ onPriceSet, onTagSet }: FirstProps) {
   return (
     <div className="thumb-func-buttons">
-      <Button variant="eighth" onClick={onPriceSet}>이전번역 결과</Button>
-      <Button variant="ninth" onClick={onTagSet}>올땀 스튜디오</Button>
+      <Button variant="secondary" onClick={onPriceSet}>레이어 초기화</Button>
+      <Button variant="primary" onClick={onTagSet}>패널 적용</Button>
     </div>
   );
 }
