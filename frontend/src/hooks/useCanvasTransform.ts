@@ -21,9 +21,9 @@ export type TransformState = {
 };
 
 export type ScreenPoint = { x: number; y: number };
-export type ImagePoint  = { x: number; y: number };
-export type ScreenRect  = { x: number; y: number; w: number; h: number }; // 화면 좌표
-export type ImageRect   = { x: number; y: number; w: number; h: number };  // 원본(픽셀)
+export type ImagePoint = { x: number; y: number };
+export type ScreenRect = { x: number; y: number; w: number; h: number }; // 화면 좌표
+export type ImageRect = { x: number; y: number; w: number; h: number };  // 원본(픽셀)
 
 const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(max, v));
 
@@ -34,7 +34,11 @@ export type ExportOptions = {
   background?: string;       // 투명 아닌 배경색 필요시
 };
 
-export function useCanvasTransform() {
+export type UseCanvasTransformOptions = {
+  onChange?: (state: TransformState) => void;
+};
+
+export function useCanvasTransform(opts: UseCanvasTransformOptions = {}) {
   const [state, setState] = useState<TransformState>({
     scale: 1,
     tx: 0,
@@ -61,16 +65,20 @@ export function useCanvasTransform() {
     el.style.setProperty("--rot", `${state.rotate}deg`);
     el.style.setProperty("--flipX", state.flipX ? "-1" : "1");
     el.style.setProperty("--flipY", state.flipY ? "-1" : "1");
-  }, [state]);
+  }, [state.scale, state.tx, state.ty, state.rotate, state.flipX, state.flipY]);
 
   const commit = useCallback((patch: Partial<TransformState>) => {
     setState((prev) => {
       const next = { ...prev, ...patch };
-      // CSS 반영
-      setTimeout(applyCssVars, 0);
+      // CSS 즉시 반영 (setTimeout 제거)
+      applyCssVars();
       return next;
     });
-  }, [applyCssVars]);
+
+    // onChange를 setState 콜백 외부로 이동하여 즉시 호출
+    const nextState = { ...state, ...patch };
+    opts.onChange?.(nextState);
+  }, [applyCssVars, opts.onChange, state]);
 
   // 연결
   const connectStage = useCallback((el: HTMLElement | null) => {
@@ -78,68 +86,40 @@ export function useCanvasTransform() {
   }, []);
   const connectTransform = useCallback((el: HTMLElement | null) => {
     targetRef.current = el;
-    setTimeout(applyCssVars, 0);
+    // 즉시 CSS 반영 (setTimeout 제거)
+    applyCssVars();
   }, [applyCssVars]);
 
-  // 회전/플립 상태 보관
-  const orientRef = React.useRef<Orientation>({ angle: 0, flipX: false, flipY: false });
+  // 회전/플립 상태는 state에서 관리됨 (orientRef 제거)
 
   // 외부에 제공할 게터
   const getOrientation = React.useCallback((): Orientation => {
-    const { angle, flipX, flipY } = orientRef.current;
+    // state에서 실제 회전/반전 상태 가져오기
+    const { rotate, flipX, flipY } = state;
     // 0/90/180/270 중 하나로 정규화
-    const a = ((angle % 360) + 360) % 360;
+    const a = ((rotate % 360) + 360) % 360;
     return { angle: a, flipX, flipY };
-  }, []);
+  }, [state]);
 
-  // 스타일 반영(이미 갖고 있는 apply/update 함수에서 같이 호출)
-  const apply = React.useCallback(() => {
-  const el = transformElRef.current;
-    if (!el) return;
-    const { angle, flipX, flipY } = orientRef.current;
-    el.style.setProperty("--tf-rot", `${angle}deg`);
-    el.style.setProperty("--tf-flipX", flipX ? "-1" : "1");
-    el.style.setProperty("--tf-flipY", flipY ? "-1" : "1");
-    // ...기존 스케일/이동도 계속 설정...
-  }, []);
-
-  const rotateLeft  = React.useCallback(() => {
-    orientRef.current.angle -= 90;
-    apply();
-  }, [apply]);
-
-  const rotateRight = React.useCallback(() => {
-    orientRef.current.angle += 90;
-    apply();
-  }, [apply]);
-
-  const flipH = React.useCallback(() => {
-    orientRef.current.flipX = !orientRef.current.flipX;
-    apply();
-  }, [apply]);
-
-  const flipV = React.useCallback(() => {
-    orientRef.current.flipY = !orientRef.current.flipY;
-    apply();
-  }, [apply]);
+  // 스타일 반영은 applyCssVars에서 처리됨
 
   // 회전/이동/확대/플립 (버튼/핫키용)
   const api = useMemo(() => ({
     // 이동
-    moveLeft:  () => commit({ tx: state.tx - 10 }),
+    moveLeft: () => commit({ tx: state.tx - 10 }),
     moveRight: () => commit({ tx: state.tx + 10 }),
-    moveUp:    () => commit({ ty: state.ty - 10 }),
-    moveDown:  () => commit({ ty: state.ty + 10 }),
+    moveUp: () => commit({ ty: state.ty - 10 }),
+    moveDown: () => commit({ ty: state.ty + 10 }),
     // 확대/축소
-    zoomIn:    () => commit({ scale: clamp(state.scale + 0.1, 0.1, 8) }),
-    zoomOut:   () => commit({ scale: clamp(state.scale - 0.1, 0.1, 8) }),
-    fit:       () => commit({ scale: 1, tx: 0, ty: 0 }),
+    zoomIn: () => commit({ scale: clamp(state.scale + 0.1, 0.1, 8) }),
+    zoomOut: () => commit({ scale: clamp(state.scale - 0.1, 0.1, 8) }),
+    fit: () => commit({ scale: 1, tx: 0, ty: 0, rotate: 0, flipX: false, flipY: false }),
     // 회전/반전 (누적)
-    rotateLeft:  () => commit({ rotate: state.rotate - 90 }),
+    rotateLeft: () => commit({ rotate: state.rotate - 90 }),
     rotateRight: () => commit({ rotate: state.rotate + 90 }),
-    flipH:       () => commit({ flipX: !state.flipX }),
-    flipV:       () => commit({ flipY: !state.flipY }),
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    flipH: () => commit({ flipX: !state.flipX }),
+    flipV: () => commit({ flipY: !state.flipY }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }), [state, commit]);
 
   // ===== 행렬(이미지→스크린) 구성 =====
@@ -153,13 +133,13 @@ export function useCanvasTransform() {
 
     const stageRect = stage.getBoundingClientRect();
     const Cx = stageRect.left + stageRect.width / 2;
-    const Cy = stageRect.top  + stageRect.height / 2;
+    const Cy = stageRect.top + stageRect.height / 2;
 
     // 이미지 레이아웃 크기(변환 전) - getBoundingClientRect는 transform 반영되므로 offsetWidth/Height 사용
     const w0 = (target as any).offsetWidth || target.naturalWidth || 1;
     const h0 = (target as any).offsetHeight || target.naturalHeight || 1;
 
-    const natW = target.naturalWidth  || w0;
+    const natW = target.naturalWidth || w0;
     const natH = target.naturalHeight || h0;
 
     // 이미지 픽셀 → 엘리먼트 레이아웃(px)
@@ -168,8 +148,8 @@ export function useCanvasTransform() {
 
     const fx = st.flipX ? -1 : 1;
     const fy = st.flipY ? -1 : 1;
-    const s  = st.scale;
-    const θ  = ((st.rotate % 360) + 360) % 360;
+    const s = st.scale;
+    const θ = ((st.rotate % 360) + 360) % 360;
 
     let M = new DOMMatrix();
     // 스테이지 중앙으로 이동
@@ -247,10 +227,10 @@ export function useCanvasTransform() {
   // ===== 현재 상태 기반: 화면 사각형(ScreenRect) → 원본(ImageRect) 근사(BBox) =====
   // ViewerPanel에서 drawImage(sx,sy,sw,sh) 형태로 쓰기 위해, 역행렬로 4점 변환 후 bounding box 반환
   function screenRectToImageBBox(r: ScreenRect): ImageRect {
-    const p1 = screenToImage(r.x,          r.y);
-    const p2 = screenToImage(r.x + r.w,    r.y);
-    const p3 = screenToImage(r.x + r.w,    r.y + r.h);
-    const p4 = screenToImage(r.x,          r.y + r.h);
+    const p1 = screenToImage(r.x, r.y);
+    const p2 = screenToImage(r.x + r.w, r.y);
+    const p3 = screenToImage(r.x + r.w, r.y + r.h);
+    const p4 = screenToImage(r.x, r.y + r.h);
     const xs = [p1.x, p2.x, p3.x, p4.x];
     const ys = [p1.y, p2.y, p3.y, p4.y];
     const minX = Math.min(...xs), maxX = Math.max(...xs);
@@ -273,8 +253,8 @@ export function useCanvasTransform() {
     const rounding = opt.rounding ?? "none";
     const round = (v: number) =>
       rounding === "none" ? v :
-      rounding === "floor" ? Math.floor(v) :
-      rounding === "ceil"  ? Math.ceil(v) : Math.round(v);
+        rounding === "floor" ? Math.floor(v) :
+          rounding === "ceil" ? Math.ceil(v) : Math.round(v);
 
     const M = buildMatrix();
     // L: 선택영역 → (0,0)-(W,H)
@@ -314,7 +294,6 @@ export function useCanvasTransform() {
     panStart, panMove, panEnd,
     screenRectToImageBBox,
     exportSelection,
-    rotateLeft, rotateRight, flipH, flipV,
     getOrientation,
     ...api,
   };

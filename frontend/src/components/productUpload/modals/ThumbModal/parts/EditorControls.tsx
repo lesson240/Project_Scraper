@@ -26,6 +26,7 @@ type Props = {
   onZoomIn(): void;
   onZoomOut(): void;
   onFit(): void;
+  onFillScreen(): void;
   onToggleSelect?(): void;
   onAfterAction?: () => void;
 };
@@ -63,7 +64,7 @@ export default function EditorControls(p: Props) {
         <button onClick={() => handleButtonClick(p.onRotateRight)}>
           <img
             src={rightTurn} /></button>
-        <button onClick={() => handleButtonClick(p.onFit)}>
+        <button onClick={() => handleButtonClick(p.onFillScreen)}>
           <img
             src={fillTheScreen} /></button>
       </div>

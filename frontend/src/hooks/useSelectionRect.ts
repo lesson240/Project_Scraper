@@ -38,9 +38,29 @@ export function useSelectionRect(opts: UseSelectionRectOptions = {}) {
   const shiftRef = useRef(false);
 
   const setRect = useCallback((r: Rect | null) => {
-    setRectState(r ? norm(r) : null);
-    opts.onChange?.(r ? norm(r) : null);
-  }, [opts]);
+    console.log('useSelectionRect: setRect 호출됨', { input: r, current: rect });
+
+    if (r) {
+      const normalized = norm(r);
+      console.log('useSelectionRect: 정규화된 rect', normalized);
+      setRectState(normalized);
+
+      // onChange 콜백이 있는 경우에만 호출
+      if (opts.onChange) {
+        console.log('useSelectionRect: onChange 콜백 호출', normalized);
+        opts.onChange(normalized);
+      }
+    } else {
+      console.log('useSelectionRect: rect를 null로 설정');
+      setRectState(null);
+
+      if (opts.onChange) {
+        opts.onChange(null);
+      }
+    }
+
+    console.log('useSelectionRect: setRectState 완료');
+  }, [opts.onChange, rect]);
 
   const clear = useCallback(() => setRect(null), [setRect]);
 
@@ -62,8 +82,7 @@ export function useSelectionRect(opts: UseSelectionRectOptions = {}) {
   }, [clear]);
 
   // 내부/핸들 히트 테스트(화면 좌표)
-  const hit = useCallback((sx: number, sy: number):
-    { where: "outside" | "inside" | "handle"; handle?: Handle } => {
+  const hit = useCallback((sx: number, sy: number): { where: "outside" | "inside" | "handle"; handle?: Handle } => {
     if (!rect) return { where: "outside" };
     const r = rect;
     const pad = 8; // 핸들 히트 여유(픽셀)
@@ -73,7 +92,7 @@ export function useSelectionRect(opts: UseSelectionRectOptions = {}) {
       // 핸들 영역(모서리/엣지) 우선
       const near = (a: number, b: number) => Math.abs(a - b) <= pad;
       const left = near(sx, r.x), right = near(sx, r.x + r.w);
-      const top  = near(sy, r.y), bottom = near(sy, r.y + r.h);
+      const top = near(sy, r.y), bottom = near(sy, r.y + r.h);
       if (top && left) return { where: "handle", handle: "nw" };
       if (top && right) return { where: "handle", handle: "ne" };
       if (bottom && right) return { where: "handle", handle: "se" };
@@ -96,9 +115,9 @@ export function useSelectionRect(opts: UseSelectionRectOptions = {}) {
         case "ne":
         case "sw": return "nesw-resize";
         case "n":
-        case "s":  return "ns-resize";
+        case "s": return "ns-resize";
         case "e":
-        case "w":  return "ew-resize";
+        case "w": return "ew-resize";
       }
     }
     if (h.where === "inside") return "move"; // hand like
@@ -153,13 +172,13 @@ export function useSelectionRect(opts: UseSelectionRectOptions = {}) {
       let { x, y, w, h } = m.base;
       switch (m.handle) {
         case "nw": x += dx; y += dy; w -= dx; h -= dy; break;
-        case "n":  y += dy;          h -= dy; break;
-        case "ne":          y += dy; w += dx; h -= dy; break;
-        case "e":                   w += dx;          break;
-        case "se":                  w += dx; h += dy; break;
-        case "s":                           h += dy; break;
-        case "sw": x += dx;          w -= dx; h += dy; break;
-        case "w":  x += dx;          w -= dx;          break;
+        case "n": y += dy; h -= dy; break;
+        case "ne": y += dy; w += dx; h -= dy; break;
+        case "e": w += dx; break;
+        case "se": w += dx; h += dy; break;
+        case "s": h += dy; break;
+        case "sw": x += dx; w -= dx; h += dy; break;
+        case "w": x += dx; w -= dx; break;
       }
       const r = squareIfShift(x, y, w, h);
       setRect(r);

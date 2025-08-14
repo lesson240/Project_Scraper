@@ -313,3 +313,80 @@
   background-color: #e0e0e0;
   border: none;
 }
+
+/* 드래그 앤 드롭 스타일 - 교환 방식 */
+.thumbnail-drag-container {
+  position: relative;
+  cursor: grab;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.thumbnail-drag-container:active {
+  cursor: grabbing;
+}
+
+.thumbnail-drag-container.dragging {
+  opacity: 0.5;
+  transform: scale(0.95);
+  z-index: 1000;
+  cursor: grabbing;
+}
+
+.thumbnail-drag-container.drag-over {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.7);
+  border: 2px solid #3b82f6;
+  border-radius: 8px;
+}
+
+.thumbnail-drag-container.drag-over::before {
+  content: '⇄';
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #3b82f6;
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+  z-index: 1001;
+  animation: swapIconPulse 0.8s ease-in-out infinite alternate;
+}
+
+@keyframes swapIconPulse {
+  0% {
+    transform: translateX(-50%) scale(1);
+    box-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
+  }
+
+  100% {
+    transform: translateX(-50%) scale(1.1);
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.8);
+  }
+}
+
+/* 드래그 중일 때 썸네일 패널 스타일 */
+.thumbnail-panel {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+/* 드래그 중인 요소의 부모 컨테이너 */
+.thumbnail-panel .thumbnail-drag-container {
+  flex-shrink: 0;
+}
+
+/* 교환 가능한 위치 표시 */
+.thumbnail-drag-container.drag-over .thumbnail-item {
+  border: 2px dashed #3b82f6;
+  border-radius: 8px;
+}

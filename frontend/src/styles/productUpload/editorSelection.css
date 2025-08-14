@@ -20,7 +20,15 @@
 
 .select-box {
   position: absolute;
-  border: 1.5px solid #22c55e;
+  /* 각 면마다 다른 색상으로 방향 구분 */
+  border-top: 1.5px solid #ff6b6b;
+  /* 🔴 상단: 빨간색 */
+  border-right: 1.5px solid #4ecdc4;
+  /* 🔵 우측: 청록색 */
+  border-bottom: 1.5px solid #45b7d1;
+  /* 🔷 하단: 파란색 */
+  border-left: 1.5px solid #96ceb4;
+  /* 🟢 좌측: 연한 초록색 */
   box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.25);
   pointer-events: none;
 }

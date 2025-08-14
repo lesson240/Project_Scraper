@@ -4,14 +4,20 @@ import "@/styles/productUpload/thumbnailModal.css";
 
 
 type FirstProps = {
-  onPriceSet: () => void;
+  onLayerReset: () => void;
   onTagSet: () => void;
+  onPanelApply: (e?: React.MouseEvent) => void;
 };
-export function ThumbResultButtons({ onPriceSet, onTagSet }: FirstProps) {
+
+export function ThumbResultButtons({ onLayerReset, onTagSet, onPanelApply }: FirstProps) {
+  const handlePanelApply = () => {
+    onPanelApply();
+  };
+
   return (
     <div className="thumb-func-buttons">
-      <Button variant="secondary" onClick={onPriceSet}>레이어 초기화</Button>
-      <Button variant="primary" onClick={onTagSet}>패널 적용</Button>
+      <Button variant="secondary" onClick={onLayerReset}>레이어 초기화</Button>
+      <Button variant="primary" onClick={handlePanelApply}>패널 적용</Button>
     </div>
   );
 }

@@ -92,7 +92,7 @@ export default function EditorTransformSync({
         });
 
         return () => cancelAnimationFrame(id);
-    }, [transformTick, image, sendCrop]);
+    }, [image, sendCrop]); // transformTick 의존성 제거
 
     return null; // UI 렌더링 없음
 }

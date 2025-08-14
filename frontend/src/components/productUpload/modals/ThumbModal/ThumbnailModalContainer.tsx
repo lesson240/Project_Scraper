@@ -24,7 +24,22 @@ export default function ThumbnailModalContainer({
     removeImage,
     resetImages,
     saveImages,
+    setThumbnails, // useThumbnailModal에서 setThumbnails 가져오기
   } = useThumbnailModal(defaultImages, onSave);
+
+  // ✅ updateThumbnail 함수 구현
+  const updateThumbnail = useCallback((index: number, newImageUrl: string) => {
+    setThumbnails(prev => {
+      const newThumbnails = [...prev];
+      newThumbnails[index] = newImageUrl;
+      return newThumbnails;
+    });
+  }, [setThumbnails]);
+
+  // ✅ updateThumbnails 함수 구현 (순서 변경용)
+  const updateThumbnails = useCallback((newThumbnails: string[]) => {
+    setThumbnails(newThumbnails);
+  }, [setThumbnails]);
 
   // ✅ onSave 콜백을 useCallback으로 안정화
   const handleSave = useCallback(() => {
@@ -61,6 +76,8 @@ export default function ThumbnailModalContainer({
       removeImage={removeImage}
       resetImages={resetImages}
       saveImages={handleSave}
+      updateThumbnail={updateThumbnail}
+      updateThumbnails={updateThumbnails}
     />
   );
 

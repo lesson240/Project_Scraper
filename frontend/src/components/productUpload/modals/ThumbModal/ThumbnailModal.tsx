@@ -1,29 +1,19 @@
 import React from "react";
 import { ModalBase, ModalHeader, ModalBody, ModalFooter } from "@/components/common/Modal";
 import ThumbnailPanel from "./parts/ThumbnailPanel";
-import EditorMain from "./parts/EditorMain";
+import EditorMain, { EditorMainRef } from "./parts/EditorMain";
 import ViewerPanel from "./parts/ViewerPanel";
 import ThumbModalFooter from "./parts/ThumbnailModalFooter";
 import { ThumbResultButtons, ThumbEditorButtons } from "./parts/ThumbnailFunctionButtons";
 import SectionLabel from "./parts/SectionLabel";
 import EditorControls from "./parts/EditorControls";
-import { useCanvasTransform } from "@/hooks/useCanvasTransform";
+import ThumbnailTransformSync from "./components/ThumbnailTransformSync";
+import { useThumbnailTransform } from "./lib/useThumbnailTransform";
+import { useThumbnailPanel } from "./lib/useThumbnailPanel";
+import { useThumbnailReorder } from "./lib/useThumbnailReorder";
 import type { Rect } from "@/hooks/useSelectionRect";
+import type { ThumbnailModalProps } from "./lib/thumbnail.types";
 import "@/styles/productUpload/thumbnailModal.css";
-
-type Props = {
-  isOpen: boolean;
-  onClose: () => void;
-  thumbnails: string[];
-  currentIndex: number;
-  setCurrentIndex: (idx: number) => void;
-  addImages: (newImages: string[]) => void;
-  removeImage: (idx: number) => void;
-  resetImages: () => void;
-  saveImages: () => void;
-};
-
-type Orientation = { angle: number; flipX: boolean; flipY: boolean };
 
 export default function ThumbModal({
   isOpen,
@@ -35,57 +25,68 @@ export default function ThumbModal({
   removeImage,
   resetImages,
   saveImages,
-}: Props) {
-  const t = useCanvasTransform();
+  updateThumbnail,
+  updateThumbnails,
+}: ThumbnailModalProps) {
+  // 패널 적용 실행 중 플래그
+  const isPanelApplyingRef = React.useRef(false);
+
+  // EditorMain ref 생성
+  const editorMainRef = React.useRef<EditorMainRef>(null);
+
+  // Transform 관련 로직을 커스텀 훅으로 분리
+  const {
+    t,
+    orientation,
+    setOrientation,
+    safeSetOrientation,
+    bumpTick
+  } = useThumbnailTransform(isPanelApplyingRef);
+
   const [crop, setCrop] = React.useState<Rect | null>(null);
-  const readOrientation = React.useCallback<() => Orientation>(
-    () => t.getOrientation(),
-    [t]
+
+  // 패널 적용 로직을 커스텀 훅으로 분리
+  const { handlePanelApply } = useThumbnailPanel(
+    isPanelApplyingRef,
+    currentIndex,
+    crop,
+    thumbnails,
+    updateThumbnail
   );
 
-  // orientation 기본값 설정으로 undefined 방지
-  const [orientation, setOrientation] = React.useState<Orientation>(() => ({
-    angle: 0,
-    flipX: false,
-    flipY: false
-  }));
+  // 순서 변경 로직을 커스텀 훅으로 분리
+  const { handleReorder } = useThumbnailReorder(
+    thumbnails,
+    currentIndex,
+    updateThumbnails,
+    setCurrentIndex
+  );
 
-  const [transformTick, setTransformTick] = React.useState(0);
-  const bumpTick = React.useCallback(() => {
-    setTransformTick(v => v + 1);
-    // transform 변경 후 orientation 즉시 동기화
-    const newOrientation = t.getOrientation();
-    // console.log('Transform changed, new orientation:', newOrientation); // 디버깅용
-    setOrientation(newOrientation);
-  }, [t]);
+  // 이미지 선택 시 editormain 상태 초기화
+  const handleImageSelect = React.useCallback((idx: number) => {
+    setCurrentIndex(idx);
+    // editormain의 transform 상태 초기화
+    t.fit(); // fit() 함수로 모든 변환 상태 초기화
+    // orientation 상태도 초기화
+    setOrientation({ angle: 0, flipX: false, flipY: false });
+    // crop 상태도 초기화
+    setCrop(null);
+  }, [setCurrentIndex, t, setOrientation]);
 
-  // ✅ orientation 변경 시 디버깅 (개발 환경에서만)
-  React.useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
-      // console.log('Orientation state updated:', orientation);
-    }
-  }, [orientation]);
+  // 레이어 초기화 함수
+  const handleLayerReset = React.useCallback(() => {
+    // editormain의 transform 상태를 처음 상태로 초기화
+    t.fit(); // fit() 함수로 모든 변환 상태 초기화
+    // orientation 상태도 초기화
+    setOrientation({ angle: 0, flipX: false, flipY: false });
+    // crop 상태도 초기화
+    setCrop(null);
+  }, [t, setOrientation]);
 
-  // ✅ transform 객체 변경 감지
-  React.useEffect(() => {
-    const checkTransform = () => {
-      const currentOrientation = t.getOrientation();
-      if (
-        currentOrientation.angle !== orientation.angle ||
-        currentOrientation.flipX !== orientation.flipX ||
-        currentOrientation.flipY !== orientation.flipY
-      ) {
-        // console.log('Transform mismatch detected, updating...');
-        setOrientation(currentOrientation);
-      }
-    };
-
-    // 주기적으로 transform 상태 확인 (개발 환경에서만)
-    if (process.env.NODE_ENV === 'development') {
-      const interval = setInterval(checkTransform, 100);
-      return () => clearInterval(interval);
-    }
-  }, [t, orientation]);
+  // 패널 적용 핸들러 래퍼
+  const handlePanelApplyWrapper = React.useCallback((e?: React.MouseEvent) => {
+    handlePanelApply(e, t, setOrientation);
+  }, [handlePanelApply, t, setOrientation]);
 
   return (
     <ModalBase isOpen={isOpen} onClose={onClose}>
@@ -98,13 +99,15 @@ export default function ThumbModal({
             currentIndex={currentIndex}
             onAdd={addImages}
             onRemove={removeImage}
-            onSelect={setCurrentIndex}
+            onSelect={handleImageSelect}
+            onReorder={handleReorder}
           />
 
           <div className="thumb-main-wrapper">
             <div className="editor-wrapper">
               <SectionLabel text="올땀 에디터" />
               <EditorMain
+                ref={editorMainRef}
                 image={thumbnails[currentIndex] || ""}
                 transform={t}
                 onCropChange={(r) => {
@@ -119,7 +122,6 @@ export default function ThumbModal({
                     setCrop(null);
                   }
                 }}
-                transformTick={transformTick}
               />
             </div>
             <div className="viewer-wrapper">
@@ -129,13 +131,17 @@ export default function ThumbModal({
                   <ViewerPanel
                     image={thumbnails[currentIndex] || ""}
                     crop={crop}
-                    orientation={orientation}
+                    orientation={isPanelApplyingRef.current
+                      ? { angle: 0, flipX: false, flipY: false } // 패널 적용 중 고정값
+                      : orientation // 정상 상태
+                    }
                   />
                 </div>
                 <div className="editor-func-buttons-wrapper">
                   <ThumbResultButtons
-                    onPriceSet={() => console.log("모달 가격 설정")}
+                    onLayerReset={handleLayerReset}
                     onTagSet={() => console.log("모달 태그 설정")}
+                    onPanelApply={handlePanelApplyWrapper}
                   />
                 </div>
               </div>
@@ -155,6 +161,10 @@ export default function ThumbModal({
                   onZoomIn={t.zoomIn}
                   onZoomOut={t.zoomOut}
                   onFit={t.fit}
+                  onFillScreen={() => {
+                    // EditorMain의 handleFillScreen 함수 호출
+                    editorMainRef.current?.handleFillScreen();
+                  }}
                   onAfterAction={bumpTick}
                 />
                 <div className="division-line">
@@ -174,6 +184,15 @@ export default function ThumbModal({
       <ModalFooter>
         <ThumbModalFooter onReset={resetImages} onSave={saveImages} />
       </ModalFooter>
+
+      {/* Transform 동기화 컴포넌트 (렌더링하지 않음) */}
+      <ThumbnailTransformSync
+        isOpen={isOpen}
+        isPanelApplyingRef={isPanelApplyingRef}
+        t={t}
+        orientation={orientation}
+        setOrientation={setOrientation}
+      />
     </ModalBase>
   );
 }

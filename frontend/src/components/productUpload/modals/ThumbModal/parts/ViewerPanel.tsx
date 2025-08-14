@@ -27,12 +27,11 @@ export default function ViewerPanel({ image, crop, orientation }: Props) {
     flipY: orientation?.flipY ?? false
   }), [orientation]);
 
-  // 디버깅: orientation 변경 감지
-  React.useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
-      // console.log('ViewerPanel: Orientation changed to:', safeOrientation);
-    }
-  }, [safeOrientation]);
+  // 디버깅 로그 제거 - 중복 로그 발생 방지
+  // React.useEffect(() => {
+  //   console.log('ViewerPanel: orientation prop 변경됨:', orientation);
+  //   console.log('ViewerPanel: safeOrientation 계산됨:', safeOrientation);
+  // }, [orientation, safeOrientation]);
 
   return (
     <div className="viewer-panel">

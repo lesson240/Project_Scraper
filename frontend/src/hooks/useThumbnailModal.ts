@@ -56,5 +56,6 @@ export function useThumbnailModal(
     removeImage,
     resetImages,
     saveImages,
+    setThumbnails, // setThumbnails 추가
   };
 }

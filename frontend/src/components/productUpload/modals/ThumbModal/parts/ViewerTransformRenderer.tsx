@@ -31,7 +31,6 @@ export default function ViewerTransformRenderer({
     // orientation 변경 시 즉시 재그리기
     useEffect(() => {
         if (ready) {
-            // console.log('ViewerTransformRenderer: Redrawing with orientation:', orientation);
             draw();
         }
     }, [ready, crop, orientation]);
@@ -52,14 +51,8 @@ export default function ViewerTransformRenderer({
         const fx = orientation.flipX ? -1 : 1;
         const fy = orientation.flipY ? -1 : 1;
 
-        // console.log('ViewerTransformRenderer: Drawing with:', {
-        //     angle: orientation.angle,
-        //     flipX: orientation.flipX,
-        //     flipY: orientation.flipY
-        // });
-
         // 크롭 처리
-        const { sx, sy, sw, sh } = ViewerCropHandler.calculateCrop(im, crop);
+        const { sx, sy, sw, sh } = ViewerCropHandler.calculateCrop(im, crop, orientation);
 
         // 오프스크린 캔버스에 잘라 그리기
         const srcCanvas = document.createElement("canvas");
@@ -84,6 +77,7 @@ export default function ViewerTransformRenderer({
         ctx.scale(scale, scale);
         ctx.drawImage(srcCanvas, -sw / 2, -sh / 2);
         ctx.restore();
+
     }, [imgRef, crop, orientation]);
 
     return (
