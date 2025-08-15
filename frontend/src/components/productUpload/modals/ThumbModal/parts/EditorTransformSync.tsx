@@ -81,6 +81,13 @@ export default function EditorTransformSync({
         sendCrop();
     }, [sendCrop]);
 
+    // 선택 영역 변경 시 즉시 전송 (추가)
+    useEffect(() => {
+        if (selection.rect) {
+            scheduleSendCrop();
+        }
+    }, [selection.rect, scheduleSendCrop]);
+
     // 외부 변환 후 DOM 반영 직후 계산 (회전/플립 등)
     useEffect(() => {
         if (!image) return;
@@ -92,7 +99,7 @@ export default function EditorTransformSync({
         });
 
         return () => cancelAnimationFrame(id);
-    }, [image, sendCrop]); // transformTick 의존성 제거
+    }, [image, transformTick, sendCrop]); // transformTick 의존성 복원
 
     return null; // UI 렌더링 없음
 }

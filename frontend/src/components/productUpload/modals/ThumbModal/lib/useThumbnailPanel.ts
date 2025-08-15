@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import ViewerCropHandler from '../parts/ViewerCropHandler';
-import type { Orientation } from '../types/thumbnail.types';
+import type { Orientation } from './thumbnail.types';
 import type { Rect } from '@/hooks/useSelectionRect';
 
 export const useThumbnailPanel = (
@@ -75,6 +75,10 @@ export const useThumbnailPanel = (
                 canvas.height = sh;
                 ctx.save();
 
+                // 흰색 배경을 먼저 그리기
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, sw, sh);
+
                 // 회전/반전 적용
                 if (currentOrientation.angle !== 0) {
                     const centerX = sw / 2;
@@ -93,8 +97,16 @@ export const useThumbnailPanel = (
                     if (currentOrientation.flipY) ctx.translate(0, -sh);
                 }
 
-                // 크롭된 이미지 그리기
-                ctx.drawImage(img, sx, sy, sw, sh, 0, 0, sw, sh);
+                // 실제 이미지 영역만 그리기 (이미지 경계를 벗어나는 부분은 흰색 배경 유지)
+                const actualSx = Math.max(0, sx);
+                const actualSy = Math.max(0, sy);
+                const actualSw = Math.min(sw, img.naturalWidth - actualSx);
+                const actualSh = Math.min(sh, img.naturalHeight - actualSy);
+                
+                if (actualSw > 0 && actualSh > 0) {
+                    ctx.drawImage(img, actualSx, actualSy, actualSw, actualSh, 
+                                  Math.max(0, -sx), Math.max(0, -sy), actualSw, actualSh);
+                }
 
                 ctx.restore();
 

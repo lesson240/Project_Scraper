@@ -246,6 +246,17 @@
   border: 1px solid #00b5ad;
 }
 
+/* 정사각형 고정 버튼 활성화 상태 */
+.editor-controls button.square-locked {
+  border: 2px solid #00b5ad;
+}
+
+.editor-controls button.square-locked:hover {
+  color: #596380;
+  background: #fff;
+  border: 1px solid #ddd;
+}
+
 .shapes-wrapper {
   display: flex;
   gap: 8px;

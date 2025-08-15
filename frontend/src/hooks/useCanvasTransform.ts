@@ -57,19 +57,39 @@ export function useCanvasTransform(opts: UseCanvasTransformOptions = {}) {
 
   // CSS 변수 적용
   const applyCssVars = useCallback(() => {
+    console.log('useCanvasTransform: applyCssVars 호출됨, state:', state);
+    
     const el = targetRef.current as HTMLElement | null;
-    if (!el) return;
+    if (!el) {
+      console.log('useCanvasTransform: targetRef.current가 null');
+      return;
+    }
+    
+    console.log('useCanvasTransform: CSS 변수 설정:', {
+      scale: state.scale,
+      tx: state.tx,
+      ty: state.ty,
+      rotate: state.rotate,
+      flipX: state.flipX,
+      flipY: state.flipY
+    });
+    
     el.style.setProperty("--scale", String(state.scale));
     el.style.setProperty("--tx", `${state.tx}px`);
     el.style.setProperty("--ty", `${state.ty}px`);
     el.style.setProperty("--rot", `${state.rotate}deg`);
     el.style.setProperty("--flipX", state.flipX ? "-1" : "1");
     el.style.setProperty("--flipY", state.flipY ? "-1" : "1");
+    
+    console.log('useCanvasTransform: CSS 변수 설정 완료');
   }, [state.scale, state.tx, state.ty, state.rotate, state.flipX, state.flipY]);
 
   const commit = useCallback((patch: Partial<TransformState>) => {
+    console.log('useCanvasTransform: commit 호출됨, patch:', patch, '현재 state:', state);
+    
     setState((prev) => {
       const next = { ...prev, ...patch };
+      console.log('useCanvasTransform: setState 콜백, prev:', prev, 'next:', next);
       // CSS 즉시 반영 (setTimeout 제거)
       applyCssVars();
       return next;
@@ -77,6 +97,7 @@ export function useCanvasTransform(opts: UseCanvasTransformOptions = {}) {
 
     // onChange를 setState 콜백 외부로 이동하여 즉시 호출
     const nextState = { ...state, ...patch };
+    console.log('useCanvasTransform: onChange 호출, nextState:', nextState);
     opts.onChange?.(nextState);
   }, [applyCssVars, opts.onChange, state]);
 
@@ -111,8 +132,18 @@ export function useCanvasTransform(opts: UseCanvasTransformOptions = {}) {
     moveUp: () => commit({ ty: state.ty - 10 }),
     moveDown: () => commit({ ty: state.ty + 10 }),
     // 확대/축소
-    zoomIn: () => commit({ scale: clamp(state.scale + 0.1, 0.1, 8) }),
-    zoomOut: () => commit({ scale: clamp(state.scale - 0.1, 0.1, 8) }),
+    zoomIn: () => {
+      console.log('useCanvasTransform: 줌 인 호출됨, 현재 scale:', state.scale);
+      const newScale = clamp(state.scale + 0.1, 0.1, 8);
+      console.log('useCanvasTransform: 새로운 scale:', newScale);
+      commit({ scale: newScale });
+    },
+    zoomOut: () => {
+      console.log('useCanvasTransform: 줌 아웃 호출됨, 현재 scale:', state.scale);
+      const newScale = clamp(state.scale - 0.1, 0.1, 8);
+      console.log('useCanvasTransform: 새로운 scale:', newScale);
+      commit({ scale: newScale });
+    },
     fit: () => commit({ scale: 1, tx: 0, ty: 0, rotate: 0, flipX: false, flipY: false }),
     // 회전/반전 (누적)
     rotateLeft: () => commit({ rotate: state.rotate - 90 }),

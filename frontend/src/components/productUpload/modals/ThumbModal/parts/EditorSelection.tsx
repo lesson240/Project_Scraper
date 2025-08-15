@@ -27,24 +27,21 @@ export default function EditorSelection({ stageRef, selection, transform }: Prop
         const st = stageRef.current.getBoundingClientRect();
         const r = norm(selection.rect);
 
-        console.log('EditorSelection: 선택 상자 스타일 계산', {
-            originalRect: selection.rect,
-            normalizedRect: r,
-            stageRect: st,
-            computedStyle: {
-                left: `${r.x - st.left}px`,
-                top: `${r.y - st.top}px`,
-                width: `${r.w}px`,
-                height: `${r.h}px`,
-            }
-        });
-
-        return {
+        const computedStyle = {
             left: `${r.x - st.left}px`,
             top: `${r.y - st.top}px`,
             width: `${r.w}px`,
             height: `${r.h}px`,
-        } as React.CSSProperties;
+        };
+
+        console.log('EditorSelection: 선택 상자 스타일 계산', {
+            originalRect: selection.rect,
+            normalizedRect: r,
+            stageRect: st,
+            computedStyle
+        });
+
+        return computedStyle as React.CSSProperties;
     }, [selection.rect, stageRef]);
 
     if (!selection.rect) {
@@ -53,19 +50,29 @@ export default function EditorSelection({ stageRef, selection, transform }: Prop
     }
 
     console.log('EditorSelection: 선택 상자 렌더링', { rect: selection.rect, style: selStyle });
+    
+    // 핸들 상태 디버깅
+    console.log('EditorSelection: 핸들 요소들 확인:', {
+      hasSelectLayer: !!document.querySelector('.select-layer'),
+      hasSelectBox: !!document.querySelector('.select-box'),
+      hasSelectGrid: !!document.querySelector('.select-grid'),
+      handles: document.querySelectorAll('.handle'),
+      handleCount: document.querySelectorAll('.handle').length,
+      handleClasses: Array.from(document.querySelectorAll('.handle')).map(h => h.className)
+    });
 
     return (
-        <div className="select-layer">
-            <div className="select-box" style={selStyle}>
-                <div className="select-grid" />
-                <div className="handle nw" />
-                <div className="handle n" />
-                <div className="handle ne" />
-                <div className="handle e" />
-                <div className="handle se" />
-                <div className="handle s" />
-                <div className="handle sw" />
-                <div className="handle w" />
+        <div className="select-layer" data-selection="layer">
+            <div className="select-box" style={selStyle} data-selection="box">
+                <div className="select-grid" data-selection="grid" />
+                <div className="handle nw" data-selection="handle" data-handle="nw" />
+                <div className="handle n" data-selection="handle" data-handle="n" />
+                <div className="handle ne" data-selection="handle" data-handle="ne" />
+                <div className="handle e" data-selection="handle" data-handle="e" />
+                <div className="handle se" data-selection="handle" data-handle="se" />
+                <div className="handle s" data-selection="handle" data-handle="s" />
+                <div className="handle sw" data-selection="handle" data-handle="sw" />
+                <div className="handle w" data-selection="handle" data-handle="w" />
             </div>
         </div>
     );

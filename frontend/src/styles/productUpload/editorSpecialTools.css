@@ -1,0 +1,228 @@
+/* 특수 도구들 스타일 */
+.editor-special-tools {
+  position: absolute;
+  inset: 0;
+  pointer-events: none; /* 기본적으로 비활성화 */
+  z-index: 30; /* 선택상자(z-index: 20)보다 높게 설정 */
+}
+
+/* 특수 도구가 활성화되었을 때 자동으로 pointer-events 활성화 */
+.editor-special-tools[data-active="true"] {
+  pointer-events: auto !important; /* !important로 강제 적용 */
+}
+
+/* 특수 도구가 활성화되었을 때 자동으로 pointer-events 활성화 - 대체 방법 */
+.editor-special-tools.active {
+  pointer-events: auto !important;
+}
+
+.special-tools-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  /* cursor는 인라인 스타일로 제어 */
+  pointer-events: inherit; /* 부모 요소의 pointer-events 상속 */
+}
+
+/* 도구가 활성화되었을 때 Canvas 커서 강제 적용 */
+.editor-special-tools[data-active="true"] .special-tools-canvas {
+  cursor: crosshair !important;
+  pointer-events: auto !important;
+}
+
+/* 도구가 활성화되었을 때 Canvas 커서 강제 적용 - 대체 방법 */
+.editor-special-tools.active .special-tools-canvas {
+  cursor: crosshair !important;
+  pointer-events: auto !important;
+}
+
+/* 도구 설정 패널 */
+.tool-settings-panel {
+  position: absolute;
+  top: 10px;
+  right: 10px; /* left에서 right로 변경하여 우측에 배치 */
+  background: white;
+  border: 2px solid #007bff;
+  border-radius: 8px;
+  padding: 15px;
+  min-width: 200px; /* 너비 줄임 */
+  max-width: 250px; /* 최대 너비 제한 */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 40;
+  pointer-events: auto !important;
+  cursor: default;
+  /* 이미지 가림 방지를 위한 추가 스타일 */
+  backdrop-filter: blur(5px);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.tool-settings-panel * {
+  pointer-events: auto !important; /* 모든 하위 요소 이벤트 활성화 */
+}
+
+.tool-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.tool-icon {
+  font-size: 20px;
+}
+
+.tool-name {
+  font-weight: 600;
+  color: #333;
+}
+
+.tool-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.setting-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer; /* 설정 그룹 클릭 가능 */
+}
+
+.setting-group label {
+  min-width: 60px;
+  font-size: 14px;
+  color: #555;
+  cursor: pointer;
+}
+
+.setting-group input[type="range"] {
+  flex: 1;
+  cursor: pointer; /* 슬라이더 클릭 가능 */
+}
+
+.setting-group input[type="color"] {
+  width: 30px;
+  height: 30px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer; /* 컬러 피커 클릭 가능 */
+}
+
+.setting-group span {
+  min-width: 30px;
+  text-align: center;
+  font-size: 14px;
+  color: #666;
+}
+
+.tool-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.tool-cancel-btn,
+.tool-close-btn,
+.tool-deactivate-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer; /* 버튼 클릭 가능 */
+  transition: background-color 0.2s;
+}
+
+.tool-cancel-btn {
+  background: #dc3545;
+  color: white;
+}
+
+.tool-cancel-btn:hover {
+  background: #c82333;
+}
+
+.tool-close-btn {
+  background: #6c757d;
+  color: white;
+}
+
+.tool-close-btn:hover {
+  background: #5a6268;
+}
+
+.tool-deactivate-btn {
+  background: #ffc107;
+  color: #212529;
+}
+
+.tool-deactivate-btn:hover {
+  background: #e0a800;
+}
+
+/* 특수 도구 비활성화 시 숨김 */
+.editor-special-tools:not(.active) {
+  display: none;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .tool-settings-panel {
+    top: 10px;
+    right: 10px;
+    min-width: 180px;
+    padding: 12px;
+  }
+  
+  .tool-controls {
+    gap: 8px;
+  }
+  
+  .setting-group {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  
+  .setting-group label {
+    min-width: auto;
+  }
+}
+
+/* 설정 재표시 버튼 스타일 */
+.tool-settings-toggle {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(0, 123, 255, 0.9);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 35;
+  transition: all 0.2s ease;
+}
+
+.tool-settings-toggle:hover {
+  background: rgba(0, 123, 255, 1);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.tool-settings-toggle .tool-icon {
+  font-size: 14px;
+}
+
+.tool-settings-toggle .tool-name {
+  font-weight: 500;
+}

@@ -20,11 +20,12 @@ export default class ViewerCropHandler {
         let sx = 0, sy = 0, sw = iw, sh = ih;
 
         if (crop && crop.w > 0 && crop.h > 0) {
-            // 기본 크롭 좌표 계산
-            sx = Math.max(0, Math.min(crop.x, iw - crop.w));
-            sy = Math.max(0, Math.min(crop.y, ih - crop.h));
-            sw = Math.min(crop.w, iw - sx);
-            sh = Math.min(crop.h, ih - sy);
+            // 기본 크롭 좌표 계산 - 이미지 경계 제한 제거
+            // 선택상자가 이미지 영역을 벗어나도 그대로 표시
+            sx = crop.x;
+            sy = crop.y;
+            sw = crop.w;
+            sh = crop.h;
 
             // orientation이 있는 경우 변환 적용
             if (orientation) {
@@ -54,14 +55,16 @@ export default class ViewerCropHandler {
                 if (flipY) {
                     sy = ih - sy - sh;
                 }
-
-                // 경계 검증
-                sx = Math.max(0, Math.min(sx, iw - sw));
-                sy = Math.max(0, Math.min(sy, ih - sh));
-                sw = Math.min(sw, iw - sx);
-                sh = Math.min(sh, ih - sy);
             }
         }
+
+        // 디버깅을 위한 로그 추가
+        console.log('ViewerCropHandler - 계산된 크롭 좌표:', {
+            originalCrop: crop,
+            imageSize: { width: iw, height: ih },
+            calculatedCrop: { sx, sy, sw, sh },
+            isOutOfBounds: sx < 0 || sy < 0 || sx + sw > iw || sy + sh > ih
+        });
 
         // 최종 crop 좌표 반환
         return { sx, sy, sw, sh };

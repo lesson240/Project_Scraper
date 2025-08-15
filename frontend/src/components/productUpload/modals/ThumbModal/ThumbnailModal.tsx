@@ -4,7 +4,7 @@ import ThumbnailPanel from "./parts/ThumbnailPanel";
 import EditorMain, { EditorMainRef } from "./parts/EditorMain";
 import ViewerPanel from "./parts/ViewerPanel";
 import ThumbModalFooter from "./parts/ThumbnailModalFooter";
-import { ThumbResultButtons, ThumbEditorButtons } from "./parts/ThumbnailFunctionButtons";
+import { ThumbResultButtons } from "./parts/ThumbnailFunctionButtons";
 import SectionLabel from "./parts/SectionLabel";
 import EditorControls from "./parts/EditorControls";
 import ThumbnailTransformSync from "./components/ThumbnailTransformSync";
@@ -34,6 +34,9 @@ export default function ThumbModal({
   // EditorMain ref 생성
   const editorMainRef = React.useRef<EditorMainRef>(null);
 
+  // 정사각형 고정 상태를 로컬에서 관리
+  const [isSquareLocked, setIsSquareLocked] = React.useState(false);
+
   // Transform 관련 로직을 커스텀 훅으로 분리
   const {
     t,
@@ -62,6 +65,13 @@ export default function ThumbModal({
     setCurrentIndex
   );
 
+  // 정사각형 고정 토글 핸들러
+  const handleToggleSquareLock = React.useCallback(() => {
+    setIsSquareLocked(prev => !prev);
+    // EditorMain의 정사각형 고정 토글 함수 호출
+    editorMainRef.current?.toggleSquareLock();
+  }, []);
+
   // 이미지 선택 시 editormain 상태 초기화
   const handleImageSelect = React.useCallback((idx: number) => {
     setCurrentIndex(idx);
@@ -71,6 +81,8 @@ export default function ThumbModal({
     setOrientation({ angle: 0, flipX: false, flipY: false });
     // crop 상태도 초기화
     setCrop(null);
+    // 정사각형 고정 상태도 초기화
+    setIsSquareLocked(false);
   }, [setCurrentIndex, t, setOrientation]);
 
   // 레이어 초기화 함수
@@ -81,6 +93,8 @@ export default function ThumbModal({
     setOrientation({ angle: 0, flipX: false, flipY: false });
     // crop 상태도 초기화
     setCrop(null);
+    // 정사각형 고정 상태도 초기화
+    setIsSquareLocked(false);
   }, [t, setOrientation]);
 
   // 패널 적용 핸들러 래퍼
@@ -89,7 +103,7 @@ export default function ThumbModal({
   }, [handlePanelApply, t, setOrientation]);
 
   return (
-    <ModalBase isOpen={isOpen} onClose={onClose}>
+    <ModalBase isOpen={isOpen} onClose={onClose} disableOutsideClick={true}>
       <ModalHeader title="썸네일" onClose={onClose} />
       <ModalBody>
         <div className="thumb-modal-container">
@@ -142,6 +156,8 @@ export default function ThumbModal({
                     onLayerReset={handleLayerReset}
                     onTagSet={() => console.log("모달 태그 설정")}
                     onPanelApply={handlePanelApplyWrapper}
+                    onStudio={() => console.log("올땀 스튜디오")}
+                    onEditorPlus={() => console.log("에디터 +")}
                   />
                 </div>
               </div>
@@ -160,22 +176,32 @@ export default function ThumbModal({
                   onFlipV={t.flipV}
                   onZoomIn={t.zoomIn}
                   onZoomOut={t.zoomOut}
-                  onFit={t.fit}
                   onFillScreen={() => {
                     // EditorMain의 handleFillScreen 함수 호출
                     editorMainRef.current?.handleFillScreen();
                   }}
+                  onToggleSquareLock={() => {
+                    // EditorMain의 정사각형 고정 토글 함수 호출
+                    editorMainRef.current?.toggleSquareLock();
+                  }}
+                  onToggleBrush={() => {
+                    // EditorMain의 Brush 도구 토글 함수 호출
+                    editorMainRef.current?.toggleBrush();
+                  }}
+                  onToggleEraser={() => {
+                    // EditorMain의 Eraser 도구 토글 함수 호출
+                    editorMainRef.current?.toggleEraser();
+                  }}
+                  onToggleLasso={() => {
+                    // EditorMain의 Lasso 도구 토글 함수 호출
+                    editorMainRef.current?.toggleLasso();
+                  }}
+                  isSquareLocked={isSquareLocked}
+                  isBrushActive={editorMainRef.current?.isBrushActive || false}
+                  isEraserActive={editorMainRef.current?.isEraserActive || false}
+                  isLassoActive={editorMainRef.current?.isLassoActive || false}
                   onAfterAction={bumpTick}
                 />
-                <div className="division-line">
-                </div>
-                <div className="editor-func-buttons-wrapper">
-                  <ThumbEditorButtons
-                    onPriceSet={() => console.log("모달 가격 설정")}
-                    onTagSet={() => console.log("모달 태그 설정")}
-                    onDelete={() => removeImage(currentIndex)}
-                  />
-                </div>
               </div>
             </div>
           </div>

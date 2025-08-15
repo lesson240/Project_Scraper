@@ -44,7 +44,9 @@ export default function ViewerTransformRenderer({
         const ctx = cv.getContext("2d");
         if (!ctx) return;
 
-        ctx.clearRect(0, 0, cv.width, cv.height);
+        // 캔버스를 흰색으로 초기화
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, cv.width, cv.height);
 
         // 회전/플립 값
         const angleRad = (orientation.angle * Math.PI) / 180;
@@ -61,7 +63,20 @@ export default function ViewerTransformRenderer({
         const sctx = srcCanvas.getContext("2d");
         if (!sctx) return;
 
-        sctx.drawImage(im, sx, sy, sw, sh, 0, 0, sw, sh);
+        // 오프스크린 캔버스를 흰색으로 초기화
+        sctx.fillStyle = '#ffffff';
+        sctx.fillRect(0, 0, sw, sh);
+        
+        // 실제 이미지 영역만 그리기
+        const actualSx = Math.max(0, sx);
+        const actualSy = Math.max(0, sy);
+        const actualSw = Math.min(sw, im.naturalWidth - actualSx);
+        const actualSh = Math.min(sh, im.naturalHeight - actualSy);
+        
+        if (actualSw > 0 && actualSh > 0) {
+            sctx.drawImage(im, actualSx, actualSy, actualSw, actualSh, 
+                          Math.max(0, -sx), Math.max(0, -sy), actualSw, actualSh);
+        }
 
         // 메인 캔버스에 변환 적용
         const cx = cv.width / 2;
@@ -75,8 +90,26 @@ export default function ViewerTransformRenderer({
         ctx.rotate(angleRad);
         ctx.scale(fx, fy);
         ctx.scale(scale, scale);
+        
+        // 선택상자가 이미지 영역을 벗어난 경우 흰색 배경을 먼저 그리기
+        if (sx < 0 || sy < 0 || sx + sw > im.naturalWidth || sy + sh > im.naturalHeight) {
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(-sw / 2, -sh / 2, sw, sh);
+        }
+        
         ctx.drawImage(srcCanvas, -sw / 2, -sh / 2);
         ctx.restore();
+
+        // 디버깅을 위한 로그 추가
+        console.log('ViewerTransformRenderer - 렌더링 완료:', {
+            crop: crop,
+            calculatedCrop: { sx, sy, sw, sh },
+            imageSize: { width: im.naturalWidth, height: im.naturalHeight },
+            canvasSize: { width: cv.width, height: cv.height },
+            isOutOfBounds: sx < 0 || sy < 0 || sx + sw > im.naturalWidth || sy + sh > im.naturalHeight,
+            orientation: orientation,
+            timestamp: Date.now()
+        });
 
     }, [imgRef, crop, orientation]);
 
