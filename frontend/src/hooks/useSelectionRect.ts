@@ -84,60 +84,46 @@ export function useSelectionRect(opts: UseSelectionRectOptions = {}) {
   // 내부/핸들 히트 테스트(화면 좌표)
   const hit = useCallback((sx: number, sy: number): { where: "outside" | "inside" | "handle"; handle?: Handle } => {
     if (!rect) return { where: "outside" };
-    
+
     const r = rect;
     const pad = 8; // 핸들 히트 여유(픽셀) - 20px에서 8px로 복원
     const inX = sx >= r.x && sx <= r.x + r.w;
     const inY = sy >= r.y && sy <= r.y + r.h;
-    
-    console.log('useSelectionRect: hit 테스트:', { sx, sy, rect: r, inX, inY, pad });
-    
+
     if (inX && inY) {
       // 핸들 영역(모서리/엣지) 우선 - 정확한 범위로 감지
       const near = (a: number, b: number) => Math.abs(a - b) <= pad;
       const left = near(sx, r.x), right = near(sx, r.x + r.w);
       const top = near(sy, r.y), bottom = near(sy, r.y + r.h);
-      
-      console.log('useSelectionRect: 핸들 감지:', { left, right, top, bottom, pad });
-      
+
       if (top && left) {
-        console.log('useSelectionRect: nw 핸들 감지됨');
         return { where: "handle", handle: "nw" };
       }
       if (top && right) {
-        console.log('useSelectionRect: ne 핸들 감지됨');
         return { where: "handle", handle: "ne" };
       }
       if (bottom && right) {
-        console.log('useSelectionRect: se 핸들 감지됨');
         return { where: "handle", handle: "se" };
       }
       if (bottom && left) {
-        console.log('useSelectionRect: sw 핸들 감지됨');
         return { where: "handle", handle: "sw" };
       }
       if (top) {
-        console.log('useSelectionRect: n 핸들 감지됨');
         return { where: "handle", handle: "n" };
       }
       if (right) {
-        console.log('useSelectionRect: e 핸들 감지됨');
         return { where: "handle", handle: "e" };
       }
       if (bottom) {
-        console.log('useSelectionRect: s 핸들 감지됨');
         return { where: "handle", handle: "s" };
       }
       if (left) {
-        console.log('useSelectionRect: w 핸들 감지됨');
         return { where: "handle", handle: "w" };
       }
-      
-      console.log('useSelectionRect: 내부 영역 감지됨');
+
       return { where: "inside" };
     }
-    
-    console.log('useSelectionRect: 외부 영역 감지됨');
+
     return { where: "outside" };
   }, [rect]);
 
@@ -161,25 +147,20 @@ export function useSelectionRect(opts: UseSelectionRectOptions = {}) {
 
   // 드래그 시작
   const startDrag = useCallback((sx: number, sy: number) => {
-    console.log('useSelectionRect: startDrag 호출됨:', { sx, sy, rect, modeRef: modeRef.current });
-    
+
     const h = hit(sx, sy);
-    console.log('useSelectionRect: hit 결과:', h);
-    
+
     if (!rect || h.where === "outside") {
       // 새 그리기
-      console.log('useSelectionRect: 새 그리기 모드 설정');
       modeRef.current = { type: "draw", ox: sx, oy: sy };
       setRect({ x: sx, y: sy, w: 0, h: 0 });
       return;
     }
     if (h.where === "inside") {
-      console.log('useSelectionRect: 이동 모드 설정');
       modeRef.current = { type: "move", ox: sx, oy: sy, base: rect };
       return;
     }
     if (h.where === "handle") {
-      console.log('useSelectionRect: resize 모드 설정, handle:', h.handle);
       modeRef.current = { type: "resize", handle: h.handle!, ox: sx, oy: sy, base: rect };
       return;
     }
@@ -188,10 +169,8 @@ export function useSelectionRect(opts: UseSelectionRectOptions = {}) {
   // 드래그 이동
   const moveDrag = useCallback((sx: number, sy: number) => {
     const m = modeRef.current;
-    console.log('useSelectionRect: moveDrag 호출됨:', { sx, sy, mode: m });
-    
+
     if (m.type === "none") {
-      console.log('useSelectionRect: 모드가 none이므로 처리하지 않음');
       return;
     }
 
@@ -205,67 +184,49 @@ export function useSelectionRect(opts: UseSelectionRectOptions = {}) {
     };
 
     if (m.type === "draw") {
-      console.log('useSelectionRect: 그리기 모드 처리');
       const w = sx - m.ox, h = sy - m.oy;
       const r = squareIfShift(m.ox, m.oy, w, h);
-      console.log('useSelectionRect: 그리기 결과:', r);
       setRect(r);
       return;
     }
     if (m.type === "move") {
-      console.log('useSelectionRect: 이동 모드 처리');
       const dx = sx - m.ox, dy = sy - m.oy;
       const newRect = { x: m.base.x + dx, y: m.base.y + dy, w: m.base.w, h: m.base.h };
-      console.log('useSelectionRect: 이동 결과:', { 원본: m.base, 변경: newRect });
       setRect(newRect);
       return;
     }
     if (m.type === "resize") {
-      console.log('useSelectionRect: resize 모드 처리, handle:', m.handle);
       const dx = sx - m.ox, dy = sy - m.oy;
       let { x, y, w, h } = m.base;
-      
-      console.log('useSelectionRect: resize 시작 상태:', { x, y, w, h, dx, dy });
-      
+
       switch (m.handle) {
-        case "nw": 
-          console.log('useSelectionRect: nw 핸들 처리');
-          x += dx; y += dy; w -= dx; h -= dy; 
+        case "nw":
+          x += dx; y += dy; w -= dx; h -= dy;
           break;
-        case "n": 
-          console.log('useSelectionRect: n 핸들 처리');
-          y += dy; h -= dy; 
+        case "n":
+          y += dy; h -= dy;
           break;
-        case "ne": 
-          console.log('useSelectionRect: ne 핸들 처리');
-          y += dy; w += dx; h -= dy; 
+        case "ne":
+          y += dy; w += dx; h -= dy;
           break;
-        case "e": 
-          console.log('useSelectionRect: e 핸들 처리');
-          w += dx; 
+        case "e":
+          w += dx;
           break;
-        case "se": 
-          console.log('useSelectionRect: se 핸들 처리');
-          w += dx; h += dy; 
+        case "se":
+          w += dx; h += dy;
           break;
-        case "s": 
-          console.log('useSelectionRect: s 핸들 처리');
-          h += dy; 
+        case "s":
+          h += dy;
           break;
-        case "sw": 
-          console.log('useSelectionRect: sw 핸들 처리');
-          x += dx; w -= dx; h += dy; 
+        case "sw":
+          x += dx; w -= dx; h += dy;
           break;
-        case "w": 
-          console.log('useSelectionRect: w 핸들 처리');
-          x += dx; w -= dx; 
+        case "w":
+          x += dx; w -= dx;
           break;
       }
-      
-      console.log('useSelectionRect: resize 계산 후:', { x, y, w, h });
-      
+
       const r = squareIfShift(x, y, w, h);
-      console.log('useSelectionRect: resize 결과:', { 원본: m.base, 변경: r });
       setRect(r);
       return;
     }

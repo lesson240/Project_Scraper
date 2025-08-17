@@ -17,7 +17,7 @@ type Props = {
   onDetailPageSet: () => void;
   onUploadSet: () => void;
   onCopy: (text: string) => void;
-  onThumbClick?: (images: string[]) => void;
+  onThumbClick?: (images: string[], originGoodsCode: string) => void;
 };
 
 export default function ItemRow({
@@ -47,22 +47,22 @@ export default function ItemRow({
   const thumbArray = Object.values(item.thumb || {}).filter(Boolean);
 
   const handleRowClick = (e: React.MouseEvent, itemId: string) => {
-      const target = e.target as HTMLElement;
-          // 클릭 대상이 특정 요소(className)를 포함하면 handlerowclick 중지
-          if (
-              target.closest('.button-row') ||
-              target.closest('.copy-icon') ||   
-              target.closest('.goods-title') ||  
-              target.closest('.goods-memo') ||
-              target.closest('.thumb')         
-          ) {
-              return; // row 선택 동작 실행 안 함
-          }
-        onSelect();
-      };
+    const target = e.target as HTMLElement;
+    // 클릭 대상이 특정 요소(className)를 포함하면 handlerowclick 중지
+    if (
+      target.closest('.button-row') ||
+      target.closest('.copy-icon') ||
+      target.closest('.goods-title') ||
+      target.closest('.goods-memo') ||
+      target.closest('.thumb')
+    ) {
+      return; // row 선택 동작 실행 안 함
+    }
+    onSelect();
+  };
 
   return (
-    <tr 
+    <tr
       className={`table-row ${isSelected ? "selected-row" : ""}`}
       onClick={(e) => handleRowClick(e, item.origin_goods_code || "")}
     >
@@ -87,7 +87,8 @@ export default function ItemRow({
             className="thumb"
             onClick={() => {
               const thumbs = Object.values(item.thumb || {}).filter(Boolean);
-              onThumbClick?.(thumbs.length > 0 ? thumbs : [defaultThumb]); // ✅ 안전 처리
+              const originGoodsCode = item.origin_goods_code || "";
+              onThumbClick?.(thumbs.length > 0 ? thumbs : [defaultThumb], originGoodsCode);
             }}
           />
           <div className="goods-details">
@@ -98,36 +99,36 @@ export default function ItemRow({
                 placeholder="상품명을 입력해주세요"
                 buttonLabel="수정"
                 autoFocus={true}
-                onChange={() =>{}}
+                onChange={() => { }}
                 onButtonClick={(value) => {
                   onModifySet(item.origin_goods_code || "", "title", value);
                 }}
               />
-          </div>
-          <div className="goods-memo">
-            <TextInputWithButton
-              fieldName="memo"
-              value={item.memo}
-              placeholder="메모를 입력해주세요"
-              buttonLabel="수정"
-              onChange={() =>{}}
-              onButtonClick={(value) =>
-                onModifySet(item.origin_goods_code || "", "memo", value)
-              }
-            />
-          </div>
-          <div className="meta">
-            상품 그룹: {item.group_name} / 원본상품코드: {item.origin_goods_code}
-            <Tooltip text="코드복사">
-              <span
-                className="copy-icon"
-                onClick={() => onCopy(item.origin_goods_code || "")}
-              >
-                <CopyIcon />
-              </span>
-            </Tooltip>
-          </div>
-          <div className="meta">업로드 마켓: {item.market}</div>
+            </div>
+            <div className="goods-memo">
+              <TextInputWithButton
+                fieldName="memo"
+                value={item.memo}
+                placeholder="메모를 입력해주세요"
+                buttonLabel="수정"
+                onChange={() => { }}
+                onButtonClick={(value) =>
+                  onModifySet(item.origin_goods_code || "", "memo", value)
+                }
+              />
+            </div>
+            <div className="meta">
+              상품 그룹: {item.group_name} / 원본상품코드: {item.origin_goods_code}
+              <Tooltip text="코드복사">
+                <span
+                  className="copy-icon"
+                  onClick={() => onCopy(item.origin_goods_code || "")}
+                >
+                  <CopyIcon />
+                </span>
+              </Tooltip>
+            </div>
+            <div className="meta">업로드 마켓: {item.market}</div>
           </div>
         </div>
       </td>

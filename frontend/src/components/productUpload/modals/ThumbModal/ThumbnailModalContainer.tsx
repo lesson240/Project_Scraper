@@ -8,6 +8,7 @@ type Props = {
   onClose: () => void;
   defaultImages: string[];
   onSave: (images: string[]) => void;
+  origin_goods_code?: string;
 };
 
 export default function ThumbnailModalContainer({
@@ -15,6 +16,7 @@ export default function ThumbnailModalContainer({
   onClose,
   defaultImages,
   onSave,
+  origin_goods_code,
 }: Props) {
   const {
     thumbnails,
@@ -26,6 +28,11 @@ export default function ThumbnailModalContainer({
     saveImages,
     setThumbnails, // useThumbnailModal에서 setThumbnails 가져오기
   } = useThumbnailModal(defaultImages, onSave);
+
+  // origin_goods_code 디버깅
+  React.useEffect(() => {
+    // 디버깅 로그 제거
+  }, [origin_goods_code]);
 
   // ✅ updateThumbnail 함수 구현
   const updateThumbnail = useCallback((index: number, newImageUrl: string) => {
@@ -78,6 +85,7 @@ export default function ThumbnailModalContainer({
       saveImages={handleSave}
       updateThumbnail={updateThumbnail}
       updateThumbnails={updateThumbnails}
+      origin_goods_code={origin_goods_code}
     />
   );
 

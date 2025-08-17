@@ -19,6 +19,7 @@ from app.routers import (
     page_user_setting,
     user_account,
 )  # , user 사용자 서비스를 비활성화합니다.
+from app.imagehost.routers import imagehost_router  # ImageHost 라우터 추가
 from app.services.service_mongodb import mongodb_service
 from app.utils.util_router import get_versioned_prefix, include_routers
 
@@ -53,6 +54,7 @@ routers = [
     (page_product_upload.router, ["PageProductUpload"]),
     (page_user_setting.router, ["PageUserSetting"]),
     (user_account.router, ["UserAccount"]),
+    (imagehost_router, ["ImageHost"]),  # ImageHost 라우터 추가
 ]
 
 
@@ -92,6 +94,9 @@ app.mount(
 )
 app.mount(
     "/websockets", StaticFiles(directory=BASE_DIR / "app/websockets"), name="websockets"
+)
+app.mount(
+    "/uploads", StaticFiles(directory=BASE_DIR / "uploads"), name="uploads"
 )
 
 # 라우터 포함

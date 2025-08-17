@@ -26,4 +26,5 @@ export type ThumbnailModalProps = {
     saveImages: () => void;
     updateThumbnail?: (index: number, newImageUrl: string) => void;
     updateThumbnails?: (newThumbnails: string[]) => void;
+    origin_goods_code?: string;
 };

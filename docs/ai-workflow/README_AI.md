@@ -11,7 +11,7 @@
 - **주요 기술 스택**:
   - **Frontend**: React 19.1, TypeScript, Recoil, React Query, React Bootstrap, TailwindCSS
   - **Backend**: Python 3.11, FastAPI, WebSocket
-  - **DB**: MongoDB
+  - **DB**: MongoDB Atlas M5 (메타데이터), Cloudflare R2 (이미지 스토리지)
   - **패키지 매니저**: npm
   - **버전 관리**: Git / GitHub
 - **코드 스타일**: `.cursorrules`에 정의된 규칙 준수 (200줄 이상 파일 분리, 타입스크립트 엄격 모드 등)
@@ -66,18 +66,74 @@ backend/ (FastAPI 기반)
     ├── routers/          # API 라우터 모음
     ├── scrapers/         # 데이터 수집/크롤링 로직
     ├── services/         # 비즈니스 로직, 서비스 계층
+    ├── imagehost/        # ImageHost 서비스 (새로 추가)
+    │   ├── models/       # 이미지 관련 모델
+    │   │   ├── image_model.py      # 이미지 메타데이터 모델
+    │   │   └── storage_model.py    # 스토리지 설정 모델
+    │   ├── services/     # 이미지 처리 서비스
+    │   │   ├── storage_service.py  # Cloudflare R2 스토리지
+    │   │   ├── image_processor.py  # 이미지 최적화
+    │   │   └── cdn_service.py      # CDN 연동
+    │   └── routers/      # 이미지 관련 API
+    │       ├── image_upload.py     # 이미지 업로드 API
+    │       ├── image_management.py # 이미지 관리 API
+    │       └── image_delivery.py   # 이미지 전송 API
+    ├── config/            # 설정 파일
+    │   └── imagehost_config.py     # ImageHost 설정
     ├── tmp/               # 임시 저장소 (작업 중 데이터/파일)
     ├── utils/            # 공용 유틸 함수
     ├── websockets/       # WebSocket 관련 기능
     ├── __init__.py
     ├── config.py         # 환경 설정
     └── main.py           # FastAPI 엔트리 포인트
+```
 
 ---
 
-## 3. 폴더 구조 설계 원칙
+## 3. ImageHost 서버 아키텍처
 
-### 3-1. 전역 vs 로컬 폴더 구분
+### 3-1. 하이브리드 구조
+```
+MongoDB Atlas M5: 상품 데이터 + 이미지 메타데이터
+Cloudflare R2: 실제 이미지 파일 저장
+Cloudflare CDN: 글로벌 이미지 전송 최적화
+```
+
+### 3-2. 데이터 흐름
+```
+1. 이미지 편집 (프론트엔드)
+   ↓
+2. 이미지 업로드 (ImageHost API)
+   ↓
+3. Cloudflare R2 저장
+   ↓
+4. CDN URL 반환
+   ↓
+5. MongoDB에 메타데이터 저장
+   ↓
+6. 프론트엔드에서 CDN URL 사용
+```
+
+### 3-3. API 구조
+```
+POST /imagehost/upload              # 단일 이미지 업로드
+POST /imagehost/upload/batch        # 배치 이미지 업로드
+POST /imagehost/upload/from-base64 # Base64 이미지 업로드
+GET  /imagehost/health             # 서비스 상태 확인
+```
+
+### 3-4. 이미지 최적화 기능
+- **자동 포맷 변환**: JPEG/PNG → WebP 변환
+- **압축 최적화**: 품질 85% 기준 최적화
+- **썸네일 생성**: 150x150, 300x300, 600x600 자동 생성
+- **크기 제한**: 최대 1920x1080 제한
+- **메타데이터 제거**: EXIF 데이터 자동 제거
+
+---
+
+## 4. 폴더 구조 설계 원칙
+
+### 4-1. 전역 vs 로컬 폴더 구분
 - **전역 폴더** (`src/` 직하위): 프로젝트 전체에서 공통 사용
   - `hooks/`: 전역 커스텀 훅
   - `types/`: 전역 타입 정의
@@ -89,20 +145,20 @@ backend/ (FastAPI 기반)
   - `parts/`: 메인 UI 컴포넌트 (ThumbnailPanel, EditorMain 등)
   - `hooks/`, `types/`: 전역 레벨에서만 사용
 
-### 3-2. 폴더 명명 규칙
+### 4-2. 폴더 명명 규칙
 - **`lib/`**: hooks와 types를 통합하여 관리 (로컬 레벨)
 - **`components/`**: 로직이 포함된 컴포넌트 (ThumbnailTransformSync 등)
 - **`parts/`**: 메인 UI 렌더링 컴포넌트 (ThumbnailPanel, EditorMain 등)
 - **`hooks/`, `types/`**: 전역 레벨에서만 사용
 
-### 3-3. 파일 분리 기준
+### 4-3. 파일 분리 기준
 - **200줄 이상**: 기능 단위로 파일 분리
 - **재사용 가능 로직**: hooks/util로 이동
 - **컴포넌트별 로직**: 해당 컴포넌트의 lib 폴더에 배치
 
 ---
 
-## 4. 빌드 & 실행
+## 5. 빌드 & 실행
 
 ### Backend
 ```bash
@@ -129,8 +185,8 @@ npm run preview
 
 ---
 
-## 5. 프롬프트 템플릿
-### 5-1. 컴포넌트 생성
+## 6. 프롬프트 템플릿
+### 6-1. 컴포넌트 생성
 [컨텍스트]
 - React 19 + TypeScript + Vite + Recoil
 - CSS: SCSS 모듈(/styles)
@@ -154,7 +210,7 @@ npm run preview
 - 인라인 스타일
 - 불필요한 외부 라이브러리
 
-### 5-2. 코드 리뷰
+### 6-2. 코드 리뷰
 [컨텍스트]
 - 동일 프로젝트
 - eslint/prettier 규칙 준수
@@ -172,7 +228,7 @@ ItemRow.tsx 리팩토링
 
 ---
 
-## 6. 코드 작성& 리뷰 규칙
+## 7. 코드 작성& 리뷰 규칙
 1. 코드 스타일
 - eslint / prettier 자동 포맷 유지
 - 함수형 컴포넌트, any 타입 금지
@@ -189,4 +245,37 @@ ItemRow.tsx 리팩토링
 - Frontend: npm run frontend:dev
 5. AI 접근 제한
 - 보안 키/민감 데이터는 프롬프트에 절대 포함 금지
+
+---
+
+## 8. ImageHost 서버 설정
+
+### 8-1. 환경변수 설정
+```bash
+# .env 파일에 추가
+CLOUDFLARE_R2_ACCESS_KEY_ID=your_access_key_id
+CLOUDFLARE_R2_SECRET_ACCESS_KEY=your_secret_access_key
+CLOUDFLARE_R2_BUCKET_NAME=project-scraper-images
+CLOUDFLARE_R2_ACCOUNT_ID=your_account_id
+CDN_DOMAIN=your-cdn-domain.com
+```
+
+### 8-2. Cloudflare R2 설정
+1. Cloudflare 계정 생성
+2. R2 Object Storage 활성화
+3. API 토큰 생성 (R2 권한 필요)
+4. 버킷 생성 및 설정
+
+### 8-3. 비용 구조
+```
+MongoDB Atlas M5: 월 $32 (메타데이터)
+Cloudflare R2: 월 $1.50 (100GB 이미지)
+총 비용: 월 $33.50 (기존 대비 41% 절약)
+```
+
+### 8-4. 성능 최적화
+- **이미지 압축**: WebP 포맷 자동 변환
+- **CDN 캐싱**: 글로벌 엣지 서버 캐싱
+- **지연 로딩**: 필요 시에만 이미지 로드
+- **썸네일 생성**: 다양한 크기 자동 생성
 

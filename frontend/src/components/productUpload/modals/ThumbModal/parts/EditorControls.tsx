@@ -25,11 +25,9 @@ type Props = {
   onZoomOut?: () => void;
   onFillScreen?: () => void;
   onToggleSquareLock?: () => void;
-  onToggleBrush?: () => void;
   onToggleEraser?: () => void;
   onToggleLasso?: () => void;
   isSquareLocked?: boolean;
-  isBrushActive?: boolean;
   isEraserActive?: boolean;
   isLassoActive?: boolean;
   onAfterAction?: () => void;
@@ -46,19 +44,12 @@ const call = (fn?: () => void, after?: () => void) => () => {
 
 export default function EditorControls(p: Props) {
   const handleButtonClick = (callback?: () => void) => {
-    console.log('EditorControls: 버튼 클릭됨, callback:', callback);
-    
     if (callback) {
-      console.log('EditorControls: callback 실행 시작');
       callback();
-      console.log('EditorControls: callback 실행 완료');
-      
+
       if (p.onAfterAction) {
-        console.log('EditorControls: onAfterAction 실행');
         p.onAfterAction();
       }
-    } else {
-      console.log('EditorControls: callback이 undefined');
     }
   };
 
@@ -69,7 +60,6 @@ export default function EditorControls(p: Props) {
         <button onClick={() => handleButtonClick(p.onMoveUp)}><img src={moveUp} /></button>
         <button onClick={() => handleButtonClick(p.onRotateRight)}><img src={rightTurn} /></button>
         <button onClick={() => handleButtonClick(p.onFillScreen)}><img src={fillTheScreen} /></button>
-        <button onClick={() => handleButtonClick(p.onToggleBrush)}>🖌️</button> {/* Brush button */}
       </div>
       <div className="shapes-wrapper">
         <button onClick={() => handleButtonClick(p.onMoveLeft)}><img src={moveLeft} /></button>
@@ -78,8 +68,8 @@ export default function EditorControls(p: Props) {
           className={p.isSquareLocked ? 'square-locked' : ''}
         ><img src={square} /></button>
         <button onClick={() => handleButtonClick(p.onMoveRight)}><img src={moveRight} /></button>
-        <button onClick={() => handleButtonClick(p.onToggleEraser)}>🧽</button> {/* Eraser button */}
-        <button onClick={() => handleButtonClick(p.onToggleLasso)}>🪢</button> {/* Lasso button */}
+        <button onClick={() => handleButtonClick()}>🧽</button> {/* Eraser button - 기능 연결 해제 */}
+        <button onClick={() => handleButtonClick()}>🪢</button> {/* Lasso button - 기능 연결 해제 */}
       </div>
       <div className="shapes-wrapper">
         <button onClick={() => handleButtonClick(p.onFlipH)}><img src={flipHorizontally} /></button>

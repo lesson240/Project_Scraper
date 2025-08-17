@@ -6,7 +6,7 @@ import { Item } from "@/types/product";
 type Props = {
   items?: Item[];
   pageSize: string;
-  onThumbClick?: (images: string[]) => void;
+  onThumbClick?: (images: string[], originGoodsCode: string) => void;
   onAttributeSet: () => void;
   onOptionSet: () => void;
   onDetailPageSet: () => void;

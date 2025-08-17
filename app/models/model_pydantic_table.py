@@ -81,6 +81,12 @@ class GoodsMemoUpdateModel(BaseModel):
     memo: str
 
 
+# 썸네일 업데이트 전용 모델
+class GoodsThumbUpdateModel(BaseModel):
+    origin_goods_code: str
+    thumbnail_images: List[str]
+
+
 # # 작성중
 # class InputGoodsManagementTableModel(Model):
 #     market: Optional[str] = Field(None)

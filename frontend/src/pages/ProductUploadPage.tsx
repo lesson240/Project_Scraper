@@ -13,6 +13,7 @@ export default function ProductUploadPage() {
   // 모달 상태
   const [modalOpen, setModalOpen] = useState(false);
   const [currentThumbs, setCurrentThumbs] = useState<string[]>([]);
+  const [currentOriginGoodsCode, setCurrentOriginGoodsCode] = useState<string>("");
 
   const pageSizeNumber = parseInt(pageSize.replace("개", ""), 10);
   const currentItems = items.slice(0, pageSizeNumber);
@@ -30,14 +31,20 @@ export default function ProductUploadPage() {
     }
   };
 
-    /** 썸네일 클릭 시 모달 열기 */
-    const handleThumbClick = (images: string[]) => {
+  /** 썸네일 클릭 시 모달 열기 */
+  const handleThumbClick = (images: string[], originGoodsCode: string) => {
+    if (!originGoodsCode) {
+      console.error('ProductUploadPage: originGoodsCode가 비어있음');
+      return;
+    }
+
     setCurrentThumbs([...images]);
+    setCurrentOriginGoodsCode(originGoodsCode);
     setModalOpen(false);          // 모달 닫았다가
     setTimeout(() => {            // 다음 tick에 열어 초기화 강제
-        setModalOpen(true);
+      setModalOpen(true);
     }, 0);
-    };
+  };
 
   /** 상품명/메모 수정 */
   const onModifySet = async (
@@ -71,10 +78,10 @@ export default function ProductUploadPage() {
         items={items}
         pageSize={pageSize}
         onThumbClick={handleThumbClick} // ✅ 썸네일 클릭 시 모달 열기
-        onAttributeSet={() => {}}
-        onOptionSet={() => {}}
-        onDetailPageSet={() => {}}
-        onUploadSet={() => {}}
+        onAttributeSet={() => { }}
+        onOptionSet={() => { }}
+        onDetailPageSet={() => { }}
+        onUploadSet={() => { }}
         onModifySet={onModifySet}
       />
 
@@ -84,6 +91,7 @@ export default function ProductUploadPage() {
         onClose={() => setModalOpen(false)}
         defaultImages={currentThumbs}
         onSave={(imgs) => setCurrentThumbs(imgs)}
+        origin_goods_code={currentOriginGoodsCode}
       />
     </div>
   );

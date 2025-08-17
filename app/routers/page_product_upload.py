@@ -21,6 +21,7 @@ from app.models.model_pydantic_table import (
     GoodsPriceUpdateModel,
     GoodsNameUpdateModel,
     GoodsMemoUpdateModel,
+    GoodsThumbUpdateModel
 )
 from app.models.model_odmantic_oliveyoung import OriginGoodsDetailModel
 from app.models.model_odmantic_table import InputGoodsManagementTableModel
@@ -32,8 +33,9 @@ from app.utils.util_router import set_version
 from fastapi import APIRouter, Request, HTTPException
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Any
 import os
+from datetime import datetime
 
 # 파일명 자동 추출
 file_name = os.path.basename(__file__)
@@ -310,10 +312,34 @@ async def save_goods_detail():
 
 
 @router.post("/save-goods-thumb", response_class=JSONResponse)
-async def save_goods_thumb():
-    return {"message": "썸네일 설정 API - 구현 예정"}
+async def save_goods_thumb(data: List[GoodsThumbUpdateModel]):
+    logger.info(f"save_goods_thumb 호출됨: {data}")
+    try:
+        for item in data:
+            logger.info(f"처리 중인 아이템: {item}")
+            query = {"origin_goods_code": item.origin_goods_code}
+            update_data = {
+                "thumbnail_images": item.thumbnail_images,
+            }
+            logger.info(f"MongoDB 업데이트 시도: query={query}, update_data={update_data}")
+
+            result = await mongodb_service.engine.get_collection(
+                InputGoodsManagementTableModel
+            ).update_one(query, {"$set": update_data}, upsert=True)
+
+            logger.info(f"MongoDB 업데이트 결과: {result}")
+
+        return {"message": "썸네일이 성공적으로 업데이트되었습니다."}
+    except Exception as e:
+        logger.error(f"썸네일 저장 중 오류 발생: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"썸네일 저장 오류: {str(e)}")
 
 
 @router.post("/save-goods-upload", response_class=JSONResponse)
 async def save_goods_upload():
     return {"message": "업로드 설정 API - 구현 예정"}
+
+
+# 기존 upload-image 엔드포인트 제거됨
+# 새로운 ImageHost 서버 사용: /imagehost/upload
+# 로컬 파일 저장 대신 Cloudflare R2에 직접 업로드

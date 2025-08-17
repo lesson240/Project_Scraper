@@ -4,3 +4,5 @@ dcker-compose.yml
 node_modules
 .venv/
 venv/
+# Uploads directory
+uploads/

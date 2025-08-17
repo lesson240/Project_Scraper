@@ -58,14 +58,6 @@ export default class ViewerCropHandler {
             }
         }
 
-        // 디버깅을 위한 로그 추가
-        console.log('ViewerCropHandler - 계산된 크롭 좌표:', {
-            originalCrop: crop,
-            imageSize: { width: iw, height: ih },
-            calculatedCrop: { sx, sy, sw, sh },
-            isOutOfBounds: sx < 0 || sy < 0 || sx + sw > iw || sy + sh > ih
-        });
-
         // 최종 crop 좌표 반환
         return { sx, sy, sw, sh };
     }

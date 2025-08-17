@@ -14,66 +14,42 @@ type Props = {
 };
 
 export default function EditorSelection({ stageRef, selection, transform }: Props) {
-    // 선택박스 스타일 계산 (화면 좌표 → 스테이지 내부 좌표)
-    const selStyle = useMemo(() => {
+    // 선택 상자 스타일 계산
+    const selStyle = React.useMemo(() => {
         if (!selection.rect || !stageRef.current) {
-            console.log('EditorSelection: selection.rect 또는 stageRef가 없음', {
-                hasRect: !!selection.rect,
-                hasStageRef: !!stageRef.current
-            });
-            return undefined;
+            return null;
         }
 
-        const st = stageRef.current.getBoundingClientRect();
-        const r = norm(selection.rect);
+        const stageRect = stageRef.current.getBoundingClientRect();
+        const left = selection.rect.x - stageRect.left;
+        const top = selection.rect.y - stageRect.top;
+        const width = selection.rect.w;
+        const height = selection.rect.h;
 
-        const computedStyle = {
-            left: `${r.x - st.left}px`,
-            top: `${r.y - st.top}px`,
-            width: `${r.w}px`,
-            height: `${r.h}px`,
+        return {
+            left: `${left}px`,
+            top: `${top}px`,
+            width: `${width}px`,
+            height: `${height}px`,
         };
-
-        console.log('EditorSelection: 선택 상자 스타일 계산', {
-            originalRect: selection.rect,
-            normalizedRect: r,
-            stageRect: st,
-            computedStyle
-        });
-
-        return computedStyle as React.CSSProperties;
     }, [selection.rect, stageRef]);
 
+    // 선택 상자가 없으면 렌더링하지 않음
     if (!selection.rect) {
-        console.log('EditorSelection: selection.rect가 null이므로 렌더링하지 않음');
         return null;
     }
 
-    console.log('EditorSelection: 선택 상자 렌더링', { rect: selection.rect, style: selStyle });
-    
-    // 핸들 상태 디버깅
-    console.log('EditorSelection: 핸들 요소들 확인:', {
-      hasSelectLayer: !!document.querySelector('.select-layer'),
-      hasSelectBox: !!document.querySelector('.select-box'),
-      hasSelectGrid: !!document.querySelector('.select-grid'),
-      handles: document.querySelectorAll('.handle'),
-      handleCount: document.querySelectorAll('.handle').length,
-      handleClasses: Array.from(document.querySelectorAll('.handle')).map(h => h.className)
-    });
-
     return (
-        <div className="select-layer" data-selection="layer">
-            <div className="select-box" style={selStyle} data-selection="box">
-                <div className="select-grid" data-selection="grid" />
-                <div className="handle nw" data-selection="handle" data-handle="nw" />
-                <div className="handle n" data-selection="handle" data-handle="n" />
-                <div className="handle ne" data-selection="handle" data-handle="ne" />
-                <div className="handle e" data-selection="handle" data-handle="e" />
-                <div className="handle se" data-selection="handle" data-handle="se" />
-                <div className="handle s" data-selection="handle" data-handle="s" />
-                <div className="handle sw" data-selection="handle" data-handle="sw" />
-                <div className="handle w" data-selection="handle" data-handle="w" />
-            </div>
+        <div className="select-box" style={selStyle}>
+            {/* 핸들 요소들 */}
+            <div className="handle nw" data-handle="nw" data-selection="handle"></div>
+            <div className="handle n" data-handle="n" data-selection="handle"></div>
+            <div className="handle ne" data-handle="ne" data-selection="handle"></div>
+            <div className="handle e" data-handle="e" data-selection="handle"></div>
+            <div className="handle se" data-handle="se" data-selection="handle"></div>
+            <div className="handle s" data-handle="s" data-selection="handle"></div>
+            <div className="handle sw" data-handle="sw" data-selection="handle"></div>
+            <div className="handle w" data-handle="w" data-selection="handle"></div>
         </div>
     );
 }

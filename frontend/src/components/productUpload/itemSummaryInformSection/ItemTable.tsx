@@ -10,7 +10,7 @@ type Props = {
   currentPage: number;
   pageSizeNumber: number;
   selectedItems: string[];
-  onThumbClick?: (images: string[]) => void;
+  onThumbClick?: (images: string[], originGoodsCode: string) => void;
   onSelectAll: (checked: boolean) => void;
   onSelectItem: (id: string) => void;
   onModifySet: (id: string, field: "title" | "memo", value: string) => void;
