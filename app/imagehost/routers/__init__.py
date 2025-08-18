@@ -8,8 +8,8 @@ from fastapi import APIRouter
 
 imagehost_router = APIRouter()
 
-# 각 라우터를 메인 라우터에 포함
-imagehost_router.include_router(upload_router, prefix="/upload", tags=["Image Upload"])
+# 각 라우터를 메인 라우터에 포함 (접두사 제거하여 직접 경로 사용)
+imagehost_router.include_router(upload_router, tags=["Image Upload"])
 imagehost_router.include_router(management_router, prefix="/management", tags=["Image Management"])
 imagehost_router.include_router(delivery_router, prefix="/delivery", tags=["Image Delivery"])
 

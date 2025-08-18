@@ -1,7 +1,7 @@
 # ImageHost 설정 파일
 import os
 from typing import Optional
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 
 class ImageHostSettings(BaseSettings):
     """ImageHost 설정"""

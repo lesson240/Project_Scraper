@@ -5,6 +5,7 @@ import DashboardPage from "./pages/DashboardPage";
 // import ProductUploadPage from "@/pages/ProductUploadPage_old";
 import ProductCollect from "@/pages/ProductCollectPage";
 import ProductUpload from "@/pages/ProductUploadPage";
+import AdminRouter from "./pages/Admin/AdminRouter";
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
         {/* <Route path="/upload_old" element={<ProductUploadPage />} /> */}
         <Route path="/collect" element={<ProductCollect />} />
         <Route path="/upload" element={<ProductUpload />} />
+        <Route path="/admin/*" element={<AdminRouter />} />
         {/* 기타 라우트 */}
       </Routes>
     </Layout>

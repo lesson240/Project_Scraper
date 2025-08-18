@@ -30,7 +30,6 @@
   align-items: center;
   padding: 16px 20px;
   border-bottom: 1px;
-  background-color: #fafafa;
   font-size: 0.8rem;
   font-weight: bold;
 }
@@ -41,7 +40,6 @@
   font-size: 20px;
   cursor: pointer;
   color: #495057;
-
 }
 
 .modal-close:hover {

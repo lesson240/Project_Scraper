@@ -23,10 +23,20 @@ export default function ThumbnailItem({ src, isActive, onClick, onRemove }: Prop
       <img src={src} alt="thumbnail" />
       <button
         className="remove-btn"
+        type="button"
+        draggable={false}
         onClick={(e) => {
           e.stopPropagation();
           onRemove();
         }}
+        onMouseDown={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+        }}
+        onDragStart={(e) => {
+          e.preventDefault();
+        }}
+        aria-label="remove thumbnail"
       >
         ×
       </button>

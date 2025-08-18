@@ -5,6 +5,7 @@ import ItemSummaryContainer from "@/components/productUpload/itemSummaryInformSe
 import ThumbnailModalContainer from "@/components/productUpload/modals/ThumbModal/ThumbnailModalContainer";
 import "@/styles/section.css";
 import axios from "@/lib/axios";
+import apiConfig from "@/config/api";
 
 export default function ProductUploadPage() {
   const [items, setItems] = useState<any[]>([]);
@@ -38,7 +39,18 @@ export default function ProductUploadPage() {
       return;
     }
 
-    setCurrentThumbs([...images]);
+    const normalize = (url: string) => {
+      if (!url) return url;
+      // 절대 경로(로컬 정적) → baseUrl 프리픽스
+      if (url.startsWith('/')) return `${apiConfig.baseUrl}${url}`;
+      // 과거 8001 호스트 참조를 8000으로 정규화
+      const fixed = url.replace(/http:\/\/(localhost|127\.0\.0\.1):8001/g, apiConfig.baseUrl);
+      // 잘못된 플레이스홀더 파일명 제거
+      if (fixed.includes('unknown_image')) return '';
+      return fixed;
+    };
+
+    setCurrentThumbs(images.map(normalize).filter(Boolean));
     setCurrentOriginGoodsCode(originGoodsCode);
     setModalOpen(false);          // 모달 닫았다가
     setTimeout(() => {            // 다음 tick에 열어 초기화 강제

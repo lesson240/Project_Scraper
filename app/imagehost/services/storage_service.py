@@ -2,7 +2,9 @@
 import boto3
 import hashlib
 import uuid
+import os
 from typing import Optional, Dict, Any, BinaryIO
+import mimetypes
 from datetime import datetime, timedelta
 from botocore.exceptions import ClientError, NoCredentialsError
 from fastapi import HTTPException, UploadFile
@@ -28,6 +30,12 @@ class CloudflareR2Service:
     def _create_client(self):
         """boto3 클라이언트 생성"""
         try:
+            # 테스트 모드에서는 None 반환
+            # 자격증명 미설정 시 에러로 처리하여 즉시 알림
+            if not self.config.access_key_id or not self.config.secret_access_key:
+                logger.error("Cloudflare R2 자격증명이 설정되지 않았습니다")
+                raise HTTPException(status_code=500, detail="Cloudflare R2 자격증명이 누락되었습니다")
+                
             session = boto3.Session(
                 aws_access_key_id=self.config.access_key_id,
                 aws_secret_access_key=self.config.secret_access_key,
@@ -36,7 +44,7 @@ class CloudflareR2Service:
             
             client = session.client(
                 's3',
-                endpoint_url=self.config.endpoint_url or "https://<account_id>.r2.cloudflarestorage.com",
+                endpoint_url=self.config.endpoint_url or f"https://{os.getenv('CLOUDFLARE_R2_ACCOUNT_ID','')}.r2.cloudflarestorage.com",
                 aws_access_key_id=self.config.access_key_id,
                 aws_secret_access_key=self.config.secret_access_key,
                 config=boto3.session.Config(
@@ -51,8 +59,42 @@ class CloudflareR2Service:
             logger.error(f"Cloudflare R2 클라이언트 생성 실패: {str(e)}")
             raise HTTPException(status_code=500, detail="스토리지 서비스 초기화 실패")
     
+    async def upload_image(self, content: bytes, filename: str, content_type: Optional[str] = None) -> str:
+        """바이트 데이터를 Cloudflare R2에 업로드 (로컬 백업 제거)"""
+        try:
+            if self.client is None:
+                raise HTTPException(status_code=500, detail="Cloudflare R2 클라이언트가 초기화되지 않았습니다")
+            
+            # Content-Type 유추
+            guessed_type, _ = mimetypes.guess_type(filename)
+            ct = content_type or guessed_type or 'application/octet-stream'
+
+            # Cloudflare R2에 업로드
+            self.client.put_object(
+                Bucket=self.bucket_name,
+                Key=filename,
+                Body=content,
+                ContentType=ct
+            )
+            
+            # Cloudflare R2 공개 URL 생성 (환경변수 우선)
+            public_base = os.getenv('CLOUDFLARE_R2_PUBLIC_URL') or os.getenv('CLOUDFLARE_R2_PUBLIC_BASE_URL')
+            if public_base:
+                cloudflare_url = f"{public_base.rstrip('/')}/{filename}"
+            else:
+                account_id = os.getenv('CLOUDFLARE_R2_ACCOUNT_ID', '')
+                # 퍼블릭 버킷이 아닌 경우에는 이 URL이 공개 접근이 되지 않을 수 있음
+                cloudflare_url = f"https://{account_id}.r2.cloudflarestorage.com/{self.bucket_name}/{filename}"
+            
+            logger.info(f"Cloudflare R2 업로드 성공: {filename} -> {cloudflare_url}")
+            return cloudflare_url
+            
+        except Exception as e:
+            logger.error(f"Cloudflare R2 업로드 실패: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Cloudflare R2 업로드 실패: {str(e)}")
+
     async def upload_file(self, file: UploadFile, metadata: Dict[str, Any] = None) -> ImageMetadata:
-        """파일 업로드"""
+        """파일 업로드 (로컬 백업 제거)"""
         try:
             # 파일 검증
             self._validate_file(file)
@@ -68,8 +110,12 @@ class CloudflareR2Service:
             
             # 체크섬 계산
             checksum = hashlib.md5(content).hexdigest()
-            
-            # Cloudflare R2에 업로드
+
+            if self.client is None:
+                logger.error("Cloudflare R2 클라이언트가 초기화되지 않았습니다")
+                raise HTTPException(status_code=500, detail="Cloudflare R2 클라이언트가 초기화되지 않았습니다")
+
+            # 실제 Cloudflare R2 업로드
             self.client.put_object(
                 Bucket=self.bucket_name,
                 Key=cloudflare_id,
@@ -88,7 +134,13 @@ class CloudflareR2Service:
                 id=file_id,
                 filename=file.filename,
                 cloudflare_id=cloudflare_id,
-                url=f"https://{self.bucket_name}.r2.cloudflarestorage.com/{cloudflare_id}",
+                url=(
+                    (
+                        (os.getenv('CLOUDFLARE_R2_PUBLIC_URL') or os.getenv('CLOUDFLARE_R2_PUBLIC_BASE_URL')).rstrip('/')
+                        + f"/{cloudflare_id}"
+                    ) if (os.getenv('CLOUDFLARE_R2_PUBLIC_URL') or os.getenv('CLOUDFLARE_R2_PUBLIC_BASE_URL'))
+                    else f"https://{os.getenv('CLOUDFLARE_R2_ACCOUNT_ID','')}.r2.cloudflarestorage.com/{self.bucket_name}/{cloudflare_id}"
+                ),
                 size=file_size,
                 format=self._detect_image_format(file.content_type),
                 content_type=file.content_type,

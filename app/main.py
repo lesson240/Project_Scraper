@@ -95,9 +95,10 @@ app.mount(
 app.mount(
     "/websockets", StaticFiles(directory=BASE_DIR / "app/websockets"), name="websockets"
 )
-app.mount(
-    "/uploads", StaticFiles(directory=BASE_DIR / "uploads"), name="uploads"
-)
+# 업로드 정적 경로는 Cloudflare R2를 사용하므로 비활성화
+# app.mount(
+#     "/uploads", StaticFiles(directory=BASE_DIR / "uploads"), name="uploads"
+# )
 
 # 라우터 포함
 include_routers(app, routers, prefix=prefix)

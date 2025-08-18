@@ -60,7 +60,8 @@ export const useThumbnailPanel = (
             }
 
             const img = new Image();
-            img.crossOrigin = 'anonymous';
+            // 외부 호스팅 이미지의 캔버스 오염을 방지하기 위해 fetch→blob→objectURL 경로 사용
+            // 우선 onload 핸들러 준비
             img.onload = () => {
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
@@ -102,10 +103,10 @@ export const useThumbnailPanel = (
                 const actualSy = Math.max(0, sy);
                 const actualSw = Math.min(sw, img.naturalWidth - actualSx);
                 const actualSh = Math.min(sh, img.naturalHeight - actualSy);
-                
+
                 if (actualSw > 0 && actualSh > 0) {
-                    ctx.drawImage(img, actualSx, actualSy, actualSw, actualSh, 
-                                  Math.max(0, -sx), Math.max(0, -sy), actualSw, actualSh);
+                    ctx.drawImage(img, actualSx, actualSy, actualSw, actualSh,
+                        Math.max(0, -sx), Math.max(0, -sy), actualSw, actualSh);
                 }
 
                 ctx.restore();
@@ -134,7 +135,29 @@ export const useThumbnailPanel = (
                 console.error('이미지 로드 실패:', error);
                 setTimeout(() => { isPanelApplyingRef.current = false; }, 500);
             };
-            img.src = currentImage;
+
+            // 안전 로드: same-origin이 아니면 fetch로 blob 후 objectURL 로드
+            try {
+                const isCross = /^https?:\/\//.test(currentImage) && !currentImage.includes('localhost:');
+                if (isCross) {
+                    fetch(currentImage, { mode: 'cors' })
+                        .then(res => res.blob())
+                        .then(blob => {
+                            const url = URL.createObjectURL(blob);
+                            img.src = url;
+                        })
+                        .catch(err => {
+                            console.error('이미지 fetch 실패:', err);
+                            setTimeout(() => { isPanelApplyingRef.current = false; }, 500);
+                        });
+                } else {
+                    img.crossOrigin = 'anonymous';
+                    img.src = currentImage;
+                }
+            } catch (e) {
+                console.error('이미지 안전 로드 실패:', e);
+                setTimeout(() => { isPanelApplyingRef.current = false; }, 500);
+            }
         } catch (error) {
             console.error('패널 적용 중 오류 발생:', error);
             setTimeout(() => { isPanelApplyingRef.current = false; }, 500);
