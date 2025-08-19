@@ -12,6 +12,7 @@ type Props = {
   onDetailPageSet: () => void;
   onUploadSet: () => void;
   onModifySet?: (id: string, field: "title" | "memo", value: string) => void;
+  onSelectedItemsChange?: (selectedItems: string[]) => void; // 선택된 상품 목록 변경 시 호출
 };
 
 export default function ItemSummaryInformSection({
@@ -23,6 +24,7 @@ export default function ItemSummaryInformSection({
   onDetailPageSet,
   onUploadSet,
   onModifySet,
+  onSelectedItemsChange,
 }: Props) {
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -38,21 +40,25 @@ export default function ItemSummaryInformSection({
       .slice((currentPage - 1) * pageSizeNumber, currentPage * pageSizeNumber)
       .map((item) => item.origin_goods_code || "");
     if (isChecked) {
-      setSelectedItems((prev) => [
-        ...prev,
-        ...currentPageIds.filter((id) => !prev.includes(id)),
-      ]);
+      const newSelectedItems = [
+        ...selectedItems,
+        ...currentPageIds.filter((id) => !selectedItems.includes(id)),
+      ];
+      setSelectedItems(newSelectedItems);
+      onSelectedItemsChange?.(newSelectedItems);
     } else {
-      setSelectedItems((prev) =>
-        prev.filter((id) => !currentPageIds.includes(id))
-      );
+      const newSelectedItems = selectedItems.filter((id) => !currentPageIds.includes(id));
+      setSelectedItems(newSelectedItems);
+      onSelectedItemsChange?.(newSelectedItems);
     }
   };
 
   const handleSelectItem = (id: string) => {
-    setSelectedItems((prev) =>
-      prev.includes(id) ? prev.filter((pid) => pid !== id) : [...prev, id]
-    );
+    const newSelectedItems = selectedItems.includes(id)
+      ? selectedItems.filter((pid) => pid !== id)
+      : [...selectedItems, id];
+    setSelectedItems(newSelectedItems);
+    onSelectedItemsChange?.(newSelectedItems);
   };
 
 

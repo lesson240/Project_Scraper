@@ -18,6 +18,7 @@ type Props = {
     setPageSize: (size: string) => void;
     currentCount: number;
     totalCount: number;
+    selectedProductsCount?: number; // 선택된 상품 개수
 };
 
 export default function FunctionButtons({
@@ -31,6 +32,7 @@ export default function FunctionButtons({
     setPageSize,
     currentCount,
     totalCount,
+    selectedProductsCount = 0,
 }: Props) {
 
     const [layout, setLayout] = useState<"grid" | "list">("grid");
@@ -46,7 +48,14 @@ export default function FunctionButtons({
                         {`조회 상품: ${currentCount}개 (총 ${totalCount}개)`}
                     </span>
                 </div>
-                <Button variant="secondary" onClick={onPriceSet}>가격 설정</Button>
+                                <Button 
+                    variant="secondary" 
+                    onClick={onPriceSet}
+                    disabled={selectedProductsCount === 0}
+                    title={selectedProductsCount === 0 ? "상품을 선택해주세요" : "가격 설정"}
+                >
+                    가격 설정
+                </Button>
                 <Button variant="secondary" onClick={onTagSet}>태그 설정</Button>
                 <Button variant="secondary" onClick={onDetailPageSet}>상세페이지 설정</Button>
                 <Button variant="secondary" onClick={onGoodsNameSet}>상품명 설정</Button>
@@ -62,14 +71,14 @@ export default function FunctionButtons({
                                 <rect data-name="사각형 3883" width="20" height="2" rx="1" transform="translate(1613 585)" fill="#a7b0c7"></rect>
                                 <rect data-name="사각형 3884" width="20" height="2" rx="1" transform="translate(1613 592)" fill="#a7b0c7"></rect>
                             </g>
-                                <path data-name="사각형 3885" fill="none" d="M0 0h30v30H0z"></path>
+                            <path data-name="사각형 3885" fill="none" d="M0 0h30v30H0z"></path>
                         </svg>
                     </button>
                     <button
                         className={`toggle-button-right ${!isGrid ? "active" : ""}`}
                         onClick={() => setLayout("list")}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">
-                        <path data-name="사각형 3887" fill="none" d="M0 0h30v30H0z"></path>
+                            <path data-name="사각형 3887" fill="none" d="M0 0h30v30H0z"></path>
                             <g data-name="그룹 11039" transform="translate(-1669 -570.303)">
                                 <rect data-name="사각형 3888" width="11" height="2" rx="1" transform="translate(1683 580)" fill="#a7b0c7"></rect>
                                 <rect data-name="사각형 3893" width="11" height="2" rx="1" transform="translate(1683 589)" fill="#a7b0c7"></rect>
@@ -81,29 +90,29 @@ export default function FunctionButtons({
                 </div>
                 <div className="section-row">
                     <div className="combo-wrapper">
-                        <svg xmlns="http://www.w3.org/2000/svg" 
-                        width="30" height="30" viewBox="0 0 30 30">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                            width="30" height="30" viewBox="0 0 30 30">
                             <g data-name="그룹 10907">
-                                <path data-name="패스 10510" 
-                                d="M5.585 0H2.021A1.959 1.959 0 0 0 0 2.124v3.358a1.957 1.957 0 0 0 2.021 2.124h3.564a1.957 1.957 0 0 0 2.021-2.124V2.124A1.957 1.957 0 0 0 5.585 0z" 
-                                transform="translate(6 6)" 
-                                stroke="#a7b0c7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2px" 
-                                fillRule="evenodd" fill="none"></path>
-                                <path data-name="패스 10513" 
-                                d="M5.585 0H2.021A1.959 1.959 0 0 0 0 2.124v3.358a1.957 1.957 0 0 0 2.021 2.124h3.564a1.957 1.957 0 0 0 2.021-2.124V2.124A1.957 1.957 0 0 0 5.585 0z" 
-                                transform="translate(6 16.394)" 
-                                stroke="#a7b0c7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2px" 
-                                fillRule="evenodd" fill="none"></path>
-                                <path data-name="패스 10511" d="M5.585 0H2.021A1.959 1.959 0 0 0 0 2.124v3.358a1.957 1.957 0 0 0 2.021 2.124h3.564a1.957 1.957 0 0 0 2.021-2.124V2.124A1.957 1.957 0 0 0 5.585 0z" 
-                                transform="translate(16.394 6)" 
-                                stroke="#a7b0c7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2px" 
-                                fillRule="evenodd" fill="none"></path>
-                                <path data-name="패스 10512" 
-                                d="M5.585 0H2.021A1.959 1.959 0 0 0 0 2.124v3.358a1.957 1.957 0 0 0 2.021 2.124h3.564a1.957 1.957 0 0 0 2.021-2.124V2.124A1.957 1.957 0 0 0 5.585 0z" 
-                                transform="translate(16.394 16.394)" 
-                                stroke="#a7b0c7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2px" 
-                                fillRule="evenodd" fill="none"></path></g>
-                                <path data-name="사각형 3824" fill="none" d="M0 0h30v30H0z"></path></svg>
+                                <path data-name="패스 10510"
+                                    d="M5.585 0H2.021A1.959 1.959 0 0 0 0 2.124v3.358a1.957 1.957 0 0 0 2.021 2.124h3.564a1.957 1.957 0 0 0 2.021-2.124V2.124A1.957 1.957 0 0 0 5.585 0z"
+                                    transform="translate(6 6)"
+                                    stroke="#a7b0c7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2px"
+                                    fillRule="evenodd" fill="none"></path>
+                                <path data-name="패스 10513"
+                                    d="M5.585 0H2.021A1.959 1.959 0 0 0 0 2.124v3.358a1.957 1.957 0 0 0 2.021 2.124h3.564a1.957 1.957 0 0 0 2.021-2.124V2.124A1.957 1.957 0 0 0 5.585 0z"
+                                    transform="translate(6 16.394)"
+                                    stroke="#a7b0c7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2px"
+                                    fillRule="evenodd" fill="none"></path>
+                                <path data-name="패스 10511" d="M5.585 0H2.021A1.959 1.959 0 0 0 0 2.124v3.358a1.957 1.957 0 0 0 2.021 2.124h3.564a1.957 1.957 0 0 0 2.021-2.124V2.124A1.957 1.957 0 0 0 5.585 0z"
+                                    transform="translate(16.394 6)"
+                                    stroke="#a7b0c7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2px"
+                                    fillRule="evenodd" fill="none"></path>
+                                <path data-name="패스 10512"
+                                    d="M5.585 0H2.021A1.959 1.959 0 0 0 0 2.124v3.358a1.957 1.957 0 0 0 2.021 2.124h3.564a1.957 1.957 0 0 0 2.021-2.124V2.124A1.957 1.957 0 0 0 5.585 0z"
+                                    transform="translate(16.394 16.394)"
+                                    stroke="#a7b0c7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2px"
+                                    fillRule="evenodd" fill="none"></path></g>
+                            <path data-name="사각형 3824" fill="none" d="M0 0h30v30H0z"></path></svg>
                         <ComboInput
                             // label="페이지 수"
                             options={["30개", "50개", "100개", "500개"]}

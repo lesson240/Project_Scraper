@@ -23,6 +23,7 @@ export type UseSelectionRectOptions = {
   toImage?: (sx: number, sy: number) => { x: number; y: number };
   onChange?: (r: Rect | null) => void; // 선택 변경 콜백(화면 좌표 기준)
   stage?: HTMLElement | null;          // 커서 좌표 기준(옵션)
+  preserveOnClear?: boolean;           // clear() 호출 시 선택상자 유지 여부
 };
 
 export function norm(r: Rect): Rect {
@@ -56,7 +57,13 @@ export function useSelectionRect(opts: UseSelectionRectOptions = {}) {
     }
   }, [opts.onChange]); // rect 의존성 제거
 
-  const clear = useCallback(() => setRect(null), [setRect]);
+  const clear = useCallback(() => {
+    // preserveOnClear 옵션이 true이고 현재 선택상자가 있으면 유지
+    if (opts.preserveOnClear && rect) {
+      return;
+    }
+    setRect(null);
+  }, [setRect, opts.preserveOnClear, rect]);
 
   // 정사각형 고정 토글 함수
   const toggleSquareLock = useCallback(() => {

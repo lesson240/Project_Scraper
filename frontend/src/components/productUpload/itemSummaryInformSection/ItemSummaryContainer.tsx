@@ -14,6 +14,7 @@ type Props = {
   onDetailPageSet: () => void;
   onUploadSet: () => void;
   onModifySet: (id: string, field: "title" | "memo", value: string) => Promise<void>;
+  onSelectedItemsChange?: (selectedItems: string[]) => void; // 선택된 상품 목록 변경 시 호출
 };
 
 
@@ -25,7 +26,8 @@ export default function ItemSummaryContainer({
   onOptionSet,
   onDetailPageSet,
   onUploadSet,
-  onModifySet
+  onModifySet,
+  onSelectedItemsChange
 }: Props) {
   const [toastMessage, setToastMessage] = useState("");
 
@@ -69,6 +71,7 @@ export default function ItemSummaryContainer({
         onDetailPageSet={onDetailPageSet}
         onUploadSet={onUploadSet}
         onModifySet={handleModifySet}
+        onSelectedItemsChange={onSelectedItemsChange}
       />
     </>
   );

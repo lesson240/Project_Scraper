@@ -10,10 +10,10 @@ const developmentConfig: ApiConfig = {
   imageHostUrl: 'http://localhost:8000/v1/imagehost'
 };
 
-// 프로덕션 환경 설정 (도메인 설정 후 변경)
+// 프로덕션 환경 설정 (도메인 연결)
 const productionConfig: ApiConfig = {
-  baseUrl: 'https://your-domain.com', // 실제 도메인으로 변경
-  imageHostUrl: 'https://your-domain.com/imagehost'
+  baseUrl: 'https://allttam.kr',
+  imageHostUrl: 'https://allttam.kr/v1/imagehost'
 };
 
 // 환경에 따른 설정 선택

@@ -69,12 +69,13 @@ class CloudflareR2Service:
             guessed_type, _ = mimetypes.guess_type(filename)
             ct = content_type or guessed_type or 'application/octet-stream'
 
-            # Cloudflare R2에 업로드
+            # Cloudflare R2에 업로드 (강한 캐시로 중복 네트워크 최소화)
             self.client.put_object(
                 Bucket=self.bucket_name,
                 Key=filename,
                 Body=content,
-                ContentType=ct
+                ContentType=ct,
+                CacheControl="public, max-age=31536000, immutable"
             )
             
             # Cloudflare R2 공개 URL 생성 (환경변수 우선)
@@ -115,12 +116,13 @@ class CloudflareR2Service:
                 logger.error("Cloudflare R2 클라이언트가 초기화되지 않았습니다")
                 raise HTTPException(status_code=500, detail="Cloudflare R2 클라이언트가 초기화되지 않았습니다")
 
-            # 실제 Cloudflare R2 업로드
+            # 실제 Cloudflare R2 업로드 (강한 캐시로 중복 네트워크 최소화)
             self.client.put_object(
                 Bucket=self.bucket_name,
                 Key=cloudflare_id,
                 Body=content,
                 ContentType=file.content_type,
+                CacheControl="public, max-age=31536000, immutable",
                 Metadata={
                     'original_filename': file.filename,
                     'uploaded_at': datetime.utcnow().isoformat(),

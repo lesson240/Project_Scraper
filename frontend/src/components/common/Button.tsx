@@ -12,6 +12,8 @@ type Props = {
   customType?: CustomType; // 실제 버튼 HTML 속성엔 안 들어가지만 논리적으로 사용 가능
   variant?: ButtonVariant;
   onClick?: () => void;
+  disabled?: boolean;
+  title?: string;
   children: React.ReactNode;
 };
 
@@ -20,6 +22,8 @@ export default function Button({
   customType,
   variant = "primary",
   onClick,
+  disabled = false,
+  title,
   children,
 }: Props) {
   return (
@@ -28,6 +32,8 @@ export default function Button({
       data-custom-type={customType}
       className={`btn ${variant}`}
       onClick={onClick}
+      disabled={disabled}
+      title={title}
     >
       {children}
     </button>

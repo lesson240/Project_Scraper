@@ -258,19 +258,27 @@
 /* ---------- Footer Buttons ---------- */
 .thumbnail-modal-footer {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   gap: 12px;
   margin-top: 8px;
 }
 
-.thumbnail-modal-footer .btn-reset {
-  background: #fff;
-  border: 1px solid #ddd;
+.thumbnail-modal-footer button {
+  flex: 1;
+  max-width: 120px;
+  min-width: 100px;
+  height: 40px;
   padding: 8px 20px;
   border-radius: 6px;
   font-size: 14px;
   cursor: pointer;
   transition: 0.2s;
+  border: none;
+}
+
+.thumbnail-modal-footer .btn-reset {
+  background: #fff;
+  border: 1px solid #ddd;
 }
 
 .thumbnail-modal-footer .btn-reset:hover {
@@ -279,19 +287,12 @@
 
 .thumbnail-modal-footer .btn-save {
   background: #00b5ad;
-  border: none;
   color: #fff;
-  padding: 8px 20px;
-  border-radius: 6px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: 0.2s;
 }
 
 .thumbnail-modal-footer .btn-save:hover {
   background: #00a099;
 }
-
 
 
 /* ---------- Section Label + Divider ---------- */

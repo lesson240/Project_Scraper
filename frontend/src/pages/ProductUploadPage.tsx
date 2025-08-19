@@ -16,6 +16,9 @@ export default function ProductUploadPage() {
   const [currentThumbs, setCurrentThumbs] = useState<string[]>([]);
   const [currentOriginGoodsCode, setCurrentOriginGoodsCode] = useState<string>("");
 
+  // 선택된 상품 목록 상태
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+
   const pageSizeNumber = parseInt(pageSize.replace("개", ""), 10);
   const currentItems = items.slice(0, pageSizeNumber);
   const currentCount = currentItems.length;
@@ -84,6 +87,8 @@ export default function ProductUploadPage() {
         setPageSize={setPageSize}
         currentCount={currentCount}
         totalCount={totalCount}
+        selectedItems={selectedItems}
+        items={items}
       />
 
       <ItemSummaryContainer
@@ -95,6 +100,7 @@ export default function ProductUploadPage() {
         onDetailPageSet={() => { }}
         onUploadSet={() => { }}
         onModifySet={onModifySet}
+        onSelectedItemsChange={setSelectedItems}
       />
 
       {/* ✅ 모달은 컨테이너에서 관리 */}

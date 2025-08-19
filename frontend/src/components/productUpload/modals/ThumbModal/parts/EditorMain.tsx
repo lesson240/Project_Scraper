@@ -30,6 +30,7 @@ export interface EditorMainRef {
   isEraserActive: boolean;
   isLassoActive: boolean;
   handleFillScreen: () => void;
+  preserveSelection: () => void;
 }
 
 const EditorMain = forwardRef<EditorMainRef, Props>(({ image, onCropChange, transform, transformTick }, ref) => {
@@ -41,7 +42,8 @@ const EditorMain = forwardRef<EditorMainRef, Props>(({ image, onCropChange, tran
   const own = useCanvasTransform();
   const tf = transform ?? own;
   const sel = useSelectionRect({
-    onChange: onCropChange
+    onChange: onCropChange,
+    preserveOnClear: true // 선택상자 해제 방지
   });
 
   // 특수 도구 상태
@@ -97,6 +99,19 @@ const EditorMain = forwardRef<EditorMainRef, Props>(({ image, onCropChange, tran
           (selectBox as HTMLElement).style.height = `${newRect.h}px`;
         }
       }, 100);
+    }
+  }, [sel]);
+
+  // 선택상자 해제 방지 및 버튼 클릭 시 선택상자 유지
+  const preserveSelection = useCallback(() => {
+    // 현재 선택상자가 있으면 유지
+    if (sel.rect) {
+      // 선택상자 상태를 임시로 저장했다가 복원
+      const currentRect = sel.rect;
+      // 약간의 지연 후 선택상자 복원 (transform 적용 후)
+      setTimeout(() => {
+        sel.setRect(currentRect);
+      }, 10);
     }
   }, [sel]);
 
@@ -184,6 +199,57 @@ const EditorMain = forwardRef<EditorMainRef, Props>(({ image, onCropChange, tran
     };
   }, [tf]);
 
+  // 마우스 드래그로 줌 인/아웃 처리 (선택상자 내부에서도 동작)
+  useEffect(() => {
+    const host = stageRef.current;
+    if (!host) return;
+
+    let isDragging = false;
+    let startY = 0;
+    let startZoom = 0;
+
+    const handleMouseDown = (e: MouseEvent) => {
+      // 선택상자 내부에서도 마우스 이벤트 처리
+      isDragging = true;
+      startY = e.clientY;
+      // 현재 줌 상태를 저장 (기본값 1)
+      startZoom = 1;
+      e.preventDefault();
+      e.stopPropagation();
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isDragging) return;
+
+      const deltaY = e.clientY - startY;
+      const zoomDelta = deltaY * 0.01; // 드래그 거리에 따른 줌 변화량
+
+      if (Math.abs(zoomDelta) > 0.01) {
+        // 줌 인/아웃을 여러 번 호출하여 부드러운 줌 효과 구현
+        if (zoomDelta > 0) {
+          tf.zoomOut();
+        } else {
+          tf.zoomIn();
+        }
+      }
+    };
+
+    const handleMouseUp = () => {
+      isDragging = false;
+    };
+
+    // 마우스 이벤트 리스너를 document에 추가하여 선택상자 내부에서도 동작
+    document.addEventListener('mousedown', handleMouseDown);
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      document.removeEventListener('mousedown', handleMouseDown);
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [tf]);
+
   // 초기 80% 정사각형 선택 영역 설정
   useEffect(() => {
     const img = imgRef.current;
@@ -218,6 +284,7 @@ const EditorMain = forwardRef<EditorMainRef, Props>(({ image, onCropChange, tran
     toggleSquareLock: toggleSquareLock, // 정사각형 고정 토글 함수 노출
     toggleEraser: toggleEraser, // Eraser 도구 토글 함수 노출
     toggleLasso: toggleLasso, // Lasso 도구 토글 함수 노출
+    preserveSelection: preserveSelection, // 선택상자 유지 함수 노출
     isSquareLocked: sel.isSquareLocked || false, // 정사각형 고정 상태 노출
     isEraserActive: activeTool === 'eraser', // Eraser 도구 활성화 상태 노출
     isLassoActive: activeTool === 'lasso', // Lasso 도구 활성화 상태 노출

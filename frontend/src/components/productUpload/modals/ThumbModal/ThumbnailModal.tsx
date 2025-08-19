@@ -8,6 +8,7 @@ import { ThumbResultButtons } from "./parts/ThumbnailFunctionButtons";
 import SectionLabel from "./parts/SectionLabel";
 import EditorControls from "./parts/EditorControls";
 import ThumbnailTransformSync from "./components/ThumbnailTransformSync";
+import ToastImageEditorModal from "../ToastImageEditorModal/ToastImageEditorModal";
 import { useThumbnailTransform } from "./lib/useThumbnailTransform";
 import { useThumbnailPanel } from "./lib/useThumbnailPanel";
 import { useThumbnailReorder } from "./lib/useThumbnailReorder";
@@ -46,11 +47,42 @@ export default function ThumbModal({
   // 패널 적용된 항목 추적
   const [modifiedSet, setModifiedSet] = React.useState<Set<number>>(new Set());
 
+  // Toast Image Editor 모달 상태
+  const [isToastEditorOpen, setIsToastEditorOpen] = React.useState(false);
+  const [selectedImageForEditor, setSelectedImageForEditor] = React.useState<string>("");
+
+  // 이미지 제거 함수
+  const handleRemoveImage = (index: number) => {
+    if (removeImage) {
+      removeImage(index);
+      // 현재 선택된 이미지가 제거된 경우 인덱스 조정
+      if (currentIndex >= index && currentIndex > 0) {
+        setCurrentIndex(currentIndex - 1);
+      } else if (currentIndex === index && thumbnails.length === 1) {
+        setCurrentIndex(0);
+      }
+    }
+  };
+
   // 호스팅된 이미지 URL인지 확인하는 함수
   const isHostedImage = useCallback((imageUrl: string): boolean => {
-    return imageUrl.startsWith('http://localhost:8000') ||
-      imageUrl.startsWith('https://') ||
-      imageUrl.startsWith('blob:');
+    // 퍼블릭 접근 가능한 URL만 호스팅된 것으로 간주 (blob: 은 제외)
+    return /^https?:\/\//.test(imageUrl) && !imageUrl.startsWith('blob:');
+  }, []);
+
+  // 유효한 이미지 URL 여부 (확장자 기반, 쿼리스트링 허용)
+  const isValidImageUrl = useCallback((u: string): boolean => {
+    if (!u) return false;
+    // 상대 경로(/v1/...) 또는 http(s) 허용, blob 은 제외
+    const isUrlish = u.startsWith('/') || /^https?:\/\//.test(u);
+    const hasExt = /\.(jpe?g|png|webp|gif|avif)(\?|$)/i.test(u);
+
+    // 외부 이미지 도메인 필터링 (R2 이미지 우선 사용)
+    if (u.includes('image.oliveyoung.co.kr') || u.includes('image.coupang.com')) {
+      return false; // 외부 이미지는 유효하지 않음으로 처리
+    }
+
+    return isUrlish && hasExt && !u.startsWith('blob:');
   }, []);
 
   // MongoDB에서 썸네일 메타데이터 조회하여 이미지 우선순위 설정
@@ -64,14 +96,15 @@ export default function ThumbModal({
         if (result.success && result.data && result.data.thumbnail_images) {
           // R2 호스팅 이미지 우선, no-code/빈 값 제외
           const raw: string[] = result.data.thumbnail_images || [];
-          const hostedImages = raw.filter(u => !!u && !u.includes('no-code'));
+          // 잘못 저장된 베이스 URL이나 확장자 없는 값 제외
+          const hostedImages = raw.filter(u => isValidImageUrl(u) && !u.includes('no-code'));
           const existingImages = thumbnails.filter(img => !isHostedImage(img));
 
           // 호스팅된 이미지 + 기존 이미지 순서로 결합
           const prioritizedImages = [...hostedImages, ...existingImages];
 
           // 중복 제거 (같은 URL이 있으면 하나만 유지)
-          const uniqueImages = Array.from(new Set(prioritizedImages));
+          const uniqueImages = Array.from(new Set(prioritizedImages.filter(isValidImageUrl)));
 
           // thumbnails 업데이트
           if (JSON.stringify(uniqueImages) !== JSON.stringify(thumbnails)) {
@@ -157,17 +190,34 @@ export default function ThumbModal({
     setIsSquareLocked(false);
   }, [setCurrentIndex, t, setOrientation]);
 
-  // 이미지 우선순위 정렬 (호스팅된 이미지 우선)
+  // 이미지 우선순위 정렬 (README_AI 문서 기준)
   const sortImagesByPriority = useCallback((images: string[]): string[] => {
     return images.sort((a, b) => {
-      const aIsHosted = isHostedImage(a);
-      const bIsHosted = isHostedImage(b);
+      // 1. 호스팅된 이미지 (https://pub-b8307bd30f534121a8852e53312218eb.r2.dev/...)
+      const aIsHosted = a.startsWith('https://pub-b8307bd30f534121a8852e53312218eb.r2.dev/');
+      const bIsHosted = b.startsWith('https://pub-b8307bd30f534121a8852e53312218eb.r2.dev/');
 
-      if (aIsHosted && !bIsHosted) return -1;  // a가 호스팅된 이미지면 우선
-      if (!aIsHosted && bIsHosted) return 1;   // b가 호스팅된 이미지면 우선
-      return 0;  // 둘 다 호스팅된 이미지이거나 둘 다 아닌 경우 순서 유지
+      // 2. 원본 이미지 URL (https://image.oliveyoung.co.kr/...)
+      const aIsOriginal = a.includes('image.oliveyoung.co.kr') || a.includes('image.coupang.com');
+      const bIsOriginal = b.includes('image.oliveyoung.co.kr') || b.includes('image.coupang.com');
+
+      // 3. Blob URL (blob:http://localhost:5173/...)
+      const aIsBlob = a.startsWith('blob:');
+      const bIsBlob = b.startsWith('blob:');
+
+      // 우선순위: 호스팅 > 원본 > Blob
+      if (aIsHosted && !bIsHosted) return -1;
+      if (!aIsHosted && bIsHosted) return 1;
+
+      if (aIsOriginal && !bIsOriginal) return -1;
+      if (!aIsOriginal && bIsOriginal) return 1;
+
+      if (aIsBlob && !bIsBlob) return -1;
+      if (!aIsBlob && bIsBlob) return 1;
+
+      return 0;
     });
-  }, [isHostedImage]);
+  }, []);
 
   // 레이어 초기화 함수
   const handleLayerReset = React.useCallback(() => {
@@ -202,8 +252,26 @@ export default function ThumbModal({
     }
 
     try {
-      // 패널 적용된 항목만 업로드
-      const modifiedImages = thumbnails.filter((_, idx) => modifiedSet.has(idx));
+      // 패널 적용된 항목만 업로드 (인덱스 보존)
+      const modifiedIndexes = thumbnails.map((_, idx) => idx).filter((idx) => modifiedSet.has(idx));
+      // blob URL은 서버로 업로드 가능하도록 실제 Blob으로 변환 후 File 생성
+      const modifiedImages = await Promise.all(modifiedIndexes.map(async (idx) => {
+        const url = thumbnails[idx];
+        if (url.startsWith('blob:')) {
+          try {
+            const res = await fetch(url);
+            const blob = await res.blob();
+            // data:image 형태로 변환해 기존 로직 재사용
+            const arrayBuffer = await blob.arrayBuffer();
+            const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+            const mime = blob.type || 'image/jpeg';
+            return `data:${mime};base64,${base64}`;
+          } catch {
+            return url; // 실패 시 그대로 전달(에러 처리 로직에서 걸림)
+          }
+        }
+        return url;
+      }));
       const uploadedUrls = await uploadEditedImages(modifiedImages, finalOriginGoodsCode);
       // 수정되지 않은 기존 호스팅 이미지는 유지
       const existingHosted = thumbnails.filter((url, idx) => !modifiedSet.has(idx) && url.startsWith('http'));
@@ -229,6 +297,15 @@ export default function ThumbModal({
       if (response.ok) {
         const result = await response.json();
         setToastMessage('썸네일이 성공적으로 저장되었습니다.');
+        // 업로드된 URL을 패널에도 즉시 반영하여 blob: 대신 퍼블릭 URL을 표시
+        if (uploadedUrls.length === modifiedIndexes.length) {
+          const next = [...thumbnails];
+          uploadedUrls.forEach((url, i) => {
+            const targetIndex = modifiedIndexes[i];
+            next[targetIndex] = url;
+          });
+          updateThumbnails(next);
+        }
         setModifiedSet(new Set());
         // onClose(); // 성공 시 모달 닫기 - 제거하여 모달이 열린 상태로 유지
       } else {
@@ -291,7 +368,7 @@ export default function ThumbModal({
             if (result.success && result.data && result.data.url) {
               // 로컬 개발 환경에서는 백엔드 서버의 URL을 사용
               const imageUrl = result.data.url.startsWith('/')
-                ? `http://localhost:8000${result.data.url}`
+                ? `${apiConfig.baseUrl}${result.data.url}`
                 : result.data.url;
               uploadedUrls.push(imageUrl);
             } else {
@@ -337,7 +414,7 @@ export default function ThumbModal({
             if (result.success && result.data && result.data.url) {
               // 로컬 개발 환경에서는 백엔드 서버의 URL을 사용
               const imageUrl = result.data.url.startsWith('/')
-                ? `http://localhost:8000${result.data.url}`
+                ? `${apiConfig.baseUrl}${result.data.url}`
                 : result.data.url;
               uploadedUrls.push(imageUrl);
             } else {
@@ -478,7 +555,7 @@ export default function ThumbModal({
             thumbnails={thumbnails}
             currentIndex={currentIndex}
             onAdd={addImages}
-            onRemove={removeImage}
+            onRemove={handleRemoveImage}
             onSelect={handleImageSelect}
             onReorder={handleReorder}
           />
@@ -523,7 +600,12 @@ export default function ThumbModal({
                     onTagSet={() => { }}
                     onPanelApply={handlePanelApplyWrapper}
                     onStudio={() => { }}
-                    onEditorPlus={() => { }}
+                    onEditorPlus={(imageUrl: string) => {
+                      // 현재 선택된 이미지의 URL을 사용
+                      const currentImageUrl = thumbnails[currentIndex] || "";
+                      setSelectedImageForEditor(currentImageUrl);
+                      setIsToastEditorOpen(true);
+                    }}
                   />
                 </div>
               </div>
@@ -532,16 +614,46 @@ export default function ThumbModal({
               <div className="division-wrapper">
                 {/* 모달 전용 기능 버튼 */}
                 <EditorControls
-                  onMoveUp={t.moveUp}
-                  onMoveDown={t.moveDown}
-                  onMoveLeft={t.moveLeft}
-                  onMoveRight={t.moveRight}
-                  onRotateLeft={t.rotateLeft}
-                  onRotateRight={t.rotateRight}
-                  onFlipH={t.flipH}
-                  onFlipV={t.flipV}
-                  onZoomIn={t.zoomIn}
-                  onZoomOut={t.zoomOut}
+                  onMoveUp={() => {
+                    t.moveUp();
+                    editorMainRef.current?.preserveSelection();
+                  }}
+                  onMoveDown={() => {
+                    t.moveDown();
+                    editorMainRef.current?.preserveSelection();
+                  }}
+                  onMoveLeft={() => {
+                    t.moveLeft();
+                    editorMainRef.current?.preserveSelection();
+                  }}
+                  onMoveRight={() => {
+                    t.moveRight();
+                    editorMainRef.current?.preserveSelection();
+                  }}
+                  onRotateLeft={() => {
+                    t.rotateLeft();
+                    editorMainRef.current?.preserveSelection();
+                  }}
+                  onRotateRight={() => {
+                    t.rotateRight();
+                    editorMainRef.current?.preserveSelection();
+                  }}
+                  onFlipH={() => {
+                    t.flipH();
+                    editorMainRef.current?.preserveSelection();
+                  }}
+                  onFlipV={() => {
+                    t.flipV();
+                    editorMainRef.current?.preserveSelection();
+                  }}
+                  onZoomIn={() => {
+                    t.zoomIn();
+                    editorMainRef.current?.preserveSelection();
+                  }}
+                  onZoomOut={() => {
+                    t.zoomOut();
+                    editorMainRef.current?.preserveSelection();
+                  }}
                   onFillScreen={() => {
                     // EditorMain의 handleFillScreen 함수 호출
                     editorMainRef.current?.handleFillScreen();
@@ -585,6 +697,24 @@ export default function ThumbModal({
         t={t}
         orientation={orientation}
         setOrientation={setOrientation}
+      />
+
+      {/* Toast Image Editor 모달 */}
+      <ToastImageEditorModal
+        isOpen={isToastEditorOpen}
+        onClose={() => setIsToastEditorOpen(false)}
+        imageUrl={selectedImageForEditor}
+        onSave={(editedImageUrl) => {
+          // 편집된 이미지를 현재 선택된 썸네일로 업데이트
+          if (currentIndex >= 0 && thumbnails[currentIndex]) {
+            updateThumbnail(currentIndex, editedImageUrl);
+            setModifiedSet(prev => {
+              const next = new Set(prev);
+              next.add(currentIndex);
+              return next;
+            });
+          }
+        }}
       />
     </ModalBase>
   );

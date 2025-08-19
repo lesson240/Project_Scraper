@@ -3,6 +3,7 @@
 // ✅ 로딩 상태 관리 및 에러 처리
 
 import React, { useEffect, useRef, useState } from "react";
+import apiConfig from "@/config/api";
 
 type Props = {
     image: string;
@@ -21,7 +22,13 @@ export default function ViewerImageLoader({ image, children }: Props) {
         }
 
         const im = new Image();
-        im.crossOrigin = "anonymous";
+        // 교차 출처일 때만 CORS 요청. 동일 출처/blob/data는 설정하지 않음
+        const isBlobOrData = image.startsWith('blob:') || image.startsWith('data:');
+        const isAbsolute = /^https?:\/\//i.test(image);
+        const isSameOrigin = !isAbsolute || image.startsWith(window.location.origin);
+        if (!isBlobOrData && !isSameOrigin) {
+            im.crossOrigin = "anonymous";
+        }
         setReady(false);
 
         im.onload = () => {
@@ -35,7 +42,13 @@ export default function ViewerImageLoader({ image, children }: Props) {
             setReady(false);
         };
 
-        im.src = image;
+        // 교차 출처인 공개 URL은 백엔드 프록시를 통해 불러와 캔버스 오염을 방지
+        if (!isBlobOrData && !isSameOrigin) {
+            const proxied = `${apiConfig.baseUrl}/v1/imagehost/delivery/proxy?url=${encodeURIComponent(image)}`;
+            im.src = proxied;
+        } else {
+            im.src = image;
+        }
 
         return () => {
             imgRef.current = null;

@@ -16,6 +16,11 @@ export const useThumbnailPanel = (
         t: any,
         setOrientation: (orientation: Orientation) => void
     ) => {
+        // 중복 실행 방지
+        if (isPanelApplyingRef.current) {
+            e && e.preventDefault();
+            return;
+        }
         if (e) {
             e.preventDefault();
             e.stopPropagation();
@@ -60,8 +65,8 @@ export const useThumbnailPanel = (
             }
 
             const img = new Image();
-            // 외부 호스팅 이미지의 캔버스 오염을 방지하기 위해 fetch→blob→objectURL 경로 사용
-            // 우선 onload 핸들러 준비
+            img.crossOrigin = 'anonymous';
+            // onload에서만 1회 처리
             img.onload = () => {
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
@@ -113,10 +118,13 @@ export const useThumbnailPanel = (
 
                 canvas.toBlob((blob) => {
                     if (blob) {
-                        const newImageUrl = URL.createObjectURL(blob);
+                        // 1) 즉시 미리보기용 blob URL 반영
+                        const previewUrl = URL.createObjectURL(blob);
                         if (updateThumbnail) {
-                            updateThumbnail(currentIndex, newImageUrl);
+                            updateThumbnail(currentIndex, previewUrl);
                         }
+                        // 메모리 해제는 약간의 지연 후
+                        setTimeout(() => URL.revokeObjectURL(previewUrl), 30000);
                     } else {
                         console.error('Blob 생성 실패');
                     }
@@ -136,24 +144,9 @@ export const useThumbnailPanel = (
                 setTimeout(() => { isPanelApplyingRef.current = false; }, 500);
             };
 
-            // 안전 로드: same-origin이 아니면 fetch로 blob 후 objectURL 로드
+            // 단순 로드: 교차 출처도 CORS 허용이므로 직접 로드
             try {
-                const isCross = /^https?:\/\//.test(currentImage) && !currentImage.includes('localhost:');
-                if (isCross) {
-                    fetch(currentImage, { mode: 'cors' })
-                        .then(res => res.blob())
-                        .then(blob => {
-                            const url = URL.createObjectURL(blob);
-                            img.src = url;
-                        })
-                        .catch(err => {
-                            console.error('이미지 fetch 실패:', err);
-                            setTimeout(() => { isPanelApplyingRef.current = false; }, 500);
-                        });
-                } else {
-                    img.crossOrigin = 'anonymous';
-                    img.src = currentImage;
-                }
+                img.src = currentImage;
             } catch (e) {
                 console.error('이미지 안전 로드 실패:', e);
                 setTimeout(() => { isPanelApplyingRef.current = false; }, 500);

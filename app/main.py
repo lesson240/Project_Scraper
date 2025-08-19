@@ -31,6 +31,10 @@ from fastapi.templating import Jinja2Templates
 from contextlib import asynccontextmanager
 from datetime import datetime
 import os
+from dotenv import load_dotenv
+
+# .env 로드 (루트 경로)
+load_dotenv(".env")
 
 # 파일명 자동 추출
 file_name = os.path.basename(__file__)
@@ -79,10 +83,18 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 # CORS 설정
+# 환경변수 ALLOWED_ORIGINS(쉼표 구분)로 운영 도메인을 제한할 수 있습니다.
+# 예: ALLOWED_ORIGINS="https://allttam.kr,https://www.allttam.kr"
+allowed_origins_env = os.getenv("ALLOWED_ORIGINS", "*")
+cors_allowed_origins = (
+    ["*"]
+    if allowed_origins_env.strip() == "*"
+    else [o.strip() for o in allowed_origins_env.split(",") if o.strip()]
+)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    # allow_origins=["http://localhost:5173"],  # React dev server adress
+    allow_origins=cors_allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

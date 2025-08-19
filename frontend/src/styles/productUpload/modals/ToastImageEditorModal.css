@@ -1,0 +1,68 @@
+/* path: frontend/src/styles/productUpload/modals/ToastImageEditorModal.css */
+
+.toast-editor-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 400px;
+    color: #6c757d;
+    font-style: italic;
+}
+
+.toast-editor-container {
+    width: 100%;
+    height: 100%;
+}
+
+.toast-editor {
+    width: 100%;
+    height: 600px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+}
+
+.toast-editor-footer {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+.toast-editor-footer button {
+    flex: 1;
+    max-width: 120px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.toast-editor-footer .btn-reset {
+    background: #fff;
+    border: 1px solid #ddd;
+    color: #495057;
+}
+
+.toast-editor-footer .btn-reset:hover {
+    background: #f1f1f1;
+}
+
+.toast-editor-footer .btn-save {
+    background: #00b5ad;
+    color: white;
+}
+
+.toast-editor-footer .btn-save:hover {
+    background: #00a099;
+}
+
+.toast-editor-footer .btn-close {
+    background: #6c757d;
+    color: white;
+}
+
+.toast-editor-footer .btn-close:hover {
+    background: #5a6268;
+}
