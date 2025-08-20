@@ -1,5 +1,104 @@
 # AI Workflow Documentation
 
+## 📁 폴더 구조 및 파일 관리 규칙
+
+### **전역 폴더 구조 규칙**
+
+#### **1. Hooks 관리 규칙**
+- **모든 커스텀 훅은 `src/hooks/` 폴더에서 중앙 관리**
+- **컴포넌트별 hooks 폴더는 허용하지 않음**
+- **예외**: 특정 도메인에만 사용되는 훅은 해당 도메인 폴더 내 hooks 폴더 허용
+
+```
+✅ 올바른 구조:
+src/hooks/
+├── useExchangeRate.ts
+├── usePriceCalculation.ts
+├── useImageUpload.ts
+└── useCustomsApi.ts
+
+❌ 잘못된 구조:
+src/components/ProductUpload/modals/PriceSettingModal/hooks/
+├── useExchangeRate.ts
+└── usePriceCalculation.ts
+```
+
+#### **2. Container 패턴 규칙**
+- **모든 모달과 페이지는 Container 패턴으로 구현**
+- **index.ts 파일은 Container 컴포넌트를 export**
+- **비즈니스 로직과 상태 관리는 Container에서 처리**
+
+```
+✅ 올바른 구조:
+src/components/ProductUpload/modals/PriceSettingModal/
+├── PriceSettingModalContainer.tsx  # 비즈니스 로직, 상태 관리
+├── PriceSettingModal.tsx           # UI 컴포넌트
+├── PriceSettingModal.css
+└── index.ts                        # Container export
+
+❌ 잘못된 구조:
+src/components/ProductUpload/modals/PriceSettingModal/
+├── PriceSettingModal.tsx           # 비즈니스 로직과 UI 혼재
+├── PriceSettingModal.css
+└── index.ts                        # 직접 컴포넌트 export
+```
+
+#### **3. 폴더 구조 표준**
+```
+src/
+├── components/                      # 재사용 가능한 컴포넌트
+│   ├── common/                     # 공통 컴포넌트
+│   ├── modals/                     # 모달 컴포넌트
+│   └── [도메인명]/                 # 도메인별 컴포넌트
+├── hooks/                          # 전역 커스텀 훅
+├── apis/                           # API 서비스
+├── types/                          # 전역 타입 정의
+├── utils/                          # 유틸리티 함수
+└── styles/                         # 전역 스타일
+```
+
+#### **4. 파일명 규칙**
+- **컴포넌트**: PascalCase (예: `PriceSettingModal.tsx`)
+- **컨테이너**: PascalCase + Container (예: `PriceSettingModalContainer.tsx`)
+- **훅**: camelCase + use (예: `useExchangeRate.ts`)
+- **타입**: camelCase + .types (예: `priceSetting.types.ts`)
+- **스타일**: 컴포넌트명과 동일 + .css (예: `PriceSettingModal.css`)
+
+#### **5. 모달 컴포넌트 구조 규칙**
+```
+modals/[모달명]/
+├── [모달명]Container.tsx          # 비즈니스 로직, 상태 관리
+├── [모달명].tsx                   # UI 컴포넌트
+├── [모달명].css                   # 스타일 (컴포넌트와 같은 폴더)
+├── sections/                      # 섹션별 컴포넌트
+│   ├── [섹션명]Section.tsx
+│   └── [섹션명]Section.css
+├── types/                         # 모달 전용 타입
+│   └── [모달명].types.ts
+└── index.ts                       # Container export
+```
+
+#### **6. CSS 파일 관리 규칙**
+- **컴포넌트별 CSS**: 각 컴포넌트와 같은 폴더에 CSS 파일 배치
+- **전역 스타일**: `src/styles/` 폴더에는 공통 스타일만 관리
+- **컴포넌트 스타일**: `src/components/[도메인]/[컴포넌트명]/[컴포넌트명].css`
+
+```
+✅ 올바른 구조:
+src/components/productUpload/modals/PriceSettingModal/
+├── PriceSettingModalContainer.tsx
+├── PriceSettingModal.tsx
+├── PriceSettingModal.css          # 컴포넌트와 같은 폴더
+└── sections/
+    ├── ExchangeRateSection.tsx
+    └── ExchangeRateSection.css    # 섹션별 CSS도 같은 폴더
+
+❌ 잘못된 구조:
+src/styles/productUpload/modals/PriceSettingModal.css  # 전역 스타일 폴더에 컴포넌트별 CSS
+```
+
+---
+
 ## 이미지 호스팅 시스템 관리 가이드
 
 ### 📁 파일명 규칙 (Naming Convention)
@@ -65,7 +164,8 @@ uploads/metadata/
 #### **새로운 모달 생성 시**
 - `src/components/productUpload/modals/` 폴더 내에 모달명 폴더 생성
 - `modals/모달명/` 구조로 하위 컴포넌트 분리
-- `sections/`, `hooks/`, `types/` 폴더로 기능별 분리
+- `sections/`, `types/` 폴더로 기능별 분리
+- **Container 패턴 필수 적용**
 
 #### **폴더 구조 예시**
 ```
@@ -74,18 +174,16 @@ modals/PriceSettingModal/
 │   ├── ExchangeRateSection.tsx
 │   ├── FormulaSection.tsx
 │   └── MarginListSection.tsx
-├── hooks/             # 커스텀 훅
-│   ├── useExchangeRate.ts
-│   └── usePriceCalculation.ts
 ├── types/             # 타입 정의
 │   └── priceSetting.types.ts
-├── PriceSettingModal.tsx  # 메인 컴포넌트
-├── PriceSettingModal.css  # 스타일
-└── index.ts           # export
+├── PriceSettingModalContainer.tsx  # 비즈니스 로직
+├── PriceSettingModal.tsx           # UI 컴포넌트
+├── PriceSettingModal.css           # 스타일
+└── index.ts           # Container export
 ```
 
 #### **외부 API 연동 규칙**
-- 환율/관세 정보는 `hooks/useExchangeRate.ts`에서 관리
+- 환율/관세 정보는 `src/hooks/useCustomsApi.ts`에서 관리
 - 실제 API 연동 시 TODO 주석으로 표시
 - 개발 중에는 더미 데이터 사용
 
@@ -105,8 +203,8 @@ modals/PriceSettingModal/
 - 메타데이터에는 오브젝트 키만 저장 권장(베이스 URL 중복 방지).
 
 ### 중복 요청 방지
-- 에디터 ‘패널 적용’: 업로드 금지, blob 미리보기만 사용.
-- ‘저장’ 클릭 시에만 업로드 수행, 성공 후 퍼블릭 URL로 교체.
+- 에디터 '패널 적용': 업로드 금지, blob 미리보기만 사용.
+- '저장' 클릭 시에만 업로드 수행, 성공 후 퍼블릭 URL로 교체.
 - 동일 URL 다중 렌더링은 캐시로 처리되므로 추가 최적화는 선택.
 
 ---

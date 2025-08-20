@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Button from "@/components/common/Button";
 import ComboInput from "../../common/ComboInput"
+import TagSettingModal from "../modals/TagSettingModal";
 import "@/styles/collect/filterButtons.css";
 import "@/styles/section.css"
 import "@/styles/productUpload/layoutToggle.css"
@@ -36,6 +37,7 @@ export default function FunctionButtons({
 }: Props) {
 
     const [layout, setLayout] = useState<"grid" | "list">("grid");
+    const [isTagSettingModalOpen, setIsTagSettingModalOpen] = useState(false);
     const isGrid = layout === "grid";
 
 
@@ -56,7 +58,14 @@ export default function FunctionButtons({
                 >
                     가격 설정
                 </Button>
-                <Button variant="secondary" onClick={onTagSet}>태그 설정</Button>
+                <Button 
+                    variant="secondary" 
+                    onClick={() => setIsTagSettingModalOpen(true)}
+                    disabled={selectedProductsCount === 0}
+                    title={selectedProductsCount === 0 ? "상품을 선택해주세요" : "태그 설정"}
+                >
+                    태그 설정
+                </Button>
                 <Button variant="secondary" onClick={onDetailPageSet}>상세페이지 설정</Button>
                 <Button variant="secondary" onClick={onGoodsNameSet}>상품명 설정</Button>
                 <Button variant="third-rate" onClick={onSalesRegistrationSet}>판매 등록</Button>
@@ -122,6 +131,20 @@ export default function FunctionButtons({
                     </div>
                 </div>
             </div>
+            
+            {/* 태그 설정 모달 */}
+            {isTagSettingModalOpen && (
+                <TagSettingModal
+                    isOpen={isTagSettingModalOpen}
+                    onClose={() => setIsTagSettingModalOpen(false)}
+                    selectedProducts={[]} // TODO: 실제 선택된 상품 데이터 전달
+                    onSave={(settings) => {
+                        console.log('태그 설정 저장:', settings);
+                        onTagSet(); // 기존 onTagSet 콜백 호출
+                        setIsTagSettingModalOpen(false);
+                    }}
+                />
+            )}
         </div >
     );
 }

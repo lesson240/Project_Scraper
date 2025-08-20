@@ -5,9 +5,15 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:clean": "vite --force",
+    "dev:debug": "vite --debug",
     "build": "tsc -b && vite build",
+    "build:clean": "rm -rf dist && npm run build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "lint:fix": "eslint . --fix",
+    "preview": "vite preview",
+    "clean": "rm -rf node_modules dist .vite",
+    "reinstall": "npm run clean && npm install"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.80.10",

@@ -1,51 +1,88 @@
 // path: frontend/src/components/productUpload/modals/PriceSettingModal/sections/ExchangeRateSection.tsx
 import React from 'react';
-import type { ExchangeRateSectionProps } from '../types/priceSetting.types';
+import type { ExchangeRateSectionProps } from '@/types/priceSetting.types';
 
-export default function ExchangeRateSection({ exchangeRates, isLoading }: ExchangeRateSectionProps) {
+export default function ExchangeRateSection({ 
+    exchangeRates, 
+    isLoading, 
+    tariffPeriod,
+    error,
+    onAppliedRateChange 
+}: ExchangeRateSectionProps) {
     if (isLoading) {
         return (
             <div className="exchange-rate-section">
-                <h3>환율 설정</h3>
-                <div className="loading">환율 정보를 불러오는 중...</div>
+                <div className="loading-container">
+                    <div className="loading-spinner"></div>
+                    <div className="loading-text">환율 정보를 불러오는 중...</div>
+                </div>
             </div>
         );
     }
 
     return (
         <div className="exchange-rate-section">
+            {error && (
+                <div className="error-message">
+                    <span className="error-icon">⚠️</span>
+                    <span className="error-text">{error}</span>
+                </div>
+            )}
+            
             <div className="exchange-rate-table">
                 <div className="table-header-with-note">
                     <h4>환율 정보</h4>
-                    <div className="tariff-note">
-                        관세 적용기간: 단위: 1원 (W)
+                    <div className="tariff-info">
+                        <div className="tariff-note">
+                            관세 적용기간: 단위: 1원 (W)
+                        </div>
+                        <div className="tariff-period">
+                            관세 주간: {tariffPeriod}
+                        </div>
                     </div>
                 </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>기준</th>
-                            <th>일일 고시환율</th>
-                            <th>관세 주간환율</th>
-                            <th>올땀 적용환율</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {exchangeRates.map((rate, index) => (
-                            <tr key={index}>
-                                <td>{rate.currency}</td>
-                                <td>{rate.dailyRate.toLocaleString()}</td>
-                                <td>{rate.weeklyTariff}</td>
-                                <td>
-                                    {typeof rate.appliedRate === 'number'
-                                        ? rate.appliedRate.toLocaleString()
-                                        : rate.appliedRate
-                                    }
-                                </td>
+                
+                <div className="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>기준</th>
+                                <th>일일 고시환율</th>
+                                <th>관세 주간환율</th>
+                                <th>
+                            올땀 적용환율
+                            <button 
+                                className="sync-button" 
+                                onClick={() => onSyncRates()}
+                                title="환율 동기화"
+                            >
+                                🔗
+                            </button>
+                        </th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {exchangeRates.map((rate, index) => (
+                                <tr key={index}>
+                                    <td className="currency-code">{rate.currency}</td>
+                                    <td className="daily-rate">{rate.dailyRate.toLocaleString()}</td>
+                                    <td className="weekly-tariff">{rate.weeklyTariff.toLocaleString()}</td>
+                                    <td className="applied-rate-cell">
+                                        <input
+                                            type="number"
+                                            className="applied-rate-input"
+                                            value={typeof rate.appliedRate === 'number' ? rate.appliedRate : 0}
+                                            onChange={(e) => onAppliedRateChange(rate.currency, Number(e.target.value))}
+                                            placeholder="환율 입력"
+                                            min="0"
+                                            step="0.01"
+                                        />
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     );

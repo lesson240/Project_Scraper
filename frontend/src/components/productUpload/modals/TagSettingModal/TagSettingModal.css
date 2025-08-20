@@ -1,0 +1,174 @@
+/* path: frontend/src/components/productUpload/modals/TagSettingModal/TagSettingModal.css */
+
+/* 가격설정 모달 CSS를 base로 한 태그 설정 모달 스타일 */
+
+/* 모달 헤더 */
+.modal-header h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+.selected-products-badge {
+    background: #f0f9f8;
+    color: #00b5ad;
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 500;
+    margin-left: 12px;
+}
+
+/* 모달 바디 */
+.tag-setting-container {
+    padding: 0;
+}
+
+.tag-setting-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    min-height: 600px;
+}
+
+.left-section,
+.right-section {
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    overflow: hidden;
+}
+
+/* 섹션별 스타일 */
+.left-section {
+    background: #fafafa;
+}
+
+.right-section {
+    background: white;
+}
+
+/* 모달 푸터 */
+.modal-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.btn-reset {
+    background: white;
+    color: #666;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-reset:hover {
+    background: #f8f9fa;
+    border-color: #ccc;
+}
+
+.btn-save {
+    background: #00b5ad;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-save:hover {
+    background: #00a099;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 1200px) {
+    .tag-setting-layout {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .left-section,
+    .right-section {
+        min-height: auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .tag-setting-container {
+        padding: 0;
+    }
+    
+    .tag-setting-layout {
+        gap: 12px;
+    }
+    
+    .modal-footer {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .btn-reset,
+    .btn-save {
+        width: 100%;
+    }
+}
+
+/* 로딩 상태 */
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+.loading-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #00b5ad;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 에러 메시지 */
+.error-message {
+    background: #fee;
+    color: #c33;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #fcc;
+    margin: 12px 0;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.error-icon {
+    font-size: 16px;
+}
+
+.error-text {
+    flex: 1;
+}

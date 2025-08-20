@@ -5,8 +5,9 @@ import type { MarginListSectionProps } from '../types/priceSetting.types';
 export default function MarginListSection({
     selectedProducts,
     calculatedPrices,
-    exchangeRates
-}: MarginListSectionProps) {
+    exchangeRates,
+    isCalculated = false
+}: MarginListSectionProps & { isCalculated?: boolean }) {
     const getExchangeRate = (currency: string) => {
         const rate = exchangeRates.find(r => r.currency.includes(currency));
         return typeof rate?.appliedRate === 'number' ? rate.appliedRate : 0;
@@ -14,6 +15,25 @@ export default function MarginListSection({
 
     const getCalculatedPrice = (productId: string) => {
         return calculatedPrices.find(p => p.productId === productId);
+    };
+
+    const formatOriginalPrice = (price: number | string, currency: string) => {
+        const numPrice = typeof price === 'string' ? parseFloat(price) : price;
+        if (isNaN(numPrice)) return '-';
+        
+        // 통화별 단위 표시
+        switch (currency) {
+            case 'JPY':
+                return `¥${numPrice.toLocaleString()}`;
+            case 'USD':
+                return `$${numPrice.toLocaleString()}`;
+            case 'EUR':
+                return `€${numPrice.toLocaleString()}`;
+            case 'CNY':
+                return `¥${numPrice.toLocaleString()}`;
+            default:
+                return `${numPrice.toLocaleString()}`;
+        }
     };
 
     return (
@@ -56,9 +76,11 @@ export default function MarginListSection({
                                         />
                                     </td>
                                     <td className="product-name">{product.name}</td>
-                                    <td className="original-price">{product.originalPrice}</td>
+                                    <td className="original-price">
+                                        {formatOriginalPrice(product.originalPrice, product.currency)}
+                                    </td>
                                     <td className="set-price">
-                                        {calculated ? (
+                                        {isCalculated && calculated ? (
                                             <>
                                                 {calculated.basePrice.toLocaleString()} -
                                                 {calculated.platformPrices.coupang.toLocaleString()}
@@ -68,10 +90,10 @@ export default function MarginListSection({
                                         )}
                                     </td>
                                     <td className="margin-rate">
-                                        {calculated ? `${calculated.expectedMarginRate.toFixed(0)}%` : '-'}
+                                        {isCalculated && calculated ? `${calculated.expectedMarginRate.toFixed(0)}%` : '-'}
                                     </td>
                                     <td className="margin-amount">
-                                        {calculated ? (
+                                        {isCalculated && calculated ? (
                                             <>
                                                 {calculated.expectedMargin.toLocaleString()} -
                                                 {(calculated.expectedMargin * 1.15).toLocaleString()}
