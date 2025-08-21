@@ -64,24 +64,45 @@ export default function ExchangeRateSection({
                             </tr>
                         </thead>
                         <tbody>
-                            {exchangeRates.map((rate, index) => (
-                                <tr key={index}>
-                                    <td className="currency-code">{rate.currency}</td>
-                                    <td className="daily-rate">{rate.dailyRate.toLocaleString()}</td>
-                                    <td className="weekly-tariff">{rate.weeklyTariff.toLocaleString()}</td>
-                                    <td className="applied-rate-cell">
-                                        <input
-                                            type="number"
-                                            className="applied-rate-input"
-                                            value={typeof rate.appliedRate === 'number' ? rate.appliedRate : 0}
-                                            onChange={(e) => onAppliedRateChange(rate.currency, Number(e.target.value))}
-                                            placeholder="환율 입력"
-                                            min="0"
-                                            step="0.01"
-                                        />
-                                    </td>
-                                </tr>
-                            ))}
+                            {['USD', 'CNY', 'JPY', 'EUR'].map((currency) => {
+                                // 해당 통화의 koreaexim 데이터 찾기
+                                const koreaeximData = exchangeRates.find(rate =>
+                                    (rate.currencyCode || rate.currency) === currency && rate.source === 'koreaexim'
+                                );
+                                
+                                // 해당 통화의 customs 데이터 찾기
+                                const customsData = exchangeRates.find(rate =>
+                                    (rate.currencyCode || rate.currency) === currency && rate.source === 'customs'
+                                );
+                                
+                                // 일일 고시환율: koreaexim source인 경우 appliedRate 표시
+                                const dailyRate = koreaeximData?.appliedRate || 0;
+                                
+                                // 관세 주간환율: customs source인 경우 appliedRate 표시
+                                const weeklyTariff = customsData?.appliedRate || 0;
+                                
+                                // 적용환율: customs 우선, 없으면 koreaexim 사용
+                                const appliedRate = customsData?.appliedRate || koreaeximData?.appliedRate || 0;
+
+                                return (
+                                    <tr key={currency}>
+                                        <td className="currency-code">{currency}</td>
+                                        <td className="daily-rate">{dailyRate.toLocaleString()}</td>
+                                        <td className="weekly-tariff">{weeklyTariff.toLocaleString()}</td>
+                                        <td className="applied-rate-cell">
+                                            <input
+                                                type="number"
+                                                className="applied-rate-input"
+                                                value={appliedRate}
+                                                onChange={(e) => onAppliedRateChange(currency, Number(e.target.value))}
+                                                placeholder="환율 입력"
+                                                min="0"
+                                                step="0.01"
+                                            />
+                                        </td>
+                                    </tr>
+                                );
+                            })}
                         </tbody>
                     </table>
                 </div>

@@ -8,9 +8,14 @@ export default function MarginListSection({
     calculatedPrices,
     exchangeRates,
     isCalculated = false
-}: MarginListSectionProps & { isCalculated?: boolean }) {
+}: Omit<MarginListSectionProps, 'platformMargins' | 'onMarginChange' | 'onMarginReset'> & { isCalculated?: boolean }) {
     const getExchangeRate = (currency: string) => {
-        const rate = exchangeRates.find(r => r.currency.includes(currency));
+        if (!exchangeRates || !Array.isArray(exchangeRates)) {
+            console.warn('exchangeRates가 유효하지 않습니다:', exchangeRates);
+            return 0;
+        }
+
+        const rate = exchangeRates.find(r => r?.currency && r.currency.includes(currency));
         return typeof rate?.appliedRate === 'number' ? rate.appliedRate : 0;
     };
 

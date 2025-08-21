@@ -26,7 +26,7 @@ secrets = load_secrets()
 
 # 관세청 API 설정
 CUSTOMS_API_CONFIG = {
-    "base_url": "https://apis.data.go.kr/1220000/retrieveTrifFxrtInfo",  # 관세청 환율 API
+    "base_url": "http://apis.data.go.kr/1220000/retrieveTrifFxrtInfo/getRetrieveTrifFxrtInfo",  # 관세청 환율 API
     "service_key": secrets.get("CUSTOMS_API_KEY", ""),
     "timeout": 30000,  # 타임아웃 증가 (15초 → 30초)
     "retry_count": 3,

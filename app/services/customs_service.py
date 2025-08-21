@@ -33,12 +33,8 @@ class CustomsService:
             # API 문서에 명시된 필수 파라미터만 사용 (보수적 접근)
             params = {
                 "serviceKey": self.service_key,
-                # "aplyBgnDt": datetime.now().strftime("%Y%m%d"),  # 필수: 조회년월일
-                "aplyBgnDt": "20250701",  # 필수: 조회년월일
-                "weekFxrtTpcd": "2",  # 필수: 수입(2) 기준
-                # "pageNo": "1",
-                # "numOfRows": "10",   # 더 보수적으로 줄임 (20 → 10)
-                # "dataType": "XML"    # API가 XML만 지원
+                "aplyBgnDt": datetime.now().strftime("%Y%m%d"),  # 필수: 조회년월일
+                "weekFxrtTpcd": "2"  # 필수: 수입(2) 기준
             }
             
             print(f"관세청 API 호출: 전체 통화 조회 (필터링: {curr_sgn if curr_sgn else '전체'})")
