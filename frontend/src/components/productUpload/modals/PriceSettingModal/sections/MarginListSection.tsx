@@ -1,6 +1,7 @@
 // path: frontend/src/components/productUpload/modals/PriceSettingModal/sections/MarginListSection.tsx
 import React from 'react';
-import type { MarginListSectionProps } from '../types/priceSetting.types';
+import type { MarginListSectionProps } from '@/types/priceSetting.types';
+import '@/styles/productUpload/modals/sections/MarginListSection.css';
 
 export default function MarginListSection({
     selectedProducts,
@@ -20,7 +21,7 @@ export default function MarginListSection({
     const formatOriginalPrice = (price: number | string, currency: string) => {
         const numPrice = typeof price === 'string' ? parseFloat(price) : price;
         if (isNaN(numPrice)) return '-';
-        
+
         // 통화별 단위 표시
         switch (currency) {
             case 'JPY':
@@ -38,7 +39,6 @@ export default function MarginListSection({
 
     return (
         <div className="margin-list-section">
-            <h3>마진 목록</h3>
 
             <div className="margin-formulas">
                 <div className="formula-item">
@@ -98,7 +98,9 @@ export default function MarginListSection({
                                                 {calculated.expectedMargin.toLocaleString()} -
                                                 {(calculated.expectedMargin * 1.15).toLocaleString()}
                                             </>
-                                        ) : '-'}
+                                        ) : (
+                                            '-'
+                                        )}
                                     </td>
                                 </tr>
                             );

@@ -10,6 +10,8 @@ const __dirname = path.dirname(__filename);
 
 export default defineConfig({
   plugins: [react(), svgLoader()],
+  // 환경변수 파일 위치 설정 - 프로젝트 루트의 .env 파일 사용
+  envDir: path.resolve(__dirname, '..'),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "src"), // @ => src 폴더

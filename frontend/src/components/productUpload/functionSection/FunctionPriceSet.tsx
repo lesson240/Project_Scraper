@@ -1,6 +1,6 @@
 // src/components/productUpload/functionSection/FunctionPriceSet.tsx
 import React from "react";
-import PriceSettingModal from "../modals/PriceSettingModal";
+import PriceSettingModalContainer from "../modals/PriceSettingModal/PriceSettingModalContainer";
 
 type Props = {
     isOpen: boolean;
@@ -29,7 +29,7 @@ export default function FunctionPriceSet({ isOpen, onClose, selectedItems, items
     };
 
     return (
-        <PriceSettingModal
+        <PriceSettingModalContainer
             isOpen={isOpen}
             onClose={onClose}
             selectedProducts={selectedProducts}

@@ -1,0 +1,918 @@
+/* path: frontend/src/components/productUpload/modals/PriceSettingModal/PriceSettingModal.css */
+
+.price-setting-container {
+    max-height: 70vh;
+    overflow-y: auto;
+    padding: 24px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border-radius: 16px;
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* 스크롤바 스타일링 */
+.price-setting-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.price-setting-container::-webkit-scrollbar-track {
+    background: #f1f3f4;
+    border-radius: 4px;
+}
+
+.price-setting-container::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #00b5ad 0%, #00a099 100%);
+    border-radius: 4px;
+    border: 1px solid #f1f3f4;
+}
+
+.price-setting-container::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #00a099 0%, #008f87 100%);
+}
+
+/* 기존 selected-products-badge 스타일은 위에서 재정의됨 */
+
+/* 고정 헤더 스타일 */
+.section-header {
+    position: sticky;
+    top: 0;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border: 1px solid #e9ecef;
+    border-radius: 12px 12px 0 0;
+    padding: 18px 24px;
+    margin: 0;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+
+.section-header:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+    border-color: #00b5ad;
+}
+
+.section-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: #2c3e50;
+    border-bottom: none;
+    padding: 0;
+    position: relative;
+}
+
+.section-header h3::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #00b5ad, #00a099);
+    transition: width 0.3s ease;
+}
+
+.section-header:hover h3::after {
+    width: 100%;
+}
+
+.exchange-rate-header {
+    top: 0;
+    z-index: 20;
+}
+
+.formula-header {
+    top: 60px;
+    /* 환율 설정 헤더 다음에 고정 */
+    z-index: 15;
+}
+
+/* 토글 버튼 스타일 */
+.toggle-button {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 1px solid #dee2e6;
+    font-size: 14px;
+    color: #495057;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+.toggle-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: left 0.5s;
+}
+
+.toggle-button:hover::before {
+    left: 100%;
+}
+
+.toggle-button:hover {
+    background: linear-gradient(135deg, #00b5ad 0%, #00a099 100%);
+    color: white;
+    transform: translateY(-2px);
+    border-color: #00b5ad;
+    box-shadow: 0 4px 12px rgba(0, 181, 173, 0.3);
+}
+
+.toggle-button.expanded {
+    background: linear-gradient(135deg, #00b5ad 0%, #00a099 100%);
+    color: white;
+    border-color: #00a099;
+    box-shadow: 0 4px 12px rgba(0, 181, 173, 0.2);
+}
+
+.toggle-button.collapsed {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    color: #495057;
+    border-color: #dee2e6;
+}
+
+.toggle-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 섹션 본문 스타일 */
+.exchange-rate-section,
+.formula-section,
+.margin-list-section {
+    background: linear-gradient(135deg, #ffffff 0%, #fafbfc 100%);
+    border: none;
+    border-radius: 0 0 12px 12px;
+    padding: 24px;
+    margin-top: -1px;
+    animation: slideDown 0.3s ease-out;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border-left: 1px solid #e9ecef;
+    border-right: 1px solid #e9ecef;
+    border-bottom: 1px solid #e9ecef;
+}
+
+/* 섹션 접힘/펼침 애니메이션 */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+        max-height: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        max-height: 1000px;
+        padding-top: 24px;
+        padding-bottom: 24px;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+        max-height: 1000px;
+        padding-top: 24px;
+        padding-bottom: 24px;
+    }
+
+    to {
+        opacity: 0;
+        transform: translateY(-10px);
+        max-height: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+}
+
+/* 섹션 헤더 계층적 고정 */
+.exchange-rate-header {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    background: #fff;
+    border-bottom: 1px solid #e0e0e0;
+    margin-bottom: 0;
+}
+
+.formula-header {
+    position: sticky;
+    top: 60px;
+    /* 환율 설정 헤더 높이만큼 아래에 고정 */
+    z-index: 20;
+    background: #fff;
+    border-bottom: 1px solid #e0e0e0;
+    margin-bottom: 0;
+}
+
+.margin-list-header {
+    position: sticky;
+    top: 120px;
+    /* 환율 설정 + 공식 설정 헤더 높이만큼 아래에 고정 */
+    z-index: 10;
+    background: #fff;
+    border-bottom: 1px solid #e0e0e0;
+    margin-bottom: 0;
+}
+
+/* 환율 섹션 */
+.exchange-rate-section .exchange-rate-table {
+    overflow-x: auto;
+}
+
+/* 테이블 헤더와 노트 */
+.table-header-with-note {
+    margin-bottom: 15px;
+}
+
+.table-header-with-note h4 {
+    margin: 0 0 8px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.tariff-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.tariff-note {
+    font-size: 12px;
+    color: #666;
+    font-style: italic;
+}
+
+.tariff-period {
+    font-size: 12px;
+    color: #007bff;
+    font-weight: 500;
+}
+
+/* 환율 정보 테이블 */
+.exchange-rate-table {
+    margin-bottom: 30px;
+}
+
+.exchange-rate-table table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #e0e0e0;
+}
+
+.exchange-rate-table th,
+.exchange-rate-table td {
+    padding: 12px;
+    text-align: center;
+    border: 1px solid #e0e0e0;
+}
+
+.exchange-rate-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #333;
+}
+
+.exchange-rate-table td {
+    background: white;
+}
+
+/* 환율 입력 필드 */
+.applied-rate-input {
+    width: 100px;
+    padding: 6px 8px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 14px;
+    text-align: center;
+    transition: border-color 0.2s;
+}
+
+.applied-rate-input:focus {
+    outline: none;
+    border-color: #00b5ad;
+    box-shadow: 0 0 0 2px rgba(0, 181, 173, 0.2);
+}
+
+.applied-rate-input::-webkit-outer-spin-button,
+.applied-rate-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.applied-rate-input[type=number] {
+    -moz-appearance: textfield;
+}
+
+/* 공식 설정 섹션 */
+.formula-section .formula-table {
+    overflow-x: auto;
+}
+
+.formula-section table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #e0e0e0;
+}
+
+.formula-section th,
+.formula-section td {
+    padding: 12px;
+    text-align: center;
+    border: 1px solid #e0e0e0;
+}
+
+.formula-section th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #333;
+}
+
+.formula-section td {
+    background: white;
+}
+
+/* 공식 설정 섹션 추가 스타일 */
+.formula-section {
+    padding: 20px;
+}
+
+.formula-options {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.checkbox-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #333;
+}
+
+.checkbox-option input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.formula-sections-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+.base-formula,
+.additional-formula {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+}
+
+.base-formula h4,
+.additional-formula h4 {
+    margin: 0 0 15px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    border-bottom: 2px solid #00b5ad;
+    padding-bottom: 8px;
+}
+
+.formula-display {
+    background: #fff;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #e0e0e0;
+    margin-bottom: 20px;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    color: #333;
+    text-align: center;
+}
+
+.formula-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.input-group label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #555;
+}
+
+.input-group input[type="number"] {
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border-color 0.2s;
+}
+
+.input-group input[type="number"]:focus {
+    outline: none;
+    border-color: #00b5ad;
+    box-shadow: 0 0 0 2px rgba(0, 181, 173, 0.2);
+}
+
+.formula-note {
+    font-size: 11px;
+    color: #666;
+    font-style: italic;
+    margin-top: 15px;
+    text-align: center;
+}
+
+.platform-margins {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+/* 마진 목록 섹션 */
+.margin-list-section .margin-table {
+    overflow-x: auto;
+}
+
+.margin-list-section table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #e0e0e0;
+}
+
+.margin-list-section th,
+.margin-list-section td {
+    padding: 12px;
+    text-align: center;
+    border: 1px solid #e0e0e0;
+}
+
+.margin-list-section th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #333;
+}
+
+.margin-list-section td {
+    background: white;
+}
+
+/* 마진 목록 섹션 추가 스타일 */
+.margin-list-section {
+    padding: 20px;
+}
+
+.margin-formulas {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    border: 1px solid #e0e0e0;
+}
+
+.formula-item {
+    margin-bottom: 8px;
+    font-size: 13px;
+    color: #555;
+}
+
+.formula-item:last-child {
+    margin-bottom: 0;
+}
+
+.formula-item strong {
+    color: #333;
+}
+
+/* 썸네일 셀 스타일 */
+.thumbnail-cell {
+    width: 80px;
+    padding: 8px !important;
+}
+
+.product-thumbnail {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+}
+
+/* 상품명 셀 스타일 */
+.product-name {
+    text-align: left !important;
+    max-width: 200px;
+    word-wrap: break-word;
+}
+
+/* 가격 관련 셀 스타일 */
+.original-price,
+.set-price,
+.margin-rate,
+.margin-amount {
+    font-family: 'Courier New', monospace;
+    font-weight: 500;
+}
+
+.original-price {
+    color: #007bff;
+}
+
+.set-price {
+    color: #28a745;
+}
+
+.margin-rate {
+    color: #ffc107;
+}
+
+.margin-amount {
+    color: #dc3545;
+}
+
+/* 버튼 스타일 */
+.btn-margin {
+    background: #00b5ad;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin: 10px 0;
+}
+
+.btn-margin:hover {
+    background: #00a099;
+    transform: translateY(-1px);
+}
+
+.btn-save {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-right: 10px;
+}
+
+.btn-save:hover {
+    background: #218838;
+    transform: translateY(-1px);
+}
+
+.btn-reset {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-reset:hover {
+    background: #5a6268;
+    transform: translateY(-1px);
+}
+
+/* 모달 헤더 스타일 */
+.modal-header-content {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+}
+
+.modal-header-content h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+}
+
+.selected-products-badge {
+    background: linear-gradient(135deg, #00b5ad 0%, #00a099 100%);
+    color: white;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0, 181, 173, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+}
+
+/* 모달 푸터 스타일 */
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 20px;
+    border-top: 1px solid #e9ecef;
+    background: #f8f9fa;
+}
+
+.modal-footer button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    min-width: 100px;
+    position: relative;
+    overflow: hidden;
+}
+
+.modal-footer button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s;
+}
+
+.modal-footer button:hover::before {
+    left: 100%;
+}
+
+.btn-reset {
+    background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+    color: white;
+    border: 1px solid #6c757d;
+}
+
+.btn-reset:hover {
+    background: linear-gradient(135deg, #5a6268 0%, #495057 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+}
+
+.btn-calculate-margin {
+    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+    color: white;
+    border: 1px solid #17a2b8;
+}
+
+.btn-calculate-margin:hover {
+    background: linear-gradient(135deg, #138496 0%, #117a8b 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(23, 162, 184, 0.3);
+}
+
+.btn-save {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    border: 1px solid #28a745;
+}
+
+.btn-save:hover {
+    background: linear-gradient(135deg, #20c997 0%, #1e7e34 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+.modal-footer button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 로딩 상태 */
+.loading {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+    font-style: italic;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .tariff-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .exchange-rate-table,
+    .formula-section,
+    .margin-list-section {
+        overflow-x: auto;
+    }
+
+    .exchange-rate-table table,
+    .formula-section table,
+    .margin-list-section table {
+        min-width: 600px;
+    }
+
+    .applied-rate-input {
+        width: 80px;
+        font-size: 12px;
+    }
+
+    .formula-sections-container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .platform-margins {
+        grid-template-columns: 1fr;
+    }
+
+    .formula-options {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .margin-list-section table {
+        min-width: 600px;
+    }
+
+    .product-name {
+        max-width: 150px;
+    }
+
+    .thumbnail-cell {
+        width: 60px;
+    }
+
+    .product-thumbnail {
+        width: 50px;
+        height: 50px;
+    }
+}
+
+/* 로딩 컨테이너 스타일 */
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    gap: 16px;
+}
+
+.loading-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #00b5ad;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-text {
+    color: #666;
+    font-size: 14px;
+}
+
+/* 에러 메시지 스타일 */
+.error-message {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #856404;
+    font-size: 14px;
+}
+
+.error-icon {
+    font-size: 16px;
+}
+
+.error-text {
+    flex: 1;
+}
+
+/* 통화별 셀 스타일 */
+.currency-code {
+    font-weight: 600;
+    color: #333;
+    background: #f8f9fa;
+}
+
+.daily-rate,
+.weekly-tariff {
+    font-family: 'Courier New', monospace;
+    font-weight: 500;
+    color: #007bff;
+}
+
+.applied-rate-cell {
+    padding: 8px 16px !important;
+}
+
+/* 환율 입력 필드 개선 */
+.applied-rate-input {
+    width: 100px;
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 14px;
+    text-align: center;
+    transition: all 0.2s;
+    background: white;
+}
+
+.applied-rate-input:focus {
+    outline: none;
+    border-color: #00b5ad;
+    box-shadow: 0 0 0 2px rgba(0, 181, 173, 0.2);
+}
+
+.applied-rate-input:hover {
+    border-color: #00b5ad;
+}
+
+.applied-rate-input::-webkit-outer-spin-button,
+.applied-rate-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.applied-rate-input[type=number] {
+    -moz-appearance: textfield;
+}
+
+/* 연동 아이콘 스타일 */
+.sync-button {
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 4px;
+    margin-left: 8px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    color: #00b5ad;
+}
+
+.sync-button:hover {
+    background: rgba(0, 181, 173, 0.1);
+    transform: scale(1.1);
+}
+
+.sync-button:active {
+    transform: scale(0.95);
+}

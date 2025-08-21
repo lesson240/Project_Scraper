@@ -1,13 +1,15 @@
 // path: frontend/src/components/productUpload/modals/PriceSettingModal/sections/ExchangeRateSection.tsx
 import React from 'react';
 import type { ExchangeRateSectionProps } from '@/types/priceSetting.types';
+import '@/styles/productUpload/modals/sections/ExchangeRateSection.css';
 
-export default function ExchangeRateSection({ 
-    exchangeRates, 
-    isLoading, 
+export default function ExchangeRateSection({
+    exchangeRates,
+    isLoading,
     tariffPeriod,
     error,
-    onAppliedRateChange 
+    onAppliedRateChange,
+    onSyncRates
 }: ExchangeRateSectionProps) {
     if (isLoading) {
         return (
@@ -28,7 +30,7 @@ export default function ExchangeRateSection({
                     <span className="error-text">{error}</span>
                 </div>
             )}
-            
+
             <div className="exchange-rate-table">
                 <div className="table-header-with-note">
                     <h4>환율 정보</h4>
@@ -41,7 +43,7 @@ export default function ExchangeRateSection({
                         </div>
                     </div>
                 </div>
-                
+
                 <div className="table-container">
                     <table>
                         <thead>
@@ -50,15 +52,15 @@ export default function ExchangeRateSection({
                                 <th>일일 고시환율</th>
                                 <th>관세 주간환율</th>
                                 <th>
-                            올땀 적용환율
-                            <button 
-                                className="sync-button" 
-                                onClick={() => onSyncRates()}
-                                title="환율 동기화"
-                            >
-                                🔗
-                            </button>
-                        </th>
+                                    올땀 적용환율
+                                    <button
+                                        className="sync-button"
+                                        onClick={onSyncRates}
+                                        title="환율 동기화"
+                                    >
+                                        🔗
+                                    </button>
+                                </th>
                             </tr>
                         </thead>
                         <tbody>

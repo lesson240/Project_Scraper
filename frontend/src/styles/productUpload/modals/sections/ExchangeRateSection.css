@@ -1,0 +1,379 @@
+/* ExchangeRateSection.css */
+
+.exchange-rate-section {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.section-header {
+    background: #f8f9fa;
+    padding: 16px 20px;
+    border-bottom: 1px solid #e0e0e0;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.2s;
+}
+
+.section-header:hover {
+    background: #e9ecef;
+}
+
+.section-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.toggle-icon {
+    font-size: 14px;
+    color: #666;
+    transition: transform 0.2s;
+}
+
+.toggle-icon.expanded {
+    transform: rotate(90deg);
+}
+
+.section-content {
+    padding: 20px;
+}
+
+.exchange-rate-table {
+    margin-bottom: 30px;
+}
+
+.table-header-with-note {
+    margin-bottom: 15px;
+}
+
+.table-header-with-note h4 {
+    margin: 0 0 8px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.tariff-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.tariff-note {
+    font-size: 12px;
+    color: #666;
+    font-style: italic;
+}
+
+.tariff-period {
+    font-size: 12px;
+    color: #007bff;
+    font-weight: 500;
+}
+
+.table-container {
+    overflow-x: auto;
+}
+
+.exchange-rate-table table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #e0e0e0;
+}
+
+.exchange-rate-table th,
+.exchange-rate-table td {
+    padding: 12px;
+    text-align: center;
+    border: 1px solid #e0e0e0;
+}
+
+.exchange-rate-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #333;
+}
+
+.exchange-rate-table td {
+    background: white;
+}
+
+.currency-code {
+    font-weight: 600;
+    color: #333;
+    background: #f8f9fa;
+}
+
+.daily-rate,
+.weekly-tariff {
+    font-family: 'Courier New', monospace;
+    font-weight: 500;
+    color: #007bff;
+}
+
+.applied-rate-cell {
+    padding: 8px 16px !important;
+}
+
+/* 실시간 환율 조회 관련 스타일 */
+.fetch-rate-cell {
+    text-align: center;
+    padding: 8px 16px !important;
+}
+
+.fetch-rate-button {
+    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 60px;
+    position: relative;
+    overflow: hidden;
+}
+
+.fetch-rate-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s;
+}
+
+.fetch-rate-button:hover::before {
+    left: 100%;
+}
+
+.fetch-rate-button:hover {
+    background: linear-gradient(135deg, #138496 0%, #117a8b 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(23, 162, 184, 0.3);
+}
+
+.fetch-rate-button:disabled {
+    background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.fetch-rate-button.fetching {
+    background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+    color: #212529;
+}
+
+.fetching-spinner {
+    animation: spin 1s linear infinite;
+}
+
+/* 실시간 데이터 표시 인디케이터 */
+.fetched-indicator {
+    margin-left: 6px;
+    font-size: 12px;
+    animation: pulse 2s infinite;
+    display: inline-block;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.7;
+        transform: scale(1.1);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* 환율 입력 필드 개선 */
+.applied-rate-input {
+    width: 100px;
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 14px;
+    text-align: center;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.applied-rate-input:focus {
+    outline: none;
+    border-color: #00b5ad;
+    box-shadow: 0 0 0 3px rgba(0, 181, 173, 0.1);
+}
+
+.applied-rate-input:hover {
+    border-color: #00b5ad;
+}
+
+.applied-rate-input::-webkit-outer-spin-button,
+.applied-rate-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.applied-rate-input[type=number] {
+    -moz-appearance: textfield;
+}
+
+.sync-button {
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 4px;
+    margin-left: 8px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    color: #00b5ad;
+}
+
+.sync-button:hover {
+    background: rgba(0, 181, 173, 0.1);
+    transform: scale(1.1);
+}
+
+.sync-button:active {
+    transform: scale(0.95);
+}
+
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    gap: 16px;
+}
+
+.loading-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #00b5ad;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-text {
+    color: #666;
+    font-size: 14px;
+}
+
+.error-message {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #856404;
+    font-size: 14px;
+}
+
+.error-icon {
+    font-size: 16px;
+}
+
+.error-text {
+    flex: 1;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .tariff-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .exchange-rate-table {
+        overflow-x: auto;
+    }
+
+    .exchange-rate-table table {
+        min-width: 600px;
+    }
+
+    .applied-rate-input {
+        width: 80px;
+        font-size: 12px;
+    }
+}
+
+/* 테이블 헤더 스타일 개선 */
+.exchange-rate-table th {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    font-weight: 600;
+    color: #495057;
+    padding: 14px 12px;
+    border: 1px solid #dee2e6;
+    position: relative;
+}
+
+.exchange-rate-table th:last-child {
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    color: #1976d2;
+}
+
+/* 테이블 셀 스타일 개선 */
+.exchange-rate-table td {
+    padding: 12px;
+    border: 1px solid #e9ecef;
+    background: white;
+    transition: background-color 0.2s ease;
+}
+
+.exchange-rate-table tr:hover td {
+    background: #f8f9fa;
+}
+
+/* 통화 코드 스타일 */
+.currency-code {
+    font-weight: 700;
+    color: #2c3e50;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
+}
+
+/* 일일 환율과 주간 환율 스타일 */
+.daily-rate,
+.weekly-tariff {
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+    color: #007bff;
+    text-align: right;
+    padding-right: 20px !important;
+}

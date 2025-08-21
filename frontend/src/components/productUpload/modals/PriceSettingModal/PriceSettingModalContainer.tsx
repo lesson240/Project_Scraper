@@ -2,10 +2,32 @@
 import React, { useState, useEffect } from 'react';
 import PriceSettingModal from './PriceSettingModal';
 import { useExchangeRateManager } from '@/hooks/useExchangeRateManager';
+import { getExchangeRatesForFrontend } from '@/apis/exchangeRateApi';
 import type { PriceSettingModalProps, Product } from '@/types/priceSetting.types';
 
+// 공식설정 타입 정의
+interface FormulaSettings {
+    basePrice: number;
+    exchangeRate: number;
+    platformMargin: {
+        coupang: number;
+        auction: number;
+        gmarket: number;
+        elevenst: number;
+    };
+    isEnabled: boolean;
+}
+
+// 플랫폼 마진 타입 정의
+interface PlatformMargins {
+    coupang: number;
+    auction: number;
+    gmarket: number;
+    elevenst: number;
+}
+
 export default function PriceSettingModalContainer(props: PriceSettingModalProps) {
-    const [formulaSettings, setFormulaSettings] = useState({
+    const [formulaSettings, setFormulaSettings] = useState<FormulaSettings>({
         basePrice: 50000,
         exchangeRate: 1350,
         platformMargin: {
@@ -17,7 +39,7 @@ export default function PriceSettingModalContainer(props: PriceSettingModalProps
         isEnabled: true
     });
 
-    const [platformMargins, setPlatformMargins] = useState({
+    const [platformMargins, setPlatformMargins] = useState<PlatformMargins>({
         coupang: 15,
         auction: 15,
         gmarket: 15,
@@ -25,14 +47,14 @@ export default function PriceSettingModalContainer(props: PriceSettingModalProps
     });
 
     // 섹션 토글 상태
-    const [isExchangeRateExpanded, setIsExchangeRateExpanded] = useState(false);
-    const [isFormulaExpanded, setIsFormulaExpanded] = useState(true);
-    
+    const [isExchangeRateExpanded, setIsExchangeRateExpanded] = useState(true); // 환율 설정은 기본적으로 펼쳐짐
+    const [isFormulaExpanded, setIsFormulaExpanded] = useState(true); // 공식 설정도 기본적으로 펼쳐짐
+
     // 마진 계산 완료 상태
     const [isCalculated, setIsCalculated] = useState(false);
 
     // 환율 정보 훅 사용
-    const { exchangeRates, isLoading: ratesLoading, tariffPeriod, error, updateAppliedRate } = useExchangeRateManager();
+    const { exchangeRates, isLoading: ratesLoading, tariffPeriod, error, updateAppliedRate, fetchFrontendExchangeRates } = useExchangeRateManager();
 
     // 가격 계산 로직 (더미 데이터)
     const [calculatedPrices, setCalculatedPrices] = useState<any[]>([]);
@@ -77,23 +99,25 @@ export default function PriceSettingModalContainer(props: PriceSettingModalProps
                 expectedMargin: 15000,
                 expectedMarginRate: 26.1
             }));
-            
+
             setCalculatedPrices(calculated);
             setIsCalculated(true);
         }
     };
 
     const handleSave = () => {
+        if (!props.onSave) return;
+
         // 선택된 상품들의 가격 정보 업데이트
         const updatedProducts = props.selectedProducts.map(product => {
             const calculated = calculatedPrices.find(calc => calc.productId === product.id);
             const exchangeRate = exchangeRates.find(rate => rate.currency === product.currency);
-            
+
             // 설정 상품가 계산 (원본 할인가 * 환율 + 마진)
             let settingPrice = 0;
             if (calculated && exchangeRate && typeof exchangeRate.appliedRate === 'number') {
-                const originalPrice = typeof product.originalPrice === 'string' 
-                    ? parseFloat(product.originalPrice) 
+                const originalPrice = typeof product.originalPrice === 'string'
+                    ? parseFloat(product.originalPrice)
                     : product.originalPrice;
                 settingPrice = Math.round(originalPrice * exchangeRate.appliedRate + calculated.expectedMargin);
             }
@@ -113,7 +137,7 @@ export default function PriceSettingModalContainer(props: PriceSettingModalProps
             calculatedPrices,
             updatedProducts
         };
-        
+
         props.onSave(settings);
         props.onClose();
     };
@@ -140,8 +164,23 @@ export default function PriceSettingModalContainer(props: PriceSettingModalProps
         setIsCalculated(false);
     };
 
-    const handleExchangeRateToggle = () => {
-        setIsExchangeRateExpanded(!isExchangeRateExpanded);
+    const handleExchangeRateToggle = async () => {
+        const newExpandedState = !isExchangeRateExpanded;
+        setIsExchangeRateExpanded(newExpandedState);
+
+        // 환율 설정 섹션이 펼쳐질 때 새로운 API 호출
+        if (newExpandedState) {
+            try {
+                console.log('환율 설정 섹션 펼침 - 프론트엔드 전용 API 호출 중...');
+
+                // useExchangeRateManager의 fetchFrontendExchangeRates 함수 호출
+                await fetchFrontendExchangeRates();
+
+                console.log('환율 데이터 업데이트 완료');
+            } catch (error) {
+                console.error('프론트엔드 환율 정보 조회 중 오류:', error);
+            }
+        }
     };
 
     const handleFormulaToggle = () => {

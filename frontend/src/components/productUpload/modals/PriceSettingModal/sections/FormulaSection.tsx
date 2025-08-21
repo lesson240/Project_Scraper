@@ -1,6 +1,7 @@
 // path: frontend/src/components/productUpload/modals/PriceSettingModal/sections/FormulaSection.tsx
 import React from 'react';
-import type { FormulaSectionProps } from '../types/priceSetting.types';
+import type { FormulaSectionProps } from '@/types/priceSetting.types';
+import '@/styles/productUpload/modals/sections/FormulaSection.css';
 
 export default function FormulaSection({
     formulaSettings,

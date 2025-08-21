@@ -4,64 +4,45 @@ export interface Product {
     id: string;
     name: string;
     thumbnail: string;
-    price: number;
+    originalPrice: number | string;
+    currency: string;
     tags: string[];
-}
-
-export interface FormulaSettings {
-    basePrice: number;
-    exchangeRate: number;
-    platformMargin: {
-        [key: string]: number;
-    };
-    isEnabled: boolean;
 }
 
 export interface ExchangeRateData {
     currency: string;
     dailyRate: number;
     weeklyTariff: number;
-    appliedRate: number;
-}
-
-export interface CalculatedPrice {
-    productId: string;
-    originalPrice: number;
-    setPrice: number;
-    marginRate: number;
-    marginAmount: number;
+    appliedRate: number | string;
+    lastUpdated?: Date;
+    source?: 'customs' | 'koreaexim' | 'manual';
 }
 
 export interface PriceSettingModalProps {
     isOpen: boolean;
     onClose: () => void;
     selectedProducts: any[];
-    onSave: (settings: any) => void;
+    onSave?: (settings: any) => void;
 }
 
 export interface PriceSettingModalUIProps {
     isOpen: boolean;
     onClose: () => void;
     selectedProducts: any[];
-    formulaSettings: FormulaSettings;
-    platformMargins: { [key: string]: number };
     exchangeRates: ExchangeRateData[];
     calculatedPrices: CalculatedPrice[];
     isCalculated: boolean;
     tariffPeriod: string;
     isLoading: boolean;
     error: string | null;
-    isExchangeRateExpanded: boolean;
-    isFormulaExpanded: boolean;
-    onFormulaChange: (field: string, value: number | boolean) => void;
-    onPlatformMarginChange: (platform: string, value: number) => void;
-    onCalculateMargin: () => void;
-    onSave: () => void;
-    onReset: () => void;
-    onExchangeRateToggle: () => void;
-    onFormulaToggle: () => void;
     onAppliedRateChange: (currency: string, rate: number) => void;
     onSyncRates: () => void;
+    formulaSettings: FormulaSettings;
+    platformMargins: PlatformMargins;
+    onFormulaChange: (field: string, value: any) => void;
+    onFormulaReset: () => void;
+    onMarginChange: (platform: string, value: number) => void;
+    onMarginReset: () => void;
 }
 
 export interface ExchangeRateSectionProps {
@@ -73,14 +54,57 @@ export interface ExchangeRateSectionProps {
     onSyncRates: () => void;
 }
 
+export interface FormulaSettings {
+    costFormula: string;
+    priceFormula: string;
+    marginFormula: string;
+    freeShipping: boolean;
+    optimizeShippingFee: boolean;
+    baseMarginRate: number;
+    additionalMargin: number;
+    baseShippingFee: number;
+    returnShippingFee: number;
+    exchangeShippingFee: number;
+}
+
+export interface PlatformMargins {
+    coupang: number;
+    elevenst: number;
+    gmarket: number;
+    openmarket: number;
+    auction: number;
+}
+
+export interface CalculatedPrice {
+    productId: string;
+    currency: string;
+    originalPrice: number;
+    calculatedPrice: number;
+    margin: number;
+    finalPrice: number;
+    basePrice: number;
+    platformPrices: {
+        coupang: number;
+        auction: number;
+        gmarket: number;
+        elevenst: number;
+    };
+    expectedMargin: number;
+    expectedMarginRate: number;
+}
+
 export interface FormulaSectionProps {
     formulaSettings: FormulaSettings;
-    platformMargins: { [key: string]: number };
-    onFormulaChange: (field: string, value: number | boolean) => void;
+    platformMargins: PlatformMargins;
+    onFormulaChange: (field: string, value: any) => void;
     onPlatformMarginChange: (platform: string, value: number) => void;
 }
 
 export interface MarginListSectionProps {
+    selectedProducts: Product[];
     calculatedPrices: CalculatedPrice[];
-    isCalculated: boolean;
+    exchangeRates: ExchangeRateData[];
+    platformMargins: PlatformMargins;
+    onMarginChange: (platform: string, value: number) => void;
+    onMarginReset: () => void;
 }

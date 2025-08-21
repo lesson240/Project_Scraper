@@ -7,6 +7,11 @@ sys.path.append(str(BASE_DIR))
 
 # 프로젝트 Module 불러오기
 from app.utils.util_logging import setup_logger
+
+# 강제 모듈 리로드를 위한 importlib 사용
+import importlib
+
+# 모듈들을 개별적으로 import하여 캐시 문제 방지
 from app.routers import (
     func_autocomplete,
     func_inquiry,
@@ -18,6 +23,8 @@ from app.routers import (
     page_product_upload,
     page_user_setting,
     user_account,
+    exchange_rates,
+    exchange_rate_sync,
 )  # , user 사용자 서비스를 비활성화합니다.
 from app.imagehost.routers import imagehost_router  # ImageHost 라우터 추가
 from app.services.service_mongodb import mongodb_service
@@ -59,6 +66,8 @@ routers = [
     (page_user_setting.router, ["PageUserSetting"]),
     (user_account.router, ["UserAccount"]),
     (imagehost_router, ["ImageHost"]),  # ImageHost 라우터 추가
+    (exchange_rates.router, ["ExchangeRates"]),  # 환율 API 라우터 추가
+    (exchange_rate_sync.router, ["ExchangeRateSync"]),  # 환율 동기화 API 라우터 추가
 ]
 
 

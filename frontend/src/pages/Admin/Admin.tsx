@@ -1,7 +1,6 @@
 // path: frontend/src/pages/Admin/Admin.tsx
 import React, { useState, useEffect } from 'react';
 import AdminRouter from './AdminRouter';
-import { customsApiService, ExchangeRateInfo } from '@/apis/customsApi';
 import ImageHostingSection from './components/ImageHosting/ImageHostingSection';
 import { FaCog, FaUsers, FaChartLine, FaImage, FaDatabase, FaShieldAlt, FaGlobe } from 'react-icons/fa';
 import './Admin.css';
@@ -25,7 +24,7 @@ interface ApiInfo {
 
 export default function Admin() {
     const [activeTab, setActiveTab] = useState('dashboard');
-    
+
     // API 정보 상태
     const [apis, setApis] = useState<ApiInfo[]>([
         {
@@ -33,8 +32,8 @@ export default function Admin() {
             name: '관세청 환율정보 API',
             endpoint: 'https://apis.data.go.kr/1220000/retrieveTrifFxrtInfo',
             dataFormat: 'XML',
-            authKey: import.meta.env.VITE_CUSTOMS_API_KEY || 'API 키가 설정되지 않음',
-            authKeyDecoded: import.meta.env.VITE_CUSTOMS_API_KEY ? decodeURIComponent(import.meta.env.VITE_CUSTOMS_API_KEY) : 'API 키가 설정되지 않음',
+            authKey: 'API 키는 백엔드에서 관리됩니다',
+            authKeyDecoded: 'API 키는 백엔드에서 관리됩니다',
             status: 'active',
             lastUsed: '2024-08-20 10:30:00',
             usageCount: 1250,
@@ -55,13 +54,13 @@ export default function Admin() {
     });
 
     const [showAddForm, setShowAddForm] = useState(false);
-    
+
     // API 테스트 상태
     const [isTestingApi, setIsTestingApi] = useState(false);
     const [apiTestResult, setApiTestResult] = useState<{
         isConnected: boolean;
         message: string;
-        exchangeRates?: ExchangeRateInfo[];
+        exchangeRates?: any[];
     } | null>(null);
 
     // API 테스트 실행
@@ -69,41 +68,33 @@ export default function Admin() {
         if (apiId === 'customs_exchange_rate') {
             setIsTestingApi(true);
             setApiTestResult(null);
-            
+
             try {
-                // API 연결 상태 확인
-                const status = await customsApiService.checkApiStatus();
-                
-                if (status.isConnected) {
-                    // 주요 통화 환율 정보 조회
-                    const rates = await customsApiService.getMajorExchangeRates();
-                    setApiTestResult({
-                        isConnected: true,
-                        message: 'API 연결 및 데이터 조회 성공',
-                        exchangeRates: rates
-                    });
-                    
-                    // 사용량 업데이트
-                    setApis(prev => prev.map(api => 
-                        api.id === apiId 
-                            ? { 
-                                ...api, 
-                                lastUsed: new Date().toLocaleString(),
-                                monthlyUsage: api.monthlyUsage + 1,
-                                usageCount: api.usageCount + 1
-                            }
-                            : api
-                    ));
-                } else {
-                    setApiTestResult({
-                        isConnected: false,
-                        message: status.message
-                    });
-                }
+                // 백엔드 API를 통해 환율 정보 조회
+                const response = await fetch('http://localhost:8000/v1/api/exchange-rate-sync/status');
+                const status = await response.json();
+
+                setApiTestResult({
+                    isConnected: true,
+                    message: '백엔드 API 연결 성공',
+                    exchangeRates: []
+                });
+
+                // 사용량 업데이트
+                setApis(prev => prev.map(api =>
+                    api.id === apiId
+                        ? {
+                            ...api,
+                            lastUsed: new Date().toLocaleString(),
+                            monthlyUsage: api.monthlyUsage + 1,
+                            usageCount: api.usageCount + 1
+                        }
+                        : api
+                ));
             } catch (error) {
                 setApiTestResult({
                     isConnected: false,
-                    message: `API 테스트 실패: ${error instanceof Error ? error.message : '알 수 없는 오류'}`
+                    message: '백엔드 API 연결 실패'
                 });
             } finally {
                 setIsTestingApi(false);
@@ -130,7 +121,7 @@ export default function Admin() {
                 expirationDate: '2025-12-31',
                 description: newApi.description || ''
             };
-            
+
             setApis(prev => [...prev, api]);
             setNewApi({
                 name: '',
@@ -145,8 +136,8 @@ export default function Admin() {
 
     // API 상태 변경
     const handleToggleApiStatus = (apiId: string) => {
-        setApis(prev => prev.map(api => 
-            api.id === apiId 
+        setApis(prev => prev.map(api =>
+            api.id === apiId
                 ? { ...api, status: api.status === 'active' ? 'inactive' : 'active' }
                 : api
         ));
@@ -162,7 +153,7 @@ export default function Admin() {
         <div className="api-management-section">
             <div className="d-flex justify-content-between align-items-center mb-4">
                 <h3>API 관리</h3>
-                <button 
+                <button
                     className="btn btn-primary"
                     onClick={() => setShowAddForm(!showAddForm)}
                 >
@@ -230,7 +221,7 @@ export default function Admin() {
                             rows={3}
                         />
                     </div>
-                    <button 
+                    <button
                         className="btn btn-success"
                         onClick={handleAddApi}
                         disabled={!newApi.name || !newApi.endpoint || !newApi.authKey}
@@ -258,7 +249,7 @@ export default function Admin() {
                                     </small>
                                     <br />
                                     <small className="text-muted">
-                                        <strong>상태:</strong> 
+                                        <strong>상태:</strong>
                                         <span className={`badge ms-2 ${api.status === 'active' ? 'bg-success' : 'bg-secondary'}`}>
                                             {api.status === 'active' ? '활성' : '비활성'}
                                         </span>
@@ -266,20 +257,20 @@ export default function Admin() {
                                 </div>
                             </div>
                             <div className="api-actions">
-                                <button 
+                                <button
                                     className={`btn btn-sm ${api.status === 'active' ? 'btn-warning' : 'btn-success'} me-2`}
                                     onClick={() => handleToggleApiStatus(api.id)}
                                 >
                                     {api.status === 'active' ? '비활성화' : '활성화'}
                                 </button>
-                                <button 
+                                <button
                                     className="btn btn-sm btn-info me-2"
                                     onClick={() => handleTestApi(api.id)}
                                     disabled={isTestingApi}
                                 >
                                     {isTestingApi ? '테스트 중...' : '테스트'}
                                 </button>
-                                <button 
+                                <button
                                     className="btn btn-sm btn-danger"
                                     onClick={() => handleDeleteApi(api.id)}
                                 >
@@ -335,63 +326,63 @@ export default function Admin() {
         </div>
     );
 
-  return (
+    return (
         <div className="admin-container">
             {/* 탭 네비게이션 */}
-      <div className="admin-tabs">
-                <button 
+            <div className="admin-tabs">
+                <button
                     className={`tab-button ${activeTab === 'dashboard' ? 'active' : ''}`}
                     onClick={() => setActiveTab('dashboard')}
                 >
                     <FaCog className="me-2" />
                     대시보드
                 </button>
-                <button 
+                <button
                     className={`tab-button ${activeTab === 'imageHosting' ? 'active' : ''}`}
                     onClick={() => setActiveTab('imageHosting')}
                 >
                     <FaImage className="me-2" />
                     이미지 호스팅
                 </button>
-                <button 
+                <button
                     className={`tab-button ${activeTab === 'api' ? 'active' : ''}`}
                     onClick={() => setActiveTab('api')}
                 >
                     <FaGlobe className="me-2" />
                     API 관리
                 </button>
-                <button 
+                <button
                     className={`tab-button ${activeTab === 'users' ? 'active' : ''}`}
                     onClick={() => setActiveTab('users')}
                 >
                     <FaUsers className="me-2" />
                     사용자 관리
                 </button>
-                <button 
+                <button
                     className={`tab-button ${activeTab === 'system' ? 'active' : ''}`}
                     onClick={() => setActiveTab('system')}
                 >
                     <FaChartLine className="me-2" />
                     시스템 모니터링
                 </button>
-                <button 
+                <button
                     className={`tab-button ${activeTab === 'database' ? 'active' : ''}`}
                     onClick={() => setActiveTab('database')}
                 >
                     <FaDatabase className="me-2" />
                     데이터베이스 관리
                 </button>
-                <button 
+                <button
                     className={`tab-button ${activeTab === 'security' ? 'active' : ''}`}
                     onClick={() => setActiveTab('security')}
                 >
                     <FaShieldAlt className="me-2" />
                     보안 설정
                 </button>
-      </div>
+            </div>
 
-      {/* 메인 컨텐츠 */}
-      <div className="admin-content">
+            {/* 메인 컨텐츠 */}
+            <div className="admin-content">
                 {activeTab === 'dashboard' && (
                     <div className="dashboard-section">
                         <h3>시스템 대시보드</h3>
@@ -432,7 +423,7 @@ export default function Admin() {
                     <div className="users-section">
                         <h3>사용자 관리</h3>
                         <div className="p-4 text-center text-muted">
-                            <FaUsers className="mb-3" style={{fontSize: '3rem', opacity: 0.3}} />
+                            <FaUsers className="mb-3" style={{ fontSize: '3rem', opacity: 0.3 }} />
                             <p>사용자 계정, 권한, 그룹 관리</p>
                             <p>사용자 관리 기능 개발 예정</p>
                         </div>
@@ -443,7 +434,7 @@ export default function Admin() {
                     <div className="system-section">
                         <h3>시스템 모니터링</h3>
                         <div className="p-4 text-center text-muted">
-                            <FaChartLine className="mb-3" style={{fontSize: '3rem', opacity: 0.3}} />
+                            <FaChartLine className="mb-3" style={{ fontSize: '3rem', opacity: 0.3 }} />
                             <p>시스템 성능, 로그, 알림 관리</p>
                             <p>시스템 모니터링 기능 개발 예정</p>
                         </div>
@@ -454,7 +445,7 @@ export default function Admin() {
                     <div className="database-section">
                         <h3>데이터베이스 관리</h3>
                         <div className="p-4 text-center text-muted">
-                            <FaDatabase className="mb-3" style={{fontSize: '3rem', opacity: 0.3}} />
+                            <FaDatabase className="mb-3" style={{ fontSize: '3rem', opacity: 0.3 }} />
                             <p>DB 백업, 복구, 최적화</p>
                             <p>데이터베이스 관리 기능 개발 예정</p>
                         </div>
@@ -465,13 +456,13 @@ export default function Admin() {
                     <div className="security-section">
                         <h3>보안 설정</h3>
                         <div className="p-4 text-center text-muted">
-                            <FaShieldAlt className="mb-3" style={{fontSize: '3rem', opacity: 0.3}} />
+                            <FaShieldAlt className="mb-3" style={{ fontSize: '3rem', opacity: 0.3 }} />
                             <p>접근 제어, 암호화, 감사 로그</p>
                             <p>보안 설정 기능 개발 예정</p>
+                        </div>
                     </div>
-                  </div>
                 )}
             </div>
-      </div>
-  );
+        </div>
+    );
 }

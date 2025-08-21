@@ -99,6 +99,237 @@ src/styles/productUpload/modals/PriceSettingModal.css  # 전역 스타일 폴더
 
 ---
 
+## 💱 환율 동기화 시스템 아키텍처
+
+### 🏗️ **시스템 구조**
+
+#### **핵심 컴포넌트**
+```
+환율 동기화 시스템
+├── exchange_rate_sync.py          # 🎯 백엔드 핵심 동기화 로직 (FastAPI)
+├── useExchangeRateSync.ts         # 🔄 React 상태 관리 훅
+├── ExchangeRateSection.tsx        # 🖥️ UI 표시 및 사용자 인터랙션
+├── PriceSettingModalContainer.tsx # 🔗 이벤트 연결 및 상태 관리
+└── main.py                        # 🚪 FastAPI 라우터 등록
+```
+
+#### **역할 분담**
+```
+프론트엔드 (React)
+├── 사용자 인터랙션 처리
+├── 환율 데이터 상태 관리
+├── 백엔드 API 호출
+└── UI 렌더링
+
+백엔드 (FastAPI)
+├── 외부 API 프록시 (관세청, 한국수출입은행)
+├── MongoDB 데이터 저장/조회
+├── 비즈니스 로직 처리
+├── 날짜 유효성 검증
+├── API 호출 제한 관리
+└── 초기 데이터 생성
+
+데이터베이스 (MongoDB)
+├── 환율 데이터 영구 저장
+├── 날짜별 데이터 관리
+└── 데이터 무결성 보장
+```
+
+#### **데이터 흐름**
+```
+사용자 펼치기 토글 클릭
+    ↓
+ExchangeRateSection.tsx (onSyncRates 호출)
+    ↓
+PriceSettingModalContainer.tsx (handleSyncRates 실행)
+    ↓
+useExchangeRateSync.ts (syncExchangeRates 실행)
+    ↓
+백엔드 API (/api/exchange-rate-sync/sync)
+    ↓
+ExchangeRateSyncService.sync_exchange_rates()
+    ↓
+MongoDB에서 환율 데이터 로드 또는 외부 API에서 새 데이터 가져오기
+```
+
+### 🔄 **상세 동작 흐름**
+
+#### **1단계: 사용자 인터랙션**
+```
+가격 설정 모달 → 환율 설정 섹션 → 펼치기 토글 클릭
+    ↓
+ExchangeRateSection.tsx에서 onSyncRates() 함수 호출
+    ↓
+PriceSettingModalContainer.tsx의 handleSyncRates() 실행
+    ↓
+useExchangeRateSync.ts의 syncExchangeRates() 실행
+```
+
+#### **2단계: 백엔드 API 호출**
+```
+POST /api/exchange-rate-sync/sync
+    ↓
+ExchangeRateSyncService.sync_exchange_rates() 실행
+    ↓
+데이터베이스 구조 확인 및 초기화
+```
+
+#### **3단계: 데이터베이스 구조 검증**
+```
+ExchangeRateSyncService.ensure_collections_exist()
+    ↓
+MongoDB 연결 상태 확인
+    ↓
+필요한 컬렉션 존재 여부 확인 및 생성
+    ↓
+데이터베이스 경로 검증 완료
+```
+
+#### **4단계: 날짜 유효성 검증**
+```
+ExchangeRateSyncService.sync_exchange_rates()
+    ↓
+MongoDB에서 저장된 환율 데이터 조회
+    ↓
+데이터가 없는 경우 → 초기 데이터 자동 생성
+    ↓
+오늘 날짜와 저장된 데이터 날짜 비교
+    ↓
+일일고시환율 반영 날짜 vs 오늘 날짜
+관세주간환율 종료 날짜 vs 오늘 날짜
+```
+
+#### **5단계: 조건부 API 호출**
+```
+날짜가 다르면 → 외부 API 호출
+날짜가 같으면 → MongoDB 캐시 사용
+
+일일고시환율:
+├── 날짜 불일치 → 한국수출입은행 API 호출
+└── 날짜 일치 → MongoDB 캐시 사용
+
+관세주간환율:
+├── 날짜 불일치 → 관세청 API 호출
+└── 날짜 일치 → MongoDB 캐시 사용
+```
+
+#### **6단계: 데이터 저장 및 통합**
+```
+외부 API에서 가져온 데이터 → MongoDB에 저장
+    ↓
+일일고시환율 + 관세주간환율 데이터 통합
+    ↓
+통합된 환율 데이터를 프론트엔드로 전송
+    ↓
+React 상태에 반영하여 UI 업데이트
+```
+
+### 🎯 **핵심 기능**
+
+#### **자동 초기화**
+- **MongoDB에 환율 데이터가 전혀 없는 경우**
+- **기본 통화별 초기 환율 데이터 자동 생성**
+- **USD, EUR, JPY, CNY 통화별 기본값 설정**
+- **컬렉션이 존재하지 않는 경우 자동 생성**
+
+#### **스마트 캐싱**
+- **일일 1회 API 호출 제한**
+- **날짜 기반 캐시 유효성 검증**
+- **불필요한 외부 API 호출 방지**
+- **강제 동기화 옵션 제공**
+
+#### **에러 처리 및 복구**
+- **API 호출 실패 시 기본값 사용**
+- **데이터베이스 연결 실패 시 명확한 에러 메시지**
+- **부분적 실패 시에도 시스템 안정성 유지**
+- **로깅을 통한 상세한 에러 추적**
+
+### 🔧 **API 호출 제한 정책**
+
+#### **일일 호출 한도**
+```
+MAX_DAILY_API_CALLS = 1 (통화 타입별)
+
+일일고시환율: 하루 최대 1회
+관세주간환율: 하루 최대 1회
+```
+
+#### **호출 카운트 관리**
+```
+날짜가 바뀌면 카운트 자동 초기화
+API 호출 성공 시에만 카운트 증가
+한도 초과 시 에러 메시지 반환
+강제 동기화 시 제한 우회 가능
+```
+
+### 📊 **데이터 구조**
+
+#### **MongoDB 컬렉션 구조**
+```
+exchange_rates 컬렉션
+├── currencyCode: 통화 코드 (USD, EUR, JPY, CNY)
+├── appliedRate: 적용 환율
+├── source: 데이터 출처 (customs, koreaexim, manual)
+├── rateType: 환율 타입 (daily, weekly)
+├── baseDate: 기준 날짜 (YYYYMMDD)
+└── isActive: 활성 상태
+```
+
+#### **프론트엔드 데이터 구조**
+```
+ExchangeRateData
+├── currency: 통화 코드
+├── dailyRate: 일일고시환율
+├── weeklyTariff: 관세주간환율
+├── appliedRate: 적용 환율
+```
+
+#### **백엔드 API 응답 구조**
+```
+ExchangeRateSyncResponse
+├── success: 성공 여부
+├── data: 통합된 환율 데이터
+├── message: 동기화 결과 메시지
+├── source: 데이터 출처 (cache/api/initialized)
+├── lastUpdated: 마지막 업데이트 시간
+├── dailyRateDate: 일일고시환율 날짜
+├── weeklyTariffDate: 관세주간환율 날짜
+├── isDailyRateValid: 일일고시환율 유효성
+└── isWeeklyTariffValid: 관세주간환율 유효성
+```
+
+### 🚀 **성능 최적화**
+
+#### **캐시 전략**
+- **날짜 기반 캐시 유효성 검증**
+- **MongoDB 영구 저장**
+- **중복 API 호출 방지**
+- **스마트한 동기화 조건 확인**
+
+#### **비동기 처리**
+- **FastAPI 비동기 처리**
+- **MongoDB 비동기 드라이버 사용**
+- **에러 발생 시에도 다른 API 호출 계속 진행**
+- **사용자 경험 최적화**
+
+### 🔐 **보안 및 환경변수**
+
+#### **환경변수 관리**
+```
+프로젝트 루트 (.env)
+├── VITE_CUSTOMS_API_KEY: 관세청 API 키
+├── VITE_KOREAEXIM_API_KEY: 한국수출입은행 API 키
+└── VITE_API_BASE_URL: 백엔드 API 기본 URL
+```
+
+#### **API 키 보안**
+- **백엔드에서만 API 키 접근**
+- **프론트엔드에는 API 키 노출 금지**
+- **환경변수를 통한 안전한 키 관리**
+- **API 호출 제한을 통한 비용 관리**
+
+---
+
 ## 이미지 호스팅 시스템 관리 가이드
 
 ### 📁 파일명 규칙 (Naming Convention)
