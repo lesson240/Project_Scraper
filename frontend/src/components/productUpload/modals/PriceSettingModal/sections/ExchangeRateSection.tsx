@@ -70,11 +70,20 @@ export default function ExchangeRateSection({
                                     rate.currencyCode === currency
                                 );
 
-                                // 일일 고시환율: koreaexim source인 경우 appliedRate 표시
-                                const dailyRate = rateData?.source === 'koreaexim' ? rateData.appliedRate : 0;
+                                // 일일 고시환율: koreaeximRate 값 사용
+                                const dailyRate = rateData?.koreaeximRate || 0;
 
-                                // 관세 주간환율: customs source인 경우 appliedRate 표시
-                                const weeklyTariff = rateData?.source === 'customs' ? rateData.appliedRate : 0;
+                                // 관세 주간환율: customsRate 값 사용
+                                const weeklyTariff = rateData?.customsRate || 0;
+
+                                // 디버깅 로그 (필요시에만 활성화)
+                                // console.log(`${currency} 환율 데이터:`, {
+                                //     dailyRate,
+                                //     weeklyTariff,
+                                //     appliedRate: rateData?.appliedRate,
+                                //     koreaeximRate: rateData?.koreaeximRate,
+                                //     customsRate: rateData?.customsRate
+                                // });
 
                                 // 적용환율: customs 우선, 없으면 koreaexim 사용
                                 const appliedRate = rateData?.appliedRate || 0;

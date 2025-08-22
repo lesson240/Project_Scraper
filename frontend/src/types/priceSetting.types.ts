@@ -17,6 +17,9 @@ export interface ExchangeRateData {
     appliedRate: number;
     lastUpdated?: Date;
     source?: 'customs' | 'koreaexim' | 'manual';
+    // koreaexim과 customs의 개별 데이터 추가
+    koreaeximRate?: number;  // 일일 고시환율
+    customsRate?: number;    // 관세 주간환율
 }
 
 // Combined 엔드포인트 응답용 인터페이스 추가

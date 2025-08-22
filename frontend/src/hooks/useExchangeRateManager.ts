@@ -1,7 +1,7 @@
 // path: frontend/src/hooks/useExchangeRateManager.ts
 import { useState, useEffect } from 'react';
-import { getExchangeRatesForFrontend } from '@/apis/exchangeRateApi';
-import type { ExchangeRateData, CombinedExchangeRateResponse, CombinedExchangeRateData } from '@/types/priceSetting.types';
+import { getExchangeRatesForFrontend, type ExchangeRateResponse } from '@/apis/exchangeRateApi';
+import type { ExchangeRateData } from '@/types/priceSetting.types';
 
 export function useExchangeRateManager() {
     const [exchangeRates, setExchangeRates] = useState<ExchangeRateData[]>([]);
@@ -25,38 +25,30 @@ export function useExchangeRateManager() {
         setError(null);
 
         try {
-            console.log('환율 정보 조회 시작...');
+                            const response = await getExchangeRatesForFrontend();
 
-            const response = await getExchangeRatesForFrontend();
-
-            if (response.success && response.data) {
-                console.log('환율 정보 조회 성공:', response.data);
+                if (response.success && response.data) {
 
                 // Combined 엔드포인트 응답을 ExchangeRateData 형식으로 변환
                 const updatedRates: ExchangeRateData[] = [];
 
-                // USD, CNY, JPY, EUR 순서로 처리
-                const currencies = ['USD', 'CNY', 'JPY', 'EUR'];
-
-                currencies.forEach(currency => {
-                    const combinedData = response.data.find((item: any) =>
-                        item.currencyCode === currency
-                    );
-
-                    if (combinedData && (combinedData.customs || combinedData.koreaexim)) {
-                        // customs 데이터가 있으면 customs 우선, 없으면 koreaexim 사용
-                        const sourceData = combinedData.customs || combinedData.koreaexim;
-
-                        if (sourceData) {
-                            updatedRates.push({
-                                currencyCode: currency,
-                                baseDate: sourceData.baseDate || '',
-                                rateType: combinedData.customs ? 'weekly' : 'daily',
-                                appliedRate: sourceData.appliedRate || 0,
-                                lastUpdated: new Date(),
-                                source: (sourceData.source as 'customs' | 'koreaexim' | 'manual') || 'manual'
-                            });
-                        }
+                // response.data는 CombinedExchangeRateData[] 배열
+                // 각 통화별로 koreaexim과 customs 데이터를 모두 포함하여 처리
+                response.data.forEach((combinedData: any) => {
+                    if (combinedData.currencyCode) {
+                        const newRate: ExchangeRateData = {
+                            currencyCode: combinedData.currencyCode,
+                            baseDate: combinedData.customs?.baseDate || combinedData.koreaexim?.baseDate || '',
+                            rateType: 'combined', // koreaexim과 customs 모두 포함
+                            appliedRate: 0, // 사용자가 입력할 값
+                            lastUpdated: new Date(),
+                            source: 'manual',
+                            // koreaexim과 customs 개별 환율 저장
+                            koreaeximRate: combinedData.koreaexim?.appliedRate || 0,
+                            customsRate: combinedData.customs?.appliedRate || 0
+                        };
+                        
+                        updatedRates.push(newRate);
                     }
                 });
 
@@ -67,8 +59,6 @@ export function useExchangeRateManager() {
                 const today = new Date();
                 const weekNumber = Math.ceil(today.getDate() / 7);
                 setTariffPeriod(`${today.getFullYear()}년 ${weekNumber}주차`);
-
-                console.log('환율 데이터 업데이트 완료:', updatedRates);
             } else {
                 console.warn('환율 정보 조회 실패:', response.message);
                 setError(response.message || '환율 정보 조회에 실패했습니다.');
@@ -88,9 +78,6 @@ export function useExchangeRateManager() {
         try {
             // TODO: 실제 API 호출로 대체
             await new Promise(resolve => setTimeout(resolve, 1000));
-
-            // 더미 데이터 업데이트 제거 - 실패 시 예외처리만 수행
-            console.log('환율 동기화 완료');
         } catch (err) {
             console.error('환율 동기화 중 오류:', err);
             setError('환율 동기화 중 오류가 발생했습니다.');
