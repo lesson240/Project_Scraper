@@ -111,7 +111,7 @@ export default function PriceSettingModalContainer(props: PriceSettingModalProps
         // 선택된 상품들의 가격 정보 업데이트
         const updatedProducts = props.selectedProducts.map(product => {
             const calculated = calculatedPrices.find(calc => calc.productId === product.id);
-            const exchangeRate = exchangeRates.find(rate => rate.currency === product.currency);
+            const exchangeRate = exchangeRates.find(rate => rate.currencyCode === product.currencyCode);
 
             // 설정 상품가 계산 (원본 할인가 * 환율 + 마진)
             let settingPrice = 0;
@@ -191,10 +191,16 @@ export default function PriceSettingModalContainer(props: PriceSettingModalProps
         updateAppliedRate(currency, value);
     };
 
-    const handleSyncRates = () => {
+    const handleSyncRates = async () => {
         // 환율 동기화 로직 (MongoDB에 저장)
         console.log('환율 동기화 실행');
-        // TODO: 실제 동기화 로직 구현
+        try {
+            // TODO: 실제 동기화 API 호출
+            // await syncExchangeRates();
+            console.log('환율 동기화 완료');
+        } catch (error) {
+            console.error('환율 동기화 실패:', error);
+        }
     };
 
     return (

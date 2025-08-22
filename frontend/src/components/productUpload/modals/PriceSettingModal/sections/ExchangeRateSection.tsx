@@ -36,7 +36,7 @@ export default function ExchangeRateSection({
                     <h4>환율 정보</h4>
                     <div className="tariff-info">
                         <div className="tariff-note">
-                            관세 적용기간: 단위: 1원 (W)
+                            단위: 1원 (W)
                         </div>
                         <div className="tariff-period">
                             관세 주간: {tariffPeriod}
@@ -48,7 +48,7 @@ export default function ExchangeRateSection({
                     <table>
                         <thead>
                             <tr>
-                                <th>기준</th>
+                                <th>통화</th>
                                 <th>일일 고시환율</th>
                                 <th>관세 주간환율</th>
                                 <th>
@@ -65,24 +65,19 @@ export default function ExchangeRateSection({
                         </thead>
                         <tbody>
                             {['USD', 'CNY', 'JPY', 'EUR'].map((currency) => {
-                                // 해당 통화의 koreaexim 데이터 찾기
-                                const koreaeximData = exchangeRates.find(rate =>
-                                    (rate.currencyCode || rate.currency) === currency && rate.source === 'koreaexim'
+                                // 해당 통화의 환율 데이터 찾기
+                                const rateData = exchangeRates.find(rate =>
+                                    rate.currencyCode === currency
                                 );
-                                
-                                // 해당 통화의 customs 데이터 찾기
-                                const customsData = exchangeRates.find(rate =>
-                                    (rate.currencyCode || rate.currency) === currency && rate.source === 'customs'
-                                );
-                                
+
                                 // 일일 고시환율: koreaexim source인 경우 appliedRate 표시
-                                const dailyRate = koreaeximData?.appliedRate || 0;
-                                
+                                const dailyRate = rateData?.source === 'koreaexim' ? rateData.appliedRate : 0;
+
                                 // 관세 주간환율: customs source인 경우 appliedRate 표시
-                                const weeklyTariff = customsData?.appliedRate || 0;
-                                
+                                const weeklyTariff = rateData?.source === 'customs' ? rateData.appliedRate : 0;
+
                                 // 적용환율: customs 우선, 없으면 koreaexim 사용
-                                const appliedRate = customsData?.appliedRate || koreaeximData?.appliedRate || 0;
+                                const appliedRate = rateData?.appliedRate || 0;
 
                                 return (
                                     <tr key={currency}>

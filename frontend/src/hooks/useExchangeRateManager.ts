@@ -1,52 +1,18 @@
 // path: frontend/src/hooks/useExchangeRateManager.ts
 import { useState, useEffect } from 'react';
 import { getExchangeRatesForFrontend } from '@/apis/exchangeRateApi';
-import type { ExchangeRateData } from '@/types/priceSetting.types';
+import type { ExchangeRateData, CombinedExchangeRateResponse, CombinedExchangeRateData } from '@/types/priceSetting.types';
 
 export function useExchangeRateManager() {
-    const [exchangeRates, setExchangeRates] = useState<ExchangeRateData[]>([
-        {
-            currency: 'USD',
-            dailyRate: 1350,
-            weeklyTariff: 1350,
-            appliedRate: 1350,
-            lastUpdated: new Date(),
-            source: 'manual'
-        },
-        {
-            currency: 'CNY',
-            dailyRate: 185,
-            weeklyTariff: 185,
-            appliedRate: 185,
-            lastUpdated: new Date(),
-            source: 'manual'
-        },
-        {
-            currency: 'EUR',
-            dailyRate: 1470,
-            weeklyTariff: 1470,
-            appliedRate: 1470,
-            lastUpdated: new Date(),
-            source: 'manual'
-        },
-        {
-            currency: 'JPY',
-            dailyRate: 9.1,
-            weeklyTariff: 9.1,
-            appliedRate: 9.1,
-            lastUpdated: new Date(),
-            source: 'manual'
-        }
-    ]);
-
+    const [exchangeRates, setExchangeRates] = useState<ExchangeRateData[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [tariffPeriod, setTariffPeriod] = useState('2024년 1주차');
+    const [tariffPeriod, setTariffPeriod] = useState('');
 
     const updateAppliedRate = (currency: string, value: number) => {
         setExchangeRates(prev =>
             prev.map(rate =>
-                rate.currency === currency
+                rate.currencyCode === currency
                     ? { ...rate, appliedRate: value }
                     : rate
             )
@@ -59,22 +25,40 @@ export function useExchangeRateManager() {
         setError(null);
 
         try {
-            console.log('프론트엔드 환율 정보 조회 시작...');
+            console.log('환율 정보 조회 시작...');
 
             const response = await getExchangeRatesForFrontend();
 
             if (response.success && response.data) {
-                console.log('프론트엔드 환율 정보 조회 성공:', response.data);
+                console.log('환율 정보 조회 성공:', response.data);
 
-                // API 응답 데이터를 ExchangeRateData 형식으로 변환
-                const updatedRates: ExchangeRateData[] = response.data.map((item: any) => ({
-                    currency: item.currency,
-                    dailyRate: item.dailyRate || 0,
-                    weeklyTariff: item.weeklyTariff || 0,
-                    appliedRate: item.appliedRate || 0,
-                    lastUpdated: new Date(),
-                    source: item.source || 'api'
-                }));
+                // Combined 엔드포인트 응답을 ExchangeRateData 형식으로 변환
+                const updatedRates: ExchangeRateData[] = [];
+
+                // USD, CNY, JPY, EUR 순서로 처리
+                const currencies = ['USD', 'CNY', 'JPY', 'EUR'];
+
+                currencies.forEach(currency => {
+                    const combinedData = response.data.find((item: any) =>
+                        item.currencyCode === currency
+                    );
+
+                    if (combinedData && (combinedData.customs || combinedData.koreaexim)) {
+                        // customs 데이터가 있으면 customs 우선, 없으면 koreaexim 사용
+                        const sourceData = combinedData.customs || combinedData.koreaexim;
+
+                        if (sourceData) {
+                            updatedRates.push({
+                                currencyCode: currency,
+                                baseDate: sourceData.baseDate || '',
+                                rateType: combinedData.customs ? 'weekly' : 'daily',
+                                appliedRate: sourceData.appliedRate || 0,
+                                lastUpdated: new Date(),
+                                source: (sourceData.source as 'customs' | 'koreaexim' | 'manual') || 'manual'
+                            });
+                        }
+                    }
+                });
 
                 // 환율 데이터 업데이트
                 setExchangeRates(updatedRates);
@@ -86,11 +70,11 @@ export function useExchangeRateManager() {
 
                 console.log('환율 데이터 업데이트 완료:', updatedRates);
             } else {
-                console.warn('프론트엔드 환율 정보 조회 실패:', response.message);
+                console.warn('환율 정보 조회 실패:', response.message);
                 setError(response.message || '환율 정보 조회에 실패했습니다.');
             }
         } catch (err) {
-            console.error('프론트엔드 환율 정보 조회 중 오류:', err);
+            console.error('환율 정보 조회 중 오류:', err);
             setError('환율 정보 조회 중 오류가 발생했습니다.');
         } finally {
             setIsLoading(false);
@@ -105,18 +89,10 @@ export function useExchangeRateManager() {
             // TODO: 실제 API 호출로 대체
             await new Promise(resolve => setTimeout(resolve, 1000));
 
-            // 더미 데이터로 업데이트
-            setExchangeRates(prev =>
-                prev.map(rate => ({
-                    ...rate,
-                    dailyRate: rate.dailyRate + Math.floor(Math.random() * 10) - 5,
-                    weeklyTariff: rate.weeklyTariff + Math.floor(Math.random() * 10) - 5,
-                    lastUpdated: new Date()
-                }))
-            );
-
-            setTariffPeriod('2024년 1주차');
+            // 더미 데이터 업데이트 제거 - 실패 시 예외처리만 수행
+            console.log('환율 동기화 완료');
         } catch (err) {
+            console.error('환율 동기화 중 오류:', err);
             setError('환율 동기화 중 오류가 발생했습니다.');
         } finally {
             setIsLoading(false);

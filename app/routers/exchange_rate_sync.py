@@ -2,10 +2,15 @@
 from fastapi import APIRouter, HTTPException, Depends
 from typing import List, Optional, Dict, Any
 from datetime import datetime, date
-from pydantic import BaseModel
 from motor.motor_asyncio import AsyncIOMotorClient
 from app.services.service_mongodb import mongodb_service
 from app.services.exchange_rate_services import customs_api_service, koreaexim_api_service
+# 공통 모델 import로 변경
+from app.models.model_exchange_rate import (
+    ExchangeRateBase,
+    ExchangeRateSyncResponse,
+    ExchangeRateSyncRequest
+)
 
 import logging
 
@@ -13,29 +18,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/exchange-rate-sync", tags=["ExchangeRateSync"])
-
-# Pydantic 모델
-class ExchangeRateData(BaseModel):
-    currencyCode: str
-    appliedRate: float
-    source: str  # 'customs' | 'koreaexim' | 'manual'
-    rateType: str  # 'daily' | 'weekly'
-    baseDate: str  # YYYYMMDD 형식
-    isActive: bool = True
-
-class ExchangeRateSyncRequest(BaseModel):
-    force_sync: bool = False  # 강제 동기화 여부
-
-class ExchangeRateSyncResponse(BaseModel):
-    success: bool
-    data: Optional[List[Dict[str, Any]]] = None
-    message: str
-    source: str  # 'cache' | 'api' | 'initialized'
-    lastUpdated: datetime
-    dailyRateDate: str
-    weeklyTariffDate: str
-    isDailyRateValid: bool
-    isWeeklyTariffValid: bool
 
 # 데이터베이스 의존성
 async def get_db() -> AsyncIOMotorClient:
@@ -81,7 +63,7 @@ class ExchangeRateSyncService:
     async def ensure_collections_exist(self, db: AsyncIOMotorClient):
         """필요한 컬렉션들이 존재하는지 확인하고 없으면 생성"""
         try:
-            # exchange_rates 컬렉션에 테스트 문서 삽입 후 삭제하여 컬렉션 생성
+            # MongoDB 컬렉션에 직접 접근
             test_doc = {
                 "currencyCode": "TEST",
                 "appliedRate": 0,
@@ -91,7 +73,6 @@ class ExchangeRateSyncService:
                 "isActive": False
             }
             
-            # MongoDB 컬렉션에 직접 접근
             await db.exchange_rates.insert_one(test_doc)
             await db.exchange_rates.delete_one({"currencyCode": "TEST"})
             

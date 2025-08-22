@@ -2,28 +2,20 @@
 from fastapi import APIRouter, HTTPException, Depends
 from typing import List, Optional
 from datetime import datetime
-from pydantic import BaseModel
 from motor.motor_asyncio import AsyncIOMotorClient
 from app.services.service_mongodb import mongodb_service
 from app.services.koreaexim_service import koreaexim_service
 from app.services.customs_service import customs_service
 from app.config.mongodb import MONGO_DB_NAME_EXTERNAL_API
+# 공통 모델 import로 변경
+from app.models.model_exchange_rate import (
+    ExchangeRateBase, 
+    ExchangeRateResponse,
+    CombinedExchangeRateData,
+    CombinedExchangeRateResponse
+)
 
 router = APIRouter(prefix="/api/exchange-rates", tags=["ExchangeRates"])
-
-# Pydantic 모델
-class ExchangeRateStorage(BaseModel):
-    currencyCode: str
-    appliedRate: float
-    source: str  # 'customs' | 'koreaexim' | 'manual'
-    rateType: str  # 'weekly' | 'daily'
-    baseDate: str  # YYYYMMDD 형식
-    isActive: bool = True
-
-class ExchangeRateResponse(BaseModel):
-    success: bool
-    data: Optional[List[ExchangeRateStorage]] = None
-    message: str
 
 # 데이터베이스 의존성
 async def get_db() -> AsyncIOMotorClient:
@@ -58,14 +50,14 @@ async def ensure_external_api_collection_exists(db: AsyncIOMotorClient):
                     all_rates.append(rate)
                     print(f"관세청 {rate['currencyCode']}: {rate['appliedRate']}")
             
-                    # 한국수출입은행 데이터 추가 (tts 값 우선 사용)
-        for rate in koreaexim_rates:
-            if rate.get("appliedRate", 0) > 0:
-                all_rates.append(rate)
-                rate_source = rate.get("rateSource", "unknown")
-                print(f"한국수출입은행 {rate['currencyCode']}: {rate['appliedRate']} (소스: {rate_source})")
-            else:
-                print(f"⚠️ 한국수출입은행 {rate['currencyCode']}: 환율 데이터 없음 (tts/ttb 값 누락)")
+            # 한국수출입은행 데이터 추가 (tts 값 우선 사용)
+            for rate in koreaexim_rates:
+                if rate.get("appliedRate", 0) > 0:
+                    all_rates.append(rate)
+                    rate_source = rate.get("rateSource", "unknown")
+                    print(f"한국수출입은행 {rate['currencyCode']}: {rate['appliedRate']} (소스: {rate_source})")
+                else:
+                    print(f"⚠️ 한국수출입은행 {rate['currencyCode']}: 환율 데이터 없음 (tts/ttb 값 누락)")
             
             if all_rates:
                 # 초기 데이터 삽입
@@ -151,9 +143,6 @@ async def ensure_external_api_collection_exists(db: AsyncIOMotorClient):
 async def ensure_collection_exists(db: AsyncIOMotorClient):
     """exchange_rates 컬렉션이 존재하는지 확인하고, 없으면 생성하고 초기 데이터 삽입"""
     try:
-        # 외부 API 컬렉션 먼저 확인 및 초기화
-        await ensure_external_api_collection_exists(db)
-        
         # 컬렉션이 존재하는지 확인
         collection_names = await db.list_collection_names()
         
@@ -163,80 +152,50 @@ async def ensure_collection_exists(db: AsyncIOMotorClient):
             # 컬렉션 생성 (MongoDB는 컬렉션을 자동으로 생성하지만, 명시적으로 생성)
             collection = db.exchange_rates
             
-            # 외부 API 컬렉션에서 실제 데이터를 가져와서 초기 데이터 생성
-            external_collection = db.external_api
-            external_rates = await external_collection.find({"isActive": True}).to_list(length=100)
-            
-            if external_rates:
-                # 외부 API 데이터를 기반으로 초기 데이터 생성
-                initial_data = []
-                
-                # 통화별로 최신 데이터 선택
-                currency_data = {}
-                for rate in external_rates:
-                    currency = rate.get("currencyCode")
-                    if currency and currency not in currency_data:
-                        currency_data[currency] = rate
-                
-                for currency, rate_data in currency_data.items():
-                    initial_data.append({
-                        "currencyCode": currency,
-                        "appliedRate": rate_data.get("appliedRate", 0.0),
-                        "source": rate_data.get("source", "external"),
-                        "rateType": rate_data.get("rateType", "weekly"),
-                        "baseDate": rate_data.get("baseDate", datetime.now().strftime("%Y%m%d")),
-                        "isActive": True,
-                        "createdAt": datetime.utcnow(),
-                        "updatedAt": datetime.utcnow(),
-                        "externalSource": True
-                    })
-                
-                print(f"외부 API 데이터 기반으로 {len(initial_data)}개 통화의 초기 데이터를 생성합니다.")
-            else:
-                # 외부 API 데이터가 없으면 기본 더미 데이터 생성
-                initial_data = [
-                    {
-                        "currencyCode": "USD",
-                        "appliedRate": 1350.0,
-                        "source": "manual",
-                        "rateType": "weekly",
-                        "baseDate": datetime.now().strftime("%Y%m%d"),
-                        "isActive": True,
-                        "createdAt": datetime.utcnow(),
-                        "updatedAt": datetime.utcnow()
-                    },
-                    {
-                        "currencyCode": "JPY",
-                        "appliedRate": 135.5,
-                        "source": "manual",
-                        "rateType": "weekly",
-                        "baseDate": datetime.now().strftime("%Y%m%d"),
-                        "isActive": True,
-                        "createdAt": datetime.utcnow(),
-                        "updatedAt": datetime.utcnow()
-                    },
-                    {
-                        "currencyCode": "EUR",
-                        "appliedRate": 1480.0,
-                        "source": "manual",
-                        "rateType": "weekly",
-                        "baseDate": datetime.now().strftime("%Y%m%d"),
-                        "isActive": True,
-                        "createdAt": datetime.utcnow(),
-                        "updatedAt": datetime.utcnow()
-                    },
-                    {
-                        "currencyCode": "CNY",
-                        "appliedRate": 185.0,
-                        "source": "manual",
-                        "rateType": "weekly",
-                        "baseDate": datetime.now().strftime("%Y%m%d"),
-                        "isActive": True,
-                        "createdAt": datetime.utcnow(),
-                        "updatedAt": datetime.utcnow()
-                    }
-                ]
-                print("외부 API 데이터가 없어 기본 더미 데이터를 생성합니다.")
+            # 기본 더미 데이터 생성
+            today = datetime.now().strftime("%Y%m%d")
+            initial_data = [
+                {
+                    "currencyCode": "USD",
+                    "appliedRate": 1350.0,
+                    "source": "manual",
+                    "rateType": "weekly",
+                    "baseDate": today,
+                    "isActive": True,
+                    "createdAt": datetime.utcnow(),
+                    "updatedAt": datetime.utcnow()
+                },
+                {
+                    "currencyCode": "JPY",
+                    "appliedRate": 135.5,
+                    "source": "manual",
+                    "rateType": "weekly",
+                    "baseDate": today,
+                    "isActive": True,
+                    "createdAt": datetime.utcnow(),
+                    "updatedAt": datetime.utcnow()
+                },
+                {
+                    "currencyCode": "EUR",
+                    "appliedRate": 1480.0,
+                    "source": "manual",
+                    "rateType": "weekly",
+                    "baseDate": today,
+                    "isActive": True,
+                    "createdAt": datetime.utcnow(),
+                    "updatedAt": datetime.utcnow()
+                },
+                {
+                    "currencyCode": "CNY",
+                    "appliedRate": 185.0,
+                    "source": "manual",
+                    "rateType": "weekly",
+                    "baseDate": today,
+                    "isActive": True,
+                    "createdAt": datetime.utcnow(),
+                    "updatedAt": datetime.utcnow()
+                }
+            ]
             
             # 초기 데이터 삽입
             result = await collection.insert_many(initial_data)
@@ -274,15 +233,16 @@ async def get_latest_exchange_rates(
         
         return ExchangeRateResponse(
             success=True,
-            data=[ExchangeRateStorage(**rate) for rate in rates],
+            data=[ExchangeRateBase(**rate) for rate in rates],  # ExchangeRateStorage → ExchangeRateBase
             message="최신 환율 정보를 성공적으로 조회했습니다."
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"환율 정보 조회 실패: {str(e)}")
 
+
 @router.post("/bulk")
 async def save_exchange_rates(
-    exchangeRates: List[ExchangeRateStorage],
+    exchangeRates: List[ExchangeRateBase],  # ExchangeRateStorage → ExchangeRateBase
     db: AsyncIOMotorClient = Depends(get_db)
 ) -> ExchangeRateResponse:
     """환율 정보 일괄 저장"""
@@ -320,43 +280,87 @@ async def save_exchange_rates(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"환율 정보 저장 실패: {str(e)}")
 
-@router.get("/{currency_code}")
-async def get_exchange_rate_by_currency(
+# 특정 통화의 두 컬렉션 통합 데이터 조회
+@router.get("/combined/{currency_code}")
+async def get_combined_currency_data(
     currency_code: str,
     db: AsyncIOMotorClient = Depends(get_db)
-) -> ExchangeRateResponse:
-    """특정 통화의 환율 정보 조회"""
+) -> CombinedExchangeRateResponse:
+    """특정 통화의 customs와 koreaexim 컬렉션 통합 데이터 조회"""
     try:
-        # 컬렉션 존재 확인 및 초기화
-        await ensure_collection_exists(db)
+        # external_api 데이터베이스 접근
+        client = mongodb_service.client
+        external_api_db = client["external_api"]
         
-        collection = db.exchange_rates
+        print(f"{currency_code} 통화의 customs와 koreaexim 통합 데이터 조회 시작...")
         
-        # 디버깅을 위한 로그 추가
-        print(f"조회 요청된 통화: {currency_code}")
-        print(f"데이터베이스 연결 상태: {db is not None}")
-        print(f"컬렉션 객체: {collection}")
-        
-        rate = await collection.find_one({
+        # 두 컬렉션에서 해당 통화의 최신 데이터 조회
+        customs_rate = await external_api_db.customs.find_one({
             "currencyCode": currency_code,
             "isActive": True
-        })
+        }, sort=[("baseDate", -1)])
         
-        print(f"조회 결과: {rate}")
+        koreaexim_rate = await external_api_db.koreaexim.find_one({
+            "currencyCode": currency_code,
+            "isActive": True
+        }, sort=[("baseDate", -1)])
         
-        if not rate:
-            raise HTTPException(status_code=404, detail=f"{currency_code} 통화의 환율 정보를 찾을 수 없습니다.")
+        # 결과 데이터 구성 - Dict로 변경하여 타입 오류 해결
+        result_data = {
+            "currencyCode": currency_code,
+            "customs": None,
+            "koreaexim": None
+        }
         
-        return ExchangeRateResponse(
+        # customs 데이터 처리
+        if customs_rate:
+            result_data["customs"] = {
+                "appliedRate": customs_rate.get("appliedRate", 0),
+                "baseDate": customs_rate.get("baseDate", ""),
+                "aplyBgnDt": customs_rate.get("aplyBgnDt", ""),
+                "originalData": customs_rate.get("originalData", {}),
+                "isActive": customs_rate.get("isActive", True),
+                "source": "customs"
+            }
+            print(f"{currency_code} customs 데이터: {customs_rate.get('appliedRate')}")
+        
+        # koreaexim 데이터 처리
+        if koreaexim_rate:
+            result_data["koreaexim"] = {
+                "appliedRate": koreaexim_rate.get("appliedRate", 0),
+                "baseDate": koreaexim_rate.get("baseDate", ""),
+                "searchdate": koreaexim_rate.get("searchdate", ""),
+                "tts": koreaexim_rate.get("tts", 0),
+                "ttb": koreaexim_rate.get("ttb", 0),
+                "isActive": koreaexim_rate.get("isActive", True),
+                "source": "koreaexim"
+            }
+            print(f"{currency_code} koreaexim 데이터: {koreaexim_rate.get('appliedRate')}")
+        
+        # 데이터가 하나도 없는 경우
+        if not result_data["customs"] and not result_data["koreaexim"]:
+            raise HTTPException(
+                status_code=404, 
+                detail=f"{currency_code} 통화의 데이터를 customs와 koreaexim 컬렉션에서 찾을 수 없습니다."
+            )
+        
+        print(f"{currency_code} 통화 통합 데이터 조회 완료")
+        
+        return CombinedExchangeRateResponse(
             success=True,
-            data=[ExchangeRateStorage(**rate)],
-            message=f"{currency_code} 통화의 환율 정보를 성공적으로 조회했습니다."
+            data=[result_data],
+            message=f"{currency_code} 통화의 customs와 koreaexim 통합 데이터를 성공적으로 조회했습니다."
         )
+        
     except HTTPException:
         raise
     except Exception as e:
-        print(f"환율 정보 조회 중 오류: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"환율 정보 조회 실패: {str(e)}")
+        print(f"{currency_code} 통화 통합 데이터 조회 중 오류: {str(e)}")
+        raise HTTPException(
+            status_code=500, 
+            detail=f"{currency_code} 통화 통합 데이터 조회 실패: {str(e)}"
+        )
+
 
 @router.put("/{currency_code}")
 async def update_exchange_rate(
@@ -406,7 +410,7 @@ async def get_all_exchange_rates(
         
         return ExchangeRateResponse(
             success=True,
-            data=[ExchangeRateStorage(**rate) for rate in rates],
+            data=[ExchangeRateBase(**rate) for rate in rates],  # ExchangeRateStorage → ExchangeRateBase
             message="모든 환율 정보를 성공적으로 조회했습니다."
         )
     except Exception as e:
@@ -581,7 +585,7 @@ async def get_external_api_data():
         
         return ExchangeRateResponse(
             success=True,
-            data=[ExchangeRateStorage(**rate) for rate in rates],
+            data=[ExchangeRateBase(**rate) for rate in rates],  # ExchangeRateStorage → ExchangeRateBase
             message="외부 API 환율 정보를 성공적으로 조회했습니다."
         )
         
@@ -777,49 +781,57 @@ async def get_exchange_rates_for_frontend():
         koreaexim_final = await external_api_db.koreaexim.find({"isActive": True}).to_list(length=100)
         customs_final = await external_api_db.customs.find({"isActive": True}).to_list(length=100)
         
-        # 프론트엔드에서 사용할 형식으로 데이터 변환
-        frontend_rates = []
+        # CombinedExchangeRateResponse 형식으로 데이터 변환
+        combined_rates = []
         
-        # koreaexim 데이터를 dailyRate로 변환
-        for rate in koreaexim_final:
-            frontend_rate = {
-                "currencyCode": rate["currencyCode"],
-                "currency": rate["currencyCode"],
-                "dailyRate": rate.get("appliedRate", 0),
-                "weeklyTariff": 0,  # koreaexim은 dailyRate만 제공
-                "appliedRate": rate.get("appliedRate", 0),
-                "source": "koreaexim",
-                "rateType": "daily",
-                "baseDate": rate.get("baseDate", today),
-                "isActive": rate.get("isActive", True)
+        # USD, CNY, JPY, EUR 순서로 처리
+        currencies = ['USD', 'CNY', 'JPY', 'EUR']
+        
+        for currency in currencies:
+            # koreaexim 데이터 찾기
+            koreaexim_data = next((r for r in koreaexim_final if r["currencyCode"] == currency), None)
+            
+            # customs 데이터 찾기
+            customs_data = next((r for r in customs_final if r["currencyCode"] == currency), None)
+            
+            # Combined 형식으로 데이터 구성
+            combined_rate = {
+                "currencyCode": currency,
+                "customs": None,
+                "koreaexim": None
             }
-            frontend_rates.append(frontend_rate)
-        
-        # customs 데이터를 weeklyTariff로 변환
-        for rate in customs_final:
-            # 이미 존재하는 통화인지 확인
-            existing_rate = next((r for r in frontend_rates if r["currencyCode"] == rate["currencyCode"]), None)
-            if existing_rate:
-                # 기존 데이터에 weeklyTariff 추가
-                existing_rate["weeklyTariff"] = rate.get("appliedRate", 0)
-            else:
-                # 새로운 통화 데이터 생성
-                frontend_rate = {
-                    "currencyCode": rate["currencyCode"],
-                    "currency": rate["currencyCode"],
-                    "dailyRate": 0,  # customs는 weeklyTariff만 제공
-                    "weeklyTariff": rate.get("appliedRate", 0),
-                    "appliedRate": rate.get("appliedRate", 0),
-                    "source": "customs",
-                    "rateType": "weekly",
-                    "baseDate": rate.get("baseDate", today),
-                    "isActive": rate.get("isActive", True)
+            
+            # customs 데이터 처리
+            if customs_data:
+                combined_rate["customs"] = {
+                    "appliedRate": customs_data.get("appliedRate", 0),
+                    "baseDate": customs_data.get("baseDate", today),
+                    "aplyBgnDt": customs_data.get("aplyBgnDt", today),
+                    "originalData": customs_data.get("originalData", {}),
+                    "isActive": customs_data.get("isActive", True),
+                    "source": "customs"
                 }
-                frontend_rates.append(frontend_rate)
+            
+            # koreaexim 데이터 처리
+            if koreaexim_data:
+                combined_rate["koreaexim"] = {
+                    "appliedRate": koreaexim_data.get("appliedRate", 0),
+                    "baseDate": koreaexim_data.get("baseDate", today),
+                    "searchdate": koreaexim_data.get("searchdate", today),
+                    "tts": koreaexim_data.get("tts", 0),
+                    "ttb": koreaexim_data.get("ttb", 0),
+                    "isActive": koreaexim_data.get("isActive", True),
+                    "source": "koreaexim"
+                }
+            
+            combined_rates.append(combined_rate)
         
-        return ExchangeRateResponse(
+        # CombinedExchangeRateResponse 형식으로 반환
+        from app.models.model_exchange_rate import CombinedExchangeRateResponse
+        
+        return CombinedExchangeRateResponse(
             success=True,
-            data=frontend_rates,
+            data=combined_rates,
             message="프론트엔드용 환율 정보를 성공적으로 조회했습니다."
         )
         

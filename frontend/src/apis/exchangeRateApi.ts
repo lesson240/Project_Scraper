@@ -33,7 +33,7 @@ export const getExchangeRateByCurrency = async (
 ): Promise<ExchangeRateResponse> => {
     try {
         const response = await fetch(
-            `${apiConfig.baseUrl}/v1/api/exchange-rates/${currencyCode}`,
+            `${apiConfig.baseUrl}/v1/api/exchange-rates/combined/${currencyCode}`,
             {
                 method: 'GET',
                 headers: {

@@ -9,13 +9,43 @@ export interface Product {
     tags: string[];
 }
 
+// 기존 ExchangeRateData 인터페이스 수정
 export interface ExchangeRateData {
-    currency: string;
-    dailyRate: number;
-    weeklyTariff: number;
-    appliedRate: number | string;
+    currencyCode: string;
+    baseDate: string;  // number → string으로 변경 (YYYYMMDD 형식)
+    rateType: string;  // number → string으로 변경 ('daily' | 'weekly')
+    appliedRate: number;
     lastUpdated?: Date;
     source?: 'customs' | 'koreaexim' | 'manual';
+}
+
+// Combined 엔드포인트 응답용 인터페이스 추가
+export interface CombinedExchangeRateData {
+    currencyCode: string;
+    customs: {
+        appliedRate: number;
+        baseDate: string;
+        aplyBgnDt: string;
+        originalData: any;
+        isActive: boolean;
+        source: string;
+    } | null;
+    koreaexim: {
+        appliedRate: number;
+        baseDate: string;
+        searchdate: string;
+        tts: number;
+        ttb: number;
+        isActive: boolean;
+        source: string;
+    } | null;
+}
+
+// Combined 응답 인터페이스
+export interface CombinedExchangeRateResponse {
+    success: boolean;
+    data: CombinedExchangeRateData[];
+    message: string;
 }
 
 export interface PriceSettingModalProps {
