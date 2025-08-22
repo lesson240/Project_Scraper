@@ -7,8 +7,11 @@ export default function MarginListSection({
     selectedProducts,
     calculatedPrices,
     exchangeRates,
+    platformMargins,
+    onMarginChange,
+    onMarginReset,
     isCalculated = false
-}: Omit<MarginListSectionProps, 'platformMargins' | 'onMarginChange' | 'onMarginReset'> & { isCalculated?: boolean }) {
+}: MarginListSectionProps) {
     const getExchangeRate = (currency: string) => {
         if (!exchangeRates || !Array.isArray(exchangeRates)) {
             console.warn('exchangeRates가 유효하지 않습니다:', exchangeRates);

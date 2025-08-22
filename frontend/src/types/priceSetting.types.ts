@@ -76,6 +76,15 @@ export interface PriceSettingModalUIProps {
     onFormulaReset: () => void;
     onMarginChange: (platform: string, value: number) => void;
     onMarginReset: () => void;
+    onPlatformMarginChange: (platform: string, value: number) => void;
+    // 토글 상태 및 이벤트 핸들러 추가
+    isExchangeRateExpanded: boolean;
+    isFormulaExpanded: boolean;
+    onExchangeRateToggle: () => void;
+    onFormulaToggle: () => void;
+    onCalculateMargin: () => void;
+    onSave: () => void;
+    onReset: () => void;
 }
 
 export interface ExchangeRateSectionProps {
@@ -140,4 +149,5 @@ export interface MarginListSectionProps {
     platformMargins: PlatformMargins;
     onMarginChange: (platform: string, value: number) => void;
     onMarginReset: () => void;
+    isCalculated?: boolean;
 }

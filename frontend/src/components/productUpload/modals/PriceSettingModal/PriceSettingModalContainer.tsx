@@ -5,49 +5,32 @@ import { useExchangeRateManager } from '@/hooks/useExchangeRateManager';
 import { getExchangeRatesForFrontend } from '@/apis/exchangeRateApi';
 import type { PriceSettingModalProps, Product } from '@/types/priceSetting.types';
 
-// 공식설정 타입 정의
-interface FormulaSettings {
-    basePrice: number;
-    exchangeRate: number;
-    platformMargin: {
-        coupang: number;
-        auction: number;
-        gmarket: number;
-        elevenst: number;
-    };
-    isEnabled: boolean;
-}
-
-// 플랫폼 마진 타입 정의
-interface PlatformMargins {
-    coupang: number;
-    auction: number;
-    gmarket: number;
-    elevenst: number;
-}
+import type { FormulaSettings, PlatformMargins } from '@/types/priceSetting.types';
 
 export default function PriceSettingModalContainer(props: PriceSettingModalProps) {
     const [formulaSettings, setFormulaSettings] = useState<FormulaSettings>({
-        basePrice: 50000,
-        exchangeRate: 1350,
-        platformMargin: {
-            coupang: 15,
-            auction: 15,
-            gmarket: 15,
-            elevenst: 15
-        },
-        isEnabled: true
+        costFormula: 'basePrice * 1.2',
+        priceFormula: 'costPrice + margin',
+        marginFormula: 'basePrice * 0.15',
+        freeShipping: false,
+        optimizeShippingFee: true,
+        baseMarginRate: 15,
+        additionalMargin: 0,
+        baseShippingFee: 3000,
+        returnShippingFee: 5000,
+        exchangeShippingFee: 8000
     });
 
     const [platformMargins, setPlatformMargins] = useState<PlatformMargins>({
         coupang: 15,
         auction: 15,
         gmarket: 15,
-        elevenst: 15
+        elevenst: 15,
+        openmarket: 15
     });
 
     // 섹션 토글 상태
-    const [isExchangeRateExpanded, setIsExchangeRateExpanded] = useState(true); // 환율 설정은 기본적으로 펼쳐짐
+    const [isExchangeRateExpanded, setIsExchangeRateExpanded] = useState(false); // 환율 설정은 기본적으로 접힘
     const [isFormulaExpanded, setIsFormulaExpanded] = useState(true); // 공식 설정도 기본적으로 펼쳐짐
 
     // 마진 계산 완료 상태
@@ -144,21 +127,23 @@ export default function PriceSettingModalContainer(props: PriceSettingModalProps
 
     const handleReset = () => {
         setFormulaSettings({
-            basePrice: 50000,
-            exchangeRate: 1350,
-            platformMargin: {
-                coupang: 15,
-                auction: 15,
-                gmarket: 15,
-                elevenst: 15
-            },
-            isEnabled: true
+            costFormula: 'basePrice * 1.2',
+            priceFormula: 'costPrice + margin',
+            marginFormula: 'basePrice * 0.15',
+            freeShipping: false,
+            optimizeShippingFee: true,
+            baseMarginRate: 15,
+            additionalMargin: 0,
+            baseShippingFee: 3000,
+            returnShippingFee: 5000,
+            exchangeShippingFee: 8000
         });
         setPlatformMargins({
             coupang: 15,
             auction: 15,
             gmarket: 15,
-            elevenst: 15
+            elevenst: 15,
+            openmarket: 15
         });
         // 초기화 시 계산 상태도 리셋
         setIsCalculated(false);
@@ -225,6 +210,9 @@ export default function PriceSettingModalContainer(props: PriceSettingModalProps
             onFormulaToggle={handleFormulaToggle}
             onAppliedRateChange={handleAppliedRateChange}
             onSyncRates={handleSyncRates}
+            onFormulaReset={handleReset}
+            onMarginChange={handlePlatformMarginChange}
+            onMarginReset={handleReset}
         />
     );
 }

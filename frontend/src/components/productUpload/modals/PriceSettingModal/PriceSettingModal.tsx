@@ -6,31 +6,7 @@ import FormulaSection from './sections/FormulaSection';
 import MarginListSection from './sections/MarginListSection';
 import '@/styles/productUpload/modals/PriceSettingModal.css';
 
-// PriceSettingModal의 props 타입 정의
-interface PriceSettingModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    selectedProducts: any[];
-    exchangeRates: any[];
-    calculatedPrices: any[];
-    isCalculated: boolean;
-    tariffPeriod: string;
-    isLoading: boolean;
-    error: string | null;
-    formulaSettings: any;
-    platformMargins: any;
-    isExchangeRateExpanded: boolean;
-    isFormulaExpanded: boolean;
-    onFormulaChange: (field: string, value: any) => void;
-    onPlatformMarginChange: (platform: string, value: number) => void;
-    onCalculateMargin: () => void;
-    onSave: () => void;
-    onReset: () => void;
-    onExchangeRateToggle: () => void;
-    onFormulaToggle: () => void;
-    onAppliedRateChange: (currency: string, value: number) => void;
-    onSyncRates: () => void;
-}
+import type { PriceSettingModalUIProps } from '@/types/priceSetting.types';
 
 export default function PriceSettingModal({
     isOpen, onClose, selectedProducts,
@@ -41,7 +17,7 @@ export default function PriceSettingModal({
     onCalculateMargin, onSave, onReset,
     onExchangeRateToggle, onFormulaToggle,
     onAppliedRateChange, onSyncRates,
-}: PriceSettingModalProps) {
+}: PriceSettingModalUIProps) {
     if (!isOpen) return null;
 
     return (
@@ -110,6 +86,7 @@ export default function PriceSettingModal({
                         platformMargins={platformMargins}
                         onMarginChange={onPlatformMarginChange}
                         onMarginReset={() => { }}
+                        isCalculated={isCalculated}
                     />
                 </div>
             </ModalBody>

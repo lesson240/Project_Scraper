@@ -1,5 +1,6 @@
 // path: frontend/src/components/productUpload/modals/PriceSettingModal/sections/ExchangeRateSection.tsx
 import React from 'react';
+import NumberInput from '@/components/common/NumberInput';
 import type { ExchangeRateSectionProps } from '@/types/priceSetting.types';
 import '@/styles/productUpload/modals/sections/ExchangeRateSection.css';
 
@@ -36,7 +37,7 @@ export default function ExchangeRateSection({
                     <h4>환율 정보</h4>
                     <div className="tariff-info">
                         <div className="tariff-note">
-                            단위: 1원 (W)
+                            단위: 1원 (￦)
                         </div>
                         <div className="tariff-period">
                             관세 주간: {tariffPeriod}
@@ -76,15 +77,6 @@ export default function ExchangeRateSection({
                                 // 관세 주간환율: customsRate 값 사용
                                 const weeklyTariff = rateData?.customsRate || 0;
 
-                                // 디버깅 로그 (필요시에만 활성화)
-                                // console.log(`${currency} 환율 데이터:`, {
-                                //     dailyRate,
-                                //     weeklyTariff,
-                                //     appliedRate: rateData?.appliedRate,
-                                //     koreaeximRate: rateData?.koreaeximRate,
-                                //     customsRate: rateData?.customsRate
-                                // });
-
                                 // 적용환율: customs 우선, 없으면 koreaexim 사용
                                 const appliedRate = rateData?.appliedRate || 0;
 
@@ -94,14 +86,13 @@ export default function ExchangeRateSection({
                                         <td className="daily-rate">{dailyRate.toLocaleString()}</td>
                                         <td className="weekly-tariff">{weeklyTariff.toLocaleString()}</td>
                                         <td className="applied-rate-cell">
-                                            <input
-                                                type="number"
-                                                className="applied-rate-input"
+                                            <NumberInput
                                                 value={appliedRate}
-                                                onChange={(e) => onAppliedRateChange(currency, Number(e.target.value))}
+                                                onChange={(value) => onAppliedRateChange(currency, value)}
                                                 placeholder="환율 입력"
-                                                min="0"
-                                                step="0.01"
+                                                min={0}
+                                                step={0.01}
+                                                className="exchange-rate-number-input table-cell"
                                             />
                                         </td>
                                     </tr>
