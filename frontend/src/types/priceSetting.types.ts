@@ -7,6 +7,7 @@ export interface Product {
     originalPrice: number | string;
     currency: string;
     tags: string[];
+    originGoodsCode?: string; // 상품 원본 코드 추가
 }
 
 // 기존 ExchangeRateData 인터페이스 수정

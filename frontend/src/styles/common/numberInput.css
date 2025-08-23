@@ -21,8 +21,6 @@
 .number-input-field {
     width: 100%;
     padding: 8px 12px;
-    padding-right: 40px;
-    /* 화살표 버튼 공간 확보 */
     border: 1px solid #ced4da;
     border-radius: 4px;
     font-size: 14px;
@@ -41,47 +39,6 @@
     cursor: not-allowed;
 }
 
-.number-input-arrows {
-    position: absolute;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    display: flex;
-    flex-direction: column;
-    width: 20px;
-}
-
-.number-input-arrows button {
-    flex: 1;
-    border: none;
-    background: transparent;
-    color: #6c757d;
-    font-size: 10px;
-    cursor: pointer;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-}
-
-.number-input-arrows button:hover:not(:disabled) {
-    background: #f8f9fa;
-    color: #00b5ad;
-}
-
-.number-input-arrows button:disabled {
-    color: #ced4da;
-    cursor: not-allowed;
-}
-
-.number-input-arrows .arrow-up {
-    border-bottom: 1px solid #e9ecef;
-}
-
-.number-input-arrows .arrow-down {
-    border-top: 1px solid #e9ecef;
-}
 
 /* 테이블 셀용 NumberInput 변형 스타일 */
 .number-input-container.table-cell {

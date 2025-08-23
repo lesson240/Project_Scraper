@@ -44,3 +44,31 @@ class CombinedExchangeRateData(BaseModel):
 # 통합 환율 응답
 class CombinedExchangeRateResponse(BaseResponse):
     data: Optional[List[CombinedExchangeRateData]] = None
+
+# 가격 설정 모달용 환율 저장 모델
+class PriceSettingExchangeRate(BaseModel):
+    currency: str
+    value: float
+    datetime: datetime
+    source: str = "price_setting_modal"
+    isActive: bool = True
+
+# 가격 설정 모달용 상품 업데이트 모델
+class PriceSettingProductUpdate(BaseModel):
+    originGoodsCode: str
+    settingPrice: float
+    calculatedPrice: Optional[Dict[str, Any]] = None
+    exchangeRate: Optional[float] = None
+
+# 가격 설정 모달 저장 요청 모델
+class PriceSettingSaveRequest(BaseModel):
+    exchangeRates: List[PriceSettingExchangeRate]
+    updatedProducts: List[PriceSettingProductUpdate]
+    formulaSettings: Optional[Dict[str, Any]] = None
+    platformMargins: Optional[Dict[str, Any]] = None
+
+# 가격 설정 모달 저장 응답 모델
+class PriceSettingSaveResponse(BaseResponse):
+    saved_exchange_rates: List[Dict[str, Any]]
+    updated_products_count: int
+    timestamp: datetime

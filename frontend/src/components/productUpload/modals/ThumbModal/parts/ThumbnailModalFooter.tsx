@@ -1,4 +1,6 @@
 import React from "react";
+import Button from "@/components/common/Button";
+import "@/styles/collect/filterButtons.css";
 
 type Props = {
   onReset: () => void;
@@ -12,9 +14,9 @@ export default function ThumbModalFooter({ onSave, onReset, originGoodsCode }: P
   };
 
   return (
-    <div className="thumbnail-modal-footer">
-      <button className="btn-reset" onClick={onReset}>초기화</button>
-      <button className="btn-save" onClick={handleSave}>저장</button>
+    <div className="button-box">
+      <Button variant="fourth" onClick={onReset}>초기화</Button>
+      <Button variant="primary" onClick={handleSave}>저장</Button>
     </div>
   );
 }

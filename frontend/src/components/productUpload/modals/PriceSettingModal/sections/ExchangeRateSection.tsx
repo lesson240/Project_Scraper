@@ -52,16 +52,7 @@ export default function ExchangeRateSection({
                                 <th>통화</th>
                                 <th>일일 고시환율</th>
                                 <th>관세 주간환율</th>
-                                <th>
-                                    올땀 적용환율
-                                    <button
-                                        className="sync-button"
-                                        onClick={onSyncRates}
-                                        title="환율 동기화"
-                                    >
-                                        🔗
-                                    </button>
-                                </th>
+                                <th>올땀 적용환율</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -91,7 +82,7 @@ export default function ExchangeRateSection({
                                                 onChange={(value) => onAppliedRateChange(currency, value)}
                                                 placeholder="환율 입력"
                                                 min={0}
-                                                step={0.01}
+                                                step={0.1}
                                                 className="exchange-rate-number-input table-cell"
                                             />
                                         </td>
@@ -101,6 +92,9 @@ export default function ExchangeRateSection({
                         </tbody>
                     </table>
                 </div>
+                {/* <div className="table-footer">
+                <button className="btn-calculate-margin" onClick={onSyncRates}>예상 마진</button>
+                </div> */}
             </div>
         </div>
     );

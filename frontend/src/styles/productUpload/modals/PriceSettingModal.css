@@ -9,8 +9,7 @@
     box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
-/* 스크롤바 스타일링 */
-.price-setting-container::-webkit-scrollbar {
+/* .price-setting-container::-webkit-scrollbar {
     width: 8px;
 }
 
@@ -27,7 +26,7 @@
 
 .price-setting-container::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(135deg, #00a099 0%, #008f87 100%);
-}
+} */
 
 /* 기존 selected-products-badge 스타일은 위에서 재정의됨 */
 
@@ -322,9 +321,6 @@
     margin: 0;
 }
 
-.applied-rate-input[type=number] {
-    -moz-appearance: textfield;
-}
 
 /* 공식 설정 섹션 */
 .formula-section .formula-table {
@@ -583,7 +579,7 @@
     transform: translateY(-1px);
 }
 
-.btn-save {
+/* .btn-save {
     background: #28a745;
     color: white;
     border: none;
@@ -599,7 +595,7 @@
 .btn-save:hover {
     background: #218838;
     transform: translateY(-1px);
-}
+} */
 
 .btn-reset {
     background: #6c757d;
@@ -645,15 +641,6 @@
     backdrop-filter: blur(10px);
 }
 
-/* 모달 푸터 스타일 */
-.modal-footer {
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-    padding: 20px;
-    border-top: 1px solid #e9ecef;
-    background: #f8f9fa;
-}
 
 .modal-footer button {
     padding: 10px 20px;
@@ -668,7 +655,7 @@
     overflow: hidden;
 }
 
-.modal-footer button::before {
+/* .modal-footer button::before {
     content: '';
     position: absolute;
     top: 0;
@@ -677,7 +664,7 @@
     height: 100%;
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
     transition: left 0.5s;
-}
+} */
 
 .modal-footer button:hover::before {
     left: 100%;
@@ -706,7 +693,7 @@
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(23, 162, 184, 0.3);
 }
-
+/* 
 .btn-save {
     background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
     color: white;
@@ -717,7 +704,7 @@
     background: linear-gradient(135deg, #20c997 0%, #1e7e34 100%);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
-}
+} */
 
 .modal-footer button:active {
     transform: translateY(0);
@@ -891,28 +878,3 @@
     margin: 0;
 }
 
-.applied-rate-input[type=number] {
-    -moz-appearance: textfield;
-}
-
-/* 연동 아이콘 스타일 */
-.sync-button {
-    background: none;
-    border: none;
-    font-size: 16px;
-    cursor: pointer;
-    padding: 4px;
-    margin-left: 8px;
-    border-radius: 4px;
-    transition: all 0.2s;
-    color: #00b5ad;
-}
-
-.sync-button:hover {
-    background: rgba(0, 181, 173, 0.1);
-    transform: scale(1.1);
-}
-
-.sync-button:active {
-    transform: scale(0.95);
-}

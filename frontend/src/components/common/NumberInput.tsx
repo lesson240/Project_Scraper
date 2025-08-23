@@ -57,26 +57,6 @@ export default function NumberInput({
                     disabled={disabled}
                     className="number-input-field"
                 />
-                <div className="number-input-arrows">
-                    <button
-                        type="button"
-                        className="arrow-up"
-                        onClick={handleArrowUp}
-                        disabled={disabled || value >= max}
-                        title={`${step} 증가`}
-                    >
-                        ▲
-                    </button>
-                    <button
-                        type="button"
-                        className="arrow-down"
-                        onClick={handleArrowDown}
-                        disabled={disabled || value <= min}
-                        title={`${step} 감소`}
-                    >
-                        ▼
-                    </button>
-                </div>
             </div>
         </div>
     );

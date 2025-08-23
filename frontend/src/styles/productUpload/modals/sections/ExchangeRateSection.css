@@ -146,26 +146,6 @@
     width: 100%;
 }
 
-.sync-button {
-    background: none;
-    border: none;
-    font-size: 16px;
-    cursor: pointer;
-    padding: 4px;
-    margin-left: 8px;
-    border-radius: 4px;
-    transition: all 0.2s;
-    color: #00b5ad;
-}
-
-.sync-button:hover {
-    background: rgba(0, 181, 173, 0.1);
-    transform: scale(1.1);
-}
-
-.sync-button:active {
-    transform: scale(0.95);
-}
 
 .loading-container {
     display: flex;

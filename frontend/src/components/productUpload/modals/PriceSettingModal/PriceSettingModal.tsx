@@ -4,6 +4,7 @@ import { ModalBase, ModalHeader, ModalBody, ModalFooter } from '@/components/com
 import ExchangeRateSection from './sections/ExchangeRateSection';
 import FormulaSection from './sections/FormulaSection';
 import MarginListSection from './sections/MarginListSection';
+import PriceSettingModalFooter from './sections/PriceSettingModalFooter';
 import '@/styles/productUpload/modals/PriceSettingModal.css';
 
 import type { PriceSettingModalUIProps } from '@/types/priceSetting.types';
@@ -17,6 +18,7 @@ export default function PriceSettingModal({
     onCalculateMargin, onSave, onReset,
     onExchangeRateToggle, onFormulaToggle,
     onAppliedRateChange, onSyncRates,
+    
 }: PriceSettingModalUIProps) {
     if (!isOpen) return null;
 
@@ -92,16 +94,13 @@ export default function PriceSettingModal({
             </ModalBody>
 
             <ModalFooter>
-                <div className="modal-footer">
-                    <button className="btn-reset" onClick={onReset}>초기화</button>
-                    <button
-                        className="btn-calculate-margin"
-                        onClick={onCalculateMargin}
-                    >
-                        예상 마진
-                    </button>
-                    <button className="btn-save" onClick={onSave}>저장</button>
-                </div>
+                <PriceSettingModalFooter
+                    onReset={onReset}
+                    onCalculateMargin={onCalculateMargin}
+                    onSave={onSave}
+                    originGoodsCode={selectedProducts[0]?.originGoodsCode || ''}
+                    isCalculated={isCalculated}
+                    />
             </ModalFooter>
         </ModalBase>
     );

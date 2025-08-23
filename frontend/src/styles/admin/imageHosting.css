@@ -156,11 +156,6 @@
     color: #6c757d;
 }
 
-/* 모달 스타일 */
-.modal-header {
-    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-    border-bottom: 1px solid #dee2e6;
-}
 
 .modal-title {
     color: #495057;

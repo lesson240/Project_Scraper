@@ -4,6 +4,7 @@ import PriceSettingModal from './PriceSettingModal';
 import { useExchangeRateManager } from '@/hooks/useExchangeRateManager';
 import { getExchangeRatesForFrontend } from '@/apis/exchangeRateApi';
 import type { PriceSettingModalProps, Product } from '@/types/priceSetting.types';
+import { savePriceSettingData } from '@/apis/priceSettingApi';
 
 import type { FormulaSettings, PlatformMargins } from '@/types/priceSetting.types';
 
@@ -88,41 +89,68 @@ export default function PriceSettingModalContainer(props: PriceSettingModalProps
         }
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
         if (!props.onSave) return;
 
-        // 선택된 상품들의 가격 정보 업데이트
-        const updatedProducts = props.selectedProducts.map(product => {
-            const calculated = calculatedPrices.find(calc => calc.productId === product.id);
-            const exchangeRate = exchangeRates.find(rate => rate.currencyCode === product.currencyCode);
+        try {
+            // 선택된 상품들의 가격 정보 업데이트
+            const updatedProducts = props.selectedProducts.map(product => {
+                const calculated = calculatedPrices.find(calc => calc.productId === product.id);
+                const exchangeRate = exchangeRates.find(rate => rate.currencyCode === product.currencyCode);
 
-            // 설정 상품가 계산 (원본 할인가 * 환율 + 마진)
-            let settingPrice = 0;
-            if (calculated && exchangeRate && typeof exchangeRate.appliedRate === 'number') {
-                const originalPrice = typeof product.originalPrice === 'string'
-                    ? parseFloat(product.originalPrice)
-                    : product.originalPrice;
-                settingPrice = Math.round(originalPrice * exchangeRate.appliedRate + calculated.expectedMargin);
-            }
+                // 설정 상품가 계산 (원본 할인가 * 환율 + 마진)
+                let settingPrice = 0;
+                if (calculated && exchangeRate && typeof exchangeRate.appliedRate === 'number') {
+                    const originalPrice = typeof product.originalPrice === 'string'
+                        ? parseFloat(product.originalPrice)
+                        : product.originalPrice;
+                    settingPrice = Math.round(originalPrice * exchangeRate.appliedRate + calculated.expectedMargin);
+                }
 
-            return {
-                ...product,
-                settingPrice,
-                calculatedPrice: calculated,
-                exchangeRate: typeof exchangeRate?.appliedRate === 'number' ? exchangeRate.appliedRate : 0
+                return {
+                    originGoodsCode: product.originGoodsCode || '',
+                    settingPrice,
+                    calculatedPrice: calculated,
+                    exchangeRate: typeof exchangeRate?.appliedRate === 'number' ? exchangeRate.appliedRate : 0
+                };
+            });
+
+            // 백엔드 API 호출을 위한 데이터 준비
+            const apiData = {
+                exchangeRates: exchangeRates.map(rate => ({
+                    currencyCode: rate.currencyCode,
+                    appliedRate: rate.appliedRate || 0
+                })),
+                updatedProducts,
+                formulaSettings,
+                platformMargins
             };
-        });
 
-        const settings = {
-            formula: formulaSettings,
-            platformMargins,
-            exchangeRates,
-            calculatedPrices,
-            updatedProducts
-        };
+            // 백엔드 API 호출
+            console.log('백엔드 API 호출 중...', apiData);
+            const response = await savePriceSettingData(apiData);
+            console.log('백엔드 API 응답:', response);
 
-        props.onSave(settings);
-        props.onClose();
+            if (response.success) {
+                // 성공 시 상위 컴포넌트에 알림
+                const settings = {
+                    formula: formulaSettings,
+                    platformMargins,
+                    exchangeRates,
+                    calculatedPrices,
+                    updatedProducts: updatedProducts.map(p => ({ ...p, id: p.originGoodsCode }))
+                };
+
+                props.onSave(settings);
+                props.onClose();
+            } else {
+                console.error('백엔드 API 호출 실패:', response.message);
+                alert(`저장 실패: ${response.message}`);
+            }
+        } catch (error) {
+            console.error('저장 중 오류 발생:', error);
+            alert(`저장 중 오류가 발생했습니다: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        }
     };
 
     const handleReset = () => {

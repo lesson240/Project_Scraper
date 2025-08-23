@@ -4,7 +4,7 @@ import { ModalBase, ModalHeader, ModalBody, ModalFooter } from '@/components/com
 import KeywordSection from './sections/KeywordSection';
 import KeywordAnalysisSection from './sections/KeywordAnalysisSection';
 import type { TagSettingModalUIProps } from '@/types/tagSetting.types';
-import './TagSettingModal.css';
+import '@/styles/productUpload/modals/TagSettingModal.css';
 
 export default function TagSettingModal({
     isOpen,

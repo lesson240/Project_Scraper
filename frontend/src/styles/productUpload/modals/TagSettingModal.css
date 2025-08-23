@@ -50,12 +50,12 @@
 }
 
 /* 모달 푸터 */
-.modal-footer {
+/* .modal-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
     width: 100%;
-}
+} */
 
 .btn-reset {
     background: white;
