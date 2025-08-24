@@ -321,7 +321,6 @@
     margin: 0;
 }
 
-
 /* 공식 설정 섹션 */
 .formula-section .formula-table {
     overflow-x: auto;
@@ -348,115 +347,6 @@
 
 .formula-section td {
     background: white;
-}
-
-/* 공식 설정 섹션 추가 스타일 */
-.formula-section {
-    padding: 20px;
-}
-
-.formula-options {
-    margin-bottom: 20px;
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-}
-
-.checkbox-option {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    font-size: 14px;
-    color: #333;
-}
-
-.checkbox-option input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
-    cursor: pointer;
-}
-
-.formula-sections-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 30px;
-}
-
-.base-formula,
-.additional-formula {
-    background: #f8f9fa;
-    padding: 20px;
-    border-radius: 8px;
-    border: 1px solid #e0e0e0;
-}
-
-.base-formula h4,
-.additional-formula h4 {
-    margin: 0 0 15px 0;
-    font-size: 16px;
-    font-weight: 600;
-    color: #333;
-    border-bottom: 2px solid #00b5ad;
-    padding-bottom: 8px;
-}
-
-.formula-display {
-    background: #fff;
-    padding: 12px;
-    border-radius: 6px;
-    border: 1px solid #e0e0e0;
-    margin-bottom: 20px;
-    font-family: 'Courier New', monospace;
-    font-size: 14px;
-    color: #333;
-    text-align: center;
-}
-
-.formula-inputs {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.input-group {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
-
-.input-group label {
-    font-size: 12px;
-    font-weight: 500;
-    color: #555;
-}
-
-.input-group input[type="number"] {
-    padding: 8px 12px;
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    font-size: 14px;
-    transition: border-color 0.2s;
-}
-
-.input-group input[type="number"]:focus {
-    outline: none;
-    border-color: #00b5ad;
-    box-shadow: 0 0 0 2px rgba(0, 181, 173, 0.2);
-}
-
-.formula-note {
-    font-size: 11px;
-    color: #666;
-    font-style: italic;
-    margin-top: 15px;
-    text-align: center;
-}
-
-.platform-margins {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
 }
 
 /* 마진 목록 섹션 */
@@ -742,20 +632,6 @@
     .applied-rate-input {
         width: 80px;
         font-size: 12px;
-    }
-
-    .formula-sections-container {
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
-
-    .platform-margins {
-        grid-template-columns: 1fr;
-    }
-
-    .formula-options {
-        flex-direction: column;
-        gap: 15px;
     }
 
     .margin-list-section table {

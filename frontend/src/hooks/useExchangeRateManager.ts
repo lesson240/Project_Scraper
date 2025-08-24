@@ -58,7 +58,7 @@ export function useExchangeRateManager() {
                 // 관세 주간 업데이트 (오늘 날짜 기준)
                 const today = new Date();
                 const weekNumber = Math.ceil(today.getDate() / 7);
-                setTariffPeriod(`${today.getFullYear()}년 ${weekNumber}주차`);
+                setTariffPeriod(`${today.getFullYear()}년 ${today.getMonth() + 1}월 ${weekNumber}주차`);
             } else {
                 console.warn('환율 정보 조회 실패:', response.message);
                 setError(response.message || '환율 정보 조회에 실패했습니다.');

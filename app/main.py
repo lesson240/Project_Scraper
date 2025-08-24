@@ -23,8 +23,9 @@ from app.routers import (
     page_product_upload,
     page_user_setting,
     user_account,
-    exchange_rates,
-    exchange_rate_sync,
+    api_exchange_rates,
+    api_exchange_rate_sync,
+    func_price_setting,
 )  # , user 사용자 서비스를 비활성화합니다.
 from app.imagehost.routers import imagehost_router  # ImageHost 라우터 추가
 from app.services.service_mongodb import mongodb_service
@@ -66,8 +67,9 @@ routers = [
     (page_user_setting.router, ["PageUserSetting"]),
     (user_account.router, ["UserAccount"]),
     (imagehost_router, ["ImageHost"]),  # ImageHost 라우터 추가
-    (exchange_rates.router, ["ExchangeRates"]),  # 환율 API 라우터 추가
-    (exchange_rate_sync.router, ["ExchangeRateSync"]),  # 환율 동기화 API 라우터 추가
+    (api_exchange_rates.router, ["ExchangeRates"]),  # 환율 API 라우터 추가
+    (api_exchange_rate_sync.router, ["ExchangeRateSync"]),  # 환율 동기화 API 라우터 추가
+    (func_price_setting.router, ["PriceSetting"]),  # 가격 설정 기능 라우터 추가
 ]
 
 

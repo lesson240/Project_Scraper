@@ -35,7 +35,7 @@ export async function savePriceSettingData(
   data: PriceSettingSaveRequest
 ): Promise<PriceSettingSaveResponse> {
   try {
-    const response = await fetch(`${config.baseUrl}/api/exchange-rates/price-setting/save`, {
+    const response = await fetch(`${config.baseUrl}/v1/api/price-setting/save`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

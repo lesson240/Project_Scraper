@@ -32,71 +32,72 @@ export default function FormulaSection({
 
             <div className="formula-sections-container">
                 <div className="base-formula">
-                    <h4>기본 판매가 공식</h4>
+                    <h4>기본 판매가 공식 (스마트스토어)</h4>
                     <div className="formula-display">
-                        원가 × 환율 × (1 + 기본 마진율) + 추가마진
+                        원가×환율×(1+기본 마진율)+s추가마진
                     </div>
 
                     <div className="formula-inputs">
-                        <div className="input-group">
-                            <label>기본 마진율 (%)</label>
-                            <input
-                                type="number"
-                                value={formulaSettings.baseMarginRate}
-                                onChange={(e) => onFormulaChange('baseMarginRate', Number(e.target.value))}
-                                min="0"
-                                max="100"
-                            />
-                        </div>
+                        <div className="platform-margins">
+                            <div className="input-group">
+                                <label>기본 마진율 (%)</label>
+                                <input
+                                    type="number"
+                                    value={formulaSettings.baseMarginRate}
+                                    onChange={(e) => onFormulaChange('baseMarginRate', Number(e.target.value))}
+                                    min="0"
+                                    max="100"
+                                />
+                            </div>
 
-                        <div className="input-group">
-                            <label>추가 마진</label>
-                            <input
-                                type="number"
-                                value={formulaSettings.additionalMargin}
-                                onChange={(e) => onFormulaChange('additionalMargin', Number(e.target.value))}
-                                min="0"
-                            />
+                            <div className="input-group">
+                                <label>추가 마진 (￦)</label>
+                                <input
+                                    type="number"
+                                    value={formulaSettings.additionalMargin}
+                                    onChange={(e) => onFormulaChange('additionalMargin', Number(e.target.value))}
+                                    min="0"
+                                />
+                            </div>
                         </div>
+                        <div className="platform-margins">
+                            <div className="input-group">
+                                <label>기본배송비</label>
+                                <input
+                                    type="number"
+                                    value={formulaSettings.baseShippingFee}
+                                    onChange={(e) => onFormulaChange('baseShippingFee', Number(e.target.value))}
+                                    min="0"
+                                />
+                            </div>
 
-                        <div className="input-group">
-                            <label>기본배송비</label>
-                            <input
-                                type="number"
-                                value={formulaSettings.baseShippingFee}
-                                onChange={(e) => onFormulaChange('baseShippingFee', Number(e.target.value))}
-                                min="0"
-                            />
-                        </div>
+                            <div className="input-group">
+                                <label>반품배송비</label>
+                                <input
+                                    type="number"
+                                    value={formulaSettings.returnShippingFee}
+                                    onChange={(e) => onFormulaChange('returnShippingFee', Number(e.target.value))}
+                                    min="0"
+                                />
+                            </div>
 
-                        <div className="input-group">
-                            <label>반품배송비</label>
-                            <input
-                                type="number"
-                                value={formulaSettings.returnShippingFee}
-                                onChange={(e) => onFormulaChange('returnShippingFee', Number(e.target.value))}
-                                min="0"
-                            />
-                        </div>
-
-                        <div className="input-group">
-                            <label>교환배송비</label>
-                            <input
-                                type="number"
-                                value={formulaSettings.exchangeShippingFee}
-                                onChange={(e) => onFormulaChange('exchangeShippingFee', Number(e.target.value))}
-                                min="0"
-                            />
+                            <div className="input-group">
+                                <label>교환배송비</label>
+                                <input
+                                    type="number"
+                                    value={formulaSettings.exchangeShippingFee}
+                                    onChange={(e) => onFormulaChange('exchangeShippingFee', Number(e.target.value))}
+                                    min="0"
+                                />
+                            </div>
                         </div>
                     </div>
-
-                    <div className="formula-note">※ 스마트스토어 기준</div>
                 </div>
 
                 <div className="additional-formula">
                     <h4>추가 판매가 공식</h4>
                     <div className="formula-display">
-                        기본 판매가 × (1 + 추가마진율)
+                        기본 판매가×(1+추가마진율)
                     </div>
 
                     <div className="platform-margins">

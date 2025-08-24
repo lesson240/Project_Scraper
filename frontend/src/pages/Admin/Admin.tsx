@@ -326,10 +326,10 @@ export default function Admin() {
         </div>
     );
 
-    return (
+  return (
         <div className="admin-container">
             {/* 탭 네비게이션 */}
-            <div className="admin-tabs">
+      <div className="admin-tabs">
                 <button
                     className={`tab-button ${activeTab === 'dashboard' ? 'active' : ''}`}
                     onClick={() => setActiveTab('dashboard')}
@@ -379,10 +379,10 @@ export default function Admin() {
                     <FaShieldAlt className="me-2" />
                     보안 설정
                 </button>
-            </div>
+      </div>
 
-            {/* 메인 컨텐츠 */}
-            <div className="admin-content">
+      {/* 메인 컨텐츠 */}
+      <div className="admin-content">
                 {activeTab === 'dashboard' && (
                     <div className="dashboard-section">
                         <h3>시스템 대시보드</h3>
@@ -459,10 +459,10 @@ export default function Admin() {
                             <FaShieldAlt className="mb-3" style={{ fontSize: '3rem', opacity: 0.3 }} />
                             <p>접근 제어, 암호화, 감사 로그</p>
                             <p>보안 설정 기능 개발 예정</p>
-                        </div>
                     </div>
+                  </div>
                 )}
             </div>
-        </div>
-    );
+      </div>
+  );
 }

@@ -1,10 +1,12 @@
-# path: app/routers/exchange_rate_sync.py
+# path: app/routers/api_exchange_rate_sync.py
 from fastapi import APIRouter, HTTPException, Depends
 from typing import List, Optional, Dict, Any
 from datetime import datetime, date
 from motor.motor_asyncio import AsyncIOMotorClient
 from app.services.service_mongodb import mongodb_service
-from app.services.exchange_rate_services import customs_api_service, koreaexim_api_service
+from app.services.service_customs import customs_service
+from app.services.koreaexim_service import koreaexim_service
+from app.services.service_exchange_rate import exchange_rate_service
 # 공통 모델 import로 변경
 from app.models.model_exchange_rate import (
     ExchangeRateBase,
@@ -63,19 +65,8 @@ class ExchangeRateSyncService:
     async def ensure_collections_exist(self, db: AsyncIOMotorClient):
         """필요한 컬렉션들이 존재하는지 확인하고 없으면 생성"""
         try:
-            # MongoDB 컬렉션에 직접 접근
-            test_doc = {
-                "currencyCode": "TEST",
-                "appliedRate": 0,
-                "source": "test",
-                "rateType": "test",
-                "baseDate": "00000000",
-                "isActive": False
-            }
-            
-            await db.exchange_rates.insert_one(test_doc)
-            await db.exchange_rates.delete_one({"currencyCode": "TEST"})
-            
+            # 공통 서비스 사용
+            await exchange_rate_service.ensure_collections_exist(db)
             logger.info("필요한 컬렉션들이 확인/생성되었습니다.")
         except Exception as e:
             logger.error(f"컬렉션 생성 실패: {e}")
@@ -143,7 +134,7 @@ class ExchangeRateSyncService:
             # 6. 일일고시환율 동기화
             if needs_daily_sync and self.can_call_api('daily'):
                 try:
-                    new_daily_rates = await koreaexim_api_service.get_exchange_rates(today)
+                    new_daily_rates = await koreaexim_service.get_exchange_rates(today)
                     
                     # 기존 데이터 비활성화
                     await db.exchange_rates.update_many(
@@ -172,7 +163,7 @@ class ExchangeRateSyncService:
             # 7. 관세주간환율 동기화
             if needs_weekly_sync and self.can_call_api('weekly'):
                 try:
-                    new_weekly_rates = await customs_api_service.get_exchange_rates(today)
+                    new_weekly_rates = await customs_service.get_exchange_rates(today)
                     
                     # 기존 데이터 비활성화
                     await db.exchange_rates.update_many(

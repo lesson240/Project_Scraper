@@ -26,7 +26,7 @@ export default function PriceSettingModal({
         <ModalBase isOpen={isOpen} onClose={onClose}>
             <ModalHeader onClose={onClose}>
                 <div className="modal-header-content">
-                    <h2>가격 설정</h2>
+                <h2>가격 설정</h2>
                     <div className="selected-products-badge">선택된 상품: {selectedProducts.length}개</div>
                 </div>
             </ModalHeader>
