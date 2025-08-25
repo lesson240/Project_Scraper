@@ -1,18 +1,71 @@
 import React from "react";
 import Button from "@/components/common/Button";
 import "@/styles/collect/filterButtons.css";
+import type { SaveData } from "@/types/priceSetting.types";
 
 type Props = {
   onReset: () => void;
-  onSave: (originGoodsCode: string) => void;
+  onSave: (data: SaveData) => void; // Modified to accept SaveData
   onCalculateMargin: () => void;
   originGoodsCode: string;
   isCalculated: boolean; // 예상마진 계산 완료 여부
+  // 데이터 수집을 위한 props 추가
+  exchangeRates: Array<{ currency: string; value: number }>;
+  formulaSettings: {
+    baseMarginRate: number;
+    additionalMargin: number;
+    baseShippingFee: number;
+    returnShippingFee: number;
+    exchangeShippingFee: number;
+    freeShipping: boolean;
+    optimizeShippingFee: boolean;
+  };
+  platformMargins: {
+    coupang: number;
+    auction: number;
+    gmarket: number;
+    elevenst: number;
+  };
+  calculatedProducts: Array<{
+    productId: string;
+    basePrice: number;
+    platformPrices: {
+      coupang: number;
+      auction: number;
+      gmarket: number;
+      elevenst: number;
+    };
+    expectedMargin: number;
+    expectedMarginRate: number;
+  }>;
 };
 
-export default function PriceSettingModalFooter({ onSave, onReset, onCalculateMargin, originGoodsCode, isCalculated }: Props) {
+export default function PriceSettingModalFooter({ 
+  onSave, 
+  onReset, 
+  onCalculateMargin, 
+  originGoodsCode, 
+  isCalculated,
+  exchangeRates,
+  formulaSettings,
+  platformMargins,
+  calculatedProducts
+}: Props) {
+  
   const handleSave = () => {
-    onSave(originGoodsCode);
+    // 저장할 데이터 구성
+    const saveData: SaveData = {
+      exchangeRates,
+      formulaSettings,
+      platformMargins,
+      calculatedProducts,
+      originGoodsCode
+    };
+
+    console.log('저장할 데이터:', saveData);
+    
+    // 부모 컴포넌트의 onSave 호출
+    onSave(saveData);
   };
 
   return (

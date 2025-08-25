@@ -12,6 +12,17 @@ export default function MarginListSection({
     onMarginReset,
     isCalculated = false
 }: MarginListSectionProps) {
+    
+    // 계산된 데이터 로깅
+    React.useEffect(() => {
+        if (isCalculated && calculatedPrices.length > 0) {
+            console.log('계산된 상품 데이터:', calculatedPrices);
+            console.log('선택된 상품:', selectedProducts);
+            console.log('환율 정보:', exchangeRates);
+            console.log('플랫폼 마진:', platformMargins);
+        }
+    }, [isCalculated, calculatedPrices, selectedProducts, exchangeRates, platformMargins]);
+
     const getExchangeRate = (currency: string) => {
         if (!exchangeRates || !Array.isArray(exchangeRates)) {
             console.warn('exchangeRates가 유효하지 않습니다:', exchangeRates);
@@ -89,10 +100,7 @@ export default function MarginListSection({
                                     </td>
                                     <td className="set-price">
                                         {isCalculated && calculated ? (
-                                            <>
-                                                {calculated.basePrice.toLocaleString()} -
-                                                {calculated.platformPrices.coupang.toLocaleString()}
-                                            </>
+                                            calculated.basePrice.toLocaleString()
                                         ) : (
                                             '-'
                                         )}
@@ -102,10 +110,7 @@ export default function MarginListSection({
                                     </td>
                                     <td className="margin-amount">
                                         {isCalculated && calculated ? (
-                                            <>
-                                                {calculated.expectedMargin.toLocaleString()} -
-                                                {(calculated.expectedMargin * 1.15).toLocaleString()}
-                                            </>
+                                            calculated.expectedMargin.toLocaleString()
                                         ) : (
                                             '-'
                                         )}

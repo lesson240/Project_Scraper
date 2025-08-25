@@ -42,7 +42,23 @@ logger = setup_logger(logger_name, __file__)
 
 class ChromePathManager:
     def __init__(self):
-        self.engine = mongodb_service.users_engine
+        self._engine = None  # 지연 초기화를 위해 None으로 설정
+    
+    @property
+    def engine(self):
+        """MongoDB 엔진을 지연 초기화로 반환합니다."""
+        if self._engine is None:
+            try:
+                from app.services.service_mongodb import mongodb_service
+                # MongoDB 연결 확인 및 초기화
+                if mongodb_service.client is None:
+                    # 동기적으로 연결을 시도할 수 없으므로 에러 발생
+                    raise RuntimeError("MongoDB 클라이언트가 초기화되지 않았습니다. 서버 시작 후 사용해주세요.")
+                self._engine = mongodb_service.users_engine
+            except Exception as e:
+                logger.error(f"MongoDB 엔진 초기화 실패: {e}")
+                raise RuntimeError(f"MongoDB 엔진을 초기화할 수 없습니다: {e}")
+        return self._engine
 
     def get_possible_paths(self, os_name, username):
         """Return a list of possible Chrome paths based on the operating system."""
@@ -97,7 +113,23 @@ class ChromePathManager:
 
 class ChromeExPathManager:
     def __init__(self):
-        self.engine = mongodb_service.users_engine
+        self._engine = None  # 지연 초기화를 위해 None으로 설정
+    
+    @property
+    def engine(self):
+        """MongoDB 엔진을 지연 초기화로 반환합니다."""
+        if self._engine is None:
+            try:
+                from app.services.service_mongodb import mongodb_service
+                # MongoDB 연결 확인 및 초기화
+                if mongodb_service.client is None:
+                    # 동기적으로 연결을 시도할 수 없으므로 에러 발생
+                    raise RuntimeError("MongoDB 클라이언트가 초기화되지 않았습니다. 서버 시작 후 사용해주세요.")
+                self._engine = mongodb_service.users_engine
+            except Exception as e:
+                logger.error(f"MongoDB 엔진 초기화 실패: {e}")
+                raise RuntimeError(f"MongoDB 엔진을 초기화할 수 없습니다: {e}")
+        return self._engine
 
     def get_possible_extension_paths(self, os_name, extension_id):
         """Return a list of possible Chrome extension paths based on the operating system."""
@@ -167,9 +199,6 @@ class ChromeExPathManager:
             logger.error(f"Error finding extension path: {e}")
             return None
 
-    def __init__(self):
-        self.engine = mongodb_service.users_engine
-
     def get_possible_profile_paths(self, os_name):
         """Return a list of possible Chrome profile paths based on the operating system."""
         user_home = os.path.expanduser("~")
@@ -235,7 +264,23 @@ class ChromeExPathManager:
 
 class ChromeProfilePathManager:
     def __init__(self):
-        self.engine = mongodb_service.users_engine
+        self._engine = None  # 지연 초기화를 위해 None으로 설정
+    
+    @property
+    def engine(self):
+        """MongoDB 엔진을 지연 초기화로 반환합니다."""
+        if self._engine is None:
+            try:
+                from app.services.service_mongodb import mongodb_service
+                # MongoDB 연결 확인 및 초기화
+                if mongodb_service.client is None:
+                    # 동기적으로 연결을 시도할 수 없으므로 에러 발생
+                    raise RuntimeError("MongoDB 클라이언트가 초기화되지 않았습니다. 서버 시작 후 사용해주세요.")
+                self._engine = mongodb_service.users_engine
+            except Exception as e:
+                logger.error(f"MongoDB 엔진 초기화 실패: {e}")
+                raise RuntimeError(f"MongoDB 엔진을 초기화할 수 없습니다: {e}")
+        return self._engine
 
     def get_possible_profile_paths(self, os_name):
         """Return a list of possible Chrome profile paths based on the operating system."""
@@ -304,8 +349,24 @@ class ProfileManager:
     """쿠키와 로컬 스토리지 데이터를 관리하는 클래스"""
 
     def __init__(self, refresh_interval_days=1):
-        self.engine = mongodb_service.users_engine
+        self._engine = None  # 지연 초기화를 위해 None으로 설정
         self.refresh_interval = timedelta(days=refresh_interval_days)
+    
+    @property
+    def engine(self):
+        """MongoDB 엔진을 지연 초기화로 반환합니다."""
+        if self._engine is None:
+            try:
+                from app.services.service_mongodb import mongodb_service
+                # MongoDB 연결 확인 및 초기화
+                if mongodb_service.client is None:
+                    # 동기적으로 연결을 시도할 수 없으므로 에러 발생
+                    raise RuntimeError("MongoDB 클라이언트가 초기화되지 않았습니다. 서버 시작 후 사용해주세요.")
+                self._engine = mongodb_service.users_engine
+            except Exception as e:
+                logger.error(f"MongoDB 엔진 초기화 실패: {e}")
+                raise RuntimeError(f"MongoDB 엔진을 초기화할 수 없습니다: {e}")
+        return self._engine
 
     def get_profile_cookies(self, profile_path):
         """브라우저 프로파일에서 쿠키 데이터를 가져옵니다."""

@@ -7,7 +7,7 @@ import MarginListSection from './sections/MarginListSection';
 import PriceSettingModalFooter from './sections/PriceSettingModalFooter';
 import '@/styles/productUpload/modals/PriceSettingModal.css';
 
-import type { PriceSettingModalUIProps } from '@/types/priceSetting.types';
+import type { PriceSettingModalUIProps, SaveData } from '@/types/priceSetting.types';
 
 export default function PriceSettingModal({
     isOpen, onClose, selectedProducts,
@@ -20,6 +20,35 @@ export default function PriceSettingModal({
     onAppliedRateChange, onSyncRates,
     
 }: PriceSettingModalUIProps) {
+    
+    // 저장 핸들러 구현
+    const handleSave = (saveData: SaveData) => {
+        console.log('PriceSettingModal - 저장 요청:', saveData);
+        
+        try {
+            // 데이터 검증
+            if (!saveData.exchangeRates || saveData.exchangeRates.length === 0) {
+                throw new Error('환율 정보가 없습니다.');
+            }
+            
+            if (!saveData.calculatedProducts || saveData.calculatedProducts.length === 0) {
+                throw new Error('계산된 상품 정보가 없습니다.');
+            }
+            
+            if (!saveData.originGoodsCode) {
+                throw new Error('상품 코드가 없습니다.');
+            }
+            
+            // 부모 컴포넌트의 onSave 호출
+            onSave(saveData);
+            
+        } catch (error) {
+            console.error('저장 데이터 검증 실패:', error);
+            // TODO: 사용자에게 에러 메시지 표시
+            alert(`저장 실패: ${error instanceof Error ? error.message : '알 수 없는 오류'}`);
+        }
+    };
+
     if (!isOpen) return null;
 
     return (
@@ -85,8 +114,6 @@ export default function PriceSettingModal({
                         selectedProducts={selectedProducts}
                         calculatedPrices={calculatedPrices}
                         exchangeRates={exchangeRates}
-                        platformMargins={platformMargins}
-                        onMarginChange={onPlatformMarginChange}
                         onMarginReset={() => { }}
                         isCalculated={isCalculated}
                     />
@@ -97,10 +124,17 @@ export default function PriceSettingModal({
                 <PriceSettingModalFooter
                     onReset={onReset}
                     onCalculateMargin={onCalculateMargin}
-                    onSave={onSave}
+                    onSave={handleSave}
                     originGoodsCode={selectedProducts[0]?.originGoodsCode || ''}
                     isCalculated={isCalculated}
-                    />
+                    exchangeRates={exchangeRates.map(rate => ({
+                        currency: rate.currencyCode,
+                        value: rate.appliedRate
+                    }))}
+                    formulaSettings={formulaSettings}
+                    platformMargins={platformMargins}
+                    calculatedProducts={calculatedPrices}
+                />
             </ModalFooter>
         </ModalBase>
     );

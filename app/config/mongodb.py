@@ -34,6 +34,7 @@ MONGO_DB_NAME_RECORDS = "records"
 MONGO_DB_NAME_USERS = "users"
 MONGO_DB_NAME_IMAGES = "images"
 MONGO_DB_NAME_EXTERNAL_API = "externalApi"
+MONGO_DB_NAME_SETTINGS = "settings"
 MONGO_DB_URL = load_secrets().get("MONGO_URL", "mongodb://localhost:27017")
 
 # MongoDB 컬렉션 구조 정의

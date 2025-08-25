@@ -25,35 +25,59 @@ export function useExchangeRateManager() {
         setError(null);
 
         try {
-                            const response = await getExchangeRatesForFrontend();
+            const response = await getExchangeRatesForFrontend();
+            console.log('🔍 백엔드 응답 전체:', response);
 
-                if (response.success && response.data) {
-
+            if (response.success && response.data) {
+                console.log('🔍 백엔드 응답 데이터:', response.data);
+                
                 // Combined 엔드포인트 응답을 ExchangeRateData 형식으로 변환
                 const updatedRates: ExchangeRateData[] = [];
 
                 // response.data는 CombinedExchangeRateData[] 배열
                 // 각 통화별로 koreaexim과 customs 데이터를 모두 포함하여 처리
                 response.data.forEach((combinedData: any) => {
+                    console.log(`🔍 ${combinedData.currencyCode} 통화 데이터:`, combinedData);
+                    console.log(`🔍 ${combinedData.currencyCode} customs:`, combinedData.customs);
+                    console.log(`🔍 ${combinedData.currencyCode} koreaexim:`, combinedData.koreaexim);
+                    
                     if (combinedData.currencyCode) {
+                        // 🆕 appliedRate를 실제 환율 값으로 초기화 (0이 아닌)
+                        let initialAppliedRate = 0;
+                        
+                        // KRW가 아닌 통화의 경우 기본값 설정
+                        if (combinedData.currencyCode === 'USD') {
+                            initialAppliedRate = 1400; // 기본값
+                        } else if (combinedData.currencyCode === 'CNY') {
+                            initialAppliedRate = 200;  // 기본값
+                        } else if (combinedData.currencyCode === 'JPY') {
+                            initialAppliedRate = 10;   // 기본값
+                        } else if (combinedData.currencyCode === 'EUR') {
+                            initialAppliedRate = 1700; // 기본값
+                        } else if (combinedData.currencyCode === 'KRW') {
+                            initialAppliedRate = 1;    // 원화는 항상 1
+                        }
+                        
                         const newRate: ExchangeRateData = {
                             currencyCode: combinedData.currencyCode,
-                            baseDate: combinedData.customs?.baseDate || combinedData.koreaexim?.baseDate || '',
-                            rateType: 'combined', // koreaexim과 customs 모두 포함
-                            appliedRate: 0, // 사용자가 입력할 값
-                            lastUpdated: new Date(),
+                            appliedRate: initialAppliedRate, // 🆕 실제 환율 값으로 초기화
+                            lastUpdated: new Date().toISOString().slice(0, 10), // YYYY-MM-DD 형식
                             source: 'manual',
-                            // koreaexim과 customs 개별 환율 저장
-                            koreaeximRate: combinedData.koreaexim?.appliedRate || 0,
-                            customsRate: combinedData.customs?.appliedRate || 0
+                            // 🆕 customs와 koreaexim 데이터 추가
+                            customs: combinedData.customs || null,
+                            koreaexim: combinedData.koreaexim || null
                         };
                         
                         updatedRates.push(newRate);
+                        console.log(`💱 ${combinedData.currencyCode} 환율 초기화: ${initialAppliedRate}`);
+                        console.log(`📊 ${combinedData.currencyCode} customs:`, combinedData.customs);
+                        console.log(`📊 ${combinedData.currencyCode} koreaexim:`, combinedData.koreaexim);
                     }
                 });
 
                 // 환율 데이터 업데이트
                 setExchangeRates(updatedRates);
+                console.log('🔍 최종 업데이트된 환율 데이터:', updatedRates);
 
                 // 관세 주간 업데이트 (오늘 날짜 기준)
                 const today = new Date();

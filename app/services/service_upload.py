@@ -41,8 +41,8 @@ class FilterSectionInquiry:
         self.origin_goods_name = kwargs.get("origin_goods_name", "")
 
         self.mongodb_service = mongodb_service
-        if self.mongodb_service and self.mongodb_service.engine is None:
-            raise ValueError("MongoDB engine is not initialized")
+        if self.mongodb_service and self.mongodb_service.client is None:
+            raise ValueError("MongoDB client is not initialized")
 
     # async def fetch_inquiry(self):
     #     """상품 데이터를 DB에서 조회"""

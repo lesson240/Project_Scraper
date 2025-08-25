@@ -291,6 +291,9 @@ async def get_exchange_rates_for_frontend():
         koreaexim_final = await external_api_db.koreaexim.find({"isActive": True}).to_list(length=100)
         customs_final = await external_api_db.customs.find({"isActive": True}).to_list(length=100)
         
+        print(f"🔍 koreaexim 최종 데이터: {len(koreaexim_final)}개")
+        print(f"🔍 customs 최종 데이터: {len(customs_final)}개")
+        
         # CombinedExchangeRateResponse 형식으로 데이터 변환
         combined_rates = []
         
@@ -303,6 +306,10 @@ async def get_exchange_rates_for_frontend():
             
             # customs 데이터 찾기
             customs_data = next((r for r in customs_final if r["currencyCode"] == currency), None)
+            
+            print(f"🔍 {currency} 통화 처리:")
+            print(f"  - koreaexim: {koreaexim_data}")
+            print(f"  - customs: {customs_data}")
             
             # Combined 형식으로 데이터 구성
             combined_rate = {
@@ -321,6 +328,7 @@ async def get_exchange_rates_for_frontend():
                     "isActive": customs_data.get("isActive", True),
                     "source": "customs"
                 }
+                print(f"  ✅ {currency} customs 데이터 구성 완료: {combined_rate['customs']}")
             
             # koreaexim 데이터 처리
             if koreaexim_data:
@@ -333,8 +341,12 @@ async def get_exchange_rates_for_frontend():
                     "isActive": koreaexim_data.get("isActive", True),
                     "source": "koreaexim"
                 }
+                print(f"  ✅ {currency} koreaexim 데이터 구성 완료: {combined_rate['koreaexim']}")
             
             combined_rates.append(combined_rate)
+            print(f"  🎯 {currency} 통합 데이터 완성: {combined_rate}")
+        
+        print(f"🎉 최종 combined_rates: {combined_rates}")
         
         # CombinedExchangeRateResponse 형식으로 반환
         from app.models.model_exchange_rate import CombinedExchangeRateResponse
