@@ -20,6 +20,14 @@ export default function ItemActions({
     <div className="table-col button-group">
       <div className="button-row">
         <Button variant="secondary" onClick={onAttributeSet}>
+          가격
+        </Button>
+        <Button variant="secondary" onClick={onOptionSet}>
+          태그
+        </Button>
+      </div>
+      <div className="button-row">
+        <Button variant="secondary" onClick={onAttributeSet}>
           속성
         </Button>
         <Button variant="secondary" onClick={onOptionSet}>

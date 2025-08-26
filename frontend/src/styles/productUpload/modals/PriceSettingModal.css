@@ -54,9 +54,13 @@
 
 .section-header h3 {
     margin: 0;
+    height: 40px;
     font-size: 16px;
     font-weight: 700;
     color: #2c3e50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border-bottom: none;
     padding: 0;
     position: relative;
@@ -216,9 +220,9 @@
 
 .formula-header {
     position: sticky;
-    top: 60px;
+    top: 0px;
     /* 환율 설정 헤더 높이만큼 아래에 고정 */
-    z-index: 20;
+    z-index: 30;
     background: #fff;
     border-bottom: 1px solid #e0e0e0;
     margin-bottom: 0;
@@ -226,9 +230,9 @@
 
 .margin-list-header {
     position: sticky;
-    top: 120px;
+    top: 0px;
     /* 환율 설정 + 공식 설정 헤더 높이만큼 아래에 고정 */
-    z-index: 10;
+    z-index: 30;
     background: #fff;
     border-bottom: 1px solid #e0e0e0;
     margin-bottom: 0;
@@ -255,6 +259,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 0 10px 0 10px;
     gap: 20px;
 }
 
@@ -266,7 +271,6 @@
 
 .tariff-period {
     font-size: 12px;
-    color: #007bff;
     font-weight: 500;
 }
 
@@ -321,33 +325,8 @@
     margin: 0;
 }
 
-/* 공식 설정 섹션 */
-.formula-section .formula-table {
-    overflow-x: auto;
-}
-
-.formula-section table {
-    width: 100%;
-    border-collapse: collapse;
-    border: 1px solid #e0e0e0;
-}
-
-.formula-section th,
-.formula-section td {
-    padding: 12px;
-    text-align: center;
-    border: 1px solid #e0e0e0;
-}
-
-.formula-section th {
-    background: #f8f9fa;
-    font-weight: 600;
-    color: #333;
-}
-
-.formula-section td {
-    background: white;
-}
+/* 공식 설정 섹션 - FormulaSection.css로 이동됨 */
+/* .formula-section 관련 스타일은 FormulaSection.css에서 관리 */
 
 /* 마진 목록 섹션 */
 .margin-list-section .margin-table {
@@ -358,6 +337,7 @@
     width: 100%;
     border-collapse: collapse;
     border: 1px solid #e0e0e0;
+    font-size: 13px;
 }
 
 .margin-list-section th,
@@ -428,27 +408,21 @@
 /* 가격 관련 셀 스타일 */
 .original-price,
 .set-price,
-.margin-rate,
-.margin-amount {
-    font-family: 'Courier New', monospace;
+.main-margin-rate,
+.main-margin-amount {
     font-weight: 500;
 }
 
 .original-price {
-    color: #007bff;
+    color: #000000;
 }
 
-.set-price {
-    color: #28a745;
+.set-price,
+.main-margin-rate,
+.main-margin-amount {
+    color: #00a099;
 }
 
-.margin-rate {
-    color: #ffc107;
-}
-
-.margin-amount {
-    color: #dc3545;
-}
 
 /* 버튼 스타일 */
 .btn-margin {
@@ -583,6 +557,7 @@
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(23, 162, 184, 0.3);
 }
+
 /* 
 .btn-save {
     background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
@@ -717,7 +692,6 @@
 
 .daily-rate,
 .weekly-tariff {
-    font-family: 'Courier New', monospace;
     font-weight: 500;
     color: #007bff;
 }
@@ -753,4 +727,3 @@
     -webkit-appearance: none;
     margin: 0;
 }
-

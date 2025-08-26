@@ -126,9 +126,8 @@
 /* 가격 관련 셀 스타일 */
 .original-price,
 .set-price,
-.margin-rate,
-.margin-amount {
-    font-family: 'Courier New', monospace;
+.main-margin-rate,
+.main-margin-amount {
     font-weight: 500;
 }
 
@@ -140,12 +139,14 @@
     color: #28a745;
 }
 
-.margin-rate {
-    color: #ffc107;
+.main-margin-rate {
+    color: #e74c3c;
+    font-size: 0.9em;
 }
 
-.margin-amount {
-    color: #dc3545;
+.main-margin-amount {
+    color: #27ae60;
+    font-size: 0.9em;
 }
 
 /* 반응형 디자인 */

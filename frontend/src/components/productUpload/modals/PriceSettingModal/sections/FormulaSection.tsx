@@ -1,6 +1,7 @@
 // path: frontend/src/components/productUpload/modals/PriceSettingModal/sections/FormulaSection.tsx
 import React from 'react';
 import type { FormulaSectionProps } from '@/types/priceSetting.types';
+import NumberInput from '@/components/common/NumberInput';
 import '@/styles/productUpload/modals/sections/FormulaSection.css';
 
 export default function FormulaSection({
@@ -9,7 +10,7 @@ export default function FormulaSection({
     onFormulaChange,
     onPlatformMarginChange
 }: FormulaSectionProps) {
-    
+
     const handleFormulaChange = (field: string, value: any) => {
         console.log(`공식 설정 변경: ${field} =`, value);
         onFormulaChange(field, value);
@@ -50,57 +51,47 @@ export default function FormulaSection({
 
                     <div className="formula-inputs">
                         <div className="platform-margins">
-                            <div className="input-group">
-                                <label>기본 마진율 (%)</label>
-                                <input
-                                    type="number"
-                                    value={formulaSettings.baseMarginRate}
-                                    onChange={(e) => handleFormulaChange('baseMarginRate', Number(e.target.value))}
-                                    min="0"
-                                    max="100"
-                                />
-                            </div>
+                            <NumberInput
+                                label="기본 마진율 (%)"
+                                value={formulaSettings.baseMarginRate}
+                                onChange={(value) => handleFormulaChange('baseMarginRate', value)}
+                                min={0}
+                                max={100}
+                                className="formula-input"
+                            />
 
-                            <div className="input-group">
-                                <label>추가 마진 (￦)</label>
-                                <input
-                                    type="number"
-                                    value={formulaSettings.additionalMargin}
-                                    onChange={(e) => handleFormulaChange('additionalMargin', Number(e.target.value))}
-                                    min="0"
-                                />
-                            </div>
+                            <NumberInput
+                                label="추가 마진 (￦)"
+                                value={formulaSettings.additionalMargin}
+                                onChange={(value) => handleFormulaChange('additionalMargin', value)}
+                                min={0}
+                                className="formula-input"
+                            />
                         </div>
                         <div className="platform-margins">
-                            <div className="input-group">
-                                <label>기본배송비</label>
-                                <input
-                                    type="number"
-                                    value={formulaSettings.baseShippingFee}
-                                    onChange={(e) => handleFormulaChange('baseShippingFee', Number(e.target.value))}
-                                    min="0"
-                                />
-                            </div>
+                            <NumberInput
+                                label="기본배송비"
+                                value={formulaSettings.baseShippingFee}
+                                onChange={(value) => handleFormulaChange('baseShippingFee', value)}
+                                min={0}
+                                className="formula-input"
+                            />
 
-                            <div className="input-group">
-                                <label>반품배송비</label>
-                                <input
-                                    type="number"
-                                    value={formulaSettings.returnShippingFee}
-                                    onChange={(e) => handleFormulaChange('returnShippingFee', Number(e.target.value))}
-                                    min="0"
-                                />
-                            </div>
+                            <NumberInput
+                                label="반품배송비"
+                                value={formulaSettings.returnShippingFee}
+                                onChange={(value) => handleFormulaChange('returnShippingFee', value)}
+                                min={0}
+                                className="formula-input"
+                            />
 
-                            <div className="input-group">
-                                <label>교환배송비</label>
-                                <input
-                                    type="number"
-                                    value={formulaSettings.exchangeShippingFee}
-                                    onChange={(e) => handleFormulaChange('exchangeShippingFee', Number(e.target.value))}
-                                    min="0"
-                                />
-                            </div>
+                            <NumberInput
+                                label="교환배송비"
+                                value={formulaSettings.exchangeShippingFee}
+                                onChange={(value) => handleFormulaChange('exchangeShippingFee', value)}
+                                min={0}
+                                className="formula-input"
+                            />
                         </div>
                     </div>
                 </div>
@@ -112,49 +103,41 @@ export default function FormulaSection({
                     </div>
 
                     <div className="platform-margins">
-                        <div className="input-group">
-                            <label>쿠팡</label>
-                            <input
-                                type="number"
-                                value={platformMargins.coupang}
-                                onChange={(e) => handlePlatformMarginChange('coupang', Number(e.target.value))}
-                                min="0"
-                                max="100"
-                            />
-                        </div>
+                        <NumberInput
+                            label="쿠팡"
+                            value={platformMargins.coupang}
+                            onChange={(value) => handlePlatformMarginChange('coupang', value)}
+                            min={0}
+                            max={100}
+                            className="formula-input"
+                        />
 
-                        <div className="input-group">
-                            <label>옥션</label>
-                            <input
-                                type="number"
-                                value={platformMargins.auction}
-                                onChange={(e) => handlePlatformMarginChange('auction', Number(e.target.value))}
-                                min="0"
-                                max="100"
-                            />
-                        </div>
+                        <NumberInput
+                            label="옥션"
+                            value={platformMargins.auction}
+                            onChange={(value) => handlePlatformMarginChange('auction', value)}
+                            min={0}
+                            max={100}
+                            className="formula-input"
+                        />
 
-                        <div className="input-group">
-                            <label>지마켓</label>
-                            <input
-                                type="number"
-                                value={platformMargins.gmarket}
-                                onChange={(e) => handlePlatformMarginChange('gmarket', Number(e.target.value))}
-                                min="0"
-                                max="100"
-                            />
-                        </div>
+                        <NumberInput
+                            label="지마켓"
+                            value={platformMargins.gmarket}
+                            onChange={(value) => handlePlatformMarginChange('gmarket', value)}
+                            min={0}
+                            max={100}
+                            className="formula-input"
+                        />
 
-                        <div className="input-group">
-                            <label>11번가 글로벌</label>
-                            <input
-                                type="number"
-                                value={platformMargins.elevenst}
-                                onChange={(e) => handlePlatformMarginChange('elevenst', Number(e.target.value))}
-                                min="0"
-                                max="100"
-                            />
-                        </div>
+                        <NumberInput
+                            label="11번가 글로벌"
+                            value={platformMargins.elevenst}
+                            onChange={(value) => handlePlatformMarginChange('elevenst', value)}
+                            min={0}
+                            max={100}
+                            className="formula-input"
+                        />
                     </div>
                 </div>
             </div>

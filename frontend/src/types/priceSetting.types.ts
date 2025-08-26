@@ -1,4 +1,5 @@
 // src/types/priceSetting.types.ts
+import type { PlatformMargins, CalculatedProduct } from '@/utils/priceCalculation';
 
 export interface Product {
     id: string;
@@ -42,17 +43,17 @@ export interface ExchangeRateData {
 
 // 원화 처리 헬퍼 함수 추가
 export const createExchangeRateData = (
-    currencyCode: string | undefined, 
-    appliedRate: number | undefined, 
+    currencyCode: string | undefined,
+    appliedRate: number | undefined,
     source: 'customs' | 'koreaexim' | 'manual' = 'manual'
 ): ExchangeRateData => {
     // undefined 값 처리: 기본값 설정
     const finalCurrencyCode = currencyCode || 'KRW';
     const finalAppliedRate = appliedRate || 1.0; // 기본 환율 1.0
-    
+
     // 날짜 형식 보장: YYYY-MM-DD
     const today = new Date().toISOString().slice(0, 10);
-    
+
     return {
         currencyCode: finalCurrencyCode,
         appliedRate: finalAppliedRate,
@@ -92,34 +93,24 @@ export interface CombinedExchangeRateResponse {
 
 // SaveData 인터페이스 추가
 export interface SaveData {
-    exchangeRates: Array<{ currency: string; value: number }>;
+    exchangeRates: Array<{
+        currency: string;
+        value: number;
+    }>;
     formulaSettings: {
+        costFormula: string;
+        priceFormula: string;
+        marginFormula: string;
+        freeShipping: boolean;
+        optimizeShippingFee: boolean;
         baseMarginRate: number;
         additionalMargin: number;
         baseShippingFee: number;
         returnShippingFee: number;
         exchangeShippingFee: number;
-        freeShipping: boolean;
-        optimizeShippingFee: boolean;
     };
-    platformMargins: {
-        coupang: number;
-        auction: number;
-        gmarket: number;
-        elevenst: number;
-    };
-    calculatedProducts: Array<{
-        productId: string;
-        basePrice: number;
-        platformPrices: {
-            coupang: number;
-            auction: number;
-            gmarket: number;
-            elevenst: number;
-        };
-        expectedMargin: number;
-        expectedMarginRate: number;
-    }>;
+    platformMargins: PlatformMargins;
+    calculatedProducts: CalculatedProduct[];
     originGoodsCode: string;
 }
 
@@ -181,48 +172,37 @@ export interface FormulaSettings {
     exchangeShippingFee: number;
 }
 
-export interface PlatformMargins {
-    coupang: number;
-    elevenst: number;
-    gmarket: number;
-    openmarket: number;
-    auction: number;
-}
-
 export interface CalculatedPrice {
-    productId: string;
+    originGoodsCode: string; // 🆕 originGoodsCode 필드 추가
     currency: string;
     originalPrice: number;
     calculatedPrice: number;
     margin: number;
     finalPrice: number;
     basePrice: number;
+    exchangeRate: number;
     platformPrices: {
         coupang: number;
         auction: number;
         gmarket: number;
         elevenst: number;
+        openmarket: number;
     };
-    expectedMargin: number;
-    expectedMarginRate: number;
+    marginList: {
+        main: { ExpectedMargin: number; ExpectedMarginRate: number; selling_price: number; };
+        coupang: { ExpectedMargin: number; ExpectedMarginRate: number; selling_price: number; };
+        auction: { ExpectedMargin: number; ExpectedMarginRate: number; selling_price: number; };
+        gmarket: { ExpectedMargin: number; ExpectedMarginRate: number; selling_price: number; };
+        elevenst: { ExpectedMargin: number; ExpectedMarginRate: number; selling_price: number; };
+    };
 }
 
-export interface CalculatedProduct {
-    productId: string;
-    basePrice: number;
-    platformPrices: Record<string, number>;
-    expectedMargin: number;
-    expectedMarginRate: number;
-    exchangeRate: number;
-    originalPrice: number;
-}
-  
-  export interface ProductPriceData {
+export interface ProductPriceData {
     originGoodsCode: string;
     settingPrice: number;
-    // 🆕 추가 필드들
-    expectedMargin?: number;
-    expectedMarginRate?: number;
+    // 🆕 백엔드 모델과 일치하도록 필드명 수정
+    mainExpectedMargin?: number;  // expectedMargin -> mainExpectedMargin
+    mainExpectedMarginRate?: number;  // expectedMarginRate -> mainExpectedMarginRate
     salesPrice?: number;
 }
 
@@ -233,7 +213,7 @@ export interface PriceSettingRequest {
     calculatedProducts: Record<string, any>[]; // 백엔드 모델과 일치
     updatedProducts?: ProductPriceData[]; // 백엔드 모델과 일치 (선택적)
     originGoodsCode: string;
-    
+
     // 🆕 통합된 필드들 (base_price_setting 컬렉션용)
     // allttamExchangeRates 제거 - manuel로 통합
     baseSellingPriceFormula?: Record<string, any>; // 기본 판매가 공식

@@ -72,6 +72,27 @@
     gap: 30px;
 }
 
+/* 우선순위 강화: 더 구체적인 선택자 사용 */
+.price-setting-modal .formula-section .base-formula,
+.price-setting-modal .formula-section .additional-formula {
+    background: #f8f9fa !important;
+    padding: 20px !important;
+    border-radius: 8px !important;
+    border: 1px solid #e0e0e0 !important;
+    /* 높이 자동 조정을 위한 설정 */
+    height: auto !important;
+    min-height: auto !important;
+    /* 내부 요소가 넘어가지 않도록 설정 */
+    overflow: visible !important;
+    /* Flexbox로 내부 요소 정렬 */
+    display: flex !important;
+    flex-direction: column !important;
+    /* 내부 요소가 테두리를 넘어가지 않도록 설정 */
+    box-sizing: border-box !important;
+    align-items: stretch !important;
+}
+
+/* 기본 선택자도 유지 (fallback) */
 .base-formula,
 .additional-formula {
     background: #f8f9fa;
@@ -80,12 +101,27 @@
     border: 1px solid #e0e0e0;
     /* 높이 자동 조정을 위한 설정 */
     height: auto;
-    min-height: fit-content;
+    min-height: auto;
     /* 내부 요소가 넘어가지 않도록 설정 */
     overflow: visible;
     /* Flexbox로 내부 요소 정렬 */
     display: flex;
     flex-direction: column;
+    /* 내부 요소가 테두리를 넘어가지 않도록 설정 */
+    box-sizing: border-box;
+    align-items: stretch;
+}
+
+.price-setting-modal .formula-section .base-formula h4,
+.price-setting-modal .formula-section .additional-formula h4 {
+    margin: 0 0 15px 0 !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    color: #333 !important;
+    border-bottom: 2px solid #00b5ad !important;
+    padding-bottom: 8px !important;
+    /* 헤더는 고정 크기 */
+    flex-shrink: 0 !important;
 }
 
 .base-formula h4,
@@ -100,29 +136,63 @@
     flex-shrink: 0;
 }
 
+.price-setting-modal .formula-section .formula-display {
+    background: #fff !important;
+    padding: 10px !important;
+    border-radius: 6px !important;
+    border: 1px solid #00b5ad !important;
+    margin-bottom: 10px !important;
+    font-size: 13px !important;
+    color: #333 !important;
+    text-align: left !important;
+    /* display는 고정 크기 */
+    flex-shrink: 0 !important;
+}
+
 .formula-display {
     background: #fff;
     padding: 10px;
     border-radius: 6px;
     border: 1px solid #00b5ad;
     margin-bottom: 10px;
-    font-family: 'Courier New', monospace;
-    font-size: 12px;
+    font-size: 13px;
     color: #333;
     text-align: left;
     /* display는 고정 크기 */
     flex-shrink: 0;
 }
 
+/* 우선순위 강화: formula-inputs */
+.price-setting-modal .formula-section .formula-inputs {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 15px !important;
+    /* 내부 요소가 넘어가지 않도록 설정 */
+    min-height: auto !important;
+    overflow: visible !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
 .formula-inputs {
     display: flex;
     flex-direction: column;
     gap: 15px;
-    /* 남은 공간을 모두 차지하도록 설정 */
-    flex: 1;
     /* 내부 요소가 넘어가지 않도록 설정 */
-    min-height: 0;
+    min-height: auto;
     overflow: visible;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.price-setting-modal .formula-section .formula-note {
+    font-size: 11px !important;
+    color: #666 !important;
+    font-style: italic !important;
+    margin-top: 15px !important;
+    text-align: center !important;
+    /* note는 고정 크기 */
+    flex-shrink: 0 !important;
 }
 
 .formula-note {
@@ -135,55 +205,46 @@
     flex-shrink: 0;
 }
 
+/* 공식 설정 섹션 테이블 스타일 */
+.formula-section .formula-table {
+    overflow-x: auto;
+}
+
+.formula-section table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #e0e0e0;
+}
+
+.formula-section th,
+.formula-section td {
+    padding: 12px;
+    text-align: center;
+    border: 1px solid #e0e0e0;
+}
+
+.formula-section th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #333;
+}
+
+.formula-section td {
+    background: white;
+}
+
+/* NumberInput 컴포넌트를 위한 formula-input 스타일 */
+.formula-input {
+    width: 100%;
+}
+
+/* platform-margins 그리드 조정 */
 .platform-margins {
     display: grid;
     gap: 15px;
     grid-template-columns: 1fr 1fr;
-    /* grid 내부 요소가 넘어가지 않도록 설정 */
     width: 100%;
     box-sizing: border-box;
-}
-
-/* input-group 스타일 - base-formula 내부에서만 사용 */
-.input-group {
-    display: flex;
-    flex-direction: column;
-    padding: 10px 0 0 0;
-    gap: 5px;
-    /* 부모 컨테이너를 넘어가지 않도록 설정 */
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    /* 내부 요소가 넘어가지 않도록 설정 */
-    overflow: visible;
-}
-
-.input-group label {
-    font-size: 12px;
-    font-weight: 500;
-    color: #555;
-    /* label은 고정 크기 */
-    flex-shrink: 0;
-}
-
-.input-group input[type="number"] {
-    padding: 8px 12px;
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    font-size: 14px;
-    transition: border-color 0.2s;
-    /* 부모 컨테이너를 넘어가지 않도록 설정 */
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    /* input은 고정 크기 */
-    flex-shrink: 0;
-}
-
-.input-group input[type="number"]:focus {
-    outline: none;
-    border-color: #00b5ad;
-    box-shadow: 0 0 0 2px rgba(0, 181, 173, 0.2);
 }
 
 /* 반응형 디자인 */
@@ -197,11 +258,11 @@
         flex-direction: column;
         gap: 15px;
     }
-    
+
     .base-formula,
     .additional-formula {
         /* 모바일에서는 전체 너비 사용 */
         width: 100%;
-        min-width: 0;
+        min-width: auto;
     }
 }

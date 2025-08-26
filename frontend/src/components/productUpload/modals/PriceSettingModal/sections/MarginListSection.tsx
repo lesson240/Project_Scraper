@@ -10,9 +10,14 @@ export default function MarginListSection({
     platformMargins,
     onMarginChange,
     onMarginReset,
-    isCalculated = false
+    isCalculated
 }: MarginListSectionProps) {
-    
+
+    console.log('🔍 MarginListSection 렌더링:');
+    console.log('  - selectedProducts:', selectedProducts);
+    console.log('  - calculatedPrices:', calculatedPrices);
+    console.log('  - isCalculated:', isCalculated);
+
     // 계산된 데이터 로깅
     React.useEffect(() => {
         if (isCalculated && calculatedPrices.length > 0) {
@@ -29,12 +34,19 @@ export default function MarginListSection({
             return 0;
         }
 
-        const rate = exchangeRates.find(r => r?.currency && r.currency.includes(currency));
+        const rate = exchangeRates.find(r => r?.currencyCode && r.currencyCode.includes(currency));
         return typeof rate?.appliedRate === 'number' ? rate.appliedRate : 0;
     };
 
-    const getCalculatedPrice = (productId: string) => {
-        return calculatedPrices.find(p => p.productId === productId);
+    const getCalculatedPrice = (originGoodsCode: string) => {
+        console.log(`🔍 상품 originGoodsCode ${originGoodsCode}에 대한 계산된 가격 검색 중...`);
+        console.log(`📊 전체 calculatedPrices:`, calculatedPrices);
+
+        // 🆕 originGoodsCode로 검색 (productId 필드가 없으므로)
+        const found = calculatedPrices.find(p => p.originGoodsCode === originGoodsCode);
+        console.log(`✅ 찾은 결과:`, found);
+
+        return found;
     };
 
     const formatOriginalPrice = (price: number | string, currency: string) => {
@@ -75,18 +87,18 @@ export default function MarginListSection({
                             <th>썸네일</th>
                             <th>상품명</th>
                             <th>원본 할인가</th>
-                            <th>설정 상품가 (W)</th>
+                            <th>설정 상품가 (￦)</th>
                             <th>예상 마진율</th>
                             <th>예상 마진</th>
                         </tr>
                     </thead>
                     <tbody>
                         {selectedProducts.map((product) => {
-                            const calculated = getCalculatedPrice(product.id);
+                            const calculated = getCalculatedPrice(product.originGoodsCode);  // 🆕 product.id -> product.originGoodsCode
                             const exchangeRate = getExchangeRate(product.currency);
 
                             return (
-                                <tr key={product.id}>
+                                <tr key={product.originGoodsCode}>  {/* 🆕 key도 originGoodsCode 사용 */}
                                     <td className="thumbnail-cell">
                                         <img
                                             src={product.thumbnail}
@@ -105,15 +117,15 @@ export default function MarginListSection({
                                             '-'
                                         )}
                                     </td>
-                                    <td className="margin-rate">
-                                        {isCalculated && calculated ? `${calculated.expectedMarginRate.toFixed(0)}%` : '-'}
+                                    <td className="main-margin-rate">
+                                        {isCalculated && calculated ? `${calculated.marginList.main.ExpectedMarginRate.toFixed(2)}%` : '-'}
                                     </td>
-                                    <td className="margin-amount">
-                                        {isCalculated && calculated ? (
-                                            calculated.expectedMargin.toLocaleString()
-                                        ) : (
-                                            '-'
-                                        )}
+                                    <td className="main-margin-amount">
+                                        {isCalculated && calculated ?
+                                            calculated.marginList.main.ExpectedMargin.toLocaleString()
+                                            : (
+                                                '-'
+                                            )}
                                     </td>
                                 </tr>
                             );

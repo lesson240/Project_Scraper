@@ -474,7 +474,6 @@ code {
     background-color: #f8f9fa;
     padding: 2px 4px;
     border-radius: 3px;
-    font-family: 'Courier New', monospace;
     font-size: 0.875rem;
 }
 
@@ -487,29 +486,29 @@ code {
     .admin-tabs {
         flex-wrap: wrap;
     }
-    
+
     .tab-button {
         flex: 1;
         min-width: 120px;
         margin: 2px;
     }
-    
+
     .form-row {
         grid-template-columns: 1fr;
     }
-    
+
     .stats-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .rates-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .table-responsive {
         font-size: 0.875rem;
     }
-    
+
     .btn-group {
         flex-direction: column;
     }
