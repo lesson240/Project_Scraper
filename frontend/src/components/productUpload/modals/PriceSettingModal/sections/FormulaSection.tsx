@@ -9,6 +9,17 @@ export default function FormulaSection({
     onFormulaChange,
     onPlatformMarginChange
 }: FormulaSectionProps) {
+    
+    const handleFormulaChange = (field: string, value: any) => {
+        console.log(`공식 설정 변경: ${field} =`, value);
+        onFormulaChange(field, value);
+    };
+
+    const handlePlatformMarginChange = (platform: string, value: number) => {
+        console.log(`플랫폼 마진 변경: ${platform} =`, value);
+        onPlatformMarginChange(platform, value);
+    };
+
     return (
         <div className="formula-section">
             <div className="formula-options">
@@ -16,7 +27,7 @@ export default function FormulaSection({
                     <input
                         type="checkbox"
                         checked={formulaSettings.freeShipping}
-                        onChange={(e) => onFormulaChange('freeShipping', e.target.checked)}
+                        onChange={(e) => handleFormulaChange('freeShipping', e.target.checked)}
                     />
                     무료배송
                 </label>
@@ -24,7 +35,7 @@ export default function FormulaSection({
                     <input
                         type="checkbox"
                         checked={formulaSettings.optimizeShippingFee}
-                        onChange={(e) => onFormulaChange('optimizeShippingFee', e.target.checked)}
+                        onChange={(e) => handleFormulaChange('optimizeShippingFee', e.target.checked)}
                     />
                     오기입 배송비 최적화
                 </label>
@@ -44,7 +55,7 @@ export default function FormulaSection({
                                 <input
                                     type="number"
                                     value={formulaSettings.baseMarginRate}
-                                    onChange={(e) => onFormulaChange('baseMarginRate', Number(e.target.value))}
+                                    onChange={(e) => handleFormulaChange('baseMarginRate', Number(e.target.value))}
                                     min="0"
                                     max="100"
                                 />
@@ -55,7 +66,7 @@ export default function FormulaSection({
                                 <input
                                     type="number"
                                     value={formulaSettings.additionalMargin}
-                                    onChange={(e) => onFormulaChange('additionalMargin', Number(e.target.value))}
+                                    onChange={(e) => handleFormulaChange('additionalMargin', Number(e.target.value))}
                                     min="0"
                                 />
                             </div>
@@ -66,7 +77,7 @@ export default function FormulaSection({
                                 <input
                                     type="number"
                                     value={formulaSettings.baseShippingFee}
-                                    onChange={(e) => onFormulaChange('baseShippingFee', Number(e.target.value))}
+                                    onChange={(e) => handleFormulaChange('baseShippingFee', Number(e.target.value))}
                                     min="0"
                                 />
                             </div>
@@ -76,7 +87,7 @@ export default function FormulaSection({
                                 <input
                                     type="number"
                                     value={formulaSettings.returnShippingFee}
-                                    onChange={(e) => onFormulaChange('returnShippingFee', Number(e.target.value))}
+                                    onChange={(e) => handleFormulaChange('returnShippingFee', Number(e.target.value))}
                                     min="0"
                                 />
                             </div>
@@ -86,7 +97,7 @@ export default function FormulaSection({
                                 <input
                                     type="number"
                                     value={formulaSettings.exchangeShippingFee}
-                                    onChange={(e) => onFormulaChange('exchangeShippingFee', Number(e.target.value))}
+                                    onChange={(e) => handleFormulaChange('exchangeShippingFee', Number(e.target.value))}
                                     min="0"
                                 />
                             </div>
@@ -106,7 +117,7 @@ export default function FormulaSection({
                             <input
                                 type="number"
                                 value={platformMargins.coupang}
-                                onChange={(e) => onPlatformMarginChange('coupang', Number(e.target.value))}
+                                onChange={(e) => handlePlatformMarginChange('coupang', Number(e.target.value))}
                                 min="0"
                                 max="100"
                             />
@@ -117,7 +128,7 @@ export default function FormulaSection({
                             <input
                                 type="number"
                                 value={platformMargins.auction}
-                                onChange={(e) => onPlatformMarginChange('auction', Number(e.target.value))}
+                                onChange={(e) => handlePlatformMarginChange('auction', Number(e.target.value))}
                                 min="0"
                                 max="100"
                             />
@@ -128,7 +139,7 @@ export default function FormulaSection({
                             <input
                                 type="number"
                                 value={platformMargins.gmarket}
-                                onChange={(e) => onPlatformMarginChange('gmarket', Number(e.target.value))}
+                                onChange={(e) => handlePlatformMarginChange('gmarket', Number(e.target.value))}
                                 min="0"
                                 max="100"
                             />
@@ -139,7 +150,7 @@ export default function FormulaSection({
                             <input
                                 type="number"
                                 value={platformMargins.elevenst}
-                                onChange={(e) => onPlatformMarginChange('elevenst', Number(e.target.value))}
+                                onChange={(e) => handlePlatformMarginChange('elevenst', Number(e.target.value))}
                                 min="0"
                                 max="100"
                             />

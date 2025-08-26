@@ -62,14 +62,24 @@ export default function ExchangeRateSection({
                                     rate.currencyCode === currency
                                 );
 
-                                // 일일 고시환율: koreaeximRate 값 사용
-                                const dailyRate = rateData?.koreaeximRate || 0;
+                                // 일일 고시환율: koreaexim 데이터 사용
+                                const dailyRate = rateData?.koreaexim?.appliedRate || 0;
 
-                                // 관세 주간환율: customsRate 값 사용
-                                const weeklyTariff = rateData?.customsRate || 0;
+                                // 관세 주간환율: customs 데이터 사용
+                                const weeklyTariff = rateData?.customs?.appliedRate || 0;
 
-                                // 적용환율: customs 우선, 없으면 koreaexim 사용
+                                // 적용환율: appliedRate 값 사용
                                 const appliedRate = rateData?.appliedRate || 0;
+
+                                // 🆕 데이터 확인을 위한 로깅
+                                console.log(`🔍 ${currency} 통화 데이터:`, {
+                                    rateData,
+                                    dailyRate,
+                                    weeklyTariff,
+                                    appliedRate,
+                                    koreaexim: rateData?.koreaexim,
+                                    customs: rateData?.customs
+                                });
 
                                 return (
                                     <tr key={currency}>
@@ -79,7 +89,10 @@ export default function ExchangeRateSection({
                                         <td className="applied-rate-cell">
                                             <NumberInput
                                                 value={appliedRate}
-                                                onChange={(value) => onAppliedRateChange(currency, value)}
+                                                onChange={(value) => {
+                                                    console.log(`${currency} 환율 변경:`, value);
+                                                    onAppliedRateChange(currency, value);
+                                                }}
                                                 placeholder="환율 입력"
                                                 min={0}
                                                 step={0.1}

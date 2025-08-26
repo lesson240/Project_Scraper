@@ -1,0 +1,57 @@
+/* path: frontend/src/components/common/LoadingSpinner.css */
+
+.loading-spinner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.loading-spinner__spinner {
+    border: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.loading-spinner__text {
+    font-size: 14px;
+    color: #6b7280;
+    text-align: center;
+}
+
+/* Size Variants */
+.loading-spinner--small .loading-spinner__spinner {
+    width: 16px;
+    height: 16px;
+    border-width: 2px;
+}
+
+.loading-spinner--medium .loading-spinner__spinner {
+    width: 24px;
+    height: 24px;
+    border-width: 3px;
+}
+
+.loading-spinner--large .loading-spinner__spinner {
+    width: 32px;
+    height: 32px;
+    border-width: 4px;
+}
+
+/* Animation */
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .loading-spinner__text {
+        font-size: 12px;
+    }
+}
