@@ -23,6 +23,105 @@ class PriceSettingService:
         self.setting_db = db[MONGO_DB_NAME_SETTINGS]  # "settings" 데이터베이스
         self.scrapmarket_db = db["scrapmarket"]        # "scrapmarket" 데이터베이스
     
+    async def update_modified_goods_detail(self, origin_goods_code: str) -> bool:
+        """ModifiedGoodsDetail 컬렉션을 업데이트합니다.
+        
+        Args:
+            origin_goods_code: 상품 코드
+            
+        Returns:
+            bool: 업데이트 성공 여부
+        """
+        try:
+            print(f"🔄 ModifiedGoodsDetail 컬렉션 업데이트 시작: {origin_goods_code}")
+            
+            # 1. base_price_setting 컬렉션에서 데이터 조회
+            print("📊 1단계: base_price_setting 컬렉션에서 데이터 조회 중...")
+            base_price_collection = self.setting_db.base_price_setting
+            
+            base_data = await base_price_collection.find_one(
+                {"originGoodsCode": origin_goods_code}
+            )
+            
+            if not base_data:
+                print(f"⚠️ base_price_setting에서 데이터를 찾을 수 없음: {origin_goods_code}")
+                return False
+            
+            print(f"✅ base_price_setting 데이터 조회 완료")
+            print(f"   - basePrice: {base_data.get('basePrice', 'N/A')}")
+            print(f"   - exchangeRate: {base_data.get('exchangeRate', 'N/A')}")
+            print(f"   - exchangeRates: {base_data.get('exchangeRates', 'N/A')}")
+            print(f"   - formulaSettings: {base_data.get('formulaSettings', 'N/A')}")
+            print(f"   - marginList: {base_data.get('marginList', 'N/A')}")
+            print(f"   - platformMargins: {base_data.get('platformMargins', 'N/A')}")
+            
+            # 2. ModifiedGoodsDetail 컬렉션에서 originGoodsCode 기준으로 검색
+            print("📊 2단계: ModifiedGoodsDetail 컬렉션에서 상품 검색 중...")
+            modified_goods_collection = self.scrapmarket_db.ModifiedGoodsDetail
+            
+            # originGoodsCode로 검색 (정확한 매칭)
+            search_result = await modified_goods_collection.find_one(
+                {"originGoodsCode": origin_goods_code}
+            )
+            
+            if not search_result:
+                print(f"⚠️ ModifiedGoodsDetail에서 상품을 찾을 수 없음: {origin_goods_code}")
+                return False
+            
+            print(f"✅ ModifiedGoodsDetail 상품 발견: {origin_goods_code}")
+            
+            # 3. 중복되는 selling_price 필드 제거
+            print("📊 3단계: 중복되는 selling_price 필드 제거 중...")
+            
+            # marginList 내의 각 플랫폼에서 selling_price 필드 제거
+            if 'marginList' in base_data:
+                for platform in ['main', 'coupang', 'auction', 'gmarket', 'elevenst']:
+                    if platform in base_data['marginList']:
+                        if 'selling_price' in base_data['marginList'][platform]:
+                            del base_data['marginList'][platform]['selling_price']
+                            print(f"   - {platform} 플랫폼의 selling_price 필드 제거 완료")
+            
+            # 4. 위의 6개 필드를 ModifiedGoodsDetail에 업데이트
+            print("📊 4단계: ModifiedGoodsDetail 컬렉션 업데이트 중...")
+            
+            update_data = {
+                "basePrice": base_data.get('basePrice'),
+                "exchangeRate": base_data.get('exchangeRate'),
+                "exchangeRates": base_data.get('exchangeRates'),
+                "formulaSettings": base_data.get('formulaSettings'),
+                "marginList": base_data.get('marginList'),
+                "platformMargins": base_data.get('platformMargins'),
+                "updatedAt": datetime.now(timezone.utc)
+            }
+            
+            # None 값이 아닌 필드만 포함
+            update_data = {k: v for k, v in update_data.items() if v is not None}
+            
+            print(f"📋 업데이트할 데이터:")
+            for key, value in update_data.items():
+                if key == 'updatedAt':
+                    print(f"   - {key}: {value}")
+                else:
+                    print(f"   - {key}: {type(value).__name__}")
+            
+            # ModifiedGoodsDetail 컬렉션 업데이트
+            result = await modified_goods_collection.update_one(
+                {"originGoodsCode": origin_goods_code},
+                {"$set": update_data}
+            )
+            
+            if result.modified_count > 0:
+                print(f"✅ ModifiedGoodsDetail 업데이트 완료: {origin_goods_code}")
+                print(f"   - modified_count: {result.modified_count}")
+                return True
+            else:
+                print(f"⚠️ ModifiedGoodsDetail 업데이트 실패: {origin_goods_code}")
+                return False
+                
+        except Exception as e:
+            print(f"❌ ModifiedGoodsDetail 업데이트 중 오류: {str(e)}")
+            return False
+    
     async def save_exchange_rates(self, exchange_rates: List[PriceSettingExchangeRate]) -> List[Dict[str, Any]]:
         """환율 데이터를 base_price_setting 컬렉션에 저장 (중복 방지)."""
         try:
@@ -330,7 +429,24 @@ class PriceSettingService:
             else:
                 print("⚠️ updatedProducts가 없거나 비어있어 상품 가격 업데이트를 건너뜁니다.")
 
-            print(f"🎉 모든 데이터 저장/업데이트 완료! 총 {len(saved_rates)}개 환율, {len(saved_products)}개 상품 저장, {updated_count}개 상품 업데이트")
+            # 🆕 4. ModifiedGoodsDetail 컬렉션 업데이트
+            print("📊 4단계: ModifiedGoodsDetail 컬렉션 업데이트 중...")
+            modified_goods_updated = 0
+            
+            for product_code in saved_products:
+                try:
+                    success = await self.update_modified_goods_detail(product_code)
+                    if success:
+                        modified_goods_updated += 1
+                        print(f"✅ ModifiedGoodsDetail 업데이트 성공: {product_code}")
+                    else:
+                        print(f"⚠️ ModifiedGoodsDetail 업데이트 실패: {product_code}")
+                except Exception as e:
+                    print(f"❌ ModifiedGoodsDetail 업데이트 중 오류 ({product_code}): {str(e)}")
+            
+            print(f"📊 ModifiedGoodsDetail 업데이트 결과: {modified_goods_updated}/{len(saved_products)}개 성공")
+
+            print(f"🎉 모든 데이터 저장/업데이트 완료! 총 {len(saved_rates)}개 환율, {len(saved_products)}개 상품 저장, {updated_count}개 상품 업데이트, {modified_goods_updated}개 ModifiedGoodsDetail 업데이트")
 
             return PriceSettingResponse(
                 success=True,
