@@ -1,9 +1,19 @@
 # path: app/routers/func_price_setting.py
 from fastapi import APIRouter, HTTPException, Depends
-from typing import Dict, Any
+from typing import Dict, Any, List
 from datetime import datetime
-from app.services.service_price_setting import get_price_setting_service, PriceSettingService
-from app.models.model_price_setting import PriceSettingRequest, PriceSettingResponse
+from app.services.service_price_setting import get_price_setting_service
+from app.models import (
+    PriceSettingRequest, 
+    PriceSettingResponse, 
+    CalculatedItemInfo,
+    SellingPriceFormulaInfo,
+    PlatformMarginRateInfo,
+    ExchangeRateInfo,
+    PlatformMargins,
+    MarginListByItems,
+    ModifiedGoodsDetailUpdate
+)
 from app.exceptions.price_setting_exceptions import (
     PriceSettingError,
     ExchangeRateError,
@@ -14,27 +24,17 @@ from app.exceptions.price_setting_exceptions import (
 
 router = APIRouter(prefix="/api/price-setting", tags=["PriceSetting"])
 
-# 가격 설정 모달에서 환율 저장 및 상품 가격 업데이트
 @router.post("/save")
-async def save_price_setting(request: PriceSettingRequest):
+async def save_price_setting(request_data: PriceSettingRequest):
     """가격 설정 데이터를 저장합니다."""
     try:
-        print(f"🚀 가격 설정 저장 요청 받음: {request.originGoodsCode}")
-        print(f"📊 요청 데이터 상세 분석:")
-        print(f"  - exchangeRates: {len(request.exchangeRates)}개")
-        print(f"  - baseSellingPriceFormula: {request.baseSellingPriceFormula}")
-        print(f"  - additionalSellingPriceFormula: {request.additionalSellingPriceFormula}")
-        print(f"  - updatedProducts: {len(request.updatedProducts) if request.updatedProducts else 0}개")
-        print(f"  - originGoodsCode: {request.originGoodsCode}")
-        
+        # PriceSettingRequest는 이미 올바른 구조를 가지고 있으므로 직접 사용
         service = await get_price_setting_service()
-        result = await service.save_price_setting_data(request)
+        result = await service.save_price_setting_data(request_data)
         
-        print(f"✅ 가격 설정 저장 완료: {result.message}")
         return result
         
     except ValidationError as e:
-        print(f"데이터 검증 오류: {str(e)}")
         raise HTTPException(
             status_code=422,
             detail={
@@ -42,15 +42,32 @@ async def save_price_setting(request: PriceSettingRequest):
                 "message": "데이터 검증에 실패했습니다. 필수 필드를 확인해주세요.",
                 "details": str(e),
                 "required_fields": [
-                    "exchangeRates[].currencyCode",
-                    "exchangeRates[].appliedRate",
-                    "exchangeRates[].lastUpdated",
-                    "exchangeRates[].source"
+                    "exchangeRatesInfo[].currencyCode",
+                    "exchangeRatesInfo[].appliedRate",
+                    "exchangeRatesInfo[].lastUpdated",
+                    "exchangeRatesInfo[].source"
                 ]
             }
         )
+    except ExchangeRateError as e:
+        raise HTTPException(
+            status_code=422,
+            detail={
+                "error": "EXCHANGE_RATE_ERROR",
+                "message": "환율 데이터 처리 중 오류가 발생했습니다.",
+                "details": str(e)
+            }
+        )
+    except DatabaseError as e:
+        raise HTTPException(
+            status_code=500,
+            detail={
+                "error": "DATABASE_ERROR",
+                "message": "데이터베이스 처리 중 오류가 발생했습니다.",
+                "details": str(e)
+            }
+        )
     except Exception as e:
-        print(f"❌ 가격 설정 저장 중 오류: {str(e)}")
         raise HTTPException(
             status_code=500,
             detail={
@@ -62,41 +79,74 @@ async def save_price_setting(request: PriceSettingRequest):
 
 @router.get("/load/{origin_goods_code}")
 async def load_price_setting_data(origin_goods_code: str):
-    """저장된 가격 설정 데이터를 조회합니다."""
+    """ModifiedGoodsDetail 컬렉션에서 가격 설정 데이터를 조회합니다."""
     try:
-        print(f"🔍 가격 설정 데이터 조회 요청: {origin_goods_code}")
+        if not origin_goods_code:
+            raise HTTPException(
+                status_code=400,
+                detail="상품 코드가 비어있습니다."
+            )
         
         # MongoDB 연결 확인
         from app.services.service_mongodb import ensure_mongodb_connection
         await ensure_mongodb_connection()
         
         # 가격 설정 서비스 인스턴스 생성
-        from app.services.service_price_setting import get_price_setting_service
         service = await get_price_setting_service()
         
-        # 저장된 데이터 조회
-        saved_data = await service.load_price_setting_data(origin_goods_code)
+        # ModifiedGoodsDetail 컬렉션에서 데이터 조회
+        saved_data = await service.load_modified_goods_detail(origin_goods_code)
         
         if saved_data:
-            print(f"✅ 가격 설정 데이터 조회 성공: {origin_goods_code}")
             return {
                 "success": True,
                 "data": saved_data,
-                "message": "가격 설정 데이터를 성공적으로 조회했습니다."
+                "message": "ModifiedGoodsDetail 데이터를 성공적으로 조회했습니다."
             }
         else:
-            print(f"⚠️ 저장된 가격 설정 데이터가 없음: {origin_goods_code}")
             return {
                 "success": False,
                 "data": None,
-                "message": "저장된 가격 설정 데이터가 없습니다."
+                "message": "저장된 ModifiedGoodsDetail 데이터가 없습니다."
             }
             
     except Exception as e:
-        print(f"❌ 가격 설정 데이터 조회 중 오류: {str(e)}")
         raise HTTPException(
             status_code=500,
-            detail=f"가격 설정 데이터 조회 실패: {str(e)}"
+            detail=f"ModifiedGoodsDetail 데이터 조회 실패: {str(e)}"
+        )
+
+@router.get("/load/info")
+async def load_base_price_setting_info():
+    """BasePriceSetting 컬렉션에서 공통 가격 설정 정보를 조회합니다."""
+    try:
+        # MongoDB 연결 확인
+        from app.services.service_mongodb import ensure_mongodb_connection
+        await ensure_mongodb_connection()
+        
+        # 가격 설정 서비스 인스턴스 생성
+        service = await get_price_setting_service()
+        
+        # BasePriceSetting 컬렉션에서 공통 정보 조회
+        base_info = await service.load_base_price_setting_info()
+        
+        if base_info:
+            return {
+                "success": True,
+                "data": base_info,
+                "message": "BasePriceSetting 정보를 성공적으로 조회했습니다."
+            }
+        else:
+            return {
+                "success": False,
+                "data": None,
+                "message": "저장된 BasePriceSetting 정보가 없습니다."
+            }
+            
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"BasePriceSetting 정보 조회 실패: {str(e)}"
         )
 
 @router.get("/health")

@@ -33,7 +33,7 @@ export const getExchangeRateByCurrency = async (
 ): Promise<ExchangeRateResponse> => {
     try {
         const response = await fetch(
-            `${apiConfig.baseUrl}/v1/api/exchange-rates/combined/${currencyCode}`,
+            `${apiConfig.baseUrl}/api/exchange-rates/combined/${currencyCode}`,
             {
                 method: 'GET',
                 headers: {
@@ -61,7 +61,7 @@ export const getExchangeRateByCurrency = async (
 export const getAllExchangeRates = async (): Promise<ExchangeRateResponse> => {
     try {
         const response = await fetch(
-            `${apiConfig.baseUrl}/v1/api/exchange-rates`,
+            `${apiConfig.baseUrl}/api/exchange-rates`,
             {
                 method: 'GET',
                 headers: {
@@ -90,7 +90,7 @@ export const getAllExchangeRates = async (): Promise<ExchangeRateResponse> => {
 export const getExchangeRatesForFrontend = async (): Promise<ExchangeRateResponse> => {
     try {
         const response = await fetch(
-            `${apiConfig.baseUrl}/v1/api/exchange-rates/frontend/expand`,
+            `${apiConfig.baseUrl}/api/exchange-rates/frontend/expand`,
             {
                 method: 'GET',
                 headers: {

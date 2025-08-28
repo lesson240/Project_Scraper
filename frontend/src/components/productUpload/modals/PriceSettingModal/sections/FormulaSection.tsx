@@ -1,6 +1,7 @@
 // path: frontend/src/components/productUpload/modals/PriceSettingModal/sections/FormulaSection.tsx
 import React from 'react';
-import type { FormulaSectionProps } from '@/types/priceSetting.types';
+import type { FormulaSectionProps, FormulaSettings } from '@/types/priceSetting.types';
+import type { PlatformMargins } from '@/utils/priceCalculation';
 import NumberInput from '@/components/common/NumberInput';
 import '@/styles/productUpload/modals/sections/FormulaSection.css';
 
@@ -11,12 +12,12 @@ export default function FormulaSection({
     onPlatformMarginChange
 }: FormulaSectionProps) {
 
-    const handleFormulaChange = (field: string, value: any) => {
-        console.log(`공식 설정 변경: ${field} =`, value);
+    const handleFormulaChange = (field: keyof FormulaSettings, value: any) => {
+        console.log(`공식 설정 변경: ${String(field)} =`, value);
         onFormulaChange(field, value);
     };
 
-    const handlePlatformMarginChange = (platform: string, value: number) => {
+    const handlePlatformMarginChange = (platform: keyof PlatformMargins, value: number) => {
         console.log(`플랫폼 마진 변경: ${platform} =`, value);
         onPlatformMarginChange(platform, value);
     };
@@ -46,11 +47,11 @@ export default function FormulaSection({
                 <div className="base-formula">
                     <h4>기본 판매가 공식 (스마트스토어)</h4>
                     <div className="formula-display">
-                        원가×환율×(1+기본 마진율)+s추가마진
+                        원가×환율×(1+기본 마진율)+추가마진+국제운송료
                     </div>
 
                     <div className="formula-inputs">
-                        <div className="platform-margins">
+                        <div className="formula-inputs-container">
                             <NumberInput
                                 label="기본 마진율 (%)"
                                 value={formulaSettings.baseMarginRate}
@@ -59,7 +60,7 @@ export default function FormulaSection({
                                 max={100}
                                 className="formula-input"
                             />
-
+                            
                             <NumberInput
                                 label="추가 마진 (￦)"
                                 value={formulaSettings.additionalMargin}
@@ -68,7 +69,7 @@ export default function FormulaSection({
                                 className="formula-input"
                             />
                         </div>
-                        <div className="platform-margins">
+                        <div className="formula-inputs-container">
                             <NumberInput
                                 label="기본배송비"
                                 value={formulaSettings.baseShippingFee}
@@ -91,18 +92,35 @@ export default function FormulaSection({
                                 onChange={(value) => handleFormulaChange('exchangeShippingFee', value)}
                                 min={0}
                                 className="formula-input"
+                                
+                            />
+                            <NumberInput
+                                label="국제운송료"
+                                value={formulaSettings.internationalShippingFee}
+                                onChange={(value) => handleFormulaChange('internationalShippingFee', value)}
+                                min={0}
+                                className="formula-input"
                             />
                         </div>
                     </div>
                 </div>
 
-                <div className="additional-formula">
-                    <h4>추가 판매가 공식</h4>
+                <div className="platform-formula">
+                    <h4>플랫폼 기본 마진율</h4>
                     <div className="formula-display">
-                        기본 판매가×(1+추가마진율)
+                    원가×환율×(1+플랫폼 기본 마진율)+추가마진+국제운송료
                     </div>
 
-                    <div className="platform-margins">
+                    <div className="formula-inputs-container">
+                        <NumberInput
+                            label="스마트스토어"
+                            value={platformMargins.smartstore}
+                            onChange={(value) => handlePlatformMarginChange('smartstore', value)}
+                            min={0}
+                            max={100}
+                            className="formula-input"
+                        />
+
                         <NumberInput
                             label="쿠팡"
                             value={platformMargins.coupang}

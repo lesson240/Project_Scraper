@@ -6,7 +6,7 @@ import pytest
 from fastapi.testclient import TestClient
 from unittest.mock import AsyncMock, patch
 from app.main import app
-from app.models.model_price_setting import (
+from app.models import (
     ExchangeRateData,
     ProductPriceData,
     PriceSettingRequest

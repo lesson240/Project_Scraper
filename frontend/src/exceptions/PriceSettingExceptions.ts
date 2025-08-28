@@ -85,3 +85,44 @@ export class CalculationError extends PriceSettingError {
         this.inputs = inputs;
     }
 }
+
+// 데이터 무결성 예외
+export class DataIntegrityError extends PriceSettingError {
+    public readonly dataType: string;
+    public readonly constraint: string;
+
+    constructor(message: string, dataType: string, constraint: string) {
+        super(message, 'DATA_INTEGRITY_ERROR', { dataType, constraint });
+        this.name = 'DataIntegrityError';
+        this.dataType = dataType;
+        this.constraint = constraint;
+    }
+}
+
+// 비즈니스 로직 예외
+export class BusinessLogicError extends PriceSettingError {
+    public readonly businessRule: string;
+    public readonly context?: any;
+
+    constructor(message: string, businessRule: string, context?: any) {
+        super(message, 'BUSINESS_LOGIC_ERROR', { businessRule, context });
+        this.name = 'BusinessLogicError';
+        this.businessRule = businessRule;
+        this.context = context;
+    }
+}
+
+// 리소스 부족 예외
+export class ResourceError extends PriceSettingError {
+    public readonly resourceType: string;
+    public readonly required: any;
+    public readonly available: any;
+
+    constructor(message: string, resourceType: string, required: any, available: any) {
+        super(message, 'RESOURCE_ERROR', { resourceType, required, available });
+        this.name = 'ResourceError';
+        this.resourceType = resourceType;
+        this.required = required;
+        this.available = available;
+    }
+}

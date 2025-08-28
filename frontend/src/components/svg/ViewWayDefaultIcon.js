@@ -1,0 +1,4 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+export const ViewWayDefaultIcon = ({ className }) => {
+    return (_jsxs("svg", { className: className, xmlns: "http://www.w3.org/2000/svg", width: "30", height: "30", viewBox: "0 0 30 30", children: [_jsxs("g", { "data-name": "\uADF8\uB8F9 11037", transform: "translate(-1608 -571)", children: [_jsx("rect", { "data-name": "\uC0AC\uAC01\uD615 3882", width: "20", height: "2", rx: "1", transform: "translate(1613 578)", fill: "#a7b0c7" }), _jsx("rect", { "data-name": "\uC0AC\uAC01\uD615 3883", width: "20", height: "2", rx: "1", transform: "translate(1613 585)", fill: "#a7b0c7" }), _jsx("rect", { "data-name": "\uC0AC\uAC01\uD615 3884", width: "20", height: "2", rx: "1", transform: "translate(1613 592)", fill: "#a7b0c7" })] }), _jsx("path", { "data-name": "\uC0AC\uAC01\uD615 3885", fill: "none", d: "M0 0h30v30H0z" })] }));
+};

@@ -1,36 +1,20 @@
 import React from "react";
 import Button from "@/components/common/Button";
 import "@/styles/collect/filterButtons.css";
-import type { SaveData, CalculatedPrice } from "@/types/priceSetting.types";
+import type { SaveData, CalculatedProductData, FormulaSettings } from "@/types/priceSetting.types";
+import type { PlatformMargins } from "@/utils/priceCalculation";
+import { ValidationError } from "@/exceptions/PriceSettingExceptions";
 
 type Props = {
   onReset: () => void;
-  onSave: (data: SaveData) => void; // Modified to accept SaveData
+  onSave: (data: SaveData) => void;
   onCalculateMargin: () => void;
   originGoodsCode: string;
-  isCalculated: boolean; // 예상마진 계산 완료 여부
-  // 데이터 수집을 위한 props 추가
+  isCalculated: boolean;
   exchangeRates: Array<{ currency: string; value: number }>;
-  formulaSettings: {
-    costFormula: string;
-    priceFormula: string;
-    marginFormula: string;
-    freeShipping: boolean;
-    optimizeShippingFee: boolean;
-    baseMarginRate: number;
-    additionalMargin: number;
-    baseShippingFee: number;
-    returnShippingFee: number;
-    exchangeShippingFee: number;
-  };
-  platformMargins: {
-    coupang: number;
-    auction: number;
-    gmarket: number;
-    elevenst: number;
-    openmarket: number;
-  };
-  calculatedProducts: CalculatedPrice[];  // 🆕 새로운 CalculatedPrice 타입 사용
+  formulaSettings: FormulaSettings;
+  platformMargins: PlatformMargins;
+  calculatedProducts: CalculatedProductData[];
 };
 
 export default function PriceSettingModalFooter({
@@ -46,6 +30,19 @@ export default function PriceSettingModalFooter({
 }: Props) {
 
   const handleSave = () => {
+    // 데이터 유효성 검증
+    if (!originGoodsCode) {
+      throw new ValidationError('상품 코드가 없습니다.', 'originGoodsCode', originGoodsCode);
+    }
+
+    if (!isCalculated) {
+      throw new ValidationError('예상 마진을 먼저 계산해주세요.', 'isCalculated', isCalculated);
+    }
+
+    if (calculatedProducts.length === 0) {
+      throw new ValidationError('계산된 상품 데이터가 없습니다.', 'calculatedProducts', calculatedProducts);
+    }
+
     // 저장할 데이터 구성
     const saveData: SaveData = {
       exchangeRates,
@@ -54,8 +51,6 @@ export default function PriceSettingModalFooter({
       calculatedProducts,
       originGoodsCode
     };
-
-    console.log('저장할 데이터:', saveData);
 
     // 부모 컴포넌트의 onSave 호출
     onSave(saveData);

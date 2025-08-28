@@ -67,6 +67,10 @@ routers = [
     (page_user_setting.router, ["PageUserSetting"]),
     (user_account.router, ["UserAccount"]),
     (imagehost_router, ["ImageHost"]),  # ImageHost 라우터 추가
+]
+
+# API 라우터들은 버전 접두사 없이 직접 등록
+api_routers = [
     (api_exchange_rates.router, ["ExchangeRates"]),  # 환율 API 라우터 추가
     (api_exchange_rate_sync.router, ["ExchangeRateSync"]),  # 환율 동기화 API 라우터 추가
     (func_price_setting.router, ["PriceSetting"]),  # 가격 설정 기능 라우터 추가
@@ -125,6 +129,15 @@ app.mount(
 
 # 라우터 포함
 include_routers(app, routers, prefix=prefix)
+
+# API 라우터들은 버전 접두사 없이 직접 등록
+for router, router_tags in api_routers:
+    app.include_router(router, tags=router_tags)
+
+# 테스트용 간단한 라우터 추가
+@app.get("/test")
+def test_endpoint():
+    return {"message": "Test endpoint working"}
 
 # 템플릿 설정 및 기타 설정
 templates = Jinja2Templates(directory=BASE_DIR / "templates")

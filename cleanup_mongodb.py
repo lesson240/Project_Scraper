@@ -66,6 +66,26 @@ async def cleanup_mongodb():
         except Exception as e:
             print(f"⚠️ ModifiedGoodsDetail 필드명 수정 중 오류: {e}")
         
+        # 4. base_price_setting 컬렉션의 additional 필드를 platformMargin으로 변경
+        print("📊 4단계: base_price_setting 컬렉션의 additional 필드를 platformMargin으로 변경...")
+        try:
+            result = await setting_db.base_price_setting.update_many(
+                {},
+                [
+                    {
+                        "$set": {
+                            "formulaSettings.base.platformMargin": "$formulaSettings.base.additional"
+                        }
+                    },
+                    {
+                        "$unset": "formulaSettings.base.additional"
+                    }
+                ]
+            )
+            print(f"✅ {result.modified_count}개 문서의 additional 필드를 platformMargin으로 변경 완료")
+        except Exception as e:
+            print(f"⚠️ additional 필드를 platformMargin으로 변경 중 오류: {e}")
+        
         print("🎉 MongoDB 정리 작업 완료!")
         
     except Exception as e:

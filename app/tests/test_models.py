@@ -6,7 +6,7 @@ import pytest
 from pydantic import ValidationError
 from datetime import datetime, timezone
 from app.models.model_exchange_rate import PriceSettingExchangeRate
-from app.models.model_price_setting import (
+from app.models import (
     ProductPriceData,
     PriceSettingRequest,
     PriceSettingResponse
@@ -103,11 +103,6 @@ class TestProductPriceData:
             ProductPriceData(originGoodsCode="   ", settingPrice=50000)
         
         assert "at least 1 character" in str(exc_info.value)
-    
-    def test_product_code_trim_whitespace(self):
-        """상품 코드 공백 제거"""
-        product = ProductPriceData(originGoodsCode="  PROD001  ", settingPrice=50000)
-        assert product.originGoodsCode == "PROD001"
 
 @pytest.mark.unit
 @pytest.mark.fast

@@ -73,7 +73,7 @@ export default function MarginListSection({
 
             <div className="margin-formulas">
                 <div className="formula-item">
-                    <strong>예상마진 = 설정 상품가 - (원가 × 환율) - 배송비</strong>
+                    <strong>예상마진 = 설정 상품가 - (원가 × 환율) - 국제운송료</strong>
                 </div>
                 <div className="formula-item">
                     <strong>예상마진율(%) = 예상마진 ÷ 설정 상품가</strong>
@@ -118,11 +118,11 @@ export default function MarginListSection({
                                         )}
                                     </td>
                                     <td className="main-margin-rate">
-                                        {isCalculated && calculated ? `${calculated.marginList.main.ExpectedMarginRate.toFixed(2)}%` : '-'}
+                                        {isCalculated && calculated ? `${calculated.marginList.smartstore.ExpectedMarginRate.toFixed(2)}%` : '-'}
                                     </td>
                                     <td className="main-margin-amount">
                                         {isCalculated && calculated ?
-                                            calculated.marginList.main.ExpectedMargin.toLocaleString()
+                                            calculated.marginList.smartstore.ExpectedMargin.toLocaleString()
                                             : (
                                                 '-'
                                             )}

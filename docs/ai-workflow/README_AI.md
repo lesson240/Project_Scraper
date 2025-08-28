@@ -1,484 +1,493 @@
 # AI Workflow Documentation
 
-## 📁 폴더 구조 및 파일 관리 규칙
+## 개요
+이 문서는 AI 기반 개발 워크플로우와 프로젝트 구조에 대한 가이드를 제공합니다.
 
-### **전역 폴더 구조 규칙**
+## 🚀 AI 코딩 규칙 (.cursorrules)
 
-#### **1. Hooks 관리 규칙**
-- **모든 커스텀 훅은 `src/hooks/` 폴더에서 중앙 관리**
-- **컴포넌트별 hooks 폴더는 허용하지 않음**
-- **예외**: 특정 도메인에만 사용되는 훅은 해당 도메인 폴더 내 hooks 폴더 허용
+### 1. 출력 형식 & 파일 관리
+- 모든 코드 제안 시, **변경된 파일만** 출력한다.
+- 각 코드 블록 상단에 **파일 경로** 주석을 반드시 작성한다.
+  예시: `// path: src/components/Example.tsx`
+- 불필요하게 전체 프로젝트를 다시 출력하지 않는다.
+- 폴더/파일 구조 변경이 있을 경우, 변경 전후 트리 구조를 먼저 제시한 후 코드 작성.
+- 코드가 **200줄 이상**이 될 경우, 기능 단위로 파일을 분리하여 제안한다.
+  - 분리 시 반드시 폴더 구조를 먼저 제시.
+  - 분리 이유를 주석에 설명.
 
-```
-✅ 올바른 구조:
-src/hooks/
-├── useExchangeRate.ts
-├── usePriceCalculation.ts
-├── useImageUpload.ts
-└── useCustomsApi.ts
+### 2. 폴더 & 타입 구조
+- 모든 타입 정의는 `src/types` 폴더에 저장.
+- props, interface, enum 등은 개별 파일로 분리 후 index.ts에서 재export.
+- 공통 컴포넌트는 `src/components/common`에 저장.
+- 재사용 가능한 Modal 컴포넌트는 `src/components/modals`에 저장.
 
-❌ 잘못된 구조:
-src/components/ProductUpload/modals/PriceSettingModal/hooks/
-├── useExchangeRate.ts
-└── usePriceCalculation.ts
-```
+### 3. 스타일 가이드
+- 인라인 스타일 사용 금지. CSS/SCSS 모듈 또는 Tailwind만 사용.
+- 컴포넌트별 전용 스타일 파일을 생성 (예: `Example.module.css`).
+- 반응형 레이아웃 시, 모바일 우선(Mobile-first) 접근.
 
-#### **2. Container 패턴 규칙**
-- **모든 모달과 페이지는 Container 패턴으로 구현**
-- **index.ts 파일은 Container 컴포넌트를 export**
-- **비즈니스 로직과 상태 관리는 Container에서 처리**
+### 4. 타입스크립트 규칙
+- `any` 사용 금지, 불가피한 경우 주석에 이유 명시.
+- 모든 함수와 컴포넌트는 명시적 반환 타입 지정.
+- 모든 API 응답 타입은 별도의 `src/types/api`에 관리.
 
-```
-✅ 올바른 구조:
-src/components/ProductUpload/modals/PriceSettingModal/
-├── PriceSettingModalContainer.tsx  # 비즈니스 로직, 상태 관리
-├── PriceSettingModal.tsx           # UI 컴포넌트
-├── PriceSettingModal.css
-└── index.ts                        # Container export
+### 5. 주석 정책
+- 로직 이해에 필수적인 부분만 주석 작성.
+- 한글 주석 우선, 필요한 경우 영문 병기.
+- 복잡한 로직은 블록 주석으로 요약.
 
-❌ 잘못된 구조:
-src/components/ProductUpload/modals/PriceSettingModal/
-├── PriceSettingModal.tsx           # 비즈니스 로직과 UI 혼재
-├── PriceSettingModal.css
-└── index.ts                        # 직접 컴포넌트 export
-```
+### 6. 코드 리뷰 규칙
+- AI가 생성한 코드라도 PR 시 "변경 의도"와 "위험 요소"를 반드시 설명.
+- 새로운 의존성 추가 시, 보안/라이선스 검토 필수.
+- PR 리뷰어는 기능 테스트와 코드 스타일 검증을 모두 수행.
 
-#### **3. 폴더 구조 표준**
-```
-src/
-├── components/                      # 재사용 가능한 컴포넌트
-│   ├── common/                     # 공통 컴포넌트
-│   ├── modals/                     # 모달 컴포넌트
-│   └── [도메인명]/                 # 도메인별 컴포넌트
-├── hooks/                          # 전역 커스텀 훅
-├── apis/                           # API 서비스
-├── types/                          # 전역 타입 정의
-├── utils/                          # 유틸리티 함수
-└── styles/                         # 전역 스타일
-```
+### 7. 릴리즈 태그 정책
+- 주요 기능 배포 시 `git tag vX.Y.Z`로 태그 생성.
+- CHANGELOG.md에 변경 사항 요약 필수.
 
-#### **4. 파일명 규칙**
-- **컴포넌트**: PascalCase (예: `PriceSettingModal.tsx`)
-- **컨테이너**: PascalCase + Container (예: `PriceSettingModalContainer.tsx`)
-- **훅**: camelCase + use (예: `useExchangeRate.ts`)
-- **타입**: camelCase + .types (예: `priceSetting.types.ts`)
-- **스타일**: 컴포넌트명과 동일 + .css (예: `PriceSettingModal.css`)
+### 8. 실행 스크립트 통일
+- 프론트엔드 개발 서버: `npm run dev:frontend`
+- 백엔드 개발 서버: `npm run dev:backend`
+- 전체 빌드: `npm run build:all`
+- 테스트 실행: `npm run test`
 
-#### **5. 모달 컴포넌트 구조 규칙**
-```
-modals/[모달명]/
-├── [모달명]Container.tsx          # 비즈니스 로직, 상태 관리
-├── [모달명].tsx                   # UI 컴포넌트
-├── [모달명].css                   # 스타일 (컴포넌트와 같은 폴더)
-├── sections/                      # 섹션별 컴포넌트
-│   ├── [섹션명]Section.tsx
-│   └── [섹션명]Section.css
-├── types/                         # 모달 전용 타입
-│   └── [모달명].types.ts
-└── index.ts                       # Container export
-```
+### 9. AI 접근 제한
+- `.env`의 민감 정보는 절대 AI에게 제공하지 않는다.
+- `.env.example`로 키 구조만 공유.
+- 토큰/비밀번호는 프롬프트나 코드에 직접 작성 금지.
 
-#### **6. CSS 파일 관리 규칙**
-- **컴포넌트별 CSS**: 각 컴포넌트와 같은 폴더에 CSS 파일 배치
-- **전역 스타일**: `src/styles/` 폴더에는 공통 스타일만 관리
-- **컴포넌트 스타일**: `src/components/[도메인]/[컴포넌트명]/[컴포넌트명].css`
+### 10. 테스트 코드 정책
+- 기능 추가/변경 시 반드시 테스트 코드 동반.
+- 프론트: Vitest, 백엔드: Pytest 사용.
+- 테스트 파일 위치: 해당 기능과 동일 폴더, 파일명은 `*.test.ts(x)` 또는 `test_*.py`.
 
-```
-✅ 올바른 구조:
-src/components/productUpload/modals/PriceSettingModal/
-├── PriceSettingModalContainer.tsx
-├── PriceSettingModal.tsx
-├── PriceSettingModal.css          # 컴포넌트와 같은 폴더
-└── sections/
-    ├── ExchangeRateSection.tsx
-    └── ExchangeRateSection.css    # 섹션별 CSS도 같은 폴더
+### 11. 작업 순서
+1. 변경 요청 분석
+2. 폴더/파일 구조 설계
+3. 코드 구현 (200줄 초과 시 파일 분리)
+4. 테스트 작성 및 실행
+5. PR 생성 + 리뷰
+6. Merge & 태그 배포
 
-❌ 잘못된 구조:
-src/styles/productUpload/modals/PriceSettingModal.css  # 전역 스타일 폴더에 컴포넌트별 CSS
-```
+## 📁 프로젝트 구조
 
----
+### 백엔드 (Python/FastAPI)
+- **app/**: 메인 애플리케이션 디렉토리
+  - **services/**: 비즈니스 로직 서비스
+    - `service_price_setting.py`: 가격 설정 관련 서비스
+  - **routers/**: API 엔드포인트 라우터
+    - `func_price_setting.py`: 가격 설정 API 라우터
+  - **models/**: 데이터 모델 및 스키마
+    - `model_price_setting.py`: 가격 설정 데이터 모델
+    - `model_exchange_rate.py`: 환율 데이터 모델
+  - **exceptions/**: 커스텀 예외 클래스
+    - `price_setting_exceptions.py`: 가격 설정 관련 예외
 
-## 💱 환율 동기화 시스템 아키텍처
+### 프론트엔드 (React/TypeScript)
+- **frontend/src/**: 메인 소스 코드
+  - **components/productUpload/modals/PriceSettingModal/**: 가격 설정 모달 컴포넌트
+    - `PriceSettingModal.tsx`: 메인 모달 UI 컴포넌트
+    - `PriceSettingModalContainer.tsx`: 모달 컨테이너 및 로직
+    - `sections/`: 모달 섹션별 컴포넌트
+  - **apis/**: API 통신 모듈
+    - `priceSettingApi.ts`: 가격 설정 API 클라이언트
+  - **types/**: TypeScript 타입 정의
+    - `priceSetting.types.ts`: 가격 설정 관련 타입
+  - **utils/**: 유틸리티 함수
+    - `priceCalculation.ts`: 가격 계산 로직
+  - **exceptions/**: 예외 처리 모듈
+    - `PriceSettingExceptions.ts`: 가격 설정 예외 클래스
+    - `index.ts`: 예외 처리 유틸리티
 
-### 🏗️ **시스템 구조**
+## 🔧 가격 설정 모달 리팩토링 완료 사항
 
-#### **핵심 컴포넌트**
-```
-환율 동기화 시스템
-├── exchange_rate_sync.py          # 🎯 백엔드 핵심 동기화 로직 (FastAPI)
-├── useExchangeRateSync.ts         # 🔄 React 상태 관리 훅
-├── ExchangeRateSection.tsx        # 🖥️ UI 표시 및 사용자 인터랙션
-├── PriceSettingModalContainer.tsx # 🔗 이벤트 연결 및 상태 관리
-└── main.py                        # 🚪 FastAPI 라우터 등록
-```
+### 1. 백엔드 개선사항
+- ✅ 하드코딩된 환율 통화 제거 (상수로 정의)
+- ✅ 불필요한 로깅 코드 제거
+- ✅ 예외 처리 강화 및 일관성 확보
+- ✅ 데이터 검증 및 무결성 보장
+- ✅ 성능 최적화 (불필요한 반복문 제거)
 
-#### **역할 분담**
-```
-프론트엔드 (React)
-├── 사용자 인터랙션 처리
-├── 환율 데이터 상태 관리
-├── 백엔드 API 호출
-└── UI 렌더링
+### 2. 프론트엔드 개선사항
+- ✅ 하드코딩된 기본값 상수화
+- ✅ 더미 데이터 제거
+- ✅ 타입 안전성 강화
+- ✅ 예외 처리 체계화
+- ✅ 불필요한 로깅 제거
+- ✅ 참조 오류 방지
 
-백엔드 (FastAPI)
-├── 외부 API 프록시 (관세청, 한국수출입은행)
-├── MongoDB 데이터 저장/조회
-├── 비즈니스 로직 처리
-├── 날짜 유효성 검증
-├── API 호출 제한 관리
-└── 초기 데이터 생성
+### 3. 코드 품질 개선
+- ✅ 일관된 예외 처리 패턴
+- ✅ 데이터 유효성 검증 강화
+- ✅ 타입 안전성 향상
+- ✅ 성능 최적화
+- ✅ 유지보수성 개선
 
-데이터베이스 (MongoDB)
-├── 환율 데이터 영구 저장
-├── 날짜별 데이터 관리
-└── 데이터 무결성 보장
-```
+## 📚 개발 가이드라인
 
-#### **데이터 흐름**
-```
-사용자 펼치기 토글 클릭
-    ↓
-ExchangeRateSection.tsx (onSyncRates 호출)
-    ↓
-PriceSettingModalContainer.tsx (handleSyncRates 실행)
-    ↓
-useExchangeRateSync.ts (syncExchangeRates 실행)
-    ↓
-백엔드 API (/api/exchange-rate-sync/sync)
-    ↓
-ExchangeRateSyncService.sync_exchange_rates()
-    ↓
-MongoDB에서 환율 데이터 로드 또는 외부 API에서 새 데이터 가져오기
-```
-
-### 🔄 **상세 동작 흐름**
-
-#### **1단계: 사용자 인터랙션**
-```
-가격 설정 모달 → 환율 설정 섹션 → 펼치기 토글 클릭
-    ↓
-ExchangeRateSection.tsx에서 onSyncRates() 함수 호출
-    ↓
-PriceSettingModalContainer.tsx의 handleSyncRates() 실행
-    ↓
-useExchangeRateSync.ts의 syncExchangeRates() 실행
-```
-
-#### **2단계: 백엔드 API 호출**
-```
-POST /api/exchange-rate-sync/sync
-    ↓
-ExchangeRateSyncService.sync_exchange_rates() 실행
-    ↓
-데이터베이스 구조 확인 및 초기화
-```
-
-#### **3단계: 데이터베이스 구조 검증**
-```
-ExchangeRateSyncService.ensure_collections_exist()
-    ↓
-MongoDB 연결 상태 확인
-    ↓
-필요한 컬렉션 존재 여부 확인 및 생성
-    ↓
-데이터베이스 경로 검증 완료
-```
-
-#### **4단계: 날짜 유효성 검증**
-```
-ExchangeRateSyncService.sync_exchange_rates()
-    ↓
-MongoDB에서 저장된 환율 데이터 조회
-    ↓
-데이터가 없는 경우 → 초기 데이터 자동 생성
-    ↓
-오늘 날짜와 저장된 데이터 날짜 비교
-    ↓
-일일고시환율 반영 날짜 vs 오늘 날짜
-관세주간환율 종료 날짜 vs 오늘 날짜
-```
-
-#### **5단계: 조건부 API 호출**
-```
-날짜가 다르면 → 외부 API 호출
-날짜가 같으면 → MongoDB 캐시 사용
-
-일일고시환율:
-├── 날짜 불일치 → 한국수출입은행 API 호출
-└── 날짜 일치 → MongoDB 캐시 사용
-
-관세주간환율:
-├── 날짜 불일치 → 관세청 API 호출
-└── 날짜 일치 → MongoDB 캐시 사용
-```
-
-#### **6단계: 데이터 저장 및 통합**
-```
-외부 API에서 가져온 데이터 → MongoDB에 저장
-    ↓
-일일고시환율 + 관세주간환율 데이터 통합
-    ↓
-통합된 환율 데이터를 프론트엔드로 전송
-    ↓
-React 상태에 반영하여 UI 업데이트
-```
-
-### 🎯 **핵심 기능**
-
-#### **자동 초기화**
-- **MongoDB에 환율 데이터가 전혀 없는 경우**
-- **기본 통화별 초기 환율 데이터 자동 생성**
-- **USD, EUR, JPY, CNY 통화별 기본값 설정**
-- **컬렉션이 존재하지 않는 경우 자동 생성**
-
-#### **스마트 캐싱**
-- **일일 1회 API 호출 제한**
-- **날짜 기반 캐시 유효성 검증**
-- **불필요한 외부 API 호출 방지**
-- **강제 동기화 옵션 제공**
-
-#### **에러 처리 및 복구**
-- **API 호출 실패 시 기본값 사용**
-- **데이터베이스 연결 실패 시 명확한 에러 메시지**
-- **부분적 실패 시에도 시스템 안정성 유지**
-- **로깅을 통한 상세한 에러 추적**
-
-### 🔧 **API 호출 제한 정책**
-
-#### **일일 호출 한도**
-```
-MAX_DAILY_API_CALLS = 1 (통화 타입별)
-
-일일고시환율: 하루 최대 1회
-관세주간환율: 하루 최대 1회
-```
-
-#### **호출 카운트 관리**
-```
-날짜가 바뀌면 카운트 자동 초기화
-API 호출 성공 시에만 카운트 증가
-한도 초과 시 에러 메시지 반환
-강제 동기화 시 제한 우회 가능
-```
-
-### 📊 **데이터 구조**
-
-#### **MongoDB 컬렉션 구조**
-```
-exchange_rates 컬렉션
-├── currencyCode: 통화 코드 (USD, EUR, JPY, CNY)
-├── appliedRate: 적용 환율
-├── source: 데이터 출처 (customs, koreaexim, manual)
-├── rateType: 환율 타입 (daily, weekly)
-├── baseDate: 기준 날짜 (YYYYMMDD)
-└── isActive: 활성 상태
-```
-
-#### **프론트엔드 데이터 구조**
-```
-ExchangeRateData
-├── currency: 통화 코드
-├── dailyRate: 일일고시환율
-├── weeklyTariff: 관세주간환율
-├── appliedRate: 적용 환율
-```
-
-#### **백엔드 API 응답 구조**
-```
-ExchangeRateSyncResponse
-├── success: 성공 여부
-├── data: 통합된 환율 데이터
-├── message: 동기화 결과 메시지
-├── source: 데이터 출처 (cache/api/initialized)
-├── lastUpdated: 마지막 업데이트 시간
-├── dailyRateDate: 일일고시환율 날짜
-├── weeklyTariffDate: 관세주간환율 날짜
-├── isDailyRateValid: 일일고시환율 유효성
-└── isWeeklyTariffValid: 관세주간환율 유효성
-```
-
-### 🚀 **성능 최적화**
-
-#### **캐시 전략**
-- **날짜 기반 캐시 유효성 검증**
-- **MongoDB 영구 저장**
-- **중복 API 호출 방지**
-- **스마트한 동기화 조건 확인**
-
-#### **비동기 처리**
-- **FastAPI 비동기 처리**
-- **MongoDB 비동기 드라이버 사용**
-- **에러 발생 시에도 다른 API 호출 계속 진행**
-- **사용자 경험 최적화**
-
-### 🔐 **보안 및 환경변수**
-
-#### **환경변수 관리**
-```
-프로젝트 루트 (.env)
-├── VITE_CUSTOMS_API_KEY: 관세청 API 키
-├── VITE_KOREAEXIM_API_KEY: 한국수출입은행 API 키
-└── VITE_API_BASE_URL: 백엔드 API 기본 URL
-```
-
-#### **API 키 보안**
-- **백엔드에서만 API 키 접근**
-- **프론트엔드에는 API 키 노출 금지**
-- **환경변수를 통한 안전한 키 관리**
-- **API 호출 제한을 통한 비용 관리**
-
----
-
-## 이미지 호스팅 시스템 관리 가이드
-
-### 📁 파일명 규칙 (Naming Convention)
-
-#### **기본 규칙**
-```
-[상품코드]_[이미지타입]_[날짜]_[UUID8자리].[확장자]
-
-예시:
-A00000020711907_thumbnail_20250818_101d9c71.jpg
-A00000020711907_detail_01_20250818_101d9c71.jpg
-A00000020711907_gallery_01_20250818_101d9c71.jpg
-```
-
-#### **규칙 세부사항**
-- **상품코드**: `origin_goods_code` 값 사용, 없으면 `unknown`
-- **이미지타입**: `thumbnail`, `detail`, `gallery`, `image` 등
-- **날짜**: YYYYMMDD 형식 (예: 20250818)
-- **UUID**: 전체 UUID의 앞 8자리만 사용하여 가독성 향상
-- **확장자**: 원본 파일 확장자 유지 (jpg, png, webp 등)
-
-#### **카테고리별 이미지타입 매핑**
-- `thumbnail` → `thumbnail`
-- `detail` → `detail`
-- `gallery` → `gallery`
-- 기타 → `image`
-
-### 🗂️ 메타데이터 저장 구조
-
-#### **썸네일 메타데이터**
-```
-uploads/metadata/
-├── A00000020711907_thumbnails_20250818.json
-├── B00000012345678_thumbnails_20250819.json
-└── ...
-```
-
-#### **메타데이터 내용**
-```json
-{
-  "origin_goods_code": "A00000020711907",
-  "thumbnail_images": ["url1", "url2"],
-  "saved_at": "2025-08-18T10:30:00",
-  "total_images": 2,
-  "status": "active"
+### 예외 처리
+```typescript
+// 프론트엔드 예외 처리 예시
+try {
+    await priceSettingApi.save(data);
+} catch (error) {
+    if (error instanceof ValidationError) {
+        // 데이터 검증 오류 처리
+    } else if (error instanceof APIError) {
+        // API 오류 처리
+    } else if (error instanceof NetworkError) {
+        // 네트워크 오류 처리
+    }
 }
 ```
 
-### 🔄 이미지 우선순위 정책
+### 데이터 검증
+```typescript
+// 데이터 유효성 검증 예시
+if (!saveData.originGoodsCode) {
+    throw new ValidationError('상품 코드가 없습니다.', 'originGoodsCode', saveData.originGoodsCode);
+}
 
-#### **로딩 우선순위**
-1. **호스팅된 이미지** (`https://pub-b8307bd30f534121a8852e53312218eb.r2.dev/...`)
-2. **원본 이미지 URL** (`https://image.oliveyoung.co.kr/...`)
-3. **Blob URL** (`blob:http://localhost:5173/...`)
-
-#### **모달 재열기 시 동작**
-- 호스팅된 이미지가 있으면 우선 표시
-- 외부 이미지는 백업으로 사용
-- 사용자 경험 최적화
-
-### 🎨 모달 컴포넌트 구조 규칙
-
-#### **새로운 모달 생성 시**
-- `src/components/productUpload/modals/` 폴더 내에 모달명 폴더 생성
-- `modals/모달명/` 구조로 하위 컴포넌트 분리
-- `sections/`, `types/` 폴더로 기능별 분리
-- **Container 패턴 필수 적용**
-
-#### **폴더 구조 예시**
-```
-modals/PriceSettingModal/
-├── sections/           # 섹션별 컴포넌트
-│   ├── ExchangeRateSection.tsx
-│   ├── FormulaSection.tsx
-│   └── MarginListSection.tsx
-├── types/             # 타입 정의
-│   └── priceSetting.types.ts
-├── PriceSettingModalContainer.tsx  # 비즈니스 로직
-├── PriceSettingModal.tsx           # UI 컴포넌트
-├── PriceSettingModal.css           # 스타일
-└── index.ts           # Container export
+if (!saveData.exchangeRates || saveData.exchangeRates.length === 0) {
+    throw new ValidationError('환율 데이터가 없습니다.', 'exchangeRates', saveData.exchangeRates);
+}
 ```
 
-#### **외부 API 연동 규칙**
-- 환율/관세 정보는 `src/hooks/useCustomsApi.ts`에서 관리
-- 실제 API 연동 시 TODO 주석으로 표시
-- 개발 중에는 더미 데이터 사용
+### 상수 정의
+```typescript
+// 하드코딩 제거를 위한 상수 정의
+const SUPPORTED_CURRENCIES = ['KRW', 'USD', 'CNY', 'JPY', 'EUR'];
+const DEFAULT_EXCHANGE_RATE = 1.0;
+const DEFAULT_CURRENCY = 'KRW';
+```
 
----
+## 🌐 API 엔드포인트
 
-## 네트워크 최적화 규칙(필수)
+### 가격 설정 API
+- `POST /v1/api/price-setting/save`: 가격 설정 데이터 저장
+- `GET /v1/api/price-setting/load/{origin_goods_code}`: 저장된 데이터 조회
+- `GET /v1/api/price-setting/health`: 서비스 상태 확인
 
-### 업로드/전달 캐시 정책
-- 모든 업로드 객체에는 아래 헤더를 반드시 설정한다.
-  - `Cache-Control: public, max-age=31536000, immutable`
-- 이유: 동일 URL을 패널/뷰어가 연속 참조할 때 네트워크 왕복을 제거하고 캐시로 처리되도록 하기 위함.
+## 📊 데이터 모델
 
-### 이미지 URL 표준화
-- 공개 URL은 환경변수 기반으로 생성한다.
-  - 개발(r2.dev): `CLOUDFLARE_R2_PUBLIC_BASE_URL=https://pub-xxxxx.r2.dev/<bucket>`
-  - 운영(커스텀 도메인): `CLOUDFLARE_R2_PUBLIC_URL=https://img.allttam.kr`
-- 메타데이터에는 오브젝트 키만 저장 권장(베이스 URL 중복 방지).
+### PriceSettingRequest
+```typescript
+interface PriceSettingRequest {
+    exchangeRates: ExchangeRateData[];
+    formulaSettings: FormulaSettings;
+    platformMargins: PlatformMargins;
+    calculatedProducts: Record<string, any>[];
+    updatedProducts?: ProductPriceData[];
+    originGoodsCode: string;
+    baseSellingPriceFormula?: Record<string, any>;
+    platformSellingPriceFormula?: Record<string, any>;
+}
+```
 
-### 중복 요청 방지
-- 에디터 '패널 적용': 업로드 금지, blob 미리보기만 사용.
-- '저장' 클릭 시에만 업로드 수행, 성공 후 퍼블릭 URL로 교체.
-- 동일 URL 다중 렌더링은 캐시로 처리되므로 추가 최적화는 선택.
+## 🧪 테스트 가이드
 
----
+### 백엔드 테스트
+```bash
+# 가격 설정 서비스 테스트
+pytest app/tests/test_service_price_setting.py
 
-## 관리자 기능 계획
+# 가격 설정 라우터 테스트
+pytest app/tests/test_router_price_setting.py
+```
 
-### 🎛️ 이미지 호스팅 서버 관리 UI
+### 프론트엔드 테스트
+```bash
+# 가격 설정 모달 테스트
+npm test -- --testPathPattern=PriceSettingModal
 
-#### **설정 관리**
-- **보관 기간 설정**: 기본값 365일, 관리자별 커스터마이징
-- **아카이브 전환 기간**: 활성 → 아카이브 → 삭제 단계별 관리
-- **용량 제한**: 사용자별/프로젝트별 스토리지 할당량
-- **압축 품질**: WebP 변환 품질, 썸네일 크기 등
+# 통합 테스트
+npm test -- --testPathPattern=integration
+```
 
-#### **사용자별 관리**
-- **개별 사용자 설정**: 보관 기간, 용량 제한, 권한 등
-- **그룹별 정책**: 팀/부서별 이미지 관리 정책
-- **권한 관리**: 업로드, 삭제, 수정 권한 세분화
+## ⚡ 성능 최적화
 
-#### **정리 및 아카이브**
-- **자동 정리**: 설정된 기간에 따른 자동 삭제/아카이브
-- **수동 정리**: 관리자가 직접 이미지 선택 삭제
-- **일괄 작업**: 조건별 이미지 일괄 처리
-- **복구 기능**: 실수로 삭제된 이미지 복구
+### 백엔드
+- 데이터베이스 쿼리 최적화
+- 불필요한 로깅 제거
+- 예외 처리 효율화
 
-#### **모니터링 및 통계**
-- **사용량 통계**: 사용자별, 기간별 이미지 사용량
-- **성능 모니터링**: 업로드 속도, 에러율 등
-- **비용 분석**: 스토리지 비용 추적 및 예측
+### 프론트엔드
+- 불필요한 리렌더링 방지
+- 메모이제이션 활용
+- API 호출 최적화
 
----
+## 🔒 보안 고려사항
 
-## 향후 확장 계획
+- 입력 데이터 검증 강화
+- SQL 인젝션 방지
+- XSS 공격 방지
+- CSRF 토큰 검증
 
-### **고급 기능**
-- **AI 이미지 태깅**: 자동으로 이미지 내용 분석하여 태그 생성
-- **중복 이미지 감지**: 유사한 이미지 자동 감지 및 중복 제거
-- **이미지 최적화**: 자동으로 이미지 품질 최적화
-- **CDN 연동**: Cloudflare R2 등 외부 스토리지 연동
+## 📊 모니터링 및 로깅
 
-### **보안 및 규정 준수**
-- **GDPR 준수**: 개인정보 포함 이미지 자동 감지 및 처리
-- **접근 제어**: IP 기반, 시간 기반 접근 제한
-- **감사 로그**: 모든 이미지 관련 작업 로그 기록
-- **백업 및 복구**: 정기적인 백업 및 재해 복구 계획
+- 구조화된 로깅
+- 에러 추적 및 알림
+- 성능 메트릭 수집
+- 사용자 행동 분석
 
+## 🚀 배포 가이드
+
+### 환경별 설정
+- 개발 환경: `dev`
+- 스테이징 환경: `staging`
+- 프로덕션 환경: `prod`
+
+### 배포 스크립트
+```bash
+# 전체 빌드
+npm run build:all
+
+# 프론트엔드 배포
+npm run deploy:frontend
+
+# 백엔드 배포
+npm run deploy:backend
+```
+
+## 🔍 문제 해결
+
+### 일반적인 이슈
+1. **데이터 검증 실패**: 필수 필드 확인
+2. **API 연결 오류**: 네트워크 상태 및 서버 상태 확인
+3. **타입 오류**: TypeScript 컴파일러 오류 메시지 확인
+
+### 디버깅 팁
+- 브라우저 개발자 도구 활용
+- 네트워크 탭에서 API 요청/응답 확인
+- 콘솔 로그 분석
+- 백엔드 로그 확인
+
+## 🤝 기여 가이드
+
+### 코드 리뷰 체크리스트
+- [ ] 하드코딩된 값 제거
+- [ ] 타입 안전성 확보
+- [ ] 예외 처리 구현
+- [ ] 테스트 코드 작성
+- [ ] 문서 업데이트
+
+### 커밋 메시지 규칙
+
+#### **기본 형식**
+```
+<type>(<scope>): <subject>
+
+<body>
+
+<footer>
+```
+
+#### **타입 (Type)**
+- **feat**: 새로운 기능 추가
+- **fix**: 버그 수정
+- **docs**: 문서 수정
+- **style**: 코드 포맷팅, 세미콜론 누락 등 (기능 변경 없음)
+- **refactor**: 코드 리팩토링
+- **test**: 테스트 코드 추가/수정
+- **chore**: 빌드 프로세스, 도구 변경 등
+
+#### **스코프 (Scope)**
+- **frontend**: 프론트엔드 관련 변경
+- **backend**: 백엔드 관련 변경
+- **api**: API 관련 변경
+- **ui**: UI 컴포넌트 변경
+- **hook**: 커스텀 훅 변경
+- **type**: 타입 정의 변경
+- **modal**: 모달 컴포넌트 변경
+
+#### **예시**
+
+##### **기능 추가**
+```
+feat(modal): 가격 설정 모달에 환율 동기화 기능 추가
+
+- 환율 API 연동 구현
+- 실시간 환율 업데이트 기능
+- 사용자 설정 저장 기능
+
+Closes #123
+```
+
+##### **버그 수정**
+```
+fix(api): 환율 동기화 시 API 호출 한도 초과 에러 수정
+
+- 일일 API 호출 카운트 로직 개선
+- 에러 메시지 사용자 친화적으로 변경
+- 재시도 로직 추가
+
+Fixes #456
+```
+
+##### **리팩토링**
+```
+refactor(hook): useExchangeRate 훅을 Container 패턴으로 리팩토링
+
+- 비즈니스 로직과 UI 로직 분리
+- 상태 관리 최적화
+- 에러 처리 개선
+- 테스트 코드 추가
+
+BREAKING CHANGE: useExchangeRate 훅의 반환값 구조 변경
+```
+
+##### **문서 수정**
+```
+docs(workflow): AI 워크플로우 가이드 업데이트
+
+- 커밋 메시지 규칙 추가
+- 폴더 구조 가이드 보완
+- 예시 코드 추가
+```
+
+##### **스타일 변경**
+```
+style(frontend): ESLint 규칙에 맞게 코드 포맷팅 수정
+
+- 세미콜론 추가
+- 들여쓰기 통일
+- 불필요한 공백 제거
+```
+
+##### **테스트 추가**
+```
+test(hook): useExchangeRate 훅에 대한 단위 테스트 추가
+
+- 성공 케이스 테스트
+- 실패 케이스 테스트
+- 에러 처리 테스트
+- 테스트 커버리지 85% 달성
+```
+
+##### **빌드/도구 변경**
+```
+chore(build): Webpack 설정 최적화
+
+- 번들 크기 최적화
+- 코드 스플리팅 적용
+- 개발 서버 성능 개선
+```
+
+#### **특수 키워드**
+- **Closes #123**: 이슈 해결 시
+- **Fixes #456**: 버그 수정 시
+- **BREAKING CHANGE**: 호환성 깨짐이 있는 변경 시
+- **WIP**: 작업 진행 중 (Pull Request 제목에 사용)
+
+#### **좋은 커밋 메시지 작성 팁**
+1. **제목은 50자 이내로 작성**
+2. **제목 첫 글자는 소문자로 시작**
+3. **제목 끝에 마침표 사용 금지**
+4. **명령형 어조 사용** (add, fix, update 등)
+5. **무엇을, 왜 변경했는지 명확하게 작성**
+6. **한글로 작성하여 팀원이 이해하기 쉽게**
+
+## 📋 테스트 체크리스트
+
+### 1. 단위 테스트
+- [ ] 백엔드 서비스 함수 테스트
+- [ ] 프론트엔드 컴포넌트 테스트
+- [ ] 유틸리티 함수 테스트
+- [ ] 예외 처리 테스트
+
+### 2. 통합 테스트
+- [ ] 백엔드 API 엔드포인트 테스트
+- [ ] 프론트엔드-백엔드 연동 테스트
+- [ ] 데이터베이스 연동 테스트
+
+### 3. 성능 테스트
+- [ ] API 응답 시간 측정
+- [ ] 메모리 사용량 모니터링
+- [ ] 동시 사용자 처리 능력 테스트
+
+### 4. 사용자 테스트
+- [ ] 실제 사용 시나리오 테스트
+- [ ] UI/UX 사용성 테스트
+- [ ] 에러 상황 대응 테스트
+
+## 🎯 다음 단계
+
+### 즉시 실행
+1. **테스트 실행**: 리팩토링된 코드의 동작 확인
+2. **통합 테스트**: 백엔드와 프론트엔드 연동 테스트
+3. **성능 테스트**: 응답 시간 및 메모리 사용량 확인
+4. **사용자 테스트**: 실제 사용 시나리오 테스트
+
+### 단기 목표 (1-2주)
+- [ ] 모든 테스트 케이스 통과 확인
+- [ ] 성능 벤치마크 수립
+- [ ] 사용자 피드백 수집 및 반영
+
+### 중기 목표 (1개월)
+- [ ] 프로덕션 환경 배포
+- [ ] 모니터링 시스템 구축
+- [ ] 지속적인 성능 최적화
+
+## 📞 지원 및 문의
+
+- **개발팀**: dev-team@company.com
+- **기술지원**: tech-support@company.com
+- **문서**: https://docs.company.com
+
+## 라이선스
+
+이 프로젝트는 MIT 라이선스 하에 배포됩니다.
+
+
+
+## [프롬프트 예시]
+- 요청 사항 : frontend 가격 설정 모달 관련해서 500 에러 개선
+    1. 상태: INFO:     127.0.0.1:64481 - "POST /api/price-setting/save HTTP/1.1" 500 Internal Server Error
+    2. 참고 :   아래 규칙은 꼭 지킬 것
+    3. 추가 요청 : 데이터 구조가 맞는 스키마 확인할 것
+
+
+- frontend : Vite + TypeScript + React (개발 서버: npm run dev)
+- backend : python + FastAPI (개발 서버: uvicorn app.main:app --reload)
+- 규칙 :
+    1. 실무적인 올바른 설계로 반영 (사양 맞지 않는 파일 제거_예시로 js 파일)
+    2. (필요 시) 하드 코딩 제거 / 더미 데이터는 지양
+    3. 참조/경로 오류를 방지
+    4. (필요 시) 불필요한 코드 (README_AI.md 주석 정책 참고) / 중복 디버깅 코드 제거
+    5. 에러 처리 및 로딩 상태 관리 최적화 (필요시 exception 폴더 구조 리팩토링, 일관된 에러 처리)  
+    6. 별도의 명령 없이는 CSS 코드 유지
+    7. 코드 품질 개선 (타입 안전성 개선, 성능 최적화, 비용 절감을 위한 효율적인 통신 구조 최적화)
+    8. (필요 시) README_AI.md 에 필요한 규칙을 업데이트
+    9. 데이터 구조/ 무결성/ 유효성 검증 
+    10. 단위테스트,(필요 시)프론트엔드 연동 테스트(통신 확인), 성능 테스트(응답 시간 측정) 진행
+    11. 에러 발생 시 디버깅 처리 및 에러 해결 후 디버깅 로그 코드 제거
+    12. 프로젝트 안의 파일을 직접 수정  
+
+
+  1~3 은 base_price_setting 컬렉션에 
+  1~4 는 ModifiedGoodsDetail 컬렉션에
+    1. ExchangeRateInfo
+      1) currencyCode
+      2) appliedRate
+      3) lastUpdated
+      4) source
+    2. SellingPriceFormulaInfo
+      1) baseMarginRate
+      2) additionalMargin
+      3) baseShippingFee
+      4) returnShippingFee
+      5) exchangeShippingFee
+      6) internationalShippingFee
+      7) freeShipping
+      8) optimizeShippingFee
+    3. PlatformMarginRateInfo
+      1) smartstore
+      2) coupang
+      3) auction
+      4) gmarket
+      5) elevenst
+      6) openmarket
+    4. CalculatedItemInfo
+      1) ExpectedMargin
+      2) ExpectedMarginRate
+      3) selling_price

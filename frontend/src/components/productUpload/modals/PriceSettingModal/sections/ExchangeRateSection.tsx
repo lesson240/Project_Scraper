@@ -71,15 +71,10 @@ export default function ExchangeRateSection({
                                 // 적용환율: appliedRate 값 사용
                                 const appliedRate = rateData?.appliedRate || 0;
 
-                                // 🆕 데이터 확인을 위한 로깅
-                                console.log(`🔍 ${currency} 통화 데이터:`, {
-                                    rateData,
-                                    dailyRate,
-                                    weeklyTariff,
-                                    appliedRate,
-                                    koreaexim: rateData?.koreaexim,
-                                    customs: rateData?.customs
-                                });
+                                // 개발 환경에서만 데이터 확인 로깅
+                                if (import.meta.env.DEV && !rateData) {
+                                    console.warn(`⚠️ ${currency} 통화 데이터를 찾을 수 없습니다`);
+                                }
 
                                 return (
                                     <tr key={currency}>
@@ -90,7 +85,9 @@ export default function ExchangeRateSection({
                                             <NumberInput
                                                 value={appliedRate}
                                                 onChange={(value) => {
-                                                    console.log(`${currency} 환율 변경:`, value);
+                                                    if (import.meta.env.DEV) {
+                                                        console.log(`💱 ${currency} 환율 변경:`, value);
+                                                    }
                                                     onAppliedRateChange(currency, value);
                                                 }}
                                                 placeholder="환율 입력"

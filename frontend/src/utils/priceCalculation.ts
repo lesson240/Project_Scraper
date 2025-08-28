@@ -1,7 +1,8 @@
 // path: frontend/src/utils/priceCalculation.ts
 
-export interface PlatformMargins {
-    main: number; // 🆕 main 필드 추가
+// 🆕 백엔드 모델과 일치하는 인터페이스
+export interface PlatformMarginRateInfo {
+    smartstore: number;
     coupang: number;
     auction: number;
     gmarket: number;
@@ -9,160 +10,117 @@ export interface PlatformMargins {
     openmarket: number;
 }
 
-export interface CalculatedProduct {
-    originGoodsCode: string; // 🆕 originGoodsCode 필드 추가
-    basePrice: number;
-    platformPrices: {
-        coupang: number;
-        auction: number;
-        gmarket: number;
-        elevenst: number;
-        openmarket: number;
-    };
-    exchangeRate: number;
-    originalPrice: number;
+export interface CalculatedItemInfo {
+    ExpectedMargin: number;
+    ExpectedMarginRate: number;
+    selling_price: number;
+}
 
-    // 🆕 marginList 구조로 변경 (selling_price 추가)
-    marginList: {
-        main: {
-            ExpectedMargin: number;
-            ExpectedMarginRate: number;
-            selling_price: number;
-        };
-        coupang: {
-            ExpectedMargin: number;
-            ExpectedMarginRate: number;
-            selling_price: number;
-        };
-        auction: {
-            ExpectedMargin: number;
-            ExpectedMarginRate: number;
-            selling_price: number;
-        };
-        gmarket: {
-            ExpectedMargin: number;
-            ExpectedMarginRate: number;
-            selling_price: number;
-        };
-        elevenst: {
-            ExpectedMargin: number;
-            ExpectedMarginRate: number;
-            selling_price: number;
-        };
-    };
+// 🆕 백엔드 모델과 일치하는 인터페이스로 수정
+export interface CalculatedProduct {
+    originGoodsCode: string;
+    basePrice: number;
+    originalPrice: number;
+    exchangeRate: number;
+    additionalMargin: number;
+    marginList: Record<string, CalculatedItemInfo>;
 }
 
 /**
- * 플랫폼별 마진을 계산합니다.
+ * 마진을 계산합니다.
  * @param originGoodsCode 원본 상품 코드
- * @param basePrice 기본 가격
- * @param platformMargins 플랫폼별 마진율
- * @param originalPrice 원본 가격
+ * @param originalPrice 원본 가격 (원가)
  * @param exchangeRate 환율
- * @param baseShippingFee 기본 배송비
+ * @param baseMarginRate 기본 마진율 (%)
+ * @param additionalMargin 추가 마진
+ * @param internationalShippingFee 국제운송료
+ * @param platformMarginRates 플랫폼별 마진율
  * @returns 계산된 상품 데이터
  */
 export function calculatePlatformMargins(
-    originGoodsCode: string, // 🆕 originGoodsCode 매개변수 추가
-    basePrice: number,
-    platformMargins: PlatformMargins,
+    originGoodsCode: string,
     originalPrice: number,
     exchangeRate: number = 1,
-    baseShippingFee: number = 3000 // 🆕 기본 배송비 매개변수 추가
+    baseMarginRate: number,
+    additionalMargin: number,
+    internationalShippingFee: number = 0,
+    platformMarginRates: PlatformMarginRateInfo
 ): CalculatedProduct {
-    // 🆕 메인 마진 계산: 설정 상품가 - (원가 × 환율) - 배송비
-    const mainExpectedMargin = basePrice - (originalPrice * exchangeRate) - baseShippingFee;
-    const mainExpectedMarginRate = (mainExpectedMargin / basePrice) * 100;
+    if (originalPrice <= 0) {
+        throw new Error('원본 가격이 0 이하일 수 없습니다.');
+    }
 
-    // 🆕 플랫폼별 추가 판매가 계산: 기본 판매가 × (1 + 플랫폼 마진율)
-    // 쿠팡: 기본 판매가 × (1 + 쿠팡 마진율)
-    const coupangPrice = basePrice * (1 + platformMargins.coupang / 100);
-    const coupangExpectedMargin = coupangPrice - (originalPrice * exchangeRate) - baseShippingFee;
-    const coupangExpectedMarginRate = (coupangExpectedMargin / coupangPrice) * 100;
+    // UI 공식: 원가×환율×(1+기본 마진율)+추가마진+국제운송료 = 기본 판매가(설정 상품가)
+    const costInKRW = originalPrice * exchangeRate;
+    const basePrice = costInKRW * (1 + baseMarginRate / 100) + additionalMargin + internationalShippingFee;
 
-    // 옥션: 기본 판매가 × (1 + 옥션 마진율)
-    const auctionPrice = basePrice * (1 + platformMargins.auction / 100);
-    const auctionExpectedMargin = auctionPrice - (originalPrice * exchangeRate) - baseShippingFee;
-    const auctionExpectedMarginRate = (auctionExpectedMargin / auctionPrice) * 100;
+    // 플랫폼별 마진 계산
+    const marginList: Record<string, CalculatedItemInfo> = {};
 
-    // 지마켓: 기본 판매가 × (1 + 지마켓 마진율)
-    const gmarketPrice = basePrice * (1 + platformMargins.gmarket / 100);
-    const gmarketExpectedMargin = gmarketPrice - (originalPrice * exchangeRate) - baseShippingFee;
-    const gmarketExpectedMarginRate = (gmarketExpectedMargin / gmarketPrice) * 100;
+    // 스마트스토어 마진 계산 (기본 공식)
+    const smartstoreExpectedMargin = basePrice - costInKRW - internationalShippingFee;
+    const smartstoreExpectedMarginRate = basePrice > 0 ? (smartstoreExpectedMargin / basePrice) * 100 : 0;
+    
+    marginList.smartstore = {
+        ExpectedMargin: Math.max(0, Math.round(smartstoreExpectedMargin * 100) / 100),
+        ExpectedMarginRate: Math.max(0, Math.round(smartstoreExpectedMarginRate * 100) / 100),
+        selling_price: basePrice
+    };
 
-    // 11번가: 기본 판매가 × (1 + 11번가 마진율)
-    const elevenstPrice = basePrice * (1 + platformMargins.elevenst / 100);
-    const elevenstExpectedMargin = elevenstPrice - (originalPrice * exchangeRate) - baseShippingFee;
-    const elevenstExpectedMarginRate = (elevenstExpectedMargin / elevenstPrice) * 100;
+    // 각 플랫폼별 마진 계산
+    Object.entries(platformMarginRates).forEach(([platform, marginRate]) => {
+        if (platform === 'smartstore') return; // 이미 계산됨
+        
+        // 플랫폼별 판매가: 원가×환율×(1+플랫폼 마진율)+추가마진+국제운송료
+        const platformPrice = costInKRW * (1 + marginRate / 100) + additionalMargin + internationalShippingFee;
+        
+        // 플랫폼별 마진: 플랫폼 판매가 - (원가 × 환율)
+        const platformExpectedMargin = platformPrice - costInKRW - internationalShippingFee;
+        const platformExpectedMarginRate = platformPrice > 0 ? (platformExpectedMargin / platformPrice) * 100 : 0;
 
-    // 오픈마켓: 기본 판매가 × (1 + 오픈마켓 마진율)
-    const openmarketPrice = basePrice * (1 + platformMargins.openmarket / 100);
-    const openmarketExpectedMargin = openmarketPrice - (originalPrice * exchangeRate) - baseShippingFee;
-    const openmarketExpectedMarginRate = (openmarketExpectedMargin / openmarketPrice) * 100;
+        marginList[platform] = {
+            ExpectedMargin: Math.max(0, Math.round(platformExpectedMargin * 100) / 100),
+            ExpectedMarginRate: Math.max(0, Math.round(platformExpectedMarginRate * 100) / 100),
+            selling_price: platformPrice
+        };
+    });
 
     return {
-        originGoodsCode, // 🆕 originGoodsCode 포함
+        originGoodsCode,
         basePrice,
-        platformPrices: {
-            coupang: coupangPrice,      // 🆕 플랫폼별 가격 적용
-            auction: auctionPrice,      // 🆕 플랫폼별 가격 적용
-            gmarket: gmarketPrice,      // 🆕 플랫폼별 가격 적용
-            elevenst: elevenstPrice,    // 🆕 플랫폼별 가격 적용
-            openmarket: openmarketPrice // 🆕 플랫폼별 가격 적용
-        },
-        exchangeRate,
         originalPrice,
-        marginList: {
-            main: {
-                ExpectedMargin: Math.round(mainExpectedMargin * 100) / 100,
-                ExpectedMarginRate: Math.round(mainExpectedMarginRate * 100) / 100,
-                selling_price: basePrice // 🆕 selling_price 추가
-            },
-            coupang: {
-                ExpectedMargin: Math.round(coupangExpectedMargin * 100) / 100,
-                ExpectedMarginRate: Math.round(coupangExpectedMarginRate * 100) / 100,
-                selling_price: coupangPrice // 🆕 selling_price 추가
-            },
-            auction: {
-                ExpectedMargin: Math.round(auctionExpectedMargin * 100) / 100,
-                ExpectedMarginRate: Math.round(auctionExpectedMarginRate * 100) / 100,
-                selling_price: auctionPrice // 🆕 selling_price 추가
-            },
-            gmarket: {
-                ExpectedMargin: Math.round(gmarketExpectedMargin * 100) / 100,
-                ExpectedMarginRate: Math.round(gmarketExpectedMarginRate * 100) / 100,
-                selling_price: gmarketPrice // 🆕 selling_price 추가
-            },
-            elevenst: {
-                ExpectedMargin: Math.round(elevenstExpectedMargin * 100) / 100,
-                ExpectedMarginRate: Math.round(elevenstExpectedMarginRate * 100) / 100,
-                selling_price: elevenstPrice // 🆕 selling_price 추가
-            }
-        }
+        exchangeRate,
+        additionalMargin,
+        marginList
     };
 }
 
 /**
- * 여러 상품의 플랫폼별 마진을 일괄 계산합니다.
+ * 여러 상품의 마진을 일괄 계산합니다.
  */
 export function calculateAllProductsMargins(
     products: Array<{
-        originGoodsCode: string; // 🆕 originGoodsCode 추가
-        basePrice: number;
+        originGoodsCode: string;
         originalPrice: number;
         exchangeRate?: number;
+        baseMarginRate?: number;
+        additionalMargin?: number;
+        internationalShippingFee?: number;
     }>,
-    platformMargins: PlatformMargins,
-    baseShippingFee: number = 3000 // 🆕 기본 배송비 매개변수 추가
+    baseMarginRate: number = 0,
+    additionalMargin: number = 0,
+    internationalShippingFee: number = 0,
+    platformMarginRates: PlatformMarginRateInfo
 ): CalculatedProduct[] {
     return products.map(product =>
         calculatePlatformMargins(
-            product.originGoodsCode, // 🆕 originGoodsCode 전달
-            product.basePrice,
-            platformMargins,
+            product.originGoodsCode,
             product.originalPrice,
-            product.exchangeRate,
-            baseShippingFee // 🆕 baseShippingFee 전달
+            product.exchangeRate || 1,
+            product.baseMarginRate || baseMarginRate,
+            product.additionalMargin || additionalMargin,
+            product.internationalShippingFee || internationalShippingFee,
+            platformMarginRates
         )
     );
 }

@@ -1,38 +1,50 @@
 # path: app/models/__init__.py
-from .model_price_setting import (
-    ProductPriceData,
+# 🆕 Pydantic 모델들
+from .pydantics.model_pydantic_price_setting import (
+    BasePriceSettingDocument,
     PriceSettingRequest,
-    PriceSettingResponse
+    PriceSettingResponse,
+    CalculatedItemInfo,
+    SellingPriceFormulaInfo,
+    PlatformMarginRateInfo,
+    ExchangeRateInfo,
+    PlatformMargins,
+    MarginListByItems,
+    ModifiedGoodsDetailUpdate
 )
 
+# 🆕 ODMantic 모델들
+from .odmantics.model_odmantic_price_setting import (
+    BasePriceSettingODM,
+    ModifiedGoodsDetailODM,
+    ExchangeRateODM
+)
+
+# 🆕 기존 모델들 (하위 호환성 유지)
 from .model_exchange_rate import (
     PriceSettingExchangeRate,
-    PriceSettingProductUpdate,
-    ExchangeRateBase,
-    ExchangeRateSyncRequest,
-    ExchangeRateResponse,
-    ExchangeRateSyncResponse,
-    CombinedExchangeRateData,
-    CombinedExchangeRateResponse,
-    PriceSettingSaveRequest,
-    PriceSettingSaveResponse
+    PriceSettingProductUpdate
 )
 
 __all__ = [
-    # Price Setting Models
-    "ProductPriceData",
-    "PriceSettingRequest", 
-    "PriceSettingResponse",
+    # Pydantic 모델
+    'BasePriceSettingDocument',
+    'PriceSettingRequest', 
+    'PriceSettingResponse',
+    'CalculatedItemInfo',
+    'SellingPriceFormulaInfo',
+    'PlatformMarginRateInfo',
+    'ExchangeRateInfo',
+    'PlatformMargins',
+    'MarginListByItems',
+    'ModifiedGoodsDetailUpdate',
     
-    # Exchange Rate Models
-    "PriceSettingExchangeRate",
-    "PriceSettingProductUpdate",
-    "ExchangeRateBase",
-    "ExchangeRateSyncRequest",
-    "ExchangeRateResponse",
-    "ExchangeRateSyncResponse",
-    "CombinedExchangeRateData",
-    "CombinedExchangeRateResponse",
-    "PriceSettingSaveRequest",
-    "PriceSettingSaveResponse"
+    # ODMantic 모델
+    'BasePriceSettingODM',
+    'ModifiedGoodsDetailODM',
+    'ExchangeRateODM',
+    
+    # 기존 모델
+    'PriceSettingExchangeRate',
+    'PriceSettingProductUpdate'
 ]

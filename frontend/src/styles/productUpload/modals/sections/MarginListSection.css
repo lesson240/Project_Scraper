@@ -103,11 +103,6 @@
 }
 
 /* 썸네일 셀 스타일 */
-.thumbnail-cell {
-    width: 80px;
-    padding: 8px !important;
-}
-
 .product-thumbnail {
     width: 60px;
     height: 60px;
@@ -157,10 +152,6 @@
 
     .product-name {
         max-width: 150px;
-    }
-
-    .thumbnail-cell {
-        width: 60px;
     }
 
     .product-thumbnail {

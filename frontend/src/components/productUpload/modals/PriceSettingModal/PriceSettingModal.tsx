@@ -7,9 +7,10 @@ import MarginListSection from './sections/MarginListSection';
 import PriceSettingModalFooter from './sections/PriceSettingModalFooter';
 import { calculateAllProductsMargins } from '@/utils/priceCalculation';
 import '@/styles/productUpload/modals/PriceSettingModal.css';
+import { ValidationError } from '@/exceptions/PriceSettingExceptions';
 
 import type { PriceSettingModalUIProps, SaveData } from '@/types/priceSetting.types';
-import type { CalculatedProduct } from '@/utils/priceCalculation';
+import type { CalculatedProduct, PlatformMarginRateInfo } from '@/utils/priceCalculation';
 
 export default function PriceSettingModal({
     isOpen, onClose, selectedProducts,
@@ -23,51 +24,76 @@ export default function PriceSettingModal({
 
 }: PriceSettingModalUIProps) {
 
-    // 저장 핸들러 구현
-    const handleSave = (saveData: SaveData) => {
-        console.log('PriceSettingModal - 저장 요청:', saveData);
+    // 계산된 상품 데이터를 상태로 관리
+    const [calculatedProducts, setCalculatedProducts] = React.useState<CalculatedProduct[]>([]);
 
+    // 공식 설정이나 상품 데이터가 변경될 때마다 재계산
+    React.useEffect(() => {
+        if (isCalculated && calculatedPrices.length > 0) {
+            console.log('🔄 마진 재계산 시작:', {
+                baseMarginRate: formulaSettings.baseMarginRate,
+                additionalMargin: formulaSettings.additionalMargin,
+                internationalShippingFee: formulaSettings.internationalShippingFee,
+                productsCount: calculatedPrices.length
+            });
+
+            // 🆕 PlatformMarginRateInfo로 변환
+            const platformMarginRates: PlatformMarginRateInfo = {
+                smartstore: platformMargins.smartstore.ExpectedMarginRate,
+                coupang: platformMargins.coupang.ExpectedMarginRate,
+                auction: platformMargins.auction.ExpectedMarginRate,
+                gmarket: platformMargins.gmarket.ExpectedMarginRate,
+                elevenst: platformMargins.elevenst.ExpectedMarginRate,
+                openmarket: platformMargins.openmarket.ExpectedMarginRate
+            };
+
+            const transformedCalculatedProducts: CalculatedProduct[] = calculateAllProductsMargins(
+                calculatedPrices.map(price => ({
+                    originGoodsCode: price.originGoodsCode,
+                    originalPrice: price.originalPrice,
+                    exchangeRate: price.exchangeRate || 1,
+                    baseMarginRate: formulaSettings.baseMarginRate,
+                    additionalMargin: formulaSettings.additionalMargin,
+                    internationalShippingFee: formulaSettings.internationalShippingFee
+                })),
+                formulaSettings.baseMarginRate,
+                formulaSettings.additionalMargin,
+                formulaSettings.internationalShippingFee,
+                platformMarginRates
+            );
+
+            console.log('✅ 계산 완료:', transformedCalculatedProducts);
+            setCalculatedProducts(transformedCalculatedProducts);
+        }
+    }, [isCalculated, calculatedPrices, formulaSettings.baseMarginRate, formulaSettings.additionalMargin, formulaSettings.internationalShippingFee, platformMargins]);
+
+    const handleSave = (saveData: SaveData): void => {
         try {
             // 데이터 검증
             if (!saveData.exchangeRates || saveData.exchangeRates.length === 0) {
-                throw new Error('환율 정보가 없습니다.');
+                throw new ValidationError('환율 정보가 없습니다.', 'exchangeRates', saveData.exchangeRates);
             }
 
             if (!saveData.calculatedProducts || saveData.calculatedProducts.length === 0) {
-                throw new Error('계산된 상품 정보가 없습니다.');
+                throw new ValidationError('계산된 상품 정보가 없습니다.', 'calculatedProducts', saveData.calculatedProducts);
             }
 
             if (!saveData.originGoodsCode) {
-                throw new Error('상품 코드가 없습니다.');
+                throw new ValidationError('상품 코드가 없습니다.', 'originGoodsCode', saveData.originGoodsCode);
             }
 
-            // 🆕 calculatedPrices를 새로운 형식으로 변환 (originGoodsCode 포함)
-            const transformedCalculatedProducts: CalculatedProduct[] = calculateAllProductsMargins(
-                calculatedPrices.map(price => ({
-                    originGoodsCode: price.originGoodsCode, // 🆕 originGoodsCode 포함
-                    basePrice: price.basePrice,
-                    originalPrice: price.originalPrice,
-                    exchangeRate: price.exchangeRate || 1 // 🆕 실제 exchangeRate 사용
-                })),
-                platformMargins,
-                formulaSettings.baseShippingFee // 🆕 baseShippingFee 전달
-            );
-
-            // 변환된 데이터로 saveData 업데이트
             const updatedSaveData: SaveData = {
                 ...saveData,
-                calculatedProducts: transformedCalculatedProducts
+                calculatedProducts: calculatedProducts
             };
 
-            console.log('변환된 데이터:', updatedSaveData);
-
-            // 부모 컴포넌트의 onSave 호출
             onSave(updatedSaveData);
 
         } catch (error) {
-            console.error('저장 데이터 검증 실패:', error);
-            // TODO: 사용자에게 에러 메시지 표시
-            alert(`저장 실패: ${error instanceof Error ? error.message : '알 수 없는 오류'}`);
+            if (error instanceof ValidationError) {
+                throw error;
+            }
+            throw new ValidationError('저장 데이터 검증 중 오류가 발생했습니다.', 'saveData', saveData);
         }
     };
 
@@ -132,23 +158,29 @@ export default function PriceSettingModal({
                     <div className="section-header margin-list-header">
                         <h3>마진 목록</h3>
                     </div>
+                    {/* 마진 목록 섹션 */}
                     <MarginListSection
                         selectedProducts={selectedProducts}
                         calculatedPrices={calculatedPrices}
                         exchangeRates={exchangeRates}
-                        onMarginReset={() => { }}
-                        isCalculated={isCalculated}
                         platformMargins={platformMargins}
-                        onMarginChange={() => { }}
+                        onMarginChange={(productId: string, platform: string, value: number) => {
+                            // 스마트스토어 마진만 처리
+                            if (platform === 'smartstore') {
+                                onPlatformMarginChange('smartstore', value);
+                            }
+                        }}
+                        onMarginReset={onReset}
+                        isCalculated={isCalculated}
                     />
                 </div>
             </ModalBody>
 
             <ModalFooter>
                 <PriceSettingModalFooter
+                    onSave={handleSave}
                     onReset={onReset}
                     onCalculateMargin={onCalculateMargin}
-                    onSave={handleSave}
                     originGoodsCode={selectedProducts[0]?.originGoodsCode || ''}
                     isCalculated={isCalculated}
                     exchangeRates={exchangeRates.map(rate => ({
@@ -157,7 +189,7 @@ export default function PriceSettingModal({
                     }))}
                     formulaSettings={formulaSettings}
                     platformMargins={platformMargins}
-                    calculatedProducts={calculatedPrices}  // 🆕 기존 calculatedPrices 사용 (이미 새로운 형식)
+                    calculatedProducts={calculatedPrices}
                 />
             </ModalFooter>
         </ModalBase>

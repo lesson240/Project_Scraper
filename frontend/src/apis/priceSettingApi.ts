@@ -1,183 +1,222 @@
 // path: frontend/src/apis/priceSettingApi.ts
+import axios, { AxiosInstance } from 'axios';
+import { 
+    PriceSettingRequest, 
+    PriceSettingResponse,
+    ExchangeRateInfo,
+    SaveData,
+    SellingPriceFormulaInfo,
+    PlatformMarginRateInfo,
+    MarginListByItems
+} from '@/types/priceSetting.types';
+import { 
+    ValidationError, 
+    APIError, 
+    NetworkError 
+} from '@/exceptions';
 
-import axios from 'axios';
-import type { PriceSettingRequest } from '@/types/priceSetting.types';
-import { createExchangeRateData } from '@/types/priceSetting.types';
-
-// API 기본 설정 - 기존 환경변수 패턴 사용
+// API 기본 URL
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
-const API_TIMEOUT = 30000; // 30초
 
 // Axios 인스턴스 생성
-const priceSettingApiClient = axios.create({
-    baseURL: `${API_BASE_URL}`,
-    timeout: API_TIMEOUT,
+const priceSettingApiClient: AxiosInstance = axios.create({
+    baseURL: API_BASE_URL,
+    timeout: 5000, // 5초로 단축
     headers: {
         'Content-Type': 'application/json',
     },
 });
 
-// 요청 인터셉터 - 로깅
-priceSettingApiClient.interceptors.request.use(
-    (config) => {
-        console.log(`🚀 API 요청: ${config.method?.toUpperCase()} ${config.url}`);
-        return config;
-    },
-    (error) => {
-        console.error('❌ API 요청 에러:', error);
-        return Promise.reject(error);
-    }
-);
-
-// 응답 인터셉터 - 에러 처리
+// 응답 인터셉터 설정
 priceSettingApiClient.interceptors.response.use(
-    (response) => {
-        console.log(`✅ API 응답: ${response.status} ${response.config.url}`);
-        return response;
-    },
+    (response) => response,
     (error) => {
-        console.error('❌ API 응답 에러:', {
-            status: error.response?.status,
-            message: error.message,
-            url: error.config?.url,
-            data: error.response?.data
-        });
-        return Promise.reject(error);
+        if (error.code === 'ECONNABORTED') {
+            throw new NetworkError('요청 시간이 초과되었습니다.', error);
+        }
+        
+        if (error.response) {
+            const { status, data } = error.response;
+            
+            if (status === 422) {
+                throw new ValidationError(
+                    data.detail?.message || '데이터 검증에 실패했습니다.',
+                    'request',
+                    data.detail?.details || data
+                );
+            }
+            
+            if (status >= 500) {
+                throw new APIError(`서버 오류 (${status})`, status, data.detail || data);
+            }
+            
+            if (status >= 400) {
+                throw new APIError(`클라이언트 오류 (${status})`, status, data.detail || data);
+            }
+        }
+        
+        if (error.request) {
+            throw new NetworkError('네트워크 연결에 실패했습니다.', error);
+        }
+        
+        throw new NetworkError('알 수 없는 오류가 발생했습니다.', error);
     }
 );
 
-/**
- * 가격 설정 데이터 저장 API
- */
+// 가격 설정 API
 export const priceSettingApi = {
     /**
-     * 가격 설정 데이터를 백엔드로 전송하여 저장
+     * 가격 설정 데이터 저장 API
      * @param saveData - 저장할 가격 설정 데이터
      * @returns 저장 결과
      */
-    save: async (saveData: PriceSettingRequest) => {
+    save: async (saveData: SaveData): Promise<PriceSettingResponse> => {
         try {
-            console.log('💾 가격 설정 저장 요청:', saveData);
-
-            // 데이터 변환: undefined 값 처리 및 기본값 설정
-            const transformedData = {
-                ...saveData,
-                exchangeRates: saveData.exchangeRates.map(rate => {
-                    // undefined 값 처리: 기본값 설정
-                    const finalCurrencyCode = rate.currencyCode || 'KRW';
-                    const finalAppliedRate = rate.appliedRate || 1.0; // 기본 환율 1.0
-                    
-                    // 날짜 형식 강제 변환: ISO 8601 → YYYY-MM-DD
-                    let finalLastUpdated;
-                    if (rate.lastUpdated) {
-                        // ISO 8601 형식이든 다른 형식이든 YYYY-MM-DD로 변환
-                        const date = new Date(rate.lastUpdated);
-                        if (!isNaN(date.getTime())) {
-                            finalLastUpdated = date.toISOString().slice(0, 10); // YYYY-MM-DD
-                        } else {
-                            finalLastUpdated = new Date().toISOString().slice(0, 10); // 오늘 날짜
-                        }
-                    } else {
-                        finalLastUpdated = new Date().toISOString().slice(0, 10); // 오늘 날짜
-                    }
-                    
-                    return {
-                        currencyCode: finalCurrencyCode,
-                        appliedRate: finalAppliedRate,
-                        lastUpdated: finalLastUpdated, // YYYY-MM-DD 형식 보장
-                        source: rate.source || 'manual'
-                    };
-                }),
-                // updatedProducts 필드 추가 (백엔드 요구사항)
-                updatedProducts: saveData.updatedProducts || [],
-                // 다른 필수 필드들도 기본값 보장
-                formulaSettings: saveData.formulaSettings || {},
-                platformMargins: saveData.platformMargins || {},
-                calculatedProducts: saveData.calculatedProducts || [],
-                originGoodsCode: saveData.originGoodsCode || '',
-
-                // 🆕 새로운 필드들 추가
-                // allttamExchangeRates 제거 - manuel로 통합
-                baseSellingPriceFormula: saveData.baseSellingPriceFormula || {},
-                additionalSellingPriceFormula: saveData.additionalSellingPriceFormula || {}
+            // 데이터 검증
+            if (!saveData.originGoodsCode) {
+                throw new ValidationError('상품 코드가 없습니다.', 'originGoodsCode', saveData.originGoodsCode);
+            }
+            
+            if (!saveData.exchangeRates || saveData.exchangeRates.length === 0) {
+                throw new ValidationError('환율 데이터가 없습니다.', 'exchangeRates', saveData.exchangeRates);
+            }
+            
+            if (!saveData.calculatedProducts || saveData.calculatedProducts.length === 0) {
+                throw new ValidationError('계산된 상품 데이터가 없습니다.', 'calculatedProducts', saveData.calculatedProducts);
+            }
+            
+            // 🆕 백엔드 모델에 맞게 데이터 변환
+            const transformedData: PriceSettingRequest = {
+                exchangeRatesInfo: saveData.exchangeRates.map(rate => ({
+                    currencyCode: rate.currency,
+                    appliedRate: rate.value,
+                    lastUpdated: new Date().toISOString().slice(0, 10),
+                    source: 'manual'
+                })),
+                sellingPriceFormulaInfo: {
+                    baseMarginRate: saveData.formulaSettings.baseMarginRate,
+                    additionalMargin: saveData.formulaSettings.additionalMargin,
+                    baseShippingFee: saveData.formulaSettings.baseShippingFee,
+                    returnShippingFee: saveData.formulaSettings.returnShippingFee,
+                    exchangeShippingFee: saveData.formulaSettings.exchangeShippingFee,
+                    internationalShippingFee: saveData.formulaSettings.internationalShippingFee,
+                    freeShipping: saveData.formulaSettings.freeShipping,
+                    optimizeShippingFee: saveData.formulaSettings.optimizeShippingFee
+                },
+                platformMarginRateInfo: {
+                    smartstore: saveData.platformMargins.smartstore,
+                    coupang: saveData.platformMargins.coupang,
+                    auction: saveData.platformMargins.auction,
+                    gmarket: saveData.platformMargins.gmarket,
+                    elevenst: saveData.platformMargins.elevenst,
+                    openmarket: saveData.platformMargins.openmarket
+                },
+                marginListByItems: {
+                    items: Object.fromEntries(
+                        saveData.calculatedProducts.map(product => [
+                            product.originGoodsCode,
+                            {
+                                smartstore: {
+                                    ExpectedMargin: product.marginList.smartstore?.ExpectedMargin || 0,
+                                    ExpectedMarginRate: product.marginList.smartstore?.ExpectedMarginRate || 0,
+                                    selling_price: product.marginList.smartstore?.selling_price || 0
+                                },
+                                coupang: {
+                                    ExpectedMargin: product.marginList.coupang?.ExpectedMargin || 0,
+                                    ExpectedMarginRate: product.marginList.coupang?.ExpectedMarginRate || 0,
+                                    selling_price: product.marginList.coupang?.selling_price || 0
+                                },
+                                auction: {
+                                    ExpectedMargin: product.marginList.auction?.ExpectedMargin || 0,
+                                    ExpectedMarginRate: product.marginList.auction?.ExpectedMarginRate || 0,
+                                    selling_price: product.marginList.auction?.selling_price || 0
+                                },
+                                gmarket: {
+                                    ExpectedMargin: product.marginList.gmarket?.ExpectedMargin || 0,
+                                    ExpectedMarginRate: product.marginList.gmarket?.ExpectedMarginRate || 0,
+                                    selling_price: product.marginList.gmarket?.selling_price || 0
+                                },
+                                elevenst: {
+                                    ExpectedMargin: product.marginList.elevenst?.ExpectedMargin || 0,
+                                    ExpectedMarginRate: product.marginList.elevenst?.ExpectedMarginRate || 0,
+                                    selling_price: product.marginList.elevenst?.selling_price || 0
+                                },
+                                openmarket: {
+                                    ExpectedMargin: product.marginList.openmarket?.ExpectedMargin || 0,
+                                    ExpectedMarginRate: product.marginList.openmarket?.ExpectedMarginRate || 0,
+                                    selling_price: product.marginList.openmarket?.selling_price || 0
+                                }
+                            }
+                        ])
+                    )
+                }
             };
             
-            // 🆕 각 필드별 상세 로깅
-            console.log('🔍 전송 데이터 상세 분석:');
-            console.log('  - exchangeRates:', transformedData.exchangeRates);
-            // allttamExchangeRates 로깅 제거
-            console.log('  - baseSellingPriceFormula:', transformedData.baseSellingPriceFormula);
-            console.log('  - additionalSellingPriceFormula:', transformedData.additionalSellingPriceFormula);
-            // platformMargins 로깅 제거
-            console.log('  - updatedProducts:', transformedData.updatedProducts);
+            if (import.meta.env.DEV) {
+                console.log('🚀 프론트엔드에서 백엔드로 전송하는 데이터:', transformedData);
+                console.log('📊 데이터 구조:', {
+                    exchangeRatesInfo: transformedData.exchangeRatesInfo.length,
+                    sellingPriceFormulaInfo: Object.keys(transformedData.sellingPriceFormulaInfo),
+                    platformMarginRateInfo: Object.keys(transformedData.platformMarginRateInfo),
+                    marginListByItems: Object.keys(transformedData.marginListByItems.items)
+                });
+            }
             
-            console.log('🔄 변환된 데이터:', transformedData);
-            
-            const response = await priceSettingApiClient.post('/v1/api/price-setting/save', transformedData);
-            
-            console.log('✅ 가격 설정 저장 성공:', response.data);
+            const response = await priceSettingApiClient.post('/api/price-setting/save', transformedData);
             return response.data;
             
-        } catch (error: any) {
-            console.error('❌ 가격 설정 저장 실패:', error);
-            
-            // 에러 타입별 처리
-            if (error.response) {
-                // 서버 응답이 있는 경우
-                const { status, data } = error.response;
-                
-                switch (status) {
-                    case 400:
-                        throw new Error(`잘못된 요청: ${data?.message || '데이터 형식이 올바르지 않습니다.'}`);
-                    case 401:
-                        throw new Error('인증이 필요합니다. 다시 로그인해주세요.');
-                    case 403:
-                        throw new Error('권한이 없습니다.');
-                    case 404:
-                        throw new Error('요청한 리소스를 찾을 수 없습니다.');
-                    case 422:
-                        throw new Error(`데이터 검증 실패: ${data?.message || '입력 데이터를 확인해주세요.'}`);
-                    case 500:
-                        throw new Error('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
-                    default:
-                        throw new Error(`저장 실패 (${status}): ${data?.message || '알 수 없는 오류가 발생했습니다.'}`);
-                }
-            } else if (error.request) {
-                // 요청은 보냈지만 응답을 받지 못한 경우
-                if (error.code === 'ECONNABORTED') {
-                    throw new Error('요청 시간이 초과되었습니다. 네트워크 상태를 확인해주세요.');
-                }
-                throw new Error('서버에 연결할 수 없습니다. 네트워크 상태를 확인해주세요.');
-            } else {
-                // 요청 자체를 보내지 못한 경우
-                throw new Error(`요청 실패: ${error.message}`);
+        } catch (error) {
+            if (error instanceof ValidationError || error instanceof APIError || error instanceof NetworkError) {
+                throw error;
             }
+            throw new NetworkError('가격 설정 저장 중 오류가 발생했습니다.', error as Error);
         }
     },
 
     /**
-     * 가격 설정 데이터 조회 API
+     * ModifiedGoodsDetail 컬렉션에서 가격 설정 데이터 조회 API
      * @param originGoodsCode - 상품 코드
      * @returns 저장된 가격 설정 데이터
      */
     get: async (originGoodsCode: string) => {
         try {
-            console.log('📋 가격 설정 조회 요청:', originGoodsCode);
+            if (!originGoodsCode) {
+                throw new ValidationError('상품 코드가 없습니다.', 'originGoodsCode', originGoodsCode);
+            }
             
-            const response = await priceSettingApiClient.get(`/price-setting/${originGoodsCode}`);
-            
-            console.log('✅ 가격 설정 조회 성공:', response.data);
+            const response = await priceSettingApiClient.get(`/api/price-setting/load/${originGoodsCode}`);
             return response.data;
             
-        } catch (error: any) {
-            console.error('❌ 가격 설정 조회 실패:', error);
-            
-            if (error.response?.status === 404) {
-                // 데이터가 없는 경우 null 반환
+        } catch (error) {
+            if (error instanceof APIError && error.statusCode === 404) {
                 return null;
             }
             
-            throw error;
+            if (error instanceof ValidationError || error instanceof APIError || error instanceof NetworkError) {
+                throw error;
+            }
+            throw new NetworkError('가격 설정 조회 중 오류가 발생했습니다.', error as Error);
+        }
+    },
+
+    /**
+     * BasePriceSetting 컬렉션에서 공통 가격 설정 정보 조회 API
+     * @returns 공통 가격 설정 정보
+     */
+    getInfo: async () => {
+        try {
+            const response = await priceSettingApiClient.get('/api/price-setting/load/info');
+            return response.data;
+            
+        } catch (error) {
+            if (error instanceof APIError && error.statusCode === 404) {
+                return null;
+            }
+            
+            if (error instanceof ValidationError || error instanceof APIError || error instanceof NetworkError) {
+                throw error;
+            }
+            throw new NetworkError('가격 설정 정보 조회 중 오류가 발생했습니다.', error as Error);
         }
     },
 
@@ -188,16 +227,18 @@ export const priceSettingApi = {
      */
     delete: async (originGoodsCode: string) => {
         try {
-            console.log('🗑️ 가격 설정 삭제 요청:', originGoodsCode);
+            if (!originGoodsCode) {
+                throw new ValidationError('상품 코드가 없습니다.', 'originGoodsCode', originGoodsCode);
+            }
             
-            const response = await priceSettingApiClient.delete(`/price-setting/${originGoodsCode}`);
-            
-            console.log('✅ 가격 설정 삭제 성공:', response.data);
+            const response = await priceSettingApiClient.delete(`/api/price-setting/delete/${originGoodsCode}`);
             return response.data;
             
-        } catch (error: any) {
-            console.error('❌ 가격 설정 삭제 실패:', error);
-            throw error;
+        } catch (error) {
+            if (error instanceof ValidationError || error instanceof APIError || error instanceof NetworkError) {
+                throw error;
+            }
+            throw new NetworkError('가격 설정 삭제 중 오류가 발생했습니다.', error as Error);
         }
     },
 
@@ -208,22 +249,24 @@ export const priceSettingApi = {
      */
     load: async (originGoodsCode: string): Promise<any> => {
         try {
-            console.log('🔍 저장된 가격 설정 데이터 조회 시작:', originGoodsCode);
+            if (!originGoodsCode) {
+                throw new ValidationError('상품 코드가 없습니다.', 'originGoodsCode', originGoodsCode);
+            }
             
-            const response = await axios.get(`${API_BASE_URL}/v1/api/price-setting/load/${originGoodsCode}`);
+            const response = await axios.get(`${API_BASE_URL}/api/price-setting/load/${originGoodsCode}`);
             
             if (response.data.success) {
-                console.log('✅ 저장된 가격 설정 데이터 조회 성공:', response.data.data);
                 return response.data.data;
             } else {
-                console.warn('⚠️ 저장된 가격 설정 데이터가 없음:', response.data.message);
                 return null;
             }
+            
         } catch (error) {
-            console.error('❌ 가격 설정 데이터 조회 실패:', error);
-            throw error;
+            if (axios.isAxiosError(error) && error.response?.status === 404) {
+                return null;
+            }
+            
+            throw new NetworkError('가격 설정 데이터 로드 중 오류가 발생했습니다.', error as Error);
         }
     }
 };
-
-export default priceSettingApi;

@@ -16,12 +16,14 @@ class PriceSettingError(Exception):
 class ExchangeRateError(PriceSettingError):
     """환율 처리 관련 예외"""
     
-    def __init__(self, message: str, currency: Optional[str] = None, rate: Optional[float] = None):
+    def __init__(self, message: str, currency: Optional[str] = None, rate: Optional[float] = None, exchange_rates: Optional[list] = None):
         details = {}
         if currency:
             details["currency"] = currency
         if rate is not None:
             details["rate"] = rate
+        if exchange_rates:
+            details["exchange_rates"] = exchange_rates
         
         super().__init__(
             message=message,
@@ -74,5 +76,69 @@ class DatabaseError(PriceSettingError):
         super().__init__(
             message=message,
             error_code="DATABASE_ERROR",
+            details=details
+        )
+
+class ModelValidationError(PriceSettingError):
+    """Pydantic 모델 검증 관련 예외"""
+    
+    def __init__(self, message: str, model_name: Optional[str] = None, field_errors: Optional[Dict[str, Any]] = None):
+        details = {}
+        if model_name:
+            details["model_name"] = model_name
+        if field_errors:
+            details["field_errors"] = field_errors
+        
+        super().__init__(
+            message=message,
+            error_code="MODEL_VALIDATION_ERROR",
+            details=details
+        )
+
+class DataIntegrityError(PriceSettingError):
+    """데이터 무결성 관련 예외"""
+    
+    def __init__(self, message: str, missing_fields: Optional[list] = None, invalid_data: Optional[Dict[str, Any]] = None):
+        details = {}
+        if missing_fields:
+            details["missing_fields"] = missing_fields
+        if invalid_data:
+            details["invalid_data"] = invalid_data
+        
+        super().__init__(
+            message=message,
+            error_code="DATA_INTEGRITY_ERROR",
+            details=details
+        )
+
+class DocumentCreationError(PriceSettingError):
+    """문서 생성 관련 예외"""
+    
+    def __init__(self, message: str, document_type: Optional[str] = None, origin_goods_code: Optional[str] = None):
+        details = {}
+        if document_type:
+            details["document_type"] = document_type
+        if origin_goods_code:
+            details["origin_goods_code"] = origin_goods_code
+        
+        super().__init__(
+            message=message,
+            error_code="DOCUMENT_CREATION_ERROR",
+            details=details
+        )
+
+class ExchangeRateValidationError(PriceSettingError):
+    """환율 데이터 검증 관련 예외"""
+    
+    def __init__(self, message: str, currency_code: Optional[str] = None, rate_value: Optional[float] = None):
+        details = {}
+        if currency_code:
+            details["currency_code"] = currency_code
+        if rate_value is not None:
+            details["rate_value"] = rate_value
+        
+        super().__init__(
+            message=message,
+            error_code="EXCHANGE_RATE_VALIDATION_ERROR",
             details=details
         )

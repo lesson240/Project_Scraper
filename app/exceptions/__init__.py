@@ -3,12 +3,22 @@ from .price_setting_exceptions import (
     PriceSettingError,
     ExchangeRateError,
     ProductUpdateError,
-    ValidationError
+    ValidationError,
+    DatabaseError,
+    ModelValidationError,
+    DataIntegrityError,
+    DocumentCreationError,
+    ExchangeRateValidationError
 )
 
 __all__ = [
     "PriceSettingError",
     "ExchangeRateError", 
     "ProductUpdateError",
-    "ValidationError"
+    "ValidationError",
+    "DatabaseError",
+    "ModelValidationError",
+    "DataIntegrityError",
+    "DocumentCreationError",
+    "ExchangeRateValidationError"
 ]

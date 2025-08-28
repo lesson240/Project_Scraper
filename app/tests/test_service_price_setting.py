@@ -6,7 +6,7 @@ import pytest
 from unittest.mock import AsyncMock, MagicMock
 from datetime import datetime
 from app.services.service_price_setting import PriceSettingService
-from app.models.model_price_setting import (
+from app.models import (
     ExchangeRateData,
     ProductPriceData,
     PriceSettingRequest
