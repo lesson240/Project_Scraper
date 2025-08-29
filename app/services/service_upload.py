@@ -137,21 +137,90 @@ class FilterSectionInquiry:
     async def _search_in_management(self, filters):
         """InputGoodsManagementTableModel에서 데이터 검색"""
         try:
+            logger.info(f"🔍 InputGoodsManagementTableModel 검색 시작 - 필터: {filters}")
+            
             results = await self.mongodb_service.engine.find(InputGoodsManagementTableModel, filters)
-            return [item.dict(exclude={"_id", "id"}) for item in results]
+            logger.info(f"📊 검색 결과 수: {len(results)}개")
+            
+            converted_results = []
+            for i, item in enumerate(results):
+                try:
+                    # ODMantic 모델을 딕셔너리로 변환
+                    item_dict = item.dict(exclude={"_id", "id"})
+                    converted_results.append(item_dict)
+                    logger.info(f"✅ 항목 {i+1} 변환 성공: {len(item_dict)}개 필드")
+                    
+                except Exception as item_error:
+                    logger.error(f"❌ 항목 {i+1} 변환 실패: {str(item_error)}")
+                    # 수동 변환 시도
+                    manual_dict = {
+                        "origin_goods_code": getattr(item, 'origin_goods_code', ''),
+                        "origin_goods_name": getattr(item, 'origin_goods_name', ''),
+                        "modified_goods_name": getattr(item, 'modified_goods_name', ''),
+                        # ... 다른 필드들
+                    }
+                    converted_results.append(manual_dict)
+            
+            return converted_results
+            
         except Exception as e:
-            logger.error(f"Error searching InputGoodsManagementTableModel: {e}")
+            logger.error(f"❌ InputGoodsManagementTableModel 검색 중 전체 에러: {str(e)}")
+            logger.error(f"�� 에러 타입: {type(e).__name__}")
+            import traceback
+            logger.error(f"🔍 스택 트레이스: {traceback.format_exc()}")
             return []
 
     async def _search_in_origin_detail(self, filters):
         """OriginGoodsDetailModel에서 데이터 검색"""
         try:
+            logger.info(f"🔍 OriginGoodsDetailModel 검색 시작 - 필터: {filters}")
+            
             results = await self.mongodb_service.engine.find(OriginGoodsDetailModel, filters)
-            return [item.dict(exclude={"_id", "id"}) for item in results]
+            logger.info(f"📊 OriginGoodsDetailModel 검색 결과 수: {len(results)}개")
+            
+            converted_results = []
+            for i, item in enumerate(results):
+                try:
+                    item_dict = item.dict(exclude={"_id", "id"})
+                    converted_results.append(item_dict)
+                    logger.info(f"✅ OriginGoodsDetailModel 항목 {i+1} 변환 성공")
+                except Exception as item_error:
+                    logger.error(f"❌ OriginGoodsDetailModel 항목 {i+1} 변환 실패: {str(item_error)}")
+                    # 수동 변환 시도
+                    try:
+                        manual_dict = {
+                            "origin_goods_code": getattr(item, 'origin_goods_code', ''),
+                            "origin_goods_name": getattr(item, 'origin_goods_name', ''),
+                            "modified_goods_name": getattr(item, 'modified_goods_name', ''),
+                            "brand_code": getattr(item, 'brand_code', ''),
+                            "brand_name": getattr(item, 'brand_name', ''),
+                            "market": getattr(item, 'market', ''),
+                            "group_name": getattr(item, 'group_name', ''),
+                            "memo": getattr(item, 'memo', ''),
+                            "thumb": getattr(item, 'thumb', {}),
+                            "exchangeRateInfo": None,
+                            "sellingPriceFormulaInfo": None,
+                            "platformMarginRateInfo": None,
+                            "marginListByItems": None,
+                            "updatedAt": None
+                        }
+                        converted_results.append(manual_dict)
+                        logger.info(f"✅ OriginGoodsDetailModel 항목 {i+1} 수동 변환 성공")
+                    except Exception as manual_error:
+                        logger.error(f"❌ OriginGoodsDetailModel 항목 {i+1} 수동 변환도 실패: {str(manual_error)}")
+                        converted_results.append({
+                            "origin_goods_code": str(getattr(item, 'origin_goods_code', f"error_item_{i}")),
+                            "error": f"변환 실패: {str(item_error)}"
+                        })
+            
+            return converted_results
+            
         except Exception as e:
-            logger.error(f"Error searching OriginGoodsDetailModel: {e}")
+            logger.error(f"❌ OriginGoodsDetailModel 검색 중 전체 에러: {str(e)}")
+            logger.error(f"�� 에러 타입: {type(e).__name__}")
+            import traceback
+            logger.error(f"🔍 스택 트레이스: {traceback.format_exc()}")
             return []
-
 
     async def _search_all_goods(self):
         """전체 상품 조회 (관리 테이블 + 상세 테이블)"""
@@ -160,8 +229,18 @@ class FilterSectionInquiry:
 
     async def run(self):
         try:
-            return await handle_fetch_inquiry(self)
+            logger.info("🚀 FilterSectionInquiry 실행 시작")
+            logger.info(f"📋 검색 조건: brand_code={self.brand_code}, brand_name={self.brand_name}, origin_goods_code={self.origin_goods_code}")
+            
+            result = await handle_fetch_inquiry(self)
+            logger.info(f"✅ FilterSectionInquiry 실행 완료 - 결과 수: {len(result) if result else 0}개")
+            return result
+            
         except Exception as e:
+            logger.error(f"❌ FilterSectionInquiry 실행 실패: {str(e)}")
+            logger.error(f"�� 에러 타입: {type(e).__name__}")
+            import traceback
+            logger.error(f"🔍 스택 트레이스: {traceback.format_exc()}")
             raise HTTPException(status_code=500, detail=str(e))
 
 

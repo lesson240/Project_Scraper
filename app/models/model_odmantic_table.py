@@ -3,6 +3,7 @@ from odmantic import Model, Field
 
 # from datetime import datetime
 from typing import Optional, List, Dict, Any
+from datetime import datetime
 
 
 # class InputGoodsTableRequestModel(BaseModel):
@@ -59,12 +60,12 @@ class InputGoodsManagementTableModel(Model):
     thumb: Dict[str, str] = Field(None)
 
     # 🆕 가격 설정 관련 필드들 추가 (ModifiedGoodsDetail 업데이트용)
-    basePrice: Optional[float] = Field(None, description="기본 가격")
-    exchangeRate: Optional[float] = Field(None, description="환율")
-    exchangeRates: Optional[Dict[str, Any]] = Field(None, description="환율 데이터")
-    formulaSettings: Optional[Dict[str, Any]] = Field(None, description="공식 설정")
-    marginList: Optional[Dict[str, Any]] = Field(None, description="마진 목록")
-    platformMargins: Optional[Dict[str, Any]] = Field(None, description="플랫폼별 마진 설정")
+    exchangeRateInfo: Optional[Dict[str, Any]] = Field(None, description="환율 정보")
+    sellingPriceFormulaInfo: Optional[Dict[str, Any]] = Field(None, description="공식 설정")
+    platformMarginRateInfo: Optional[Dict[str, Any]] = Field(None, description="플랫폼별 마진율")
+    marginListByItems: Optional[Dict[str, Any]] = Field(None, description="플랫폼별 계산된 마진 정보")
+    updatedAt: Optional[datetime] = Field(None, description="업데이트 시간")
+
 
     # options: Optional[List[Dict[str, str]]] = None
 

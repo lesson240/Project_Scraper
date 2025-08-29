@@ -1,0 +1,98 @@
+2025-08-29 22:16:58,976 - INFO - 🚀 FilterSectionInquiry 실행 시작
+2025-08-29 22:16:58,976 - INFO - 📋 검색 조건: brand_code=None, brand_name=None, origin_goods_code=None
+2025-08-29 22:16:59,395 - ERROR - ❌ FilterSectionInquiry 실행 실패: 'dict' object has no attribute 'origin_goods_code'
+2025-08-29 22:16:59,396 - ERROR - �� 에러 타입: AttributeError
+2025-08-29 22:16:59,397 - ERROR - 🔍 스택 트레이스: Traceback (most recent call last):
+  File "C:\Users\user\Desktop\Project_Scraper\app\services\service_upload.py", line 268, in run
+    result = await handle_fetch_inquiry(self)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\user\Desktop\Project_Scraper\app\services\query_logic.py", line 8, in handle_fetch_inquiry
+    return await query_all_goods()
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\user\Desktop\Project_Scraper\app\services\query_helpers.py", line 36, in query_all_goods
+    codes = {item.origin_goods_code for item in mg}
+             ^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'origin_goods_code'
+
+2025-08-29 22:22:14,258 - INFO - 🚀 FilterSectionInquiry 실행 시작
+2025-08-29 22:22:14,258 - INFO - 📋 검색 조건: brand_code=None, brand_name=None, origin_goods_code=None
+2025-08-29 22:22:14,297 - ERROR - ❌ FilterSectionInquiry 실행 실패: 'dict' object has no attribute 'origin_goods_code'
+2025-08-29 22:22:14,299 - ERROR - �� 에러 타입: AttributeError
+2025-08-29 22:22:14,300 - ERROR - 🔍 스택 트레이스: Traceback (most recent call last):
+  File "C:\Users\user\Desktop\Project_Scraper\app\services\service_upload.py", line 268, in run
+    price_info.pop("_id", None)
+             ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\user\Desktop\Project_Scraper\app\services\query_logic.py", line 8, in handle_fetch_inquiry
+    return await query_all_goods()
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\user\Desktop\Project_Scraper\app\services\query_helpers.py", line 36, in query_all_goods
+    codes = {item.origin_goods_code for item in mg}
+             ^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'origin_goods_code'
+
+2025-08-29 22:24:07,423 - INFO - 🚀 FilterSectionInquiry 실행 시작
+2025-08-29 22:24:07,423 - INFO - 📋 검색 조건: brand_code=None, brand_name=None, origin_goods_code=None
+2025-08-29 22:24:07,875 - ERROR - ❌ FilterSectionInquiry 실행 실패: 'dict' object has no attribute 'origin_goods_code'
+2025-08-29 22:24:07,876 - ERROR - �� 에러 타입: AttributeError
+2025-08-29 22:24:07,877 - ERROR - 🔍 스택 트레이스: Traceback (most recent call last):
+  File "C:\Users\user\Desktop\Project_Scraper\app\services\service_upload.py", line 235, in run
+    result = await handle_fetch_inquiry(self)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\user\Desktop\Project_Scraper\app\services\query_logic.py", line 8, in handle_fetch_inquiry
+    return await query_all_goods()
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\user\Desktop\Project_Scraper\app\services\query_helpers.py", line 36, in query_all_goods
+    from app.services.service_upload import mongodb_service
+         ^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'origin_goods_code'
+
+2025-08-29 22:24:11,328 - INFO - 🚀 FilterSectionInquiry 실행 시작
+2025-08-29 22:24:11,328 - INFO - 📋 검색 조건: brand_code=None, brand_name=None, origin_goods_code=None
+2025-08-29 22:24:11,370 - ERROR - ❌ FilterSectionInquiry 실행 실패: 'dict' object has no attribute 'origin_goods_code'
+2025-08-29 22:24:11,370 - ERROR - �� 에러 타입: AttributeError
+2025-08-29 22:24:11,371 - ERROR - 🔍 스택 트레이스: Traceback (most recent call last):
+  File "C:\Users\user\Desktop\Project_Scraper\app\services\service_upload.py", line 235, in run
+    result = await handle_fetch_inquiry(self)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\user\Desktop\Project_Scraper\app\services\query_logic.py", line 8, in handle_fetch_inquiry
+    return await query_all_goods()
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\user\Desktop\Project_Scraper\app\services\query_helpers.py", line 36, in query_all_goods
+    from app.services.service_upload import mongodb_service
+         ^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'origin_goods_code'
+
+2025-08-29 22:26:22,135 - INFO - 🚀 FilterSectionInquiry 실행 시작
+2025-08-29 22:26:22,136 - INFO - 📋 검색 조건: brand_code=None, brand_name=None, origin_goods_code=None
+2025-08-29 22:26:22,589 - ERROR - ❌ FilterSectionInquiry 실행 실패: 'dict' object has no attribute 'origin_goods_code'
+2025-08-29 22:26:22,589 - ERROR - �� 에러 타입: AttributeError
+2025-08-29 22:26:22,592 - ERROR - 🔍 스택 트레이스: Traceback (most recent call last):
+  File "C:\Users\user\Desktop\Project_Scraper\app\services\service_upload.py", line 235, in run
+    result = await handle_fetch_inquiry(self)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\user\Desktop\Project_Scraper\app\services\query_logic.py", line 8, in handle_fetch_inquiry
+    return await query_all_goods()
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\user\Desktop\Project_Scraper\app\services\query_helpers.py", line 36, in query_all_goods
+    extra_filter["origin_goods_code"] = {"$nin": list(codes)}
+         ^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'origin_goods_code'
+
+2025-08-29 22:26:32,491 - INFO - 🚀 FilterSectionInquiry 실행 시작
+2025-08-29 22:26:32,491 - INFO - 📋 검색 조건: brand_code=None, brand_name=None, origin_goods_code=None
+2025-08-29 22:26:32,951 - INFO - ✅ FilterSectionInquiry 실행 완료 - 결과 수: 4개
+2025-08-29 22:26:33,626 - INFO - 🚀 FilterSectionInquiry 실행 시작
+2025-08-29 22:26:33,626 - INFO - 📋 검색 조건: brand_code=None, brand_name=None, origin_goods_code=None
+2025-08-29 22:26:33,708 - INFO - ✅ FilterSectionInquiry 실행 완료 - 결과 수: 4개
+2025-08-29 22:26:41,070 - INFO - 🚀 FilterSectionInquiry 실행 시작
+2025-08-29 22:26:41,070 - INFO - 📋 검색 조건: brand_code=None, brand_name=None, origin_goods_code=None
+2025-08-29 22:26:41,149 - INFO - ✅ FilterSectionInquiry 실행 완료 - 결과 수: 4개
+2025-08-29 22:29:13,372 - INFO - 🚀 FilterSectionInquiry 실행 시작
+2025-08-29 22:29:13,372 - INFO - 📋 검색 조건: brand_code=None, brand_name=None, origin_goods_code=None
+2025-08-29 22:29:13,450 - INFO - ✅ FilterSectionInquiry 실행 완료 - 결과 수: 4개
+2025-08-29 22:29:26,608 - INFO - 🚀 FilterSectionInquiry 실행 시작
+2025-08-29 22:29:26,608 - INFO - 📋 검색 조건: brand_code=None, brand_name=None, origin_goods_code=None
+2025-08-29 22:29:27,152 - INFO - ✅ FilterSectionInquiry 실행 완료 - 결과 수: 4개
+2025-08-29 22:29:35,297 - INFO - 🚀 FilterSectionInquiry 실행 시작
+2025-08-29 22:29:35,297 - INFO - 📋 검색 조건: brand_code=None, brand_name=None, origin_goods_code=None
+2025-08-29 22:29:35,377 - INFO - ✅ FilterSectionInquiry 실행 완료 - 결과 수: 4개

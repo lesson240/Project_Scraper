@@ -1,5 +1,65 @@
-// path: frontend/src/types/priceSetting.types.ts
-import type { PlatformMargins } from '@/utils/priceCalculation';
+
+// 🆕 1. 수동 환율 정보 모델
+export interface ExchangeRateInfo {
+    currencyCode: string;
+    appliedRate: number;
+    lastUpdated: string;
+    source: string;
+}
+
+//  🆕 2. 판매가 공식 정보 모델 (SellingPriceFormulaInfo)
+export interface SellingPriceFormulaInfo {
+    baseMarginRate: number;
+    additionalMargin: number;
+    baseShippingFee: number;
+    returnShippingFee: number;
+    exchangeShippingFee: number;
+    internationalShippingFee: number;
+    freeShipping: boolean;
+    optimizeShippingFee: boolean;
+}
+
+//  🆕 3. 플랫폼별 마진율 모델 (PlatformMarginRateInfo)
+export interface PlatformMarginRateInfo {
+    smartstore: number;
+    coupang: number;
+    auction: number;
+    gmarket: number;
+    elevenst: number;
+    openmarket: number;
+}
+
+//  🆕 4. 계산된 상품 모델 (CalculatedProductData)
+export interface CalculatedProductData {
+    originGoodsCode: string;
+    originalPrice: number;
+    exchangeRate: number;
+    marginList: Record<string, CalculatedItemInfo>;
+}
+
+//  🆕 5. 플랫폼별 계산된 마진 정보 모델 (CalculatedItemInfo)
+export interface CalculatedItemInfo {
+    ExpectedMargin: number;
+    ExpectedMarginRate: number;
+    selling_price: number;
+}
+
+//  🆕 6. 플랫폼별 마진 정보를 Dict화 (PlatformMargins)
+export interface PlatformMargins {
+    smartstore: CalculatedItemInfo;
+    coupang: CalculatedItemInfo;
+    auction: CalculatedItemInfo;
+    gmarket: CalculatedItemInfo;
+    elevenst: CalculatedItemInfo;
+    openmarket: CalculatedItemInfo;
+}
+
+//  🆕 7. 전체 마진 목록을 originGoodsCode 기준으로 Dict화 (MarginListByItems)
+export interface MarginListByItems {
+    items: Record<string, PlatformMargins>;
+}
+
+
 
 export interface Product {
     id: string;
@@ -66,11 +126,6 @@ export interface CombinedExchangeRateResponse {
     message: string;
 }
 
-export interface PlatformMarginInfo {
-    ExpectedMargin: number;
-    ExpectedMarginRate: number;
-    selling_price: number;
-}
 
 export interface ProductPriceData {
     originGoodsCode: string;
@@ -80,60 +135,7 @@ export interface ProductPriceData {
     salesPrice?: number;
 }
 
-export interface CalculatedProductData {
-    originGoodsCode: string;
-    basePrice: number;
-    originalPrice: number;
-    exchangeRate: number;
-    marginList: Record<string, PlatformMarginInfo>;
-}
 
-// 🆕 백엔드 모델과 일치하는 새로운 타입들
-export interface ExchangeRateInfo {
-    currencyCode: string;
-    appliedRate: number;
-    lastUpdated: string;
-    source: string;
-}
-
-export interface SellingPriceFormulaInfo {
-    baseMarginRate: number;
-    additionalMargin: number;
-    baseShippingFee: number;
-    returnShippingFee: number;
-    exchangeShippingFee: number;
-    internationalShippingFee: number;
-    freeShipping: boolean;
-    optimizeShippingFee: boolean;
-}
-
-export interface PlatformMarginRateInfo {
-    smartstore: number;
-    coupang: number;
-    auction: number;
-    gmarket: number;
-    elevenst: number;
-    openmarket: number;
-}
-
-export interface CalculatedItemInfo {
-    ExpectedMargin: number;
-    ExpectedMarginRate: number;
-    selling_price: number;
-}
-
-export interface PlatformMargins {
-    smartstore: CalculatedItemInfo;
-    coupang: CalculatedItemInfo;
-    auction: CalculatedItemInfo;
-    gmarket: CalculatedItemInfo;
-    elevenst: CalculatedItemInfo;
-    openmarket: CalculatedItemInfo;
-}
-
-export interface MarginListByItems {
-    items: Record<string, PlatformMargins>;
-}
 
 // 🆕 새로운 PriceSettingRequest 타입
 export interface PriceSettingRequest {
@@ -165,27 +167,11 @@ export interface SaveData {
         freeShipping: boolean;
         optimizeShippingFee: boolean;
     };
-    calculatedProducts: Array<{
-        originGoodsCode: string;
-        basePrice: number;
-        originalPrice: number;
-        exchangeRate: number;
-        marginList: Record<string, PlatformMarginInfo>;
-    }>;
-    originGoodsCode: string;
     platformMarginRateInfo: PlatformMarginRateInfo;
+    marginListByItems: MarginListByItems;
 }
 
-export interface FormulaSettings {
-    baseMarginRate: number;
-    additionalMargin: number;
-    baseShippingFee: number;
-    returnShippingFee: number;
-    exchangeShippingFee: number;
-    internationalShippingFee: number;
-    freeShipping: boolean;
-    optimizeShippingFee: boolean;
-}
+
 
 export interface PriceSettingModalUIProps {
     isOpen: boolean;
@@ -197,13 +183,13 @@ export interface PriceSettingModalUIProps {
     tariffPeriod: string;
     isLoading: boolean;
     error: string | null;
-    formulaSettings: FormulaSettings;
+    sellingPriceFormulaInfo: SellingPriceFormulaInfo;
     platformMargins: PlatformMargins;
     isExchangeRateExpanded: boolean;
     isFormulaExpanded: boolean;
     onAppliedRateChange: (currency: string, value: number) => void;
     onSyncRates: () => void;
-    onFormulaChange: (field: keyof FormulaSettings, value: any) => void;
+    onFormulaChange: (field: keyof SellingPriceFormulaInfo, value: any) => void;
     onFormulaReset: () => void;
     onMarginChange: (platform: string, value: number) => void;
     onMarginReset: () => void;
@@ -235,9 +221,9 @@ export interface ExchangeRateSectionProps {
 }
 
 export interface FormulaSectionProps {
-    formulaSettings: FormulaSettings;
+    sellingPriceFormulaInfo: SellingPriceFormulaInfo;
     platformMargins: PlatformMargins;
-    onFormulaChange: (field: keyof FormulaSettings, value: any) => void;
+    onFormulaChange: (field: keyof SellingPriceFormulaInfo, value: any) => void;
     onPlatformMarginChange: (platform: keyof PlatformMargins, value: number) => void;
 }
 
@@ -248,7 +234,7 @@ export interface PriceSettingModalFooterProps {
     originGoodsCode: string;
     isCalculated: boolean;
     exchangeRates: Array<{ currency: string; value: number }>;
-    formulaSettings: FormulaSettings;
+    sellingPriceFormulaInfo: SellingPriceFormulaInfo;
     platformMargins: PlatformMargins;
     calculatedProducts: CalculatedProductData[];
 }

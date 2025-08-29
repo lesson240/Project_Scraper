@@ -307,10 +307,6 @@ async def get_exchange_rates_for_frontend():
             # customs 데이터 찾기
             customs_data = next((r for r in customs_final if r["currencyCode"] == currency), None)
             
-            print(f"🔍 {currency} 통화 처리:")
-            print(f"  - koreaexim: {koreaexim_data}")
-            print(f"  - customs: {customs_data}")
-            
             # Combined 형식으로 데이터 구성
             combined_rate = {
                 "currencyCode": currency,

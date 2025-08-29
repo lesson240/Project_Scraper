@@ -1,30 +1,12 @@
 // path: frontend/src/utils/priceCalculation.ts
+import type {
+    PlatformMarginRateInfo,
+    CalculatedProductData,
+    CalculatedItemInfo,
+} from "@/types/priceSetting.types";
 
-// 🆕 백엔드 모델과 일치하는 인터페이스
-export interface PlatformMarginRateInfo {
-    smartstore: number;
-    coupang: number;
-    auction: number;
-    gmarket: number;
-    elevenst: number;
-    openmarket: number;
-}
 
-export interface CalculatedItemInfo {
-    ExpectedMargin: number;
-    ExpectedMarginRate: number;
-    selling_price: number;
-}
 
-// 🆕 백엔드 모델과 일치하는 인터페이스로 수정
-export interface CalculatedProduct {
-    originGoodsCode: string;
-    basePrice: number;
-    originalPrice: number;
-    exchangeRate: number;
-    additionalMargin: number;
-    marginList: Record<string, CalculatedItemInfo>;
-}
 
 /**
  * 마진을 계산합니다.
@@ -45,7 +27,7 @@ export function calculatePlatformMargins(
     additionalMargin: number,
     internationalShippingFee: number = 0,
     platformMarginRates: PlatformMarginRateInfo
-): CalculatedProduct {
+): CalculatedProductData {
     if (originalPrice <= 0) {
         throw new Error('원본 가격이 0 이하일 수 없습니다.');
     }
@@ -54,30 +36,32 @@ export function calculatePlatformMargins(
     const costInKRW = originalPrice * exchangeRate;
     const basePrice = costInKRW * (1 + baseMarginRate / 100) + additionalMargin + internationalShippingFee;
 
-    // 플랫폼별 마진 계산
+    // Record<string, CalculatedItemInfo> 타입으로 변경
     const marginList: Record<string, CalculatedItemInfo> = {};
 
     // 스마트스토어 마진 계산 (기본 공식)
-    const smartstoreExpectedMargin = basePrice - costInKRW - internationalShippingFee;
-    const smartstoreExpectedMarginRate = basePrice > 0 ? (smartstoreExpectedMargin / basePrice) * 100 : 0;
-    
+    const expectedMargin = basePrice - costInKRW - internationalShippingFee;
+    const expectedMarginRate = basePrice > 0 ? (expectedMargin / basePrice) * 100 : 0;
+
+    // 각 플랫폼별로 CalculatedItemInfo 객체 생성
     marginList.smartstore = {
-        ExpectedMargin: Math.max(0, Math.round(smartstoreExpectedMargin * 100) / 100),
-        ExpectedMarginRate: Math.max(0, Math.round(smartstoreExpectedMarginRate * 100) / 100),
+        ExpectedMargin: Math.max(0, Math.round(expectedMargin * 100) / 100),
+        ExpectedMarginRate: Math.max(0, Math.round(expectedMarginRate * 100) / 100),
         selling_price: basePrice
     };
 
     // 각 플랫폼별 마진 계산
     Object.entries(platformMarginRates).forEach(([platform, marginRate]) => {
         if (platform === 'smartstore') return; // 이미 계산됨
-        
+
         // 플랫폼별 판매가: 원가×환율×(1+플랫폼 마진율)+추가마진+국제운송료
         const platformPrice = costInKRW * (1 + marginRate / 100) + additionalMargin + internationalShippingFee;
-        
+
         // 플랫폼별 마진: 플랫폼 판매가 - (원가 × 환율)
         const platformExpectedMargin = platformPrice - costInKRW - internationalShippingFee;
         const platformExpectedMarginRate = platformPrice > 0 ? (platformExpectedMargin / platformPrice) * 100 : 0;
 
+        // 각 플랫폼별로 CalculatedItemInfo 객체 생성
         marginList[platform] = {
             ExpectedMargin: Math.max(0, Math.round(platformExpectedMargin * 100) / 100),
             ExpectedMarginRate: Math.max(0, Math.round(platformExpectedMarginRate * 100) / 100),
@@ -87,10 +71,8 @@ export function calculatePlatformMargins(
 
     return {
         originGoodsCode,
-        basePrice,
         originalPrice,
         exchangeRate,
-        additionalMargin,
         marginList
     };
 }
@@ -111,7 +93,7 @@ export function calculateAllProductsMargins(
     additionalMargin: number = 0,
     internationalShippingFee: number = 0,
     platformMarginRates: PlatformMarginRateInfo
-): CalculatedProduct[] {
+): CalculatedProductData[] {
     return products.map(product =>
         calculatePlatformMargins(
             product.originGoodsCode,

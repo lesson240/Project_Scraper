@@ -5,17 +5,20 @@ import ExchangeRateSection from './sections/ExchangeRateSection';
 import FormulaSection from './sections/FormulaSection';
 import MarginListSection from './sections/MarginListSection';
 import PriceSettingModalFooter from './sections/PriceSettingModalFooter';
-import { calculateAllProductsMargins } from '@/utils/priceCalculation';
 import '@/styles/productUpload/modals/PriceSettingModal.css';
 import { ValidationError } from '@/exceptions/PriceSettingExceptions';
 
-import type { PriceSettingModalUIProps, SaveData } from '@/types/priceSetting.types';
-import type { CalculatedProduct, PlatformMarginRateInfo } from '@/utils/priceCalculation';
+import type {
+    PriceSettingModalUIProps,
+    SaveData,
+    CalculatedProductData,
+    PlatformMarginRateInfo
+} from '@/types/priceSetting.types';
 
 export default function PriceSettingModal({
     isOpen, onClose, selectedProducts,
     exchangeRates, calculatedPrices, isCalculated, tariffPeriod, isLoading, error,
-    formulaSettings, platformMargins,
+    sellingPriceFormulaInfo, platformMargins,
     isExchangeRateExpanded, isFormulaExpanded,
     onFormulaChange, onPlatformMarginChange,
     onCalculateMargin, onSave, onReset,
@@ -25,47 +28,47 @@ export default function PriceSettingModal({
 }: PriceSettingModalUIProps) {
 
     // 계산된 상품 데이터를 상태로 관리
-    const [calculatedProducts, setCalculatedProducts] = React.useState<CalculatedProduct[]>([]);
+    // const [calculatedProducts, setCalculatedProducts] = React.useState<CalculatedProductData[]>([]);
 
     // 공식 설정이나 상품 데이터가 변경될 때마다 재계산
-    React.useEffect(() => {
-        if (isCalculated && calculatedPrices.length > 0) {
-            console.log('🔄 마진 재계산 시작:', {
-                baseMarginRate: formulaSettings.baseMarginRate,
-                additionalMargin: formulaSettings.additionalMargin,
-                internationalShippingFee: formulaSettings.internationalShippingFee,
-                productsCount: calculatedPrices.length
-            });
+    // React.useEffect(() => {
+    //     if (isCalculated && calculatedPrices.length > 0) {
+    //         console.log('🔄 마진 재계산 시작:', {
+    //             baseMarginRate: sellingPriceFormulaInfo.baseMarginRate,
+    //             additionalMargin: sellingPriceFormulaInfo.additionalMargin,
+    //             internationalShippingFee: sellingPriceFormulaInfo.internationalShippingFee,
+    //             productsCount: calculatedPrices.length
+    //         });
 
-            // 🆕 PlatformMarginRateInfo로 변환
-            const platformMarginRates: PlatformMarginRateInfo = {
-                smartstore: platformMargins.smartstore.ExpectedMarginRate,
-                coupang: platformMargins.coupang.ExpectedMarginRate,
-                auction: platformMargins.auction.ExpectedMarginRate,
-                gmarket: platformMargins.gmarket.ExpectedMarginRate,
-                elevenst: platformMargins.elevenst.ExpectedMarginRate,
-                openmarket: platformMargins.openmarket.ExpectedMarginRate
-            };
+    //         // 🆕 PlatformMarginRateInfo로 변환
+    //         const platformMarginRates: PlatformMarginRateInfo = {
+    //             smartstore: platformMargins.smartstore.ExpectedMarginRate,
+    //             coupang: platformMargins.coupang.ExpectedMarginRate,
+    //             auction: platformMargins.auction.ExpectedMarginRate,
+    //             gmarket: platformMargins.gmarket.ExpectedMarginRate,
+    //             elevenst: platformMargins.elevenst.ExpectedMarginRate,
+    //             openmarket: platformMargins.openmarket.ExpectedMarginRate
+    //         };
 
-            const transformedCalculatedProducts: CalculatedProduct[] = calculateAllProductsMargins(
-                calculatedPrices.map(price => ({
-                    originGoodsCode: price.originGoodsCode,
-                    originalPrice: price.originalPrice,
-                    exchangeRate: price.exchangeRate || 1,
-                    baseMarginRate: formulaSettings.baseMarginRate,
-                    additionalMargin: formulaSettings.additionalMargin,
-                    internationalShippingFee: formulaSettings.internationalShippingFee
-                })),
-                formulaSettings.baseMarginRate,
-                formulaSettings.additionalMargin,
-                formulaSettings.internationalShippingFee,
-                platformMarginRates
-            );
+    //         const transformedCalculatedProducts: CalculatedProductData[] = calculateAllProductsMargins(
+    //             calculatedPrices.map(price => ({
+    //                 originGoodsCode: price.originGoodsCode,
+    //                 originalPrice: price.originalPrice,
+    //                 exchangeRate: price.exchangeRate || 1,
+    //                 baseMarginRate: sellingPriceFormulaInfo.baseMarginRate,
+    //                 additionalMargin: sellingPriceFormulaInfo.additionalMargin,
+    //                 internationalShippingFee: sellingPriceFormulaInfo.internationalShippingFee
+    //             })),
+    //             sellingPriceFormulaInfo.baseMarginRate,
+    //             sellingPriceFormulaInfo.additionalMargin,
+    //             sellingPriceFormulaInfo.internationalShippingFee,
+    //             platformMarginRates
+    //         );
 
-            console.log('✅ 계산 완료:', transformedCalculatedProducts);
-            setCalculatedProducts(transformedCalculatedProducts);
-        }
-    }, [isCalculated, calculatedPrices, formulaSettings.baseMarginRate, formulaSettings.additionalMargin, formulaSettings.internationalShippingFee, platformMargins]);
+    //         console.log('✅ 계산 완료:', transformedCalculatedProducts);
+    //         setCalculatedProducts(transformedCalculatedProducts);
+    //     }
+    // }, [isCalculated, calculatedPrices, sellingPriceFormulaInfo.baseMarginRate, sellingPriceFormulaInfo.additionalMargin, sellingPriceFormulaInfo.internationalShippingFee, platformMargins]);
 
     const handleSave = (saveData: SaveData): void => {
         try {
@@ -74,20 +77,21 @@ export default function PriceSettingModal({
                 throw new ValidationError('환율 정보가 없습니다.', 'exchangeRates', saveData.exchangeRates);
             }
 
-            if (!saveData.calculatedProducts || saveData.calculatedProducts.length === 0) {
-                throw new ValidationError('계산된 상품 정보가 없습니다.', 'calculatedProducts', saveData.calculatedProducts);
+            if (!saveData.marginListByItems || !saveData.marginListByItems.items) {
+                throw new ValidationError('계산된 상품 정보가 없습니다.', 'marginListByItems', saveData.marginListByItems);
             }
 
-            if (!saveData.originGoodsCode) {
-                throw new ValidationError('상품 코드가 없습니다.', 'originGoodsCode', saveData.originGoodsCode);
+            if (!saveData.platformMarginRateInfo) {
+                throw new ValidationError('플랫폼 마진 정보가 없습니다.', 'platformMarginRateInfo', saveData.platformMarginRateInfo);
             }
 
-            const updatedSaveData: SaveData = {
-                ...saveData,
-                calculatedProducts: calculatedProducts
-            };
+            // const updatedSaveData: SaveData = {
+            //     ...saveData,
+            //     calculatedProducts: calculatedProducts
+            // };
 
-            onSave(updatedSaveData);
+            // onSave(updatedSaveData);
+            onSave(saveData);
 
         } catch (error) {
             if (error instanceof ValidationError) {
@@ -147,7 +151,7 @@ export default function PriceSettingModal({
 
                     {isFormulaExpanded && (
                         <FormulaSection
-                            formulaSettings={formulaSettings}
+                            sellingPriceFormulaInfo={sellingPriceFormulaInfo}
                             platformMargins={platformMargins}
                             onFormulaChange={onFormulaChange}
                             onPlatformMarginChange={onPlatformMarginChange}
@@ -183,13 +187,27 @@ export default function PriceSettingModal({
                     onCalculateMargin={onCalculateMargin}
                     originGoodsCode={selectedProducts[0]?.originGoodsCode || ''}
                     isCalculated={isCalculated}
-                    exchangeRates={exchangeRates.map(rate => ({
-                        currency: rate.currencyCode,
-                        value: rate.appliedRate
+                    exchangeRatesInfo={exchangeRates}
+                    sellingPriceFormulaInfo={sellingPriceFormulaInfo}
+                    platformMarginRateInfo={{
+                        smartstore: platformMargins.smartstore.ExpectedMarginRate,
+                        coupang: platformMargins.coupang.ExpectedMarginRate,
+                        auction: platformMargins.auction.ExpectedMarginRate,
+                        gmarket: platformMargins.gmarket.ExpectedMarginRate,
+                        elevenst: platformMargins.elevenst.ExpectedMarginRate,
+                        openmarket: platformMargins.openmarket.ExpectedMarginRate
+                    }}
+                    calculatedProductData={calculatedPrices}
+                    selectedProducts={selectedProducts.map(product => ({  // ✅ 타입 변환
+                        originGoodsCode: product.originGoodsCode,
+                        originalPrice: typeof product.originalPrice === 'string'
+                            ? parseFloat(product.originalPrice)
+                            : product.originalPrice,
+                        exchangeRate: 1, // 기본값
+                        baseMarginRate: sellingPriceFormulaInfo.baseMarginRate,
+                        additionalMargin: sellingPriceFormulaInfo.additionalMargin,
+                        internationalShippingFee: sellingPriceFormulaInfo.internationalShippingFee
                     }))}
-                    formulaSettings={formulaSettings}
-                    platformMargins={platformMargins}
-                    calculatedProducts={calculatedPrices}
                 />
             </ModalFooter>
         </ModalBase>

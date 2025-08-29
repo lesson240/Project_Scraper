@@ -60,7 +60,7 @@ class PlatformMargins(BaseModel):
     auction: CalculatedItemInfo = Field(..., description="옥션 마진 정보")
     gmarket: CalculatedItemInfo = Field(..., description="지마켓 마진 정보")
     elevenst: CalculatedItemInfo = Field(..., description="11번가 마진 정보")
-    openmarket: CalculatedItemInfo = Field(..., description="오픈마켓 마진 정보")
+    openmarket: CalculatedItemInfo = Field(None, description="오픈마켓 마진 정보")
 
 # 🆕 6. 전체 마진 목록을 originGoodsCode 기준으로 Dict화
 class MarginListByItems(BaseModel):

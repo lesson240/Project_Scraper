@@ -5,25 +5,23 @@ from motor.motor_asyncio import AsyncIOMotorClient
 import logging
 from app.services.service_mongodb import mongodb_service
 from app.config.mongodb import MONGO_DB_NAME_SETTINGS
-from app.models.model_exchange_rate import PriceSettingExchangeRate, PriceSettingProductUpdate
+from app.models.pydantics.model_pydantic_price_setting import ExchangeRateInfo
+from app.models.odmantics.model_odmantic_price_setting import (
+    BasePriceSettingODM, 
+    ModifiedGoodsDetailODM
+)
 from app.models import (
-    BasePriceSettingDocument,
     PriceSettingRequest,
     PriceSettingResponse,
     ExchangeRateInfo,
-    SellingPriceFormulaInfo,
-    PlatformMarginRateInfo,
-    PlatformMargins,
-    MarginListByItems
+    BasePriceSettingODM,
 )
 from app.exceptions import (
     ExchangeRateError,
-    ProductUpdateError,
     DatabaseError,
     ValidationError,
     ModelValidationError,
     DataIntegrityError,
-    DocumentCreationError,
     ExchangeRateValidationError
 )
 
@@ -41,50 +39,57 @@ class PriceSettingService:
         self.setting_db = db[MONGO_DB_NAME_SETTINGS]
         self.scrapmarket_db = db["scrapmarket"]
     
-    async def update_modified_goods_detail(self, origin_goods_code: str) -> bool:
+    async def update_modified_goods_detail(self, origin_goods_code: str, request_data: PriceSettingRequest) -> bool:
         """ModifiedGoodsDetail 컬렉션을 업데이트합니다."""
         try:
             if not origin_goods_code:
                 raise ValidationError("상품 코드가 비어있습니다")
             
             # base_price_setting 컬렉션에서 데이터 조회
-            base_price_collection = self.setting_db.base_price_setting
+            # base_price_collection = self.setting_db.base_price_setting
             
-            base_data = await base_price_collection.find_one(
-                {"originGoodsCode": origin_goods_code}
-            )
-            
-            if not base_data:
-                return False
+            # base_data = await base_price_collection.find_one(
+            #     {"_id": "base_price_setting"}  # 고정된 ID로 조회
+            # )
+
+            # if not base_data:
+            #     print(f"⚠️ base_price_setting 데이터를 찾을 수 없습니다")
+            #     return False
             
             # ModifiedGoodsDetail 컬렉션에서 originGoodsCode 기준으로 검색
             modified_goods_collection = self.scrapmarket_db.ModifiedGoodsDetail
             
             search_result = await modified_goods_collection.find_one(
-                {"originGoodsCode": origin_goods_code}
+                {"origin_goods_code": origin_goods_code}
             )
             
             if not search_result:
+                print(f"⚠️ ModifiedGoodsDetail에서 상품을 찾을 수 없습니다: {origin_goods_code}")
                 return False
             
             # 업데이트할 데이터 구성 (새로운 모델 구조에 맞게)
-            update_data = {
-                "exchangeRateInfo": base_data.get('exchangeRateInfo'),
-                "sellingPriceFormulaInfo": base_data.get('sellingPriceFormulaInfo'),
-                "platformMarginRateInfo": base_data.get('platformMarginRateInfo'),
-                "platformMargins": base_data.get('platformMargins'),
-                "updatedAt": datetime.now(timezone.utc)
-            }
-            
+            update_doc = ModifiedGoodsDetailODM(
+                exchangeRateInfo=[rate.dict() for rate in request_data.exchangeRatesInfo],  # 리스트를 딕셔너리로 변환
+                sellingPriceFormulaInfo=request_data.sellingPriceFormulaInfo.dict(),  # Pydantic 모델을 딕셔너리로 변환
+                platformMarginRateInfo=request_data.platformMarginRateInfo.dict(),  # Pydantic 모델을 딕셔너리로 변환
+                marginListByItems=request_data.marginListByItems.items[origin_goods_code].dict(),  # Pydantic 모델을 딕셔너리로 변환
+                updatedAt=datetime.now(timezone.utc)
+            )
+            # ODMantic 모델을 딕셔너리로 변환
+            update_data = update_doc.dict()   
+                         
             # None 값이 아닌 필드만 포함
             update_data = {k: v for k, v in update_data.items() if v is not None}
-            
+
+            print(f"🔍 ModifiedGoodsDetail 업데이트 데이터: {origin_goods_code}")
+            print(f"📊 업데이트할 필드: {list(update_data.keys())}")
+
             # ModifiedGoodsDetail 컬렉션 업데이트
             result = await modified_goods_collection.update_one(
-                {"originGoodsCode": origin_goods_code},
+                {"origin_goods_code": origin_goods_code},
                 {"$set": update_data}
             )
-            
+            print(f"✅ ModifiedGoodsDetail 업데이트 완료: {origin_goods_code}, 수정된 문서 수: {result.modified_count}")            
             return result.modified_count > 0
                 
         except Exception as e:
@@ -165,21 +170,21 @@ class PriceSettingService:
             base_price_collection = self.setting_db.base_price_setting
             
             try:
-                # BasePriceSettingDocument 모델을 사용하여 문서 생성 및 검증
-                base_doc = BasePriceSettingDocument(
-                    exchangeRateInfo=request_data.exchangeRatesInfo[0],  # 첫 번째 환율 정보 사용
+                # BasePriceSettingODM 모델을 사용하여 문서 생성 및 검증
+                base_doc = BasePriceSettingODM(
+                    exchangeRateInfo=[rate.dict() for rate in request_data.exchangeRatesInfo],
                     sellingPriceFormulaInfo=request_data.sellingPriceFormulaInfo,
                     platformMarginRateInfo=request_data.platformMarginRateInfo,
                     updatedAt=datetime.now(timezone.utc)
                 )
                 
-                # 모델 검증
-                base_doc.validate()
-                
             except Exception as validation_error:
+                # �� 디버깅: 모델 검증 실패 시 상세 정보 로깅
+                print(f"❌ BasePriceSettingODM 모델 검증 실패: {str(validation_error)}")
+                print(f"🔍 검증 실패한 데이터: exchangeRatesInfo={len(request_data.exchangeRatesInfo)}개, sellingPriceFormulaInfo={request_data.sellingPriceFormulaInfo}, platformMarginRateInfo={request_data.platformMarginRateInfo}")
                 raise ModelValidationError(
                     message="BasePriceSetting 데이터 검증 실패",
-                    model_name="BasePriceSettingDocument",
+                    model_name="BasePriceSettingODM",
                     field_errors={"validation_error": str(validation_error)}
                 )
             
@@ -194,6 +199,9 @@ class PriceSettingService:
                 )
                 
             except Exception as e:
+                # 🔍 디버깅: 데이터베이스 저장 실패 시 상세 정보 로깅
+                print(f"❌ base_price_setting 저장 실패: {str(e)}")
+                print(f"�� 저장하려던 데이터: {base_doc.dict()}")
                 raise DatabaseError(
                     message=f"BasePriceSetting 저장 중 오류 발생: {str(e)}",
                     operation="update_one",
@@ -205,7 +213,7 @@ class PriceSettingService:
             
             for origin_goods_code in request_data.marginListByItems.items.keys():
                 try:
-                    success = await self.update_modified_goods_detail(origin_goods_code)
+                    success = await self.update_modified_goods_detail(origin_goods_code, request_data)
                     if success:
                         modified_goods_updated += 1
                 except Exception as e:
@@ -221,6 +229,11 @@ class PriceSettingService:
         except (DataIntegrityError, ModelValidationError, ExchangeRateError, DatabaseError) as validation_error:
             raise validation_error
         except Exception as e:
+            # �� 디버깅: 예상치 못한 오류 시 상세 정보 로깅
+            print(f"❌ 예상치 못한 오류: {str(e)}")
+            print(f"�� 오류 타입: {type(e).__name__}")
+            import traceback
+            print(f"🔍 스택 트레이스: {traceback.format_exc()}")
             raise DatabaseError(
                 message=f"가격 설정 데이터 저장 중 예상치 못한 오류 발생: {str(e)}",
                 operation="save_price_setting_data",

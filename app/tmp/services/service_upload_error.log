@@ -1,0 +1,70 @@
+2025-08-29 22:16:59,395 - ERROR - ❌ FilterSectionInquiry 실행 실패: 'dict' object has no attribute 'origin_goods_code'
+2025-08-29 22:16:59,396 - ERROR - �� 에러 타입: AttributeError
+2025-08-29 22:16:59,397 - ERROR - 🔍 스택 트레이스: Traceback (most recent call last):
+  File "C:\Users\user\Desktop\Project_Scraper\app\services\service_upload.py", line 268, in run
+    result = await handle_fetch_inquiry(self)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\user\Desktop\Project_Scraper\app\services\query_logic.py", line 8, in handle_fetch_inquiry
+    return await query_all_goods()
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\user\Desktop\Project_Scraper\app\services\query_helpers.py", line 36, in query_all_goods
+    codes = {item.origin_goods_code for item in mg}
+             ^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'origin_goods_code'
+
+2025-08-29 22:22:14,297 - ERROR - ❌ FilterSectionInquiry 실행 실패: 'dict' object has no attribute 'origin_goods_code'
+2025-08-29 22:22:14,299 - ERROR - �� 에러 타입: AttributeError
+2025-08-29 22:22:14,300 - ERROR - 🔍 스택 트레이스: Traceback (most recent call last):
+  File "C:\Users\user\Desktop\Project_Scraper\app\services\service_upload.py", line 268, in run
+    price_info.pop("_id", None)
+             ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\user\Desktop\Project_Scraper\app\services\query_logic.py", line 8, in handle_fetch_inquiry
+    return await query_all_goods()
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\user\Desktop\Project_Scraper\app\services\query_helpers.py", line 36, in query_all_goods
+    codes = {item.origin_goods_code for item in mg}
+             ^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'origin_goods_code'
+
+2025-08-29 22:24:07,875 - ERROR - ❌ FilterSectionInquiry 실행 실패: 'dict' object has no attribute 'origin_goods_code'
+2025-08-29 22:24:07,876 - ERROR - �� 에러 타입: AttributeError
+2025-08-29 22:24:07,877 - ERROR - 🔍 스택 트레이스: Traceback (most recent call last):
+  File "C:\Users\user\Desktop\Project_Scraper\app\services\service_upload.py", line 235, in run
+    result = await handle_fetch_inquiry(self)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\user\Desktop\Project_Scraper\app\services\query_logic.py", line 8, in handle_fetch_inquiry
+    return await query_all_goods()
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\user\Desktop\Project_Scraper\app\services\query_helpers.py", line 36, in query_all_goods
+    from app.services.service_upload import mongodb_service
+         ^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'origin_goods_code'
+
+2025-08-29 22:24:11,370 - ERROR - ❌ FilterSectionInquiry 실행 실패: 'dict' object has no attribute 'origin_goods_code'
+2025-08-29 22:24:11,370 - ERROR - �� 에러 타입: AttributeError
+2025-08-29 22:24:11,371 - ERROR - 🔍 스택 트레이스: Traceback (most recent call last):
+  File "C:\Users\user\Desktop\Project_Scraper\app\services\service_upload.py", line 235, in run
+    result = await handle_fetch_inquiry(self)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\user\Desktop\Project_Scraper\app\services\query_logic.py", line 8, in handle_fetch_inquiry
+    return await query_all_goods()
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\user\Desktop\Project_Scraper\app\services\query_helpers.py", line 36, in query_all_goods
+    from app.services.service_upload import mongodb_service
+         ^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'origin_goods_code'
+
+2025-08-29 22:26:22,589 - ERROR - ❌ FilterSectionInquiry 실행 실패: 'dict' object has no attribute 'origin_goods_code'
+2025-08-29 22:26:22,589 - ERROR - �� 에러 타입: AttributeError
+2025-08-29 22:26:22,592 - ERROR - 🔍 스택 트레이스: Traceback (most recent call last):
+  File "C:\Users\user\Desktop\Project_Scraper\app\services\service_upload.py", line 235, in run
+    result = await handle_fetch_inquiry(self)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\user\Desktop\Project_Scraper\app\services\query_logic.py", line 8, in handle_fetch_inquiry
+    return await query_all_goods()
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\user\Desktop\Project_Scraper\app\services\query_helpers.py", line 36, in query_all_goods
+    extra_filter["origin_goods_code"] = {"$nin": list(codes)}
+         ^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'origin_goods_code'
+

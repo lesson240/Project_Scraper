@@ -5,20 +5,18 @@ import { useExchangeRateManager } from '@/hooks/useExchangeRateManager';
 import type {
     PriceSettingModalUIProps,
     SaveData,
-    Product,
-    ExchangeRateData,
     CalculatedProductData,
-    FormulaSettings,
-    PriceSettingRequest,
-    PlatformMarginRates
+    SellingPriceFormulaInfo,
+    PlatformMarginRateInfo,
+    CalculatedItemInfo,
+    PlatformMargins
 } from '@/types/priceSetting.types';
-import type { PlatformMargins } from '@/types/priceSetting.types';
 import { priceSettingApi } from '@/apis/priceSettingApi';
-import { ValidationError, APIError, NetworkError } from '@/exceptions/PriceSettingExceptions';
+import { ValidationError } from '@/exceptions/PriceSettingExceptions';
 import { calculateAllProductsMargins } from '@/utils/priceCalculation';
 
 // 기본값 상수 정의
-const DEFAULT_FORMULA_SETTINGS: FormulaSettings = {
+const DEFAULT_FORMULA_SETTINGS: SellingPriceFormulaInfo = {
     freeShipping: false,
     optimizeShippingFee: true,
     baseMarginRate: 15,
@@ -29,59 +27,37 @@ const DEFAULT_FORMULA_SETTINGS: FormulaSettings = {
     internationalShippingFee: 4000
 };
 
-const DEFAULT_PLATFORM_MARGINS: PlatformMargins = {
-    smartstore: {
-        ExpectedMargin: 0,
-        ExpectedMarginRate: 35,
-        selling_price: 0
-    },
-    coupang: {
-        ExpectedMargin: 0,
-        ExpectedMarginRate: 15,
-        selling_price: 0
-    },
-    auction: {
-        ExpectedMargin: 0,
-        ExpectedMarginRate: 15,
-        selling_price: 0
-    },
-    gmarket: {
-        ExpectedMargin: 0,
-        ExpectedMarginRate: 15,
-        selling_price: 0
-    },
-    elevenst: {
-        ExpectedMargin: 0,
-        ExpectedMarginRate: 15,
-        selling_price: 0
-    },
-    openmarket: {
-        ExpectedMargin: 0,
-        ExpectedMarginRate: 15,
-        selling_price: 0
-    }
+const DEFAULT_PLATFORM_MARGIN_RATE: PlatformMarginRateInfo = {
+    smartstore: 35,
+    coupang: 15,
+    auction: 15,
+    gmarket: 15,
+    elevenst: 15,
+    openmarket: 15
 };
 
-export default function PriceSettingModalContainer(props: PriceSettingModalUIProps) {
-    const [formulaSettings, setFormulaSettings] = useState<FormulaSettings>(DEFAULT_FORMULA_SETTINGS);
-    const [platformMargins, setPlatformMargins] = useState<PlatformMargins>(DEFAULT_PLATFORM_MARGINS);
+type ContainerProps = Pick<PriceSettingModalUIProps, 'isOpen' | 'onClose' | 'selectedProducts' | 'onSave'>;
+
+export default function PriceSettingModalContainer(props: ContainerProps) {
+    const [formulaSettings, setFormulaSettings] = useState<SellingPriceFormulaInfo>(DEFAULT_FORMULA_SETTINGS);
+    const [platformMarginRates, setPlatformMarginRates] = useState<PlatformMarginRateInfo>(DEFAULT_PLATFORM_MARGIN_RATE);
     const [isExchangeRateExpanded, setIsExchangeRateExpanded] = useState(false);
     const [isFormulaExpanded, setIsFormulaExpanded] = useState(true);
     const [isCalculated, setIsCalculated] = useState(false);
     const [calculatedPrices, setCalculatedPrices] = useState<CalculatedProductData[]>([]);
     const [isLoadingSavedData, setIsLoadingSavedData] = useState(false);
 
-    const { 
-        exchangeRates, 
-        isLoading: ratesLoading, 
-        tariffPeriod, 
-        error, 
-        updateAppliedRate, 
-        fetchFrontendExchangeRates 
+    const {
+        exchangeRates,
+        isLoading: ratesLoading,
+        tariffPeriod,
+        error,
+        updateAppliedRate,
+        fetchFrontendExchangeRates
     } = useExchangeRateManager();
 
     useEffect(() => {
-        if (props.isOpen && props.selectedProducts.length > 0) {
+        if (props.isOpen && props.selectedProducts && props.selectedProducts.length > 0) {
             setIsCalculated(false);
             // 환율 데이터 자동 로딩
             fetchFrontendExchangeRates();
@@ -90,11 +66,15 @@ export default function PriceSettingModalContainer(props: PriceSettingModalUIPro
     }, [props.isOpen, props.selectedProducts]);
 
     const loadSavedPriceSettingData = async (): Promise<void> => {
-        if (props.selectedProducts.length === 0) return;
+        if (!props.selectedProducts || props.selectedProducts.length === 0) {
+            console.warn('선택된 상품이 없어서 저장된 데이터를 로드할 수 없습니다.');
+            return;
+        }
 
         const originGoodsCode = props.selectedProducts[0]?.originGoodsCode;
         if (!originGoodsCode) {
-            throw new ValidationError('상품 코드가 없습니다.', 'originGoodsCode', originGoodsCode);
+            console.warn('상품 코드가 없어서 저장된 데이터를 로드할 수 없습니다.');
+            return;
         }
 
         try {
@@ -130,16 +110,16 @@ export default function PriceSettingModalContainer(props: PriceSettingModalUIPro
                     }));
                 }
 
-                // 플랫폼 마진 복원
+                // 플랫폼 마진율율 복원
                 if (savedData.platformMarginRateInfo) {
                     const marginInfo = savedData.platformMarginRateInfo;
-                    setPlatformMargins(prev => ({
-                        smartstore: { ...prev.smartstore, ExpectedMarginRate: marginInfo.smartstore },
-                        coupang: { ...prev.coupang, ExpectedMarginRate: marginInfo.coupang },
-                        auction: { ...prev.auction, ExpectedMarginRate: marginInfo.auction },
-                        gmarket: { ...prev.gmarket, ExpectedMarginRate: marginInfo.gmarket },
-                        elevenst: { ...prev.elevenst, ExpectedMarginRate: marginInfo.elevenst },
-                        openmarket: { ...prev.openmarket, ExpectedMarginRate: marginInfo.openmarket }
+                    setPlatformMarginRates(prev => ({
+                        smartstore: marginInfo.smartstore,
+                        coupang: marginInfo.coupang,
+                        auction: marginInfo.auction,
+                        gmarket: marginInfo.gmarket,
+                        elevenst: marginInfo.elevenst,
+                        openmarket: marginInfo.openmarket
                     }));
                 }
             }
@@ -152,26 +132,26 @@ export default function PriceSettingModalContainer(props: PriceSettingModalUIPro
         }
     };
 
-    const calculateBasePrice = (product: Product): number => {
-        const originalPrice = typeof product.originalPrice === 'string' 
-            ? parseFloat(product.originalPrice) 
-            : product.originalPrice;
-        
-        if (isNaN(originalPrice) || originalPrice <= 0) {
-            throw new ValidationError('유효하지 않은 원본 가격입니다.', 'originalPrice', originalPrice);
-        }
+    // const calculateBasePrice = (product: Product): number => {
+    //     const originalPrice = typeof product.originalPrice === 'string'
+    //         ? parseFloat(product.originalPrice)
+    //         : product.originalPrice;
 
-        // 기본 가격 계산: 원본 가격 × (1 + 기본 마진율)
-        return originalPrice * (1 + formulaSettings.baseMarginRate / 100);
-    };
+    //     if (isNaN(originalPrice) || originalPrice <= 0) {
+    //         throw new ValidationError('유효하지 않은 원본 가격입니다.', 'originalPrice', originalPrice);
+    //     }
+
+    //     // 기본 가격 계산: 원본 가격 × (1 + 기본 마진율)
+    //     return originalPrice * (1 + formulaSettings.baseMarginRate / 100);
+    // };
 
     const handleCalculateMargin = async (): Promise<void> => {
         if (import.meta.env.DEV) {
-            console.log('🚀 마진 계산 시작...');
-            console.log('📊 선택된 상품 수:', props.selectedProducts.length);
-            console.log('💱 환율 데이터 수:', exchangeRates.length);
-            console.log('⚙️ 공식 설정:', formulaSettings);
-            console.log('💰 플랫폼 마진:', platformMargins);
+            // console.log('🚀 마진 계산 시작...');
+            // console.log('📊 선택된 상품 수:', props.selectedProducts.length);
+            // console.log('💱 환율 데이터 수:', exchangeRates.length);
+            // console.log('⚙️ 공식 설정:', formulaSettings);
+            // console.log('💰 플랫폼 기본 마진율:', platformMarginRates);
         }
 
         if (props.selectedProducts.length === 0) {
@@ -191,22 +171,12 @@ export default function PriceSettingModalContainer(props: PriceSettingModalUIPro
         try {
             setIsCalculated(false);
 
-            // 🆕 PlatformMarginRateInfo로 변환
-            const platformMarginRates = {
-                smartstore: platformMargins.smartstore.ExpectedMarginRate,
-                coupang: platformMargins.coupang.ExpectedMarginRate,
-                auction: platformMargins.auction.ExpectedMarginRate,
-                gmarket: platformMargins.gmarket.ExpectedMarginRate,
-                elevenst: platformMargins.elevenst.ExpectedMarginRate,
-                openmarket: platformMargins.openmarket.ExpectedMarginRate
-            };
-
             // priceCalculation.ts의 함수 사용
             const newCalculatedPrices = calculateAllProductsMargins(
                 props.selectedProducts.map(product => ({
                     originGoodsCode: product.originGoodsCode,
-                    originalPrice: typeof product.originalPrice === 'string' 
-                        ? parseFloat(product.originalPrice) 
+                    originalPrice: typeof product.originalPrice === 'string'
+                        ? parseFloat(product.originalPrice)
                         : product.originalPrice,
                     exchangeRate: 1, // 기본값, 실제로는 환율 데이터에서 가져와야 함
                     baseMarginRate: formulaSettings.baseMarginRate,
@@ -218,17 +188,16 @@ export default function PriceSettingModalContainer(props: PriceSettingModalUIPro
                 formulaSettings.internationalShippingFee,
                 platformMarginRates
             );
-
-            if (import.meta.env.DEV) {
-                console.log('📋 최종 계산된 가격 목록:', newCalculatedPrices);
-            }
+            // if (import.meta.env.DEV) {
+            //     console.log('📋 최종 계산된 가격 목록:', newCalculatedPrices);
+            // }
 
             setCalculatedPrices(newCalculatedPrices);
             setIsCalculated(true);
 
-            if (import.meta.env.DEV) {
-                console.log('✅ 마진 계산 완료:', newCalculatedPrices.length, '개 상품');
-            }
+            // if (import.meta.env.DEV) {
+            //     console.log('✅ 마진 계산 완료:', newCalculatedPrices.length, '개 상품');
+            // }
         } catch (error) {
             if (import.meta.env.DEV) {
                 console.error('❌ 마진 계산 실패:', error);
@@ -237,44 +206,22 @@ export default function PriceSettingModalContainer(props: PriceSettingModalUIPro
         }
     };
 
-    const handleSave = async (): Promise<void> => {
+    const handleSave = async (saveData: SaveData): Promise<void> => {
+
         if (!isCalculated || calculatedPrices.length === 0) {
             throw new ValidationError('계산된 데이터가 없습니다. 먼저 마진을 계산해주세요.', 'calculatedPrices', calculatedPrices);
         }
 
-        const originGoodsCode = props.selectedProducts[0]?.originGoodsCode;
+        const originGoodsCode = calculatedPrices[0]?.originGoodsCode;
+        if (import.meta.env.DEV) {
+            console.log('🎯 저장할 상품 코드:', originGoodsCode);
+        }
+
         if (!originGoodsCode) {
-            throw new ValidationError('상품 코드가 없습니다.', 'originGoodsCode', originGoodsCode);
+            throw new ValidationError('계산된 상품 데이터에서 상품 코드를 찾을 수 없습니다.', 'originGoodsCode', originGoodsCode);
         }
 
         try {
-            // 🆕 PlatformMargins → PlatformMarginRates 변환
-            const platformMarginRates: PlatformMarginRates = {
-                smartstore: platformMargins.smartstore.ExpectedMarginRate,
-                coupang: platformMargins.coupang.ExpectedMarginRate,
-                auction: platformMargins.auction.ExpectedMarginRate,
-                gmarket: platformMargins.gmarket.ExpectedMarginRate,
-                elevenst: platformMargins.elevenst.ExpectedMarginRate,
-                openmarket: platformMargins.openmarket.ExpectedMarginRate
-            };
-
-            const saveData: SaveData = {
-                exchangeRates: exchangeRates.map(rate => ({
-                    currency: rate.currencyCode,
-                    value: rate.appliedRate
-                })),
-                formulaSettings,
-                platformMargins: platformMarginRates,
-                calculatedProducts: calculatedPrices.map(price => ({
-                    originGoodsCode: price.originGoodsCode,
-                    basePrice: price.basePrice,
-                    originalPrice: price.originalPrice,
-                    exchangeRate: price.exchangeRate,
-                    marginList: price.marginList
-                })),
-                originGoodsCode
-            };
-
             await priceSettingApi.save(saveData);
             props.onSave(saveData);
 
@@ -313,7 +260,7 @@ export default function PriceSettingModalContainer(props: PriceSettingModalUIPro
 
     const handleReset = (): void => {
         setFormulaSettings(DEFAULT_FORMULA_SETTINGS);
-        setPlatformMargins(DEFAULT_PLATFORM_MARGINS);
+        setPlatformMarginRates(DEFAULT_PLATFORM_MARGIN_RATE);
         setIsCalculated(false);
         setCalculatedPrices([]);
     };
@@ -333,13 +280,30 @@ export default function PriceSettingModalContainer(props: PriceSettingModalUIPro
             error={error}
             onAppliedRateChange={updateAppliedRate}
             onSyncRates={handleSyncRates}
-            formulaSettings={formulaSettings}
-            platformMargins={platformMargins}
+            sellingPriceFormulaInfo={formulaSettings}
+            platformMargins={{
+                smartstore: { ExpectedMargin: 0, ExpectedMarginRate: platformMarginRates.smartstore, selling_price: 0 },
+                coupang: { ExpectedMargin: 0, ExpectedMarginRate: platformMarginRates.coupang, selling_price: 0 },
+                auction: { ExpectedMargin: 0, ExpectedMarginRate: platformMarginRates.auction, selling_price: 0 },
+                gmarket: { ExpectedMargin: 0, ExpectedMarginRate: platformMarginRates.gmarket, selling_price: 0 },
+                elevenst: { ExpectedMargin: 0, ExpectedMarginRate: platformMarginRates.elevenst, selling_price: 0 },
+                openmarket: { ExpectedMargin: 0, ExpectedMarginRate: platformMarginRates.openmarket, selling_price: 0 }
+            }}
             onFormulaChange={(field, value) => setFormulaSettings(prev => ({ ...prev, [field]: value }))}
             onFormulaReset={() => setFormulaSettings(DEFAULT_FORMULA_SETTINGS)}
-            onMarginChange={(platform, value) => setPlatformMargins(prev => ({ ...prev, [platform]: value }))}
-            onMarginReset={() => setPlatformMargins(DEFAULT_PLATFORM_MARGINS)}
-            onPlatformMarginChange={(platform, value) => setPlatformMargins(prev => ({ ...prev, [platform]: value }))}
+            onMarginChange={(platform, value) => {
+                setPlatformMarginRates(prev => ({
+                    ...prev,
+                    [platform]: value
+                }));
+            }}
+            onMarginReset={() => setPlatformMarginRates(DEFAULT_PLATFORM_MARGIN_RATE)}
+            onPlatformMarginChange={(platform, value) => {
+                setPlatformMarginRates(prev => ({
+                    ...prev,
+                    [platform]: value
+                }));
+            }}
             isExchangeRateExpanded={isExchangeRateExpanded}
             isFormulaExpanded={isFormulaExpanded}
             onExchangeRateToggle={handleExchangeRateToggle}

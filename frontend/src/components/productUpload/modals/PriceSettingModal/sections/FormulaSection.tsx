@@ -1,25 +1,36 @@
 // path: frontend/src/components/productUpload/modals/PriceSettingModal/sections/FormulaSection.tsx
 import React from 'react';
-import type { FormulaSectionProps, FormulaSettings } from '@/types/priceSetting.types';
-import type { PlatformMargins } from '@/utils/priceCalculation';
+import type {
+    FormulaSectionProps,
+    SellingPriceFormulaInfo,
+    PlatformMargins
+} from '@/types/priceSetting.types';
 import NumberInput from '@/components/common/NumberInput';
 import '@/styles/productUpload/modals/sections/FormulaSection.css';
 
 export default function FormulaSection({
-    formulaSettings,
+    sellingPriceFormulaInfo,
     platformMargins,
     onFormulaChange,
     onPlatformMarginChange
 }: FormulaSectionProps) {
 
-    const handleFormulaChange = (field: keyof FormulaSettings, value: any) => {
-        console.log(`공식 설정 변경: ${String(field)} =`, value);
+    const handleFormulaChange = (field: keyof SellingPriceFormulaInfo, value: any) => {
+        // console.log(`공식 설정 변경: ${String(field)} =`, value);
         onFormulaChange(field, value);
     };
 
     const handlePlatformMarginChange = (platform: keyof PlatformMargins, value: number) => {
-        console.log(`플랫폼 마진 변경: ${platform} =`, value);
+        // console.log(`플랫폼 마진 변경: ${platform} =`, value);
         onPlatformMarginChange(platform, value);
+    };
+
+    const handleBaseMarginRateChange = (value: number) => {
+        // 기본 마진율 변경
+        onFormulaChange('baseMarginRate', value);
+
+        // smartstore ExpectedMarginRate를 동일한 값으로 동기화
+        onPlatformMarginChange('smartstore', value);
     };
 
     return (
@@ -28,7 +39,7 @@ export default function FormulaSection({
                 <label className="checkbox-option">
                     <input
                         type="checkbox"
-                        checked={formulaSettings.freeShipping}
+                        checked={sellingPriceFormulaInfo.freeShipping}
                         onChange={(e) => handleFormulaChange('freeShipping', e.target.checked)}
                     />
                     무료배송
@@ -36,7 +47,7 @@ export default function FormulaSection({
                 <label className="checkbox-option">
                     <input
                         type="checkbox"
-                        checked={formulaSettings.optimizeShippingFee}
+                        checked={sellingPriceFormulaInfo.optimizeShippingFee}
                         onChange={(e) => handleFormulaChange('optimizeShippingFee', e.target.checked)}
                     />
                     오기입 배송비 최적화
@@ -54,16 +65,16 @@ export default function FormulaSection({
                         <div className="formula-inputs-container">
                             <NumberInput
                                 label="기본 마진율 (%)"
-                                value={formulaSettings.baseMarginRate}
-                                onChange={(value) => handleFormulaChange('baseMarginRate', value)}
+                                value={sellingPriceFormulaInfo.baseMarginRate}
+                                onChange={handleBaseMarginRateChange}
                                 min={0}
                                 max={100}
                                 className="formula-input"
                             />
-                            
+
                             <NumberInput
                                 label="추가 마진 (￦)"
-                                value={formulaSettings.additionalMargin}
+                                value={sellingPriceFormulaInfo.additionalMargin}
                                 onChange={(value) => handleFormulaChange('additionalMargin', value)}
                                 min={0}
                                 className="formula-input"
@@ -72,7 +83,7 @@ export default function FormulaSection({
                         <div className="formula-inputs-container">
                             <NumberInput
                                 label="기본배송비"
-                                value={formulaSettings.baseShippingFee}
+                                value={sellingPriceFormulaInfo.baseShippingFee}
                                 onChange={(value) => handleFormulaChange('baseShippingFee', value)}
                                 min={0}
                                 className="formula-input"
@@ -80,7 +91,7 @@ export default function FormulaSection({
 
                             <NumberInput
                                 label="반품배송비"
-                                value={formulaSettings.returnShippingFee}
+                                value={sellingPriceFormulaInfo.returnShippingFee}
                                 onChange={(value) => handleFormulaChange('returnShippingFee', value)}
                                 min={0}
                                 className="formula-input"
@@ -88,15 +99,15 @@ export default function FormulaSection({
 
                             <NumberInput
                                 label="교환배송비"
-                                value={formulaSettings.exchangeShippingFee}
+                                value={sellingPriceFormulaInfo.exchangeShippingFee}
                                 onChange={(value) => handleFormulaChange('exchangeShippingFee', value)}
                                 min={0}
                                 className="formula-input"
-                                
+
                             />
                             <NumberInput
                                 label="국제운송료"
-                                value={formulaSettings.internationalShippingFee}
+                                value={sellingPriceFormulaInfo.internationalShippingFee}
                                 onChange={(value) => handleFormulaChange('internationalShippingFee', value)}
                                 min={0}
                                 className="formula-input"
@@ -108,22 +119,23 @@ export default function FormulaSection({
                 <div className="platform-formula">
                     <h4>플랫폼 기본 마진율</h4>
                     <div className="formula-display">
-                    원가×환율×(1+플랫폼 기본 마진율)+추가마진+국제운송료
+                        원가×환율×(1+플랫폼 기본 마진율)+추가마진+국제운송료
                     </div>
 
                     <div className="formula-inputs-container">
                         <NumberInput
                             label="스마트스토어"
-                            value={platformMargins.smartstore}
-                            onChange={(value) => handlePlatformMarginChange('smartstore', value)}
+                            value={platformMargins.smartstore.ExpectedMarginRate}
+                            onChange={() => { }}
                             min={0}
                             max={100}
-                            className="formula-input"
+                            className="formula-input readonly"
+                            disabled={true}
                         />
 
                         <NumberInput
                             label="쿠팡"
-                            value={platformMargins.coupang}
+                            value={platformMargins.coupang.ExpectedMarginRate}
                             onChange={(value) => handlePlatformMarginChange('coupang', value)}
                             min={0}
                             max={100}
@@ -132,7 +144,7 @@ export default function FormulaSection({
 
                         <NumberInput
                             label="옥션"
-                            value={platformMargins.auction}
+                            value={platformMargins.auction.ExpectedMarginRate}
                             onChange={(value) => handlePlatformMarginChange('auction', value)}
                             min={0}
                             max={100}
@@ -141,7 +153,7 @@ export default function FormulaSection({
 
                         <NumberInput
                             label="지마켓"
-                            value={platformMargins.gmarket}
+                            value={platformMargins.gmarket.ExpectedMarginRate}
                             onChange={(value) => handlePlatformMarginChange('gmarket', value)}
                             min={0}
                             max={100}
@@ -150,7 +162,7 @@ export default function FormulaSection({
 
                         <NumberInput
                             label="11번가 글로벌"
-                            value={platformMargins.elevenst}
+                            value={platformMargins.elevenst.ExpectedMarginRate}
                             onChange={(value) => handlePlatformMarginChange('elevenst', value)}
                             min={0}
                             max={100}
