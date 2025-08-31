@@ -1,7 +1,7 @@
 // path: frontend/src/components/productUpload/modals/PriceSettingModal/sections/MarginListSection.tsx
 import React from 'react';
 import type { MarginListSectionProps } from '@/types/priceSetting.types';
-import '@/styles/productUpload/modals/sections/MarginListSection.css';
+import '@/styles/productUpload/modals/PriceSettingModal/sections/MarginListSection.css';
 
 export default function MarginListSection({
     selectedProducts,

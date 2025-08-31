@@ -1,21 +1,17 @@
-// path: frontend/src/components/productUpload/modals/PriceSettingModal/PriceSettingModal.tsx
 import React from 'react';
 import { ModalBase, ModalHeader, ModalBody, ModalFooter } from '@/components/common/Modal';
-import ExchangeRateSection from './sections/ExchangeRateSection';
-import FormulaSection from './sections/FormulaSection';
-import MarginListSection from './sections/MarginListSection';
-import PriceSettingModalFooter from './sections/PriceSettingModalFooter';
-import '@/styles/productUpload/modals/PriceSettingModal/PriceSettingModal.css';
-import { ValidationError } from '@/exceptions/PriceSettingExceptions';
-
-import type {
-    PriceSettingModalUIProps,
-    SaveData,
-    CalculatedProductData,
-    PlatformMarginRateInfo
+import ExchangeRateByItemSection from './sections/ExchangeRateByItemSection';
+import FormulaByItemSection from './sections/FormulaByItemSection';
+import MarginListByItemSection from './sections/MarginListByItemSection';
+import PriceSettingModalFooter from '../PriceSettingModal/sections/PriceSettingModalFooter';
+import type { 
+    PriceSettingModalUIProps, 
+    SaveData 
 } from '@/types/priceSetting.types';
+import { ValidationError } from '@/exceptions/PriceSettingExceptions';
+import '@/styles/productUpload/modals/PriceSettingModal/PriceSettingModal.css';
 
-export default function PriceSettingModal({
+export default function PriceSettingByItemModal({
     isOpen, onClose, selectedProducts,
     exchangeRates, calculatedPrices, isCalculated, tariffPeriod, isLoading, error,
     sellingPriceFormulaInfo, platformMargins,
@@ -41,7 +37,7 @@ export default function PriceSettingModal({
             if (!saveData.platformMarginRateInfo) {
                 throw new ValidationError('플랫폼 마진 정보가 없습니다.', 'platformMarginRateInfo', saveData.platformMarginRateInfo);
             }
-
+            
             onSave(saveData);
 
         } catch (error) {
@@ -59,7 +55,6 @@ export default function PriceSettingModal({
             <ModalHeader onClose={onClose}>
                 <div className="modal-header-content">
                     <h2>가격 설정</h2>
-                    <div className="selected-products-badge">선택된 상품: {selectedProducts.length}개</div>
                 </div>
             </ModalHeader>
 
@@ -78,13 +73,11 @@ export default function PriceSettingModal({
                     </div>
 
                     {isExchangeRateExpanded && (
-                        <ExchangeRateSection
+                        <ExchangeRateByItemSection
                             exchangeRates={exchangeRates}
-                            isLoading={isLoading}
                             tariffPeriod={tariffPeriod}
                             error={error}
                             onAppliedRateChange={onAppliedRateChange}
-                            onSyncRates={onSyncRates}
                         />
                     )}
 
@@ -101,7 +94,7 @@ export default function PriceSettingModal({
                     </div>
 
                     {isFormulaExpanded && (
-                        <FormulaSection
+                        <FormulaByItemSection
                             sellingPriceFormulaInfo={sellingPriceFormulaInfo}
                             platformMargins={platformMargins}
                             onFormulaChange={onFormulaChange}
@@ -114,7 +107,7 @@ export default function PriceSettingModal({
                         <h3>마진 목록</h3>
                     </div>
                     {/* 마진 목록 섹션 */}
-                    <MarginListSection
+                    <MarginListByItemSection
                         selectedProducts={selectedProducts}
                         calculatedPrices={calculatedPrices}
                         exchangeRates={exchangeRates}

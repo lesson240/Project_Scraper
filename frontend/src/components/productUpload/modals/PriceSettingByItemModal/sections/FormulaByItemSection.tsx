@@ -1,4 +1,4 @@
-// path: frontend/src/components/productUpload/modals/PriceSettingModal/sections/FormulaSection.tsx
+// path: frontend/src/components/productUpload/modals/PriceSettingByItemModal/sections/FormulaSection.tsx
 import React from 'react';
 import type {
     FormulaSectionProps,
@@ -8,7 +8,7 @@ import type {
 import NumberInput from '@/components/common/NumberInput';
 import '@/styles/productUpload/modals/PriceSettingModal/sections/FormulaSection.css';
 
-export default function FormulaSection({
+export default function FormulaByItemSection({
     sellingPriceFormulaInfo,
     platformMargins,
     onFormulaChange,

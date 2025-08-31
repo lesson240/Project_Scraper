@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import Tooltip from "@/components/common/Tooltip";
 import TextInputWithButton from "@/components/common/TextInputWithButton";
 import ItemActions from "./ItemActions";
+import FunctionPriceSetByItem from "./parts/FunctionPriceSetByItem";
 import { Item } from "@/types/product";
 import "@/styles/productUpload/itemRow.css";
 import defaultThumb from "@/assets/default_image.png";
@@ -44,6 +45,7 @@ export default function ItemRow({
 
   // Row 선택 상태 관리
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [isPriceModalOpen, setIsPriceModalOpen] = useState(false);
   const thumbArray = Object.values(item.thumb || {}).filter(Boolean);
 
   const handleRowClick = (e: React.MouseEvent, itemId: string) => {
@@ -61,102 +63,121 @@ export default function ItemRow({
     onSelect();
   };
 
+  const handlePriceSetting = () => {
+    setIsPriceModalOpen(true);
+  };
+
+  const handlePriceModalClose = () => {
+    setIsPriceModalOpen(false);
+  };
+
   return (
-    <tr
-      className={`table-row ${isSelected ? "selected-row" : ""}`}
-      onClick={(e) => handleRowClick(e, item.origin_goods_code || "")}
-    >
-      <td>
-        <div className="table-col-center">
-          <input
-            type="checkbox"
-            checked={isSelected}
-            onChange={onSelect}
-            onClick={(e) => e.stopPropagation()}
-          />
-        </div>
-      </td>
-      <td>
-        <div className="table-col-center">{item.market}</div>
-      </td>
-      <td>
-        <div className="table-col-left">
-          <img
-            src={item.thumb?.thumb1 || defaultThumb}
-            alt="상품 썸네일"
-            className="thumb"
-            onClick={() => {
-              const thumbs = Object.values(item.thumb || {}).filter(Boolean);
-              const originGoodsCode = item.origin_goods_code || "";
-              onThumbClick?.(thumbs.length > 0 ? thumbs : [defaultThumb], originGoodsCode);
-            }}
-          />
-          <div className="goods-details">
-            <div className="goods-title">
-              <TextInputWithButton
-                fieldName="title"
-                value={item.modified_goods_name}
-                placeholder="상품명을 입력해주세요"
-                buttonLabel="수정"
-                autoFocus={true}
-                onChange={() => { }}
-                onButtonClick={(value) => {
-                  onModifySet(item.origin_goods_code || "", "title", value);
-                }}
-              />
-            </div>
-            <div className="goods-memo">
-              <TextInputWithButton
-                fieldName="memo"
-                value={item.memo}
-                placeholder="메모를 입력해주세요"
-                buttonLabel="수정"
-                onChange={() => { }}
-                onButtonClick={(value) =>
-                  onModifySet(item.origin_goods_code || "", "memo", value)
-                }
-              />
-            </div>
-            <div className="meta">
-              상품 그룹: {item.group_name} / 원본상품코드: {item.origin_goods_code}
-              <Tooltip text="코드복사">
-                <span
-                  className="copy-icon"
-                  onClick={() => onCopy(item.origin_goods_code || "")}
-                >
-                  <CopyIcon />
-                </span>
-              </Tooltip>
-            </div>
-            <div className="meta">업로드 마켓: {item.market}</div>
+    <>
+      <tr
+        className={`table-row ${isSelected ? "selected-row" : ""}`}
+        onClick={(e) => handleRowClick(e, item.origin_goods_code || "")}
+      >
+        <td>
+          <div className="table-col-center">
+            <input
+              type="checkbox"
+              checked={isSelected}
+              onChange={onSelect}
+              onClick={(e) => e.stopPropagation()}
+            />
           </div>
-        </div>
-      </td>
-      <td>
-        <div className="table-col-left">
-          <ItemActions
-            onAttributeSet={onAttributeSet}
-            onOptionSet={onOptionSet}
-            onDetailPageSet={onDetailPageSet}
-            onUploadSet={onUploadSet}
-          />
-        </div>
-      </td>
-      <td>
-        <div className="table-col-left">
-          <div className="goods-details">
-            <div className="basic-info">상품 수집일: {item.collection_time}</div>
-            <div className="basic-info">원본 할인가 (¥): {item.goods_origin}</div>
-            <div className="basic-info">설정 상품가 (￦): {item.priceRange}</div>
-            {item.priceRequired && (
-              <div className="alert">가격 설정해 주세요</div>
-            )}
-            {item.tagRequired && (
-              <div className="alert">태그 설정해 주세요</div>
-            )}
+        </td>
+        <td>
+          <div className="table-col-center">{item.market}</div>
+        </td>
+        <td>
+          <div className="table-col-left">
+            <img
+              src={item.thumb?.thumb1 || defaultThumb}
+              alt="상품 썸네일"
+              className="thumb"
+              onClick={() => {
+                const thumbs = Object.values(item.thumb || {}).filter(Boolean);
+                const originGoodsCode = item.origin_goods_code || "";
+                onThumbClick?.(thumbs.length > 0 ? thumbs : [defaultThumb], originGoodsCode);
+              }}
+            />
+            <div className="goods-details">
+              <div className="goods-title">
+                <TextInputWithButton
+                  fieldName="title"
+                  value={item.modified_goods_name}
+                  placeholder="상품명을 입력해주세요"
+                  buttonLabel="수정"
+                  autoFocus={true}
+                  onChange={() => { }}
+                  onButtonClick={(value) => {
+                    onModifySet(item.origin_goods_code || "", "title", value);
+                  }}
+                />
+              </div>
+              <div className="goods-memo">
+                <TextInputWithButton
+                  fieldName="memo"
+                  value={item.memo}
+                  placeholder="메모를 입력해주세요"
+                  buttonLabel="수정"
+                  onChange={() => { }}
+                  onButtonClick={(value) =>
+                    onModifySet(item.origin_goods_code || "", "memo", value)
+                  }
+                />
+              </div>
+              <div className="meta">
+                상품 그룹: {item.group_name} / 원본상품코드: {item.origin_goods_code}
+                <Tooltip text="코드복사">
+                  <span
+                    className="copy-icon"
+                    onClick={() => onCopy(item.origin_goods_code || "")}
+                  >
+                    <CopyIcon />
+                  </span>
+                </Tooltip>
+              </div>
+              <div className="meta">업로드 마켓: {item.market}</div>
+            </div>
           </div>
-        </div>
-      </td>
-    </tr>
+        </td>
+        <td>
+          <div className="table-col-left">
+            <ItemActions
+              onAttributeSet={onAttributeSet}
+              onOptionSet={onOptionSet}
+              onDetailPageSet={onDetailPageSet}
+              onUploadSet={onUploadSet}
+              onPriceSetting={handlePriceSetting}
+            />
+          </div>
+        </td>
+        <td>
+          <div className="table-col-left">
+            <div className="goods-details">
+              <div className="basic-info">상품 수집일: {item.collection_time}</div>
+              <div className="basic-info">원본 할인가 (¥): {item.goods_origin}</div>
+              <div className="basic-info">설정 상품가 (￦): {item.priceRange}</div>
+              {item.priceRequired && (
+                <div className="alert">가격 설정해 주세요</div>
+              )}
+              {item.tagRequired && (
+                <div className="alert">태그 설정해 주세요</div>
+              )}
+            </div>
+          </div>
+        </td>
+      </tr>
+
+      {/* 가격 설정 모달 */}
+      <FunctionPriceSetByItem
+        isOpen={isPriceModalOpen}
+        onClose={handlePriceModalClose}
+        selectedItems={[item.origin_goods_code || ""]}
+        items={[item]}
+      />
+    </>
   );
 }

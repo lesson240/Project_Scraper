@@ -8,6 +8,7 @@ type Props = {
   onOptionSet: () => void;
   onDetailPageSet: () => void;
   onUploadSet: () => void;
+  onPriceSetting: () => void; // 가격 설정 모달 열기 함수 추가
 };
 
 export default function ItemActions({
@@ -15,11 +16,12 @@ export default function ItemActions({
   onOptionSet,
   onDetailPageSet,
   onUploadSet,
+  onPriceSetting,
 }: Props) {
   return (
     <div className="table-col button-group">
       <div className="button-row">
-        <Button variant="secondary" onClick={onAttributeSet}>
+        <Button variant="secondary" onClick={onPriceSetting}>
           가격
         </Button>
         <Button variant="secondary" onClick={onOptionSet}>

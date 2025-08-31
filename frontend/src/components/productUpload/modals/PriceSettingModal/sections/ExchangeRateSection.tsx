@@ -2,7 +2,7 @@
 import React from 'react';
 import NumberInput from '@/components/common/NumberInput';
 import type { ExchangeRateSectionProps } from '@/types/priceSetting.types';
-import '@/styles/productUpload/modals/sections/ExchangeRateSection.css';
+import '@/styles/productUpload/modals/PriceSettingModal/sections/ExchangeRateSection.css';
 
 export default function ExchangeRateSection({
     exchangeRates,
