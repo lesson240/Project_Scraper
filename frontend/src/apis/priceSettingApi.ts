@@ -182,7 +182,14 @@ export const priceSettingApi = {
     getInfo: async () => {
         try {
             const response = await priceSettingApiClient.get('/api/price-setting/load/info');
-            return response.data;
+            // 응답 구조에 따라 데이터 반환
+            if (response.data.success) {
+                return response.data.data;
+            } else if (response.data) {
+                return response.data;
+            } else {
+                return null;
+            }
 
         } catch (error) {
             if (error instanceof APIError && error.statusCode === 404) {
@@ -215,34 +222,6 @@ export const priceSettingApi = {
                 throw error;
             }
             throw new NetworkError('가격 설정 삭제 중 오류가 발생했습니다.', error as Error);
-        }
-    },
-
-    /**
-     * 저장된 가격 설정 데이터를 조회합니다.
-     * @param originGoodsCode 원본 상품 코드
-     * @returns 저장된 가격 설정 데이터
-     */
-    load: async (originGoodsCode: string): Promise<any> => {
-        try {
-            if (!originGoodsCode) {
-                throw new ValidationError('상품 코드가 없습니다.', 'originGoodsCode', originGoodsCode);
-            }
-
-            const response = await axios.get(`${API_BASE_URL}/api/price-setting/load/${originGoodsCode}`);
-
-            if (response.data.success) {
-                return response.data.data;
-            } else {
-                return null;
-            }
-
-        } catch (error) {
-            if (axios.isAxiosError(error) && error.response?.status === 404) {
-                return null;
-            }
-
-            throw new NetworkError('가격 설정 데이터 로드 중 오류가 발생했습니다.', error as Error);
         }
     }
 };

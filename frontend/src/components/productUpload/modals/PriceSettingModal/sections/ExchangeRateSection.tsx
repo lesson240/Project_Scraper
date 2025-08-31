@@ -85,9 +85,9 @@ export default function ExchangeRateSection({
                                             <NumberInput
                                                 value={appliedRate}
                                                 onChange={(value) => {
-                                                    if (import.meta.env.DEV) {
-                                                        console.log(`💱 ${currency} 환율 변경:`, value);
-                                                    }
+                                                    // if (import.meta.env.DEV) {
+                                                    //     console.log(`💱 ${currency} 환율 변경:`, value);
+                                                    // }
                                                     onAppliedRateChange(currency, value);
                                                 }}
                                                 placeholder="환율 입력"

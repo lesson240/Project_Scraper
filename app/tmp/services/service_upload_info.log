@@ -96,3 +96,9 @@ AttributeError: 'dict' object has no attribute 'origin_goods_code'
 2025-08-29 22:29:35,297 - INFO - 🚀 FilterSectionInquiry 실행 시작
 2025-08-29 22:29:35,297 - INFO - 📋 검색 조건: brand_code=None, brand_name=None, origin_goods_code=None
 2025-08-29 22:29:35,377 - INFO - ✅ FilterSectionInquiry 실행 완료 - 결과 수: 4개
+2025-08-31 12:12:54,370 - INFO - 🚀 FilterSectionInquiry 실행 시작
+2025-08-31 12:12:54,370 - INFO - 📋 검색 조건: brand_code=None, brand_name=None, origin_goods_code=None
+2025-08-31 12:12:55,135 - INFO - ✅ FilterSectionInquiry 실행 완료 - 결과 수: 4개
+2025-08-31 13:16:59,755 - INFO - 🚀 FilterSectionInquiry 실행 시작
+2025-08-31 13:16:59,756 - INFO - 📋 검색 조건: brand_code=None, brand_name=None, origin_goods_code=None
+2025-08-31 13:16:59,873 - INFO - ✅ FilterSectionInquiry 실행 완료 - 결과 수: 4개

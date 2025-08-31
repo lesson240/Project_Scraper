@@ -24,6 +24,15 @@ from app.exceptions.price_setting_exceptions import (
 
 router = APIRouter(prefix="/api/price-setting", tags=["PriceSetting"])
 
+@router.get("/health")
+async def health_check():
+    """가격 설정 서비스 상태 확인"""
+    return {
+        "status": "healthy",
+        "service": "price_setting",
+        "timestamp": datetime.utcnow().isoformat()
+    }
+
 @router.post("/save")
 async def save_price_setting(request_data: PriceSettingRequest):
     """가격 설정 데이터를 저장합니다."""
@@ -77,6 +86,43 @@ async def save_price_setting(request_data: PriceSettingRequest):
             }
         )
 
+
+
+@router.get("/load/info")
+async def load_base_price_setting_info():
+    """BasePriceSetting 컬렉션에서 공통 가격 설정 정보를 조회합니다."""
+    try:
+        # MongoDB 연결 확인
+        from app.services.service_mongodb import ensure_mongodb_connection
+        await ensure_mongodb_connection()
+        
+        # 가격 설정 서비스 인스턴스 생성
+        service = await get_price_setting_service()
+        
+        # BasePriceSetting 컬렉션에서 공통 정보 조회
+        base_info = await service.load_base_price_setting_info()
+        
+        if base_info:
+            return {
+                "success": True,
+                "data": base_info,
+                "message": "BasePriceSetting 정보를 성공적으로 조회했습니다."
+            }
+        else:
+            return {
+                "success": False,
+                "data": None,
+                "message": "저장된 BasePriceSetting 정보가 없습니다."
+            }
+            
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"BasePriceSetting 정보 조회 실패: {str(e)}"
+        )
+
+
+
 @router.get("/load/{origin_goods_code}")
 async def load_price_setting_data(origin_goods_code: str):
     """ModifiedGoodsDetail 컬렉션에서 가격 설정 데이터를 조회합니다."""
@@ -115,45 +161,3 @@ async def load_price_setting_data(origin_goods_code: str):
             status_code=500,
             detail=f"ModifiedGoodsDetail 데이터 조회 실패: {str(e)}"
         )
-
-@router.get("/load/info")
-async def load_base_price_setting_info():
-    """BasePriceSetting 컬렉션에서 공통 가격 설정 정보를 조회합니다."""
-    try:
-        # MongoDB 연결 확인
-        from app.services.service_mongodb import ensure_mongodb_connection
-        await ensure_mongodb_connection()
-        
-        # 가격 설정 서비스 인스턴스 생성
-        service = await get_price_setting_service()
-        
-        # BasePriceSetting 컬렉션에서 공통 정보 조회
-        base_info = await service.load_base_price_setting_info()
-        
-        if base_info:
-            return {
-                "success": True,
-                "data": base_info,
-                "message": "BasePriceSetting 정보를 성공적으로 조회했습니다."
-            }
-        else:
-            return {
-                "success": False,
-                "data": None,
-                "message": "저장된 BasePriceSetting 정보가 없습니다."
-            }
-            
-    except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"BasePriceSetting 정보 조회 실패: {str(e)}"
-        )
-
-@router.get("/health")
-async def health_check():
-    """가격 설정 서비스 상태 확인"""
-    return {
-        "status": "healthy",
-        "service": "price_setting",
-        "timestamp": datetime.utcnow().isoformat()
-    }

@@ -39,13 +39,14 @@ const DEFAULT_PLATFORM_MARGIN_RATE: PlatformMarginRateInfo = {
 type ContainerProps = Pick<PriceSettingModalUIProps, 'isOpen' | 'onClose' | 'selectedProducts' | 'onSave'>;
 
 export default function PriceSettingModalContainer(props: ContainerProps) {
-    const [formulaSettings, setFormulaSettings] = useState<SellingPriceFormulaInfo>(DEFAULT_FORMULA_SETTINGS);
-    const [platformMarginRates, setPlatformMarginRates] = useState<PlatformMarginRateInfo>(DEFAULT_PLATFORM_MARGIN_RATE);
+    const [formulaSettings, setFormulaSettings] = useState<SellingPriceFormulaInfo | null>(null);
+    const [platformMarginRates, setPlatformMarginRates] = useState<PlatformMarginRateInfo | null>(null);
     const [isExchangeRateExpanded, setIsExchangeRateExpanded] = useState(false);
     const [isFormulaExpanded, setIsFormulaExpanded] = useState(true);
     const [isCalculated, setIsCalculated] = useState(false);
     const [calculatedPrices, setCalculatedPrices] = useState<CalculatedProductData[]>([]);
     const [isLoadingSavedData, setIsLoadingSavedData] = useState(false);
+    const [isDataLoaded, setIsDataLoaded] = useState(false);
 
     const {
         exchangeRates,
@@ -61,6 +62,7 @@ export default function PriceSettingModalContainer(props: ContainerProps) {
             setIsCalculated(false);
             // 환율 데이터 자동 로딩
             fetchFrontendExchangeRates();
+            // MongoDB 데이터 존재 여부 확인 후 로드
             loadSavedPriceSettingData();
         }
     }, [props.isOpen, props.selectedProducts]);
@@ -71,18 +73,54 @@ export default function PriceSettingModalContainer(props: ContainerProps) {
             return;
         }
 
-        const originGoodsCode = props.selectedProducts[0]?.originGoodsCode;
-        if (!originGoodsCode) {
-            console.warn('상품 코드가 없어서 저장된 데이터를 로드할 수 없습니다.');
-            return;
-        }
-
         try {
             setIsLoadingSavedData(true);
-            const savedData = await priceSettingApi.load(originGoodsCode);
+            
+            const savedData = await priceSettingApi.getInfo();
 
-            if (savedData) {
-                // 환율 데이터 복원 (새로운 구조에 맞춰 수정)
+            // 데이터 존재 여부를 더 정확하게 검증
+            const hasFormulaData = savedData && 
+                savedData.sellingPriceFormulaInfo && 
+                typeof savedData.sellingPriceFormulaInfo === 'object';
+                
+            const hasMarginData = savedData && 
+                savedData.platformMarginRateInfo && 
+                typeof savedData.platformMarginRateInfo === 'object';
+
+            if (hasFormulaData && hasMarginData) {
+
+
+
+                // 공식 설정 복원 (새로운 구조에 맞춰 수정)
+                if (savedData.sellingPriceFormulaInfo) {
+                    const formulaInfo = savedData.sellingPriceFormulaInfo;
+                    setFormulaSettings(prev => ({
+                        ...prev,
+                        baseMarginRate: formulaInfo.baseMarginRate || prev.baseMarginRate,
+                        additionalMargin: formulaInfo.additionalMargin || prev.additionalMargin,
+                        baseShippingFee: formulaInfo.baseShippingFee || prev.baseShippingFee,
+                        returnShippingFee: formulaInfo.returnShippingFee || prev.returnShippingFee,
+                        exchangeShippingFee: formulaInfo.exchangeShippingFee || prev.exchangeShippingFee,
+                        internationalShippingFee: formulaInfo.internationalShippingFee || prev.internationalShippingFee,
+                        freeShipping: formulaInfo.freeShipping !== undefined ? formulaInfo.freeShipping : prev.freeShipping,
+                        optimizeShippingFee: formulaInfo.optimizeShippingFee !== undefined ? formulaInfo.optimizeShippingFee : prev.optimizeShippingFee
+                    }));
+                }
+
+                // 플랫폼 마진율율 복원
+                if (savedData.platformMarginRateInfo) {
+                    const marginInfo = savedData.platformMarginRateInfo;
+                    setPlatformMarginRates(prev => ({
+                        smartstore: marginInfo.smartstore || prev.smartstore,
+                        coupang: marginInfo.coupang || prev.coupang,
+                        auction: marginInfo.auction || prev.auction,
+                        gmarket: marginInfo.gmarket || prev.gmarket,
+                        elevenst: marginInfo.elevenst || prev.elevenst,
+                        openmarket: marginInfo.openmarket || prev.openmarket
+                    }));
+                }
+                
+                // 환율 데이터 복원
                 if (savedData.exchangeRateInfo) {
                     const updatedRates = exchangeRates.map(rate => {
                         if (rate.currencyCode === savedData.exchangeRateInfo.currencyCode) {
@@ -96,37 +134,32 @@ export default function PriceSettingModalContainer(props: ContainerProps) {
                     });
                 }
 
-                // 공식 설정 복원 (새로운 구조에 맞춰 수정)
-                if (savedData.sellingPriceFormulaInfo) {
-                    const formulaInfo = savedData.sellingPriceFormulaInfo;
-                    setFormulaSettings(prev => ({
-                        ...prev,
-                        baseMarginRate: formulaInfo.baseMarginRate || prev.baseMarginRate,
-                        additionalMargin: formulaInfo.additionalMargin || prev.additionalMargin,
-                        baseShippingFee: formulaInfo.baseShippingFee || prev.baseShippingFee,
-                        returnShippingFee: formulaInfo.returnShippingFee || prev.returnShippingFee,
-                        exchangeShippingFee: formulaInfo.exchangeShippingFee || prev.exchangeShippingFee,
-                        internationalShippingFee: formulaInfo.internationalShippingFee || prev.internationalShippingFee
-                    }));
-                }
 
-                // 플랫폼 마진율율 복원
-                if (savedData.platformMarginRateInfo) {
-                    const marginInfo = savedData.platformMarginRateInfo;
-                    setPlatformMarginRates(prev => ({
-                        smartstore: marginInfo.smartstore,
-                        coupang: marginInfo.coupang,
-                        auction: marginInfo.auction,
-                        gmarket: marginInfo.gmarket,
-                        elevenst: marginInfo.elevenst,
-                        openmarket: marginInfo.openmarket
-                    }));
+            } else {
+                // 3) 데이터가 없다면 기본 상수 로드
+                if (import.meta.env.DEV) {
+                    console.log('�� 기본 가격 설정 상수를 사용합니다.');
+                    console.log('❌ MongoDB 데이터 부족:', {
+                        hasFormulaData,
+                        hasMarginData,
+                        savedData: !!savedData
+                    });
                 }
+                setFormulaSettings(DEFAULT_FORMULA_SETTINGS);
+                setPlatformMarginRates(DEFAULT_PLATFORM_MARGIN_RATE);
             }
+
+            setIsDataLoaded(true);
         } catch (error) {
             if (import.meta.env.DEV) {
                 console.error('저장된 가격 설정 데이터 로드 실패:', error);
             }
+                        
+            // 에러 발생 시 기본값 사용
+            setFormulaSettings(DEFAULT_FORMULA_SETTINGS);
+            setPlatformMarginRates(DEFAULT_PLATFORM_MARGIN_RATE);
+            setIsDataLoaded(true);
+
         } finally {
             setIsLoadingSavedData(false);
         }
@@ -265,7 +298,10 @@ export default function PriceSettingModalContainer(props: ContainerProps) {
         setCalculatedPrices([]);
     };
 
-    if (!props.isOpen) return null;
+    // 데이터가 로드되기 전까지는 로딩 상태 표시
+    if (!props.isOpen || !isDataLoaded || !formulaSettings || !platformMarginRates) {
+        return null;
+    }
 
     return (
         <PriceSettingModal

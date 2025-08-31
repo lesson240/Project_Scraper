@@ -1,6 +1,7 @@
 # path: app/services/service_price_setting.py
 from typing import Dict, Any, List, Optional
 from datetime import datetime, timezone
+from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorClient
 import logging
 from app.services.service_mongodb import mongodb_service
@@ -248,12 +249,17 @@ class PriceSettingService:
             
             # ModifiedGoodsDetail 컬렉션에서 데이터 조회
             modified_goods_collection = self.scrapmarket_db.ModifiedGoodsDetail
-            
-            result = await modified_goods_collection.find_one(
-                {"originGoodsCode": origin_goods_code}
-            )
+            search_criteria = {"origin_goods_code": origin_goods_code}
+            print(f"🔍 검색 조건: {search_criteria}")
+            result = await modified_goods_collection.find_one(search_criteria)
+            print(f"🔍 find_one 결과: {result}")
             
             if result:
+                if '_id' in result and isinstance(result['_id'], ObjectId):
+                    result['_id'] = str(result['_id'])
+                if 'id' in result and isinstance(result['id'], ObjectId):
+                    result['id'] = str(result['id'])
+                result['id'] = str(result['id'])
                 # MongoDB ObjectId 제거
                 if '_id' in result:
                     del result['_id']
@@ -280,8 +286,8 @@ class PriceSettingService:
             
             if result:
                 # MongoDB ObjectId 제거
-                if '_id' in result:
-                    del result['_id']
+                if 'id' in result:
+                    del result['id']
                 return result
             else:
                 return None
