@@ -70,9 +70,11 @@ export interface Product {
     tags?: string[];
     originGoodsCode: string;
     goods_origin?: string | number;
-    cost?: number | string;
-    price?: string | number;
+    total_price?: number | string;
+    promotion_period?: string;
     selling_price?: string | number;
+    sold_out?: string | number;
+    winner_price?: string | number;
 }
 
 export interface ExchangeRateData {

@@ -111,3 +111,31 @@ AttributeError: 'dict' object has no attribute 'origin_goods_code'
 2025-08-31 16:07:44,408 - INFO - 🚀 FilterSectionInquiry 실행 시작
 2025-08-31 16:07:44,413 - INFO - 📋 검색 조건: brand_code=None, brand_name=None, origin_goods_code=None
 2025-08-31 16:07:44,556 - INFO - ✅ FilterSectionInquiry 실행 완료 - 결과 수: 4개
+2025-08-31 17:54:42,308 - INFO - 🚀 FilterSectionInquiry 실행 시작
+2025-08-31 17:54:42,310 - INFO - 📋 검색 조건: brand_code=None, brand_name=None, origin_goods_code=None
+2025-08-31 17:54:42,409 - INFO - ✅ FilterSectionInquiry 실행 완료 - 결과 수: 4개
+2025-08-31 17:55:32,606 - INFO - 🚀 FilterSectionInquiry 실행 시작
+2025-08-31 17:55:32,606 - INFO - 📋 검색 조건: brand_code=None, brand_name=None, origin_goods_code=None
+2025-08-31 17:55:32,703 - INFO - ✅ FilterSectionInquiry 실행 완료 - 결과 수: 4개
+2025-08-31 17:57:13,955 - INFO - 🚀 FilterSectionInquiry 실행 시작
+2025-08-31 17:57:13,955 - INFO - 📋 검색 조건: brand_code=None, brand_name=None, origin_goods_code=None
+2025-08-31 17:57:14,061 - INFO - ✅ FilterSectionInquiry 실행 완료 - 결과 수: 4개
+2025-08-31 17:59:41,340 - INFO - 🚀 FilterSectionInquiry 실행 시작
+2025-08-31 17:59:41,341 - INFO - 📋 검색 조건: brand_code=None, brand_name=None, origin_goods_code=None
+2025-08-31 17:59:41,438 - INFO - ✅ FilterSectionInquiry 실행 완료 - 결과 수: 4개
+2025-09-01 15:36:42,795 - INFO - 🚀 FilterSectionInquiry 실행 시작
+2025-09-01 15:36:42,796 - INFO - 📋 검색 조건: brand_code=None, brand_name=None, origin_goods_code=None
+2025-09-01 15:36:43,910 - INFO - ✅ FilterSectionInquiry 실행 완료 - 결과 수: 4개
+2025-09-01 19:48:14,438 - INFO - 🚀 FilterSectionInquiry 실행 시작
+2025-09-01 19:48:14,439 - INFO - 📋 검색 조건: brand_code=None, brand_name=None, origin_goods_code=None
+2025-09-01 19:48:14,841 - INFO - ✅ FilterSectionInquiry 실행 완료 - 결과 수: 4개
+2025-09-01 20:00:59,490 - INFO - 🚀 FilterSectionInquiry 실행 시작
+2025-09-01 20:00:59,490 - INFO - 📋 검색 조건: brand_code=string, brand_name=string, origin_goods_code=string
+2025-09-01 20:00:59,491 - INFO - 🔍 InputGoodsManagementTableModel 검색 시작 - 필터: {'$expr': {'$regexMatch': {'input': {'$toString': '$origin_goods_code'}, 'regex': 'string', 'options': 'i'}}, 'modified_goods_name': {'$regex': 'string', '$options': 'i'}}
+2025-09-01 20:00:59,533 - INFO - 📊 검색 결과 수: 0개
+2025-09-01 20:00:59,533 - INFO - 🔍 OriginGoodsDetailModel 검색 시작 - 필터: {'$expr': {'$regexMatch': {'input': {'$toString': '$origin_goods_code'}, 'regex': 'string', 'options': 'i'}}, 'origin_goods_name': {'$regex': 'string', '$options': 'i'}}
+2025-09-01 20:00:59,577 - INFO - 📊 OriginGoodsDetailModel 검색 결과 수: 0개
+2025-09-01 20:00:59,578 - INFO - ✅ FilterSectionInquiry 실행 완료 - 결과 수: 0개
+2025-09-01 20:31:03,292 - INFO - 🚀 FilterSectionInquiry 실행 시작
+2025-09-01 20:31:03,292 - INFO - 📋 검색 조건: brand_code=None, brand_name=None, origin_goods_code=None
+2025-09-01 20:31:03,401 - INFO - ✅ FilterSectionInquiry 실행 완료 - 결과 수: 4개

@@ -25,10 +25,6 @@ export default function FunctionPriceSet({ isOpen, onClose, selectedItems, items
 
         if (item?.goods_origin && parseFloat(item.goods_origin) > 0) {
             originalPrice = parseFloat(item.goods_origin);
-        } else if (item?.cost && parseFloat(item.cost) > 0) {
-            originalPrice = parseFloat(item.cost);
-        } else if (item?.price && parseFloat(item.price) > 0) {
-            originalPrice = parseFloat(item.price);
         } else if (item?.selling_price && parseFloat(item.selling_price) > 0) {
             originalPrice = parseFloat(item.selling_price);
         }
@@ -38,10 +34,10 @@ export default function FunctionPriceSet({ isOpen, onClose, selectedItems, items
             name: item?.modified_goods_name || item?.origin_goods_name || '상품명 없음',
             thumbnail: item?.thumb?.thumb1 || '',
             originalPrice: originalPrice,
-            cost: originalPrice,
+            total_price: item?.total_price,
             currency: 'KRW',
             originGoodsCode: item?.origin_goods_code || id,
-            price: item?.price,
+            promotion_period: item?.promotion_period,
             selling_price: item?.selling_price,
             goods_origin: item?.goods_origin
         };

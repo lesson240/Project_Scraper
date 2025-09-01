@@ -151,30 +151,94 @@
 }
 
 /* 가격 관련 셀 스타일 */
-.original-price,
+.inform-cell,
 .set-price,
 .main-margin-rate,
 .main-margin-amount {
     font-weight: 500;
 }
 
-.original-price {
-    color: #007bff;
+
+/* 🆕 마진, 가격, 품절, 날짜 관련 스타일 */
+.margin-critical,
+.margin-rate-critical,
+.price-critical,
+.price-selling-critical,
+.sold-ou,
+.date-critical {
+    color: #dc3545 !important;
+    background-color: #f8d7da;
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-weight: 600;
 }
 
-.set-price {
-    color: #28a745;
+.margin-warning,
+.margin-rate-warning,
+.price-warning,
+.price-selling-warning,
+.low-stock,
+.date-warning {
+    color: #856404 !important;
+    background-color: #fff3cd;
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-weight: 600;
 }
 
-.main-margin-rate {
-    color: #e74c3c;
-    font-size: 0.9em;
+.margin-caution,
+.margin-rate-caution,
+.price-caution,
+.price-selling-caution,
+.date-caution {
+    color: #ffc107 !important;
+    font-weight: 600;
 }
 
-.main-margin-amount {
-    color: #27ae60;
-    font-size: 0.9em;
+.margin-low,
+.margin-rate-low,
+.price-low,
+.price-selling-low {
+    color: #17a2b8 !important;
+    font-weight: 600;
 }
+
+.margin-medium,
+.margin-rate-medium,
+.price-medium,
+.price-selling-medium,
+.available,
+.date-future {
+    color: #28a745 !important;
+    font-weight: 600;
+}
+
+.margin-high,
+.margin-rate-high 
+.price-high,
+.price-selling-high {
+    color: #333 !important;
+    font-weight: 600;
+}
+    
+
+/* 🆕 호버 효과 */
+.date-critical:hover,
+.sold-out:hover,
+.margin-critical:hover,
+.price-critical:hover {
+    background-color: #f5c6cb !important;
+    transition: background-color 0.2s ease;
+}
+
+.date-warning:hover,
+.low-stock:hover,
+.margin-warning:hover,
+.price-warning:hover {
+    background-color: #ffeaa7 !important;
+    transition: background-color 0.2s ease;
+}
+
 
 /* 반응형 디자인 */
 @media (max-width: 768px) {
@@ -189,5 +253,19 @@
     .product-thumbnail {
         width: 50px;
         height: 50px;
+    }
+}
+
+@media (max-width: 768px) {
+    .date-critical,
+    .date-warning,
+    .sold-out,
+    .low-stock,
+    .margin-critical,
+    .margin-warning,
+    .price-critical,
+    .price-warning {
+        padding: 1px 4px;
+        font-size: 0.9em;
     }
 }

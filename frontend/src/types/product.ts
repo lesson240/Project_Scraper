@@ -13,4 +13,9 @@ export type Item = {
   memo?: string;
   group_name?: string;
   thumbnailImages?: string[];
+  total_price?: number;
+  promotion_period?: string;
+  selling_price?: number;
+  sold_out?: string;
+  winner_price?: string;
 };

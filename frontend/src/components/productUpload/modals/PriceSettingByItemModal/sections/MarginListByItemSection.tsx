@@ -1,6 +1,7 @@
 // path: frontend/src/components/productUpload/modals/PriceSettingByItemModal/sections/MarginListSection.tsx
 import React from 'react';
 import type { MarginListSectionProps } from '@/types/priceSetting.types';
+import { useItemInformStyling } from '@/hooks/useItemInformStyling';
 import '@/styles/productUpload/modals/PriceSettingModal/sections/MarginListSection.css';
 
 export default function MarginListByItemSection({
@@ -12,6 +13,8 @@ export default function MarginListByItemSection({
     onMarginReset,
     isCalculated
 }: MarginListSectionProps) {
+
+    const { getPriceClass, getMarginClass, getSoldOutClass, getDateClass } = useItemInformStyling();
 
     const getExchangeRate = (currency: string) => {
         if (!exchangeRates || !Array.isArray(exchangeRates)) {
@@ -50,7 +53,7 @@ export default function MarginListByItemSection({
         <div className="margin-list-section">
             <div className="margin-formulas">
                 <div className="formula-item">
-                    <strong>예상마진 = 설정 상품가 - (원가 × 환율) - 국제운송료</strong>
+                    <strong>예상마진 = 설정 상품가 - ((원가 or 할인가) × 환율) - 국제운송료</strong>
                 </div>
                 <div className="formula-item">
                     <strong>예상마진율(%) = 예상마진 ÷ 설정 상품가</strong>
@@ -88,21 +91,32 @@ export default function MarginListByItemSection({
                                         />
                                     </td>
                                     <td className="product-name">{product?.name || '상품명 없음'}</td>
-                                    <td className="original-price">
-                                        {calculatedProduct.originalPrice.toLocaleString()}
+                                    <td className={`inform-cell ${getPriceClass(product?.goods_origin, 'original')}`}>
+                                        {product?.goods_origin
+                                            ? parseFloat(String(product.goods_origin)).toLocaleString()
+                                            : '-'}
                                     </td>
-                                    <td className="original-price">
-                                        {calculatedProduct.originalPrice.toLocaleString()}
+                                    <td className={`inform-cell ${getPriceClass(product?.total_price || product?.goods_origin, 'total')}`}>
+                                        {product?.total_price
+                                                ? parseFloat(String(product.total_price)).toLocaleString()
+                                                : product?.goods_origin
+                                                ? parseFloat(String(product.goods_origin)).toLocaleString()
+                                                : '-'}
                                     </td>
-                                    <td className="set-price">
-                                        2025-09-01
+                                    <td className={`inform-cell ${getDateClass(product?.promotion_period, 'period')}`}>
+                                        {product?.promotion_period
+                                                ? product.promotion_period
+                                                : '-'}
                                     </td>
-                                    <td className="main-margin-rate">
-                                        판매
+                                    <td className={`inform-cell ${getSoldOutClass('판매')}`}>
+                                        {product?.sold_out
+                                                    ? product.sold_out
+                                                    : '-'}
                                     </td>
-                                    <td className="main-margin-amount">
-                                        {smartstoreMargin.ExpectedMargin.toLocaleString()}
-                                    </td>
+                                    <td className={`inform-cell ${getMarginClass(smartstoreMargin.ExpectedMargin, 'margin')}`}>
+                                        {product?.winner_price  
+                                                ? parseFloat(String(product.winner_price)).toLocaleString()
+                                                : '-'}                                       </td>
                                 </tr>
                             );
                         })}
@@ -123,11 +137,11 @@ export default function MarginListByItemSection({
                         </tr>
                         <tr>
                             <th>설정 상품가</th>
-                            <th>마진율</th>
-                            <th>마진</th>
+                            <th>예상 마진율</th>
+                            <th>예상 마진</th>
                             <th>설정 상품가</th>
-                            <th>마진율</th>
-                            <th>마진</th>
+                            <th>예상 마진율</th>
+                            <th>예상 마진</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -140,22 +154,22 @@ export default function MarginListByItemSection({
                                     <td className="set-price">
                                         Smartstore
                                     </td>
-                                    <td className="set-price">
+                                    <td className={`inform-cell ${getPriceClass(smartstoreMargin.ExpectedMargin, 'selling')}`}>
                                         {smartstoreMargin.selling_price.toLocaleString()}
                                     </td>
-                                    <td className="main-margin-rate">
-                                        {smartstoreMargin.ExpectedMarginRate.toFixed(2)}%
+                                    <td className={`inform-cell ${getMarginClass(smartstoreMargin.ExpectedMargin, 'rate')}`}>
+                                        {smartstoreMargin.ExpectedMarginRate.toFixed(1)}%
                                     </td>                                   
-                                    <td className="main-margin-amount">
+                                    <td className={`inform-cell ${getMarginClass(smartstoreMargin.ExpectedMargin, 'margin')}`}>
                                         {smartstoreMargin.ExpectedMargin.toLocaleString()}
                                     </td>
-                                    <td className="set-price">
+                                    <td className={`inform-cell ${getPriceClass(smartstoreMargin.ExpectedMargin, 'selling')}`}>
                                         {smartstoreMargin.selling_price.toLocaleString()}
                                     </td>
-                                    <td className="main-margin-rate">
-                                        {smartstoreMargin.ExpectedMarginRate.toFixed(2)}%
+                                    <td className={`inform-cell ${getMarginClass(smartstoreMargin.ExpectedMargin, 'rate')}`}>
+                                        {smartstoreMargin.ExpectedMarginRate.toFixed(1)}%
                                     </td>                                    
-                                    <td className="main-margin-amount">
+                                    <td className={`inform-cell ${getMarginClass(smartstoreMargin.ExpectedMargin, 'margin')}`}>
                                         {smartstoreMargin.ExpectedMargin.toLocaleString()}
                                     </td>
                                 </tr>
