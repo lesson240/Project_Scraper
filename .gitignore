@@ -4,8 +4,6 @@ dcker-compose.yml
 node_modules
 .venv/
 venv/
-# Uploads directory
-uploads/
 
 # Python cache files
 __pycache__/
@@ -19,9 +17,7 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
 lib64/
-parts/
 sdist/
 var/
 wheels/
