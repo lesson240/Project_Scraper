@@ -1,85 +1,110 @@
 // path: frontend/src/components/productUpload/modals/PriceSettingByItemModal/sections/ExchangeRateSection.tsx
 import React from 'react';
+import NumberInput from '@/components/common/NumberInput';
 import type { ExchangeRateSectionProps } from '@/types/priceSetting.types';
 import '@/styles/productUpload/modals/PriceSettingModal/sections/ExchangeRateSection.css';
 
 export default function ExchangeRateByItemSection({
     exchangeRates,
+    isLoading,
     tariffPeriod,
     error,
-    onAppliedRateChange
-}: Omit<ExchangeRateSectionProps, 'isLoading' | 'onSyncRates'>) {
-    if (error) {
+    onAppliedRateChange,
+    onSyncRates
+}: ExchangeRateSectionProps) {
+    if (isLoading) {
         return (
-            <div className="error-message">
-                <span className="error-icon">⚠️</span>
-                <span className="error-text">{error}</span>
+            <div className="exchange-rate-section">
+                <div className="loading-container">
+                    <div className="loading-spinner"></div>
+                    <div className="loading-text">환율 정보를 불러오는 중...</div>
+                </div>
             </div>
         );
     }
 
-    // 환율 데이터 검증 및 포맷팅 함수
-    const formatRate = (rate: number | null | undefined): string => {
-        if (rate === null || rate === undefined || rate === 0) {
-            return 'N/A';
-        }
-        return rate.toLocaleString();
-    };
-
     return (
         <div className="exchange-rate-section">
-            <div className="table-header-with-note">
-                <h4>환율 정보</h4>
-                <div className="tariff-info">
-                    <span className="tariff-note">
-                        관세청 환율 기준으로 설정됩니다.
-                    </span>
-                    <span className="tariff-period">
-                        기준일: {tariffPeriod}
-                    </span>
+            {error && (
+                <div className="error-message">
+                    <span className="error-icon">⚠️</span>
+                    <span className="error-text">{error}</span>
                 </div>
-            </div>
+            )}
 
             <div className="exchange-rate-table">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>통화</th>
-                            <th>일일 환율</th>
-                            <th>주간 관세</th>
-                            <th>적용 환율</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {exchangeRates.map((rate, index) => (
-                            <tr key={index}>
-                                <td className="currency-code">{rate.currencyCode}</td>
-                                <td className="daily-rate">
-                                    {formatRate(rate.customs?.appliedRate || rate.koreaexim?.appliedRate)}
-                                </td>
-                                <td className="weekly-tariff">
-                                    {formatRate(rate.customs?.appliedRate)}
-                                </td>
-                                <td className="applied-rate-cell">
-                                    <input
-                                        type="number"
-                                        className="applied-rate-input"
-                                        value={rate.appliedRate || ''}
-                                        onChange={(e) => {
-                                            const value = parseFloat(e.target.value);
-                                            if (!isNaN(value)) {
-                                                onAppliedRateChange(rate.currencyCode, value);
-                                            }
-                                        }}
-                                        step="0.01"
-                                        min="0"
-                                        placeholder="0.00"
-                                    />
-                                </td>
+                <div className="table-header-with-note">
+                    <h4>환율 정보</h4>
+                    <div className="tariff-info">
+                        <div className="tariff-note">
+                            단위: 1원 (￦)
+                        </div>
+                        <div className="tariff-period">
+                            관세 주간: {tariffPeriod}
+                        </div>
+                    </div>
+                </div>
+
+                <div className="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>통화</th>
+                                <th>일일 고시환율</th>
+                                <th>관세 주간환율</th>
+                                <th>올땀 적용환율</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {['USD', 'CNY', 'JPY', 'EUR'].map((currency) => {
+                                // 해당 통화의 환율 데이터 찾기
+                                const rateData = exchangeRates.find(rate =>
+                                    rate.currencyCode === currency
+                                );
+
+                                // 일일 고시환율: koreaexim 데이터 사용
+                                const dailyRate = rateData?.koreaexim?.appliedRate || 0;
+
+                                // 관세 주간환율: customs 데이터 사용
+                                const weeklyTariff = rateData?.customs?.appliedRate || 0;
+
+                                // 적용환율: appliedRate 값 사용
+                                const appliedRate = rateData?.appliedRate || 0;
+
+                                // 개발 환경에서만 데이터 확인 로깅
+                                if (import.meta.env.DEV && !rateData) {
+                                    console.warn(`⚠️ ${currency} 통화 데이터를 찾을 수 없습니다`);
+                                }
+
+                                return (
+                                    <tr key={currency}>
+                                        <td className="currency-code">{currency}</td>
+                                        <td className="daily-rate">{dailyRate.toLocaleString()}</td>
+                                        <td className="weekly-tariff">{weeklyTariff.toLocaleString()}</td>
+                                        <td className="applied-rate-cell">
+                                            <NumberInput
+                                                value={appliedRate}
+                                                onChange={(value) => {
+                                                    // if (import.meta.env.DEV) {
+                                                    //     console.log(`💱 ${currency} 환율 변경:`, value);
+                                                    // }
+                                                    onAppliedRateChange(currency, value);
+                                                }}
+                                                placeholder="환율 입력"
+                                                min={0}
+                                                step={0.1}
+                                                className="exchange-rate-number-input table-cell"
+                                            />
+                                        </td>
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
+                </div>
+                {/* <div className="table-footer">
+                <button className="btn-calculate-margin" onClick={onSyncRates}>예상 마진</button>
+                </div> */}
             </div>
         </div>
     );

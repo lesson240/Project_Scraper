@@ -118,7 +118,7 @@
     background: 8f9fa;
     color: #616161;
     font-weight: 500;
-    font-size: 14px;
+    font-size: 13px;
     border-top: none;
 }
 
@@ -238,6 +238,41 @@
     background-color: #ffeaa7 !important;
     transition: background-color 0.2s ease;
 }
+
+.color-legend {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.color-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.color-box {
+    width: 12px;
+    height: 12px;
+    border: 1px solid white;
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+
+.color-text {
+    color: #333;
+    font-size: inherit;
+}
+
+
+/* 각 색상별 클래스 */
+.color-high { background-color: #333; }
+.color-medium { background-color: #28a745; }
+.color-low { background-color: #17a2b8; }
+.color-warning { background-color: #856404; }
+.color-caution { background-color: #ffc107; }
+.color-danger { background-color: #dc3545; }
 
 
 /* 반응형 디자인 */

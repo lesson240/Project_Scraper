@@ -12,6 +12,7 @@ import type {
 import { priceSettingApi } from '@/apis/priceSettingApi';
 import { ValidationError } from '@/exceptions/PriceSettingExceptions';
 import { calculateAllProductsMargins } from '@/utils/priceCalculation';
+import Toast from "@/components/common/Toast";
 
 // 기본값 상수 정의
 const DEFAULT_FORMULA_SETTINGS: SellingPriceFormulaInfo = {
@@ -45,6 +46,8 @@ export default function PriceSettingByItemModalContainer(props: ContainerProps) 
     const [calculatedPrices, setCalculatedPrices] = useState<CalculatedProductData[]>([]);
     const [isLoadingSavedData, setIsLoadingSavedData] = useState(false);
     const [isDataLoaded, setIsDataLoaded] = useState(false);
+    const [toastMessage, setToastMessage] = useState<string>('');
+    const [showToast, setShowToast] = useState<boolean>(false);
 
     const {
         exchangeRates,
@@ -54,6 +57,19 @@ export default function PriceSettingByItemModalContainer(props: ContainerProps) 
         updateAppliedRate,
         fetchFrontendExchangeRates
     } = useExchangeRateManager();
+
+    // Toast 함수들
+    const showToastMessage = (message: string) => {
+        console.log('showToastMessage 호출됨:', message);
+        setToastMessage(message);
+        setShowToast(true);
+        console.log('Toast 상태 업데이트됨:', { message, showToast: true });
+    };
+
+    const closeToast = () => {
+        setShowToast(false);
+        setToastMessage('');
+    };
 
     useEffect(() => {
         if (props.isOpen && props.selectedProducts && props.selectedProducts.length > 0) {
@@ -166,14 +182,14 @@ export default function PriceSettingByItemModalContainer(props: ContainerProps) 
     const handleCalculateMargin = async (): Promise<void> => {
         if (props.selectedProducts.length === 0) {
             if (import.meta.env.DEV) {
-                console.error('❌ 선택된 상품이 없습니다.');
+                showToastMessage('선택된 상품이 없습니다.');
             }
             throw new ValidationError('선택된 상품이 없습니다.', 'selectedProducts', props.selectedProducts);
         }
 
         if (exchangeRates.length === 0) {
             if (import.meta.env.DEV) {
-                console.error('❌ 환율 데이터가 없습니다.');
+                showToastMessage('환율 데이터가 없습니다.');
             }
             throw new ValidationError('환율 데이터가 없습니다.', 'exchangeRates', exchangeRates);
         }
@@ -188,6 +204,11 @@ export default function PriceSettingByItemModalContainer(props: ContainerProps) 
                     originalPrice: typeof product.originalPrice === 'string'
                         ? parseFloat(product.originalPrice)
                         : product.originalPrice,
+                    totalPrice: product.total_price ? 
+                        (typeof product.total_price === 'string' 
+                            ? parseFloat(product.total_price) 
+                            : product.total_price) 
+                        : undefined,
                     exchangeRate: 1, // 기본값, 실제로는 환율 데이터에서 가져와야 함
                     baseMarginRate: formulaSettings.baseMarginRate,
                     additionalMargin: formulaSettings.additionalMargin,
@@ -201,11 +222,10 @@ export default function PriceSettingByItemModalContainer(props: ContainerProps) 
 
             setCalculatedPrices(newCalculatedPrices);
             setIsCalculated(true);
+            showToastMessage?.('마진 계산이 완료되었습니다!');
 
         } catch (error) {
-            if (import.meta.env.DEV) {
-                console.error('❌ 마진 계산 실패:', error);
-            }
+            showToastMessage?.('마진 계산 중 오류가 발생했습니다.');
             throw error;
         }
     };
@@ -213,6 +233,7 @@ export default function PriceSettingByItemModalContainer(props: ContainerProps) 
     const handleSave = async (saveData: SaveData): Promise<void> => {
 
         if (!isCalculated || calculatedPrices.length === 0) {
+            showToastMessage('계산된 데이터가 없습니다. 먼저 마진을 계산해주세요.');
             throw new ValidationError('계산된 데이터가 없습니다. 먼저 마진을 계산해주세요.', 'calculatedPrices', calculatedPrices);
         }
 
@@ -222,6 +243,7 @@ export default function PriceSettingByItemModalContainer(props: ContainerProps) 
         }
 
         if (!originGoodsCode) {
+            showToastMessage('계산된 상품 데이터에서 상품 코드를 찾을 수 없습니다.');
             throw new ValidationError('계산된 상품 데이터에서 상품 코드를 찾을 수 없습니다.', 'originGoodsCode', originGoodsCode);
         }
 
@@ -230,11 +252,11 @@ export default function PriceSettingByItemModalContainer(props: ContainerProps) 
             props.onSave(saveData);
 
             if (import.meta.env.DEV) {
-                console.log('💾 가격 설정 저장 완료');
+                showToastMessage('가격 설정 저장을 완료했습니다.');
             }
         } catch (error) {
             if (import.meta.env.DEV) {
-                console.error('❌ 가격 설정 저장 실패:', error);
+                showToastMessage('가격 설정 저장에 실패했습니다.');
             }
             throw error;
         }
@@ -267,6 +289,7 @@ export default function PriceSettingByItemModalContainer(props: ContainerProps) 
         setPlatformMarginRates(DEFAULT_PLATFORM_MARGIN_RATE);
         setIsCalculated(false);
         setCalculatedPrices([]);
+        showToastMessage('마진 목록이 초기화되었습니다!');
     };
 
     // 데이터가 로드되기 전까지는 로딩 상태 표시
@@ -275,50 +298,61 @@ export default function PriceSettingByItemModalContainer(props: ContainerProps) 
     }
 
     return (
-        <PriceSettingByItemModal
-            isOpen={props.isOpen}
-            onClose={props.onClose}
-            selectedProducts={props.selectedProducts}
-            exchangeRates={exchangeRates}
-            calculatedPrices={calculatedPrices}
-            isCalculated={isCalculated}
-            tariffPeriod={tariffPeriod}
-            isLoading={ratesLoading}
-            error={error}
-            onAppliedRateChange={updateAppliedRate}
-            onSyncRates={handleSyncRates}
-            sellingPriceFormulaInfo={formulaSettings}
-            platformMargins={{
-                smartstore: { ExpectedMargin: 0, ExpectedMarginRate: platformMarginRates.smartstore, selling_price: 0 },
-                coupang: { ExpectedMargin: 0, ExpectedMarginRate: platformMarginRates.coupang, selling_price: 0 },
-                auction: { ExpectedMargin: 0, ExpectedMarginRate: platformMarginRates.auction, selling_price: 0 },
-                gmarket: { ExpectedMargin: 0, ExpectedMarginRate: platformMarginRates.gmarket, selling_price: 0 },
-                elevenst: { ExpectedMargin: 0, ExpectedMarginRate: platformMarginRates.elevenst, selling_price: 0 },
-                openmarket: { ExpectedMargin: 0, ExpectedMarginRate: platformMarginRates.openmarket, selling_price: 0 }
-            }}
-            onFormulaChange={(field, value) => setFormulaSettings(prev => ({ ...prev, [field]: value }))}
-            onFormulaReset={() => setFormulaSettings(DEFAULT_FORMULA_SETTINGS)}
-            onMarginChange={(platform, value) => {
-                setPlatformMarginRates(prev => ({
-                    ...prev,
-                    [platform]: value
-                }));
-            }}
-            onMarginReset={() => setPlatformMarginRates(DEFAULT_PLATFORM_MARGIN_RATE)}
-            onPlatformMarginChange={(platform, value) => {
-                setPlatformMarginRates(prev => ({
-                    ...prev,
-                    [platform]: value
-                }));
-            }}
-            isExchangeRateExpanded={isExchangeRateExpanded}
-            isFormulaExpanded={isFormulaExpanded}
-            onExchangeRateToggle={handleExchangeRateToggle}
-            onFormulaToggle={handleFormulaToggle}
-            onCalculateMargin={handleCalculateMargin}
-            onSave={handleSave}
-            onReset={handleReset}
-        />
+        <>
+            {showToast && (
+                <Toast 
+                    message={toastMessage} 
+                    duration={3000} 
+                    onClose={closeToast} 
+                />
+            )}
+
+            <PriceSettingByItemModal
+                showToastMessage={showToastMessage} 
+                isOpen={props.isOpen}
+                onClose={props.onClose}
+                selectedProducts={props.selectedProducts}
+                exchangeRates={exchangeRates}
+                calculatedPrices={calculatedPrices}
+                isCalculated={isCalculated}
+                tariffPeriod={tariffPeriod}
+                isLoading={ratesLoading}
+                error={error}
+                onAppliedRateChange={updateAppliedRate}
+                onSyncRates={handleSyncRates}
+                sellingPriceFormulaInfo={formulaSettings}
+                platformMargins={{
+                    smartstore: { ExpectedMargin: 0, ExpectedMarginRate: platformMarginRates.smartstore, selling_price: 0 },
+                    coupang: { ExpectedMargin: 0, ExpectedMarginRate: platformMarginRates.coupang, selling_price: 0 },
+                    auction: { ExpectedMargin: 0, ExpectedMarginRate: platformMarginRates.auction, selling_price: 0 },
+                    gmarket: { ExpectedMargin: 0, ExpectedMarginRate: platformMarginRates.gmarket, selling_price: 0 },
+                    elevenst: { ExpectedMargin: 0, ExpectedMarginRate: platformMarginRates.elevenst, selling_price: 0 },
+                    openmarket: { ExpectedMargin: 0, ExpectedMarginRate: platformMarginRates.openmarket, selling_price: 0 }
+                }}
+                onFormulaChange={(field, value) => setFormulaSettings(prev => ({ ...prev, [field]: value }))}
+                onFormulaReset={() => setFormulaSettings(DEFAULT_FORMULA_SETTINGS)}
+                onMarginChange={(platform, value) => {
+                    setPlatformMarginRates(prev => ({
+                        ...prev,
+                        [platform]: value
+                    }));
+                }}
+                onMarginReset={() => setPlatformMarginRates(DEFAULT_PLATFORM_MARGIN_RATE)}
+                onPlatformMarginChange={(platform, value) => {
+                    setPlatformMarginRates(prev => ({
+                        ...prev,
+                        [platform]: value
+                    }));
+                }}
+                isExchangeRateExpanded={isExchangeRateExpanded}
+                isFormulaExpanded={isFormulaExpanded}
+                onExchangeRateToggle={handleExchangeRateToggle}
+                onFormulaToggle={handleFormulaToggle}
+                onCalculateMargin={handleCalculateMargin}
+                onSave={handleSave}
+                onReset={handleReset}
+            />
+        </>
     );
 }
 

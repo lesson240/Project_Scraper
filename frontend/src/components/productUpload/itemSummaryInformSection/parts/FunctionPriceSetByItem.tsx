@@ -49,9 +49,7 @@ export default function FunctionPriceSetByItem({ isOpen, onClose, selectedItems,
         };
     });
 
-    const handleSave = (settings: any) => {
-        onClose();
-    };
+    const handleSave = (settings: any) => {};
 
     return (
         <PriceSettingByItemModalContainer

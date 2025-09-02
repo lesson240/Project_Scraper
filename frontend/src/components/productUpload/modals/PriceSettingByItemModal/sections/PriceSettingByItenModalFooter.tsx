@@ -32,6 +32,7 @@ type Props = {
     additionalMargin?: number;
     internationalShippingFee?: number;
   }>;
+  showToastMessage?: (message: string) => void;
 };
 
 export default function PriceSettingModalFooter({
@@ -44,7 +45,8 @@ export default function PriceSettingModalFooter({
   sellingPriceFormulaInfo,
   platformMarginRateInfo,
   calculatedProductData,
-  selectedProducts
+  selectedProducts,
+  showToastMessage
 }: Props) {
 
   const handleCalculateMargin = () => {
@@ -59,69 +61,64 @@ export default function PriceSettingModalFooter({
           sellingPriceFormulaInfo.baseMarginRate,
           sellingPriceFormulaInfo.additionalMargin,
           sellingPriceFormulaInfo.internationalShippingFee,
-          platformMarginRateInfo
+          platformMarginRateInfo,
+          undefined // totalPrice는 별도로 처리하지 않음 (기본값 사용)
         );
       });
 
       // 계산된 결과를 부모 컴포넌트에 전달
       onCalculateMargin(calculatedProducts);
-
-      console.log('마진 계산 완료:', calculatedProducts);
+      
     } catch (error) {
       console.error('마진 계산 중 오류 발생:', error);
-      // 에러 처리 로직 추가 가능
     }
   };
 
 
   const handleSave = () => {
-    // 데이터 유효성 검증
-    if (!originGoodsCode) {
-      throw new ValidationError('상품 코드가 없습니다.', 'originGoodsCode', originGoodsCode);
+    try {
+      // 저장할 데이터 구성 - SaveData 타입에 맞게 수정
+      const saveData: SaveData = {
+        exchangeRates: exchangeRatesInfo.map(rate => ({
+          currency: rate.currencyCode,
+          value: rate.appliedRate
+        })),
+        formulaSettings: {
+          baseMarginRate: sellingPriceFormulaInfo.baseMarginRate,
+          additionalMargin: sellingPriceFormulaInfo.additionalMargin,
+          baseShippingFee: sellingPriceFormulaInfo.baseShippingFee,
+          returnShippingFee: sellingPriceFormulaInfo.returnShippingFee,
+          exchangeShippingFee: sellingPriceFormulaInfo.exchangeShippingFee,
+          internationalShippingFee: sellingPriceFormulaInfo.internationalShippingFee,
+          freeShipping: sellingPriceFormulaInfo.freeShipping,
+          optimizeShippingFee: sellingPriceFormulaInfo.optimizeShippingFee
+        },
+        platformMarginRateInfo,
+        marginListByItems: {
+          items: calculatedProductData.reduce((acc, product) => {
+            acc[product.originGoodsCode] = {
+              smartstore: product.marginList.smartstore,
+              coupang: product.marginList.coupang,
+              auction: product.marginList.auction,
+              gmarket: product.marginList.gmarket,
+              elevenst: product.marginList.elevenst,
+              openmarket: product.marginList.openmarket
+            };
+            return acc;
+          }, {} as Record<string, PlatformMargins>)
+        }
+      };
+
+      // 부모 컴포넌트의 onSave 호출
+      onSave(saveData);
+      
+      // Toast는 Container에서 처리하므로 여기서는 호출하지 않음
+      // showToastMessage?.('저장이 완료되었습니다!');
+      
+    } catch (error) {
+      showToastMessage?.('저장 중 오류가 발생했습니다.');
+      throw error;
     }
-
-    if (!isCalculated) {
-      throw new ValidationError('예상 마진을 먼저 계산해주세요.', 'isCalculated', isCalculated);
-    }
-
-    if (calculatedProductData.length === 0) {
-      throw new ValidationError('계산된 상품 데이터가 없습니다.', 'calculatedProductData', calculatedProductData);
-    }
-
-    // 저장할 데이터 구성 - SaveData 타입에 맞게 수정
-    const saveData: SaveData = {
-      exchangeRates: exchangeRatesInfo.map(rate => ({
-        currency: rate.currencyCode,
-        value: rate.appliedRate
-      })),
-      formulaSettings: {
-        baseMarginRate: sellingPriceFormulaInfo.baseMarginRate,
-        additionalMargin: sellingPriceFormulaInfo.additionalMargin,
-        baseShippingFee: sellingPriceFormulaInfo.baseShippingFee,
-        returnShippingFee: sellingPriceFormulaInfo.returnShippingFee,
-        exchangeShippingFee: sellingPriceFormulaInfo.exchangeShippingFee,
-        internationalShippingFee: sellingPriceFormulaInfo.internationalShippingFee,
-        freeShipping: sellingPriceFormulaInfo.freeShipping,
-        optimizeShippingFee: sellingPriceFormulaInfo.optimizeShippingFee
-      },
-      platformMarginRateInfo,
-      marginListByItems: {
-        items: calculatedProductData.reduce((acc, product) => {
-          acc[product.originGoodsCode] = {
-            smartstore: product.marginList.smartstore,
-            coupang: product.marginList.coupang,
-            auction: product.marginList.auction,
-            gmarket: product.marginList.gmarket,
-            elevenst: product.marginList.elevenst,
-            openmarket: product.marginList.openmarket
-          };
-          return acc;
-        }, {} as Record<string, PlatformMargins>)
-      }
-    };
-
-    // 부모 컴포넌트의 onSave 호출
-    onSave(saveData);
   };
 
   return (
@@ -130,9 +127,13 @@ export default function PriceSettingModalFooter({
       <Button variant="fourth" onClick={handleCalculateMargin}>마진 계산</Button>
       <Button
         variant="primary"
-        onClick={handleSave}
-        disabled={!isCalculated}
-        title={!isCalculated ? "마진 계산을 먼저 해주세요" : "설정을 저장합니다"}
+        onClick={() => {
+          if (!isCalculated) {
+            showToastMessage?.('마진 계산을 먼저 해주세요.');
+            return;
+          }
+          handleSave();
+        }}
       >
         저장
       </Button>

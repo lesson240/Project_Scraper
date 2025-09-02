@@ -3,7 +3,7 @@ import { ModalBase, ModalHeader, ModalBody, ModalFooter } from '@/components/com
 import ExchangeRateByItemSection from './sections/ExchangeRateByItemSection';
 import FormulaByItemSection from './sections/FormulaByItemSection';
 import MarginListByItemSection from './sections/MarginListByItemSection';
-import PriceSettingModalFooter from '../PriceSettingModal/sections/PriceSettingModalFooter';
+import PriceSettingModalFooter from './sections/PriceSettingByItenModalFooter';
 import type { 
     PriceSettingModalUIProps, 
     SaveData 
@@ -20,8 +20,9 @@ export default function PriceSettingByItemModal({
     onCalculateMargin, onSave, onReset,
     onExchangeRateToggle, onFormulaToggle,
     onAppliedRateChange, onSyncRates,
+    showToastMessage,
 
-}: PriceSettingModalUIProps) {
+}: PriceSettingModalUIProps & { showToastMessage?: (message: string) => void }) {
 
     const handleSave = (saveData: SaveData): void => {
         try {
@@ -75,9 +76,11 @@ export default function PriceSettingByItemModal({
                     {isExchangeRateExpanded && (
                         <ExchangeRateByItemSection
                             exchangeRates={exchangeRates}
+                            isLoading={isLoading}
                             tariffPeriod={tariffPeriod}
                             error={error}
                             onAppliedRateChange={onAppliedRateChange}
+                            onSyncRates={onSyncRates}
                         />
                     )}
 
@@ -112,6 +115,7 @@ export default function PriceSettingByItemModal({
                         calculatedPrices={calculatedPrices}
                         exchangeRates={exchangeRates}
                         platformMargins={platformMargins}
+                        sellingPriceFormulaInfo={sellingPriceFormulaInfo}
                         onMarginChange={(productId: string, platform: string, value: number) => {
                             // 스마트스토어 마진만 처리
                             if (platform === 'smartstore') {
@@ -152,6 +156,7 @@ export default function PriceSettingByItemModal({
                         additionalMargin: sellingPriceFormulaInfo.additionalMargin,
                         internationalShippingFee: sellingPriceFormulaInfo.internationalShippingFee
                     }))}
+                    showToastMessage={showToastMessage}
                 />
             </ModalFooter>
         </ModalBase>

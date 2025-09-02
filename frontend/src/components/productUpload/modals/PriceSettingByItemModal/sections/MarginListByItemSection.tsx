@@ -9,6 +9,7 @@ export default function MarginListByItemSection({
     calculatedPrices,
     exchangeRates,
     platformMargins,
+    sellingPriceFormulaInfo,
     onMarginChange,
     onMarginReset,
     isCalculated
@@ -58,6 +59,35 @@ export default function MarginListByItemSection({
                 <div className="formula-item">
                     <strong>예상마진율(%) = 예상마진 ÷ 설정 상품가</strong>
                 </div>
+                <div className="formula-item">
+                    <div className="color-legend">
+                        <strong>텍스트 색상 =</strong>
+                        <span className="color-indicator">
+                            <span className="color-box color-high"></span>
+                            <span className="color-text">높음</span>
+                        </span>
+                        <span className="color-indicator">
+                            <span className="color-box color-medium"></span>
+                            <span className="color-text">중간</span>
+                        </span>
+                        <span className="color-indicator">
+                            <span className="color-box color-low"></span>
+                            <span className="color-text">낮음</span>
+                        </span>
+                        <span className="color-indicator">
+                            <span className="color-box color-warning"></span>
+                            <span className="color-text">경고</span>
+                        </span>
+                        <span className="color-indicator">
+                            <span className="color-box color-caution"></span>
+                            <span className="color-text">주의</span>
+                        </span>
+                        <span className="color-indicator">
+                            <span className="color-box color-danger"></span>
+                            <span className="color-text">위험</span>
+                        </span>
+                    </div>
+                </div>
             </div>
             
             <div className="margin-table">
@@ -80,6 +110,7 @@ export default function MarginListByItemSection({
                         {calculatedPrices.map((calculatedProduct) => {
                             const product = selectedProducts.find(p => p.originGoodsCode === calculatedProduct.originGoodsCode);
                             const smartstoreMargin = calculatedProduct.marginList.smartstore;
+
                             
                             return (
                                 <tr key={calculatedProduct.originGoodsCode}>
@@ -113,10 +144,11 @@ export default function MarginListByItemSection({
                                                     ? product.sold_out
                                                     : '-'}
                                     </td>
-                                    <td className={`inform-cell ${getMarginClass(smartstoreMargin.ExpectedMargin, 'margin')}`}>
+                                    <td className="inform-cell">
                                         {product?.winner_price  
                                                 ? parseFloat(String(product.winner_price)).toLocaleString()
-                                                : '-'}                                       </td>
+                                                : '-'}                                       
+                                    </td>
                                 </tr>
                             );
                         })}
@@ -147,34 +179,52 @@ export default function MarginListByItemSection({
                     <tbody>
                         {calculatedPrices.map((calculatedProduct) => {
                             const product = selectedProducts.find(p => p.originGoodsCode === calculatedProduct.originGoodsCode);
-                            const smartstoreMargin = calculatedProduct.marginList.smartstore;
                             
-                            return (
-                                <tr key={calculatedProduct.originGoodsCode}>
-                                    <td className="set-price">
-                                        Smartstore
-                                    </td>
-                                    <td className={`inform-cell ${getPriceClass(smartstoreMargin.ExpectedMargin, 'selling')}`}>
-                                        {smartstoreMargin.selling_price.toLocaleString()}
-                                    </td>
-                                    <td className={`inform-cell ${getMarginClass(smartstoreMargin.ExpectedMargin, 'rate')}`}>
-                                        {smartstoreMargin.ExpectedMarginRate.toFixed(1)}%
-                                    </td>                                   
-                                    <td className={`inform-cell ${getMarginClass(smartstoreMargin.ExpectedMargin, 'margin')}`}>
-                                        {smartstoreMargin.ExpectedMargin.toLocaleString()}
-                                    </td>
-                                    <td className={`inform-cell ${getPriceClass(smartstoreMargin.ExpectedMargin, 'selling')}`}>
-                                        {smartstoreMargin.selling_price.toLocaleString()}
-                                    </td>
-                                    <td className={`inform-cell ${getMarginClass(smartstoreMargin.ExpectedMargin, 'rate')}`}>
-                                        {smartstoreMargin.ExpectedMarginRate.toFixed(1)}%
-                                    </td>                                    
-                                    <td className={`inform-cell ${getMarginClass(smartstoreMargin.ExpectedMargin, 'margin')}`}>
-                                        {smartstoreMargin.ExpectedMargin.toLocaleString()}
-                                    </td>
-                                </tr>
-                            );
-                        })}
+                            // 모든 플랫폼 정의
+                            const platforms = [
+                                { key: 'smartstore', name: '스마트스토어' },
+                                { key: 'coupang', name: '쿠팡' },
+                                { key: 'auction', name: '옥션' },
+                                { key: 'gmarket', name: '지마켓' },
+                                { key: 'elevenst', name: '11번가' }
+                            ];
+                            
+                            return platforms.map((platform) => {
+                                const margin = calculatedProduct.marginList[platform.key as keyof typeof calculatedProduct.marginList];
+                                // 10원 단위로 절상하는 함수
+                                const roundUpToTen = (value: number): number => {
+                                    return Math.ceil(value / 10) * 10;
+                                };
+                                
+                                return (
+                                    <tr key={`${calculatedProduct.originGoodsCode}-${platform.key}`}>
+                                        <td className="set-price">
+                                            {platform.name}
+                                        </td>
+                                        {/* 원가 기준 컬럼들 */}
+                                        <td className={`inform-cell ${getPriceClass(margin.originalPriceMargin || margin.ExpectedMargin, 'selling')}`}>
+                                            {roundUpToTen(margin.selling_price).toLocaleString()}
+                                        </td>
+                                        <td className={`inform-cell ${getMarginClass(margin.originalPriceMarginRate || margin.ExpectedMarginRate, 'rate')}`}>
+                                            {(margin.originalPriceMarginRate || margin.ExpectedMarginRate).toFixed(1)}%
+                                        </td>                                   
+                                        <td className={`inform-cell ${getMarginClass(margin.originalPriceMargin || margin.ExpectedMargin, 'margin')}`}>
+                                            {roundUpToTen(margin.originalPriceMargin || margin.ExpectedMargin).toLocaleString()}
+                                        </td>
+                                        {/* 할인가 기준 컬럼들 */}
+                                        <td className={`inform-cell ${getPriceClass(margin.totalPriceMargin || margin.ExpectedMargin, 'selling')}`}>
+                                            {roundUpToTen(margin.totalPriceSellingPrice || margin.selling_price).toLocaleString()}
+                                        </td>
+                                        <td className={`inform-cell ${getMarginClass(margin.totalPriceMarginRate || margin.ExpectedMarginRate, 'rate')}`}>
+                                            {(margin.totalPriceMarginRate || margin.ExpectedMarginRate).toFixed(1)}%
+                                        </td>                                    
+                                        <td className={`inform-cell ${getMarginClass(margin.totalPriceMargin || margin.ExpectedMargin, 'margin')}`}>
+                                            {roundUpToTen(margin.totalPriceMargin || margin.ExpectedMargin).toLocaleString()}
+                                        </td>
+                                    </tr>
+                                );
+                            });
+                        }).flat()}
                     </tbody>
                 </table>
             </div>

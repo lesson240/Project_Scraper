@@ -42,6 +42,12 @@ export interface CalculatedItemInfo {
     ExpectedMargin: number;
     ExpectedMarginRate: number;
     selling_price: number;
+    // 원가와 할인가 기준 계산을 위한 추가 필드
+    originalPriceMargin?: number;
+    originalPriceMarginRate?: number;
+    totalPriceMargin?: number;
+    totalPriceMarginRate?: number;
+    totalPriceSellingPrice?: number; // 할인가 기준 설정 상품가
 }
 
 //  🆕 6. 플랫폼별 마진 정보를 Dict화 (PlatformMargins)
@@ -208,6 +214,7 @@ export interface MarginListSectionProps {
     calculatedPrices: CalculatedProductData[];
     exchangeRates: ExchangeRateData[];
     platformMargins: PlatformMargins;
+    sellingPriceFormulaInfo?: SellingPriceFormulaInfo;
     onMarginChange: (productId: string, platform: string, value: number) => void;
     onMarginReset: (productId: string) => void;
     isCalculated: boolean;

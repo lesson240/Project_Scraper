@@ -24,9 +24,9 @@ const DEFAULT_CONFIG: ItemInformStylingConfig = {
         critical: 5000,
         warning: 10000,
         caution: 20000,
-        low: 50000,
-        medium: 100000,
-        high: 500000,
+        low: 30000,
+        medium: 50000,
+        high: 100000,
     }
 };
 
