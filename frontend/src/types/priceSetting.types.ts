@@ -207,6 +207,14 @@ export interface PriceSettingModalUIProps {
     onCalculateMargin: () => void;
     onSave: (saveData: SaveData) => void;
     onReset: () => void;
+    // 새로운 props 추가
+    settingStatus?: {
+        exchangeRate: '미설정' | '설정 완료';
+        formulaAndMargin: '미설정' | '설정 완료';
+        overall: '미설정' | '설정 완료';
+    };
+    onExchangeRateSetting?: () => void;
+    onFormulaAndMarginSetting?: () => void;
 }
 
 export interface MarginListSectionProps {

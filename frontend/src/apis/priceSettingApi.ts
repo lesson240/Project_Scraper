@@ -160,10 +160,23 @@ export const priceSettingApi = {
                 throw new ValidationError('상품 코드가 없습니다.', 'originGoodsCode', originGoodsCode);
             }
 
+            // const startTime = Date.now();
+            // console.log(`🕐 [타임아웃 디버깅] 개별 상품 데이터 로드 시작: ${originGoodsCode}`);
+            
             const response = await priceSettingApiClient.get(`/api/price-setting/load/${originGoodsCode}`);
+            
+            // const endTime = Date.now();
+            // const duration = endTime - startTime;
+            // console.log(`🕐 [타임아웃 디버깅] 개별 상품 데이터 로드 완료: ${originGoodsCode} (${duration}ms)`);
+            
             return response.data;
 
         } catch (error) {
+            // const endTime = Date.now();
+            // const duration = endTime - startTime;
+            // console.log(`🕐 [타임아웃 디버깅] 개별 상품 데이터 로드 에러: ${originGoodsCode} (${duration}ms)`);
+            // console.error('🕐 [타임아웃 디버깅] 에러 상세:', error);
+            
             if (error instanceof APIError && error.statusCode === 404) {
                 return null;
             }
@@ -181,7 +194,15 @@ export const priceSettingApi = {
      */
     getInfo: async () => {
         try {
+            // const startTime = Date.now();
+            // console.log('🕐 [타임아웃 디버깅] 프론트엔드 API 호출 시작');
+            
             const response = await priceSettingApiClient.get('/api/price-setting/load/info');
+            
+            // const endTime = Date.now();
+            // const duration = endTime - startTime;
+            // console.log(`🕐 [타임아웃 디버깅] 프론트엔드 API 응답 시간: ${duration}ms`);
+            
             // 응답 구조에 따라 데이터 반환
             if (response.data.success) {
                 return response.data.data;
@@ -192,6 +213,11 @@ export const priceSettingApi = {
             }
 
         } catch (error) {
+            // const endTime = Date.now();
+            // const duration = endTime - startTime;
+            // console.log(`🕐 [타임아웃 디버깅] 프론트엔드 API 에러 발생 시간: ${duration}ms`);
+            // console.error('🕐 [타임아웃 디버깅] 에러 상세:', error);
+            
             if (error instanceof APIError && error.statusCode === 404) {
                 return null;
             }
@@ -222,6 +248,29 @@ export const priceSettingApi = {
                 throw error;
             }
             throw new NetworkError('가격 설정 삭제 중 오류가 발생했습니다.', error as Error);
+        }
+    },
+
+    /**
+     * BasePriceSetting 컬렉션에 공통 설정 저장 API
+     * @param settingType - 설정 타입 ('exchangeRate' | 'formulaAndMargin')
+     * @param data - 저장할 설정 데이터
+     * @returns 저장 결과
+     */
+    saveBaseSetting: async (settingType: 'exchangeRate' | 'formulaAndMargin', data: any): Promise<PriceSettingResponse> => {
+        try {
+            if (!settingType || !data) {
+                throw new ValidationError('설정 타입과 데이터가 필요합니다.', 'settingType', settingType);
+            }
+
+            const response = await priceSettingApiClient.post(`/api/price-setting/save/info/${settingType}`, data);
+            return response.data;
+
+        } catch (error) {
+            if (error instanceof APIError && error.statusCode === 404) {
+                return null;
+            }
+            throw error;
         }
     }
 };

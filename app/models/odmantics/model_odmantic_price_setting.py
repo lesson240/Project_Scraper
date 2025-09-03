@@ -14,9 +14,9 @@ class BasePriceSettingODM(Model):
 
 class ModifiedGoodsDetailODM(Model):
     """ModifiedGoodsDetail 컬렉션용 ODMantic 모델"""
-    exchangeRateInfo: Dict[str, Any] = Field(..., description="환율 정보")
-    sellingPriceFormulaInfo: Dict[str, Any] = Field(..., description="공식 설정")
-    platformMarginRateInfo: Dict[str, Any] = Field(..., description="플랫폼별 마진율")
+    exchangeRateInfo: List[Dict[str, Any]] = Field(..., description="환율 정보 리스트")
+    sellingPriceFormulaInfo: SellingPriceFormulaInfo = Field(..., description="공식 설정")
+    platformMarginRateInfo: PlatformMarginRateInfo = Field(..., description="플랫폼별 마진율")
     marginListByItems: Dict[str, Any] = Field(..., description="플랫폼별 계산된 마진 정보")
     updatedAt: datetime = Field(default_factory=datetime.utcnow, description="업데이트 시간")
 

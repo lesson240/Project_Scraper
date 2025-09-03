@@ -1,5 +1,10 @@
 /* path: frontend/src/components/productUpload/modals/PriceSettingModal/PriceSettingModal.css */
 
+/* Setting 컴포넌트 스타일 import */
+@import url('../../../../styles/common/SettingStatusBadge.css');
+@import url('../../../../styles/common/SaveIcon.css');
+@import url('../../../../styles/common/toolTip.css');
+
 .price-setting-container {
     max-height: 70vh;
     overflow-y: auto;
@@ -40,11 +45,30 @@
     padding: 18px 24px;
     margin: 0;
     z-index: 10;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     transition: all 0.3s ease;
+    min-height: 60px;
+}
+
+/* 새로운 섹션 헤더 레이아웃 */
+.section-title-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+}
+
+.section-controls {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-shrink: 0;
+}
+
+.section-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
 }
 
 .section-header:hover {
@@ -54,16 +78,15 @@
 
 .section-header h3 {
     margin: 0;
-    height: 40px;
     font-size: 16px;
     font-weight: 700;
     color: #2c3e50;
     display: flex;
     align-items: center;
-    justify-content: center;
     border-bottom: none;
     padding: 0;
     position: relative;
+    white-space: nowrap;
 }
 
 .section-header h3::after {
@@ -92,6 +115,7 @@
     z-index: 15;
 }
 
+
 /* 토글 버튼 스타일 */
 .toggle-button {
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
@@ -99,14 +123,14 @@
     font-size: 14px;
     color: #495057;
     cursor: pointer;
-    padding: 8px 12px;
-    border-radius: 8px;
+    padding: 6px 10px;
+    border-radius: 6px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 40px;
-    height: 40px;
+    min-width: 32px;
+    height: 32px;
     font-weight: 600;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     position: relative;

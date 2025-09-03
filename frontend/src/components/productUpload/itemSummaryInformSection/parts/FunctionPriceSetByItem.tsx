@@ -20,15 +20,15 @@ export default function FunctionPriceSetByItem({ isOpen, onClose, selectedItems,
         //     console.log(`🔍 상품 ${id} 처리 중...`);
         // }
 
-        // 가격 정보 우선순위: goods_origin > cost > price > selling_price
+        // 가격 정보 우선순위: goods_origin > cost > total_price > selling_price
         let originalPrice = 0;
 
         if (item?.goods_origin && parseFloat(item.goods_origin) > 0) {
             originalPrice = parseFloat(item.goods_origin);
-        } else if (item?.cost && parseFloat(item.cost) > 0) {
-            originalPrice = parseFloat(item.cost);
-        } else if (item?.price && parseFloat(item.price) > 0) {
-            originalPrice = parseFloat(item.price);
+        // } else if (item?.cost && parseFloat(item.cost) > 0) {
+        //     originalPrice = parseFloat(item.cost);
+        } else if (item?.total_price && parseFloat(item.total_price) > 0) {
+            originalPrice = parseFloat(item.total_price);
         } else if (item?.selling_price && parseFloat(item.selling_price) > 0) {
             originalPrice = parseFloat(item.selling_price);
         }

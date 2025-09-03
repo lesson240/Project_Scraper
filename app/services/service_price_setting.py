@@ -250,9 +250,9 @@ class PriceSettingService:
             # ModifiedGoodsDetail 컬렉션에서 데이터 조회
             modified_goods_collection = self.scrapmarket_db.ModifiedGoodsDetail
             search_criteria = {"origin_goods_code": origin_goods_code}
-            print(f"🔍 검색 조건: {search_criteria}")
+            # print(f"🔍 검색 조건: {search_criteria}")
             result = await modified_goods_collection.find_one(search_criteria)
-            print(f"🔍 find_one 결과: {result}")
+            # print(f"🔍 find_one 결과: {result}")
             
             if result:
                 if '_id' in result and isinstance(result['_id'], ObjectId):
@@ -276,26 +276,98 @@ class PriceSettingService:
 
     async def load_base_price_setting_info(self) -> Optional[Dict[str, Any]]:
         """BasePriceSetting 컬렉션에서 공통 가격 설정 정보를 조회합니다."""
+        # import time
+        # start_time = time.time()
+        
         try:
+            # print(f"🕐 [타임아웃 디버깅] load_base_price_setting_info 시작")
+            
             # base_price_setting 컬렉션에서 데이터 조회
             base_price_collection = self.setting_db.base_price_setting
             
+            # query_start = time.time()
             result = await base_price_collection.find_one(
                 {"_id": "base_price_setting"}
             )
+            # query_time = time.time() - query_start
+            # print(f"🕐 [타임아웃 디버깅] find_one 쿼리 시간: {query_time:.3f}초")
             
             if result:
                 # MongoDB ObjectId 제거
                 if 'id' in result:
                     del result['id']
+                # total_time = time.time() - start_time
+                # print(f"🕐 [타임아웃 디버깅] load_base_price_setting_info 완료 (데이터 있음): {total_time:.3f}초")
                 return result
             else:
+                # total_time = time.time() - start_time
+                # print(f"🕐 [타임아웃 디버깅] load_base_price_setting_info 완료 (데이터 없음): {total_time:.3f}초")
                 return None
             
         except Exception as e:
             raise DatabaseError(
                 message=f"BasePriceSetting 조회 중 오류: {str(e)}",
                 operation="find_one",
+                collection="base_price_setting"
+            )
+
+    async def save_base_setting(self, setting_type: str, data: Dict[str, Any]) -> Dict[str, Any]:
+        """BasePriceSetting 컬렉션에 공통 설정을 저장합니다."""
+        try:
+            if setting_type not in ['exchangeRate', 'formulaAndMargin']:
+                raise ValidationError(f"유효하지 않은 설정 타입: {setting_type}")
+            
+            # base_price_setting 컬렉션 접근
+            base_price_collection = self.setting_db.base_price_setting
+            
+            # 기존 데이터 조회
+            existing_data = await base_price_collection.find_one({"_id": "base_price_setting"})
+            
+            if existing_data:
+                # 기존 데이터 업데이트
+                if setting_type == 'formulaAndMargin':
+                    # formulaAndMargin의 경우 formula와 platformMargin을 분리하여 저장
+                    update_data = {
+                        "$set": {
+                            "sellingPriceFormulaInfo": data.sellingPriceFormulaInfo,
+                            "platformMarginRateInfo": data.platformMarginRateInfo,
+                            "updatedAt": datetime.utcnow()
+                        }
+                    }
+                else:
+                    update_data = {"$set": {f"{setting_type}Info": data, "updatedAt": datetime.utcnow()}}
+                
+                await base_price_collection.update_one(
+                    {"_id": "base_price_setting"},
+                    update_data
+                )
+            else:
+                # 새 데이터 생성
+                if setting_type == 'formulaAndMargin':
+                    new_data = {
+                        "_id": "base_price_setting",
+                        "sellingPriceFormulaInfo": data.sellingPriceFormulaInfo,
+                        "platformMarginRateInfo": data.platformMarginRateInfo,
+                        "updatedAt": datetime.utcnow()
+                    }
+                else:
+                    new_data = {
+                        "_id": "base_price_setting",
+                        f"{setting_type}Info": data,
+                        "updatedAt": datetime.utcnow()
+                    }
+                await base_price_collection.insert_one(new_data)
+            
+            return {
+                "success": True,
+                "message": f"{setting_type} 설정이 BasePriceSetting에 성공적으로 저장되었습니다.",
+                "settingType": setting_type
+            }
+            
+        except Exception as e:
+            raise DatabaseError(
+                message=f"BasePriceSetting 저장 중 오류: {str(e)}",
+                operation="update_one" if existing_data else "insert_one",
                 collection="base_price_setting"
             )
 

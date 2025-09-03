@@ -1,0 +1,45 @@
+/* path: frontend/src/styles/common/SettingStatusBadge.css */
+
+.setting-status-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9999px;
+  border: 1px solid;
+  font-weight: 500;
+}
+
+/* Size variants */
+.setting-status-badge--sm {
+  font-size: 0.75rem;
+  padding: 0.2rem 0.4rem;
+}
+
+.setting-status-badge--md {
+  font-size: 0.875rem;
+  padding: 0.3rem 0.6rem;
+}
+
+.setting-status-badge--lg {
+  font-size: 1rem;
+  padding: 0.4rem 0.8rem;
+}
+
+/* Status variants */
+.setting-status-badge--not-set {
+  background-color: #f3f4f6;
+  color: #4b5563;
+  border-color: #e5e7eb;
+}
+
+.setting-status-badge--completed {
+  background-color: #dcfce7;
+  color: #15803d;
+  border-color: #bbf7d0;
+}
+
+/* Icon styles */
+.setting-status-badge__icon {
+  width: 0.75rem;
+  height: 0.75rem;
+  margin-right: 0.25rem;
+}

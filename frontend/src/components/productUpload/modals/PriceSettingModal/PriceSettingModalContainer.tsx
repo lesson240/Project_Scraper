@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import PriceSettingModal from './PriceSettingModal';
 import { useExchangeRateManager } from '@/hooks/useExchangeRateManager';
+import { useSettingStatus } from '@/hooks/useSettingStatus';
 import type {
     PriceSettingModalUIProps,
     SaveData,
@@ -14,6 +15,7 @@ import type {
 import { priceSettingApi } from '@/apis/priceSettingApi';
 import { ValidationError } from '@/exceptions/PriceSettingExceptions';
 import { calculateAllProductsMargins } from '@/utils/priceCalculation';
+import Toast from "@/components/common/Toast";
 
 // 기본값 상수 정의
 const DEFAULT_FORMULA_SETTINGS: SellingPriceFormulaInfo = {
@@ -47,6 +49,8 @@ export default function PriceSettingModalContainer(props: ContainerProps) {
     const [calculatedPrices, setCalculatedPrices] = useState<CalculatedProductData[]>([]);
     const [isLoadingSavedData, setIsLoadingSavedData] = useState(false);
     const [isDataLoaded, setIsDataLoaded] = useState(false);
+    const [toastMessage, setToastMessage] = useState<string>('');
+    const [showToast, setShowToast] = useState<boolean>(false);
 
     const {
         exchangeRates,
@@ -56,6 +60,25 @@ export default function PriceSettingModalContainer(props: ContainerProps) {
         updateAppliedRate,
         fetchFrontendExchangeRates
     } = useExchangeRateManager();
+
+    // 설정 상태 관리
+    const settingStatus = useSettingStatus(
+        exchangeRates,
+        formulaSettings,
+        platformMarginRates,
+        calculatedPrices
+    );
+
+    // Toast 함수들
+    const showToastMessage = (message: string) => {
+        setToastMessage(message);
+        setShowToast(true);
+    };
+
+    const closeToast = () => {
+        setShowToast(false);
+        setToastMessage('');
+    };
 
     useEffect(() => {
         if (props.isOpen && props.selectedProducts && props.selectedProducts.length > 0) {
@@ -291,6 +314,49 @@ export default function PriceSettingModalContainer(props: ContainerProps) {
         }
     };
 
+    // 설정 아이콘 클릭 핸들러들
+    const handleExchangeRateSetting = async (): Promise<void> => {
+        try {
+            if (!exchangeRates || exchangeRates.length === 0) {
+                showToastMessage('환율 정보가 없습니다.');
+                return;
+            }
+
+            const exchangeRateData = exchangeRates.map(rate => ({
+                currencyCode: rate.currencyCode,
+                appliedRate: rate.appliedRate,
+                lastUpdated: rate.lastUpdated,
+                source: rate.source
+            }));
+
+            await priceSettingApi.saveBaseSetting('exchangeRate', exchangeRateData);
+            showToastMessage('환율 설정이 저장되었습니다.');
+        } catch (error) {
+            console.error('환율 설정 저장 실패:', error);
+            showToastMessage('환율 설정 저장에 실패했습니다.');
+        }
+    };
+
+    const handleFormulaAndMarginSetting = async (): Promise<void> => {
+        try {
+            if (!formulaSettings || !platformMarginRates) {
+                showToastMessage('공식 설정 또는 플랫폼 마진 정보가 없습니다.');
+                return;
+            }
+
+            const combinedData = {
+                sellingPriceFormulaInfo: formulaSettings,
+                platformMarginRateInfo: platformMarginRates
+            };
+
+            await priceSettingApi.saveBaseSetting('formulaAndMargin', combinedData);
+            showToastMessage('공식 및 마진 설정이 저장되었습니다.');
+        } catch (error) {
+            console.error('공식 및 마진 설정 저장 실패:', error);
+            showToastMessage('공식 및 마진 설정 저장에 실패했습니다.');
+        }
+    };
+
     const handleReset = (): void => {
         setFormulaSettings(DEFAULT_FORMULA_SETTINGS);
         setPlatformMarginRates(DEFAULT_PLATFORM_MARGIN_RATE);
@@ -304,50 +370,64 @@ export default function PriceSettingModalContainer(props: ContainerProps) {
     }
 
     return (
-        <PriceSettingModal
-            isOpen={props.isOpen}
-            onClose={props.onClose}
-            selectedProducts={props.selectedProducts}
-            exchangeRates={exchangeRates}
-            calculatedPrices={calculatedPrices}
-            isCalculated={isCalculated}
-            tariffPeriod={tariffPeriod}
-            isLoading={ratesLoading}
-            error={error}
-            onAppliedRateChange={updateAppliedRate}
-            onSyncRates={handleSyncRates}
-            sellingPriceFormulaInfo={formulaSettings}
-            platformMargins={{
-                smartstore: { ExpectedMargin: 0, ExpectedMarginRate: platformMarginRates.smartstore, selling_price: 0 },
-                coupang: { ExpectedMargin: 0, ExpectedMarginRate: platformMarginRates.coupang, selling_price: 0 },
-                auction: { ExpectedMargin: 0, ExpectedMarginRate: platformMarginRates.auction, selling_price: 0 },
-                gmarket: { ExpectedMargin: 0, ExpectedMarginRate: platformMarginRates.gmarket, selling_price: 0 },
-                elevenst: { ExpectedMargin: 0, ExpectedMarginRate: platformMarginRates.elevenst, selling_price: 0 },
-                openmarket: { ExpectedMargin: 0, ExpectedMarginRate: platformMarginRates.openmarket, selling_price: 0 }
-            }}
-            onFormulaChange={(field, value) => setFormulaSettings(prev => ({ ...prev, [field]: value }))}
-            onFormulaReset={() => setFormulaSettings(DEFAULT_FORMULA_SETTINGS)}
-            onMarginChange={(platform, value) => {
-                setPlatformMarginRates(prev => ({
-                    ...prev,
-                    [platform]: value
-                }));
-            }}
-            onMarginReset={() => setPlatformMarginRates(DEFAULT_PLATFORM_MARGIN_RATE)}
-            onPlatformMarginChange={(platform, value) => {
-                setPlatformMarginRates(prev => ({
-                    ...prev,
-                    [platform]: value
-                }));
-            }}
-            isExchangeRateExpanded={isExchangeRateExpanded}
-            isFormulaExpanded={isFormulaExpanded}
-            onExchangeRateToggle={handleExchangeRateToggle}
-            onFormulaToggle={handleFormulaToggle}
-            onCalculateMargin={handleCalculateMargin}
-            onSave={handleSave}
-            onReset={handleReset}
-        />
+        <>
+            {showToast && (
+                <Toast 
+                    message={toastMessage} 
+                    duration={3000} 
+                    onClose={closeToast} 
+                />
+            )}
+
+            <PriceSettingModal
+                isOpen={props.isOpen}
+                onClose={props.onClose}
+                selectedProducts={props.selectedProducts}
+                exchangeRates={exchangeRates}
+                calculatedPrices={calculatedPrices}
+                isCalculated={isCalculated}
+                tariffPeriod={tariffPeriod}
+                isLoading={ratesLoading}
+                error={error}
+                onAppliedRateChange={updateAppliedRate}
+                onSyncRates={handleSyncRates}
+                sellingPriceFormulaInfo={formulaSettings}
+                platformMargins={{
+                    smartstore: { ExpectedMargin: 0, ExpectedMarginRate: platformMarginRates.smartstore, selling_price: 0 },
+                    coupang: { ExpectedMargin: 0, ExpectedMarginRate: platformMarginRates.coupang, selling_price: 0 },
+                    auction: { ExpectedMargin: 0, ExpectedMarginRate: platformMarginRates.auction, selling_price: 0 },
+                    gmarket: { ExpectedMargin: 0, ExpectedMarginRate: platformMarginRates.gmarket, selling_price: 0 },
+                    elevenst: { ExpectedMargin: 0, ExpectedMarginRate: platformMarginRates.elevenst, selling_price: 0 },
+                    openmarket: { ExpectedMargin: 0, ExpectedMarginRate: platformMarginRates.openmarket, selling_price: 0 }
+                }}
+                onFormulaChange={(field, value) => setFormulaSettings(prev => ({ ...prev, [field]: value }))}
+                onFormulaReset={() => setFormulaSettings(DEFAULT_FORMULA_SETTINGS)}
+                onMarginChange={(platform, value) => {
+                    setPlatformMarginRates(prev => ({
+                        ...prev,
+                        [platform]: value
+                    }));
+                }}
+                onMarginReset={() => setPlatformMarginRates(DEFAULT_PLATFORM_MARGIN_RATE)}
+                onPlatformMarginChange={(platform, value) => {
+                    setPlatformMarginRates(prev => ({
+                        ...prev,
+                        [platform]: value
+                    }));
+                }}
+                isExchangeRateExpanded={isExchangeRateExpanded}
+                isFormulaExpanded={isFormulaExpanded}
+                onExchangeRateToggle={handleExchangeRateToggle}
+                onFormulaToggle={handleFormulaToggle}
+                onCalculateMargin={handleCalculateMargin}
+                onSave={handleSave}
+                onReset={handleReset}
+                // 새로운 props 추가
+                settingStatus={settingStatus}
+                onExchangeRateSetting={handleExchangeRateSetting}
+                onFormulaAndMarginSetting={handleFormulaAndMarginSetting}
+            />
+        </>
     );
 }
 

@@ -1,5 +1,6 @@
 // src/components/productUpload/itemSummaryInformSection/ItemRow.tsx
 import React, { useState } from "react";
+import { createPortal } from "react-dom";
 import Tooltip from "@/components/common/Tooltip";
 import TextInputWithButton from "@/components/common/TextInputWithButton";
 import ItemActions from "./ItemActions";
@@ -171,13 +172,16 @@ export default function ItemRow({
         </td>
       </tr>
 
-      {/* 가격 설정 모달 */}
-      <FunctionPriceSetByItem
-        isOpen={isPriceModalOpen}
-        onClose={handlePriceModalClose}
-        selectedItems={[item.origin_goods_code || ""]}
-        items={[item]}
-      />
+      {/* 가격 설정 모달 - Portal을 사용하여 테이블 외부에 렌더링 */}
+      {isPriceModalOpen && createPortal(
+        <FunctionPriceSetByItem
+          isOpen={isPriceModalOpen}
+          onClose={handlePriceModalClose}
+          selectedItems={[item.origin_goods_code || ""]}
+          items={[item]}
+        />,
+        document.body
+      )}
     </>
   );
 }

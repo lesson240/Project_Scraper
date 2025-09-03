@@ -4,11 +4,12 @@ import ExchangeRateByItemSection from './sections/ExchangeRateByItemSection';
 import FormulaByItemSection from './sections/FormulaByItemSection';
 import MarginListByItemSection from './sections/MarginListByItemSection';
 import PriceSettingModalFooter from './sections/PriceSettingByItenModalFooter';
+import { SettingStatusBadge, SaveIcon } from '@/components/common/Setting';
+import Tooltip from '@/components/common/Tooltip';
 import type { 
     PriceSettingModalUIProps, 
     SaveData 
 } from '@/types/priceSetting.types';
-import { ValidationError } from '@/exceptions/PriceSettingExceptions';
 import '@/styles/productUpload/modals/PriceSettingModal/PriceSettingModal.css';
 
 export default function PriceSettingByItemModal({
@@ -21,32 +22,16 @@ export default function PriceSettingByItemModal({
     onExchangeRateToggle, onFormulaToggle,
     onAppliedRateChange, onSyncRates,
     showToastMessage,
+    // 새로운 props 추가
+    settingStatus,
+    onExchangeRateSetting,
+    onFormulaAndMarginSetting,
 
 }: PriceSettingModalUIProps & { showToastMessage?: (message: string) => void }) {
 
     const handleSave = (saveData: SaveData): void => {
-        try {
-            // 데이터 검증
-            if (!saveData.exchangeRates || saveData.exchangeRates.length === 0) {
-                throw new ValidationError('환율 정보가 없습니다.', 'exchangeRates', saveData.exchangeRates);
-            }
-
-            if (!saveData.marginListByItems || !saveData.marginListByItems.items) {
-                throw new ValidationError('계산된 상품 정보가 없습니다.', 'marginListByItems', saveData.marginListByItems);
-            }
-
-            if (!saveData.platformMarginRateInfo) {
-                throw new ValidationError('플랫폼 마진 정보가 없습니다.', 'platformMarginRateInfo', saveData.platformMarginRateInfo);
-            }
-            
-            onSave(saveData);
-
-        } catch (error) {
-            if (error instanceof ValidationError) {
-                throw error;
-            }
-            throw new ValidationError('저장 데이터 검증 중 오류가 발생했습니다.', 'saveData', saveData);
-        }
+        // UI 컴포넌트에서는 단순히 전달만 함 (검증은 Container에서 처리)
+        onSave(saveData);
     };
 
     if (!isOpen) return null;
@@ -63,14 +48,29 @@ export default function PriceSettingByItemModal({
                 <div className="price-setting-container">
                     {/* 환율 설정 섹션 */}
                     <div className="section-header exchange-rate-header" id="exchange-rate-section">
-                        <h3>환율 설정</h3>
-                        <button
-                            className={`toggle-button ${isExchangeRateExpanded ? 'expanded' : 'collapsed'}`}
-                            onClick={onExchangeRateToggle}
-                            title={isExchangeRateExpanded ? '접기' : '펼치기'}
-                        >
-                            {isExchangeRateExpanded ? '▲' : '▼'}
-                        </button>
+                        <div className="section-title-row">
+                            <h3>환율 설정</h3>
+                        </div>
+                        <div className="section-controls">
+                        {settingStatus && (
+                                <SettingStatusBadge status={settingStatus.exchangeRate} size="md" />
+                            )}
+                            {onExchangeRateSetting && (
+                                <SaveIcon 
+                                    settingType="exchangeRate"
+                                    onClick={onExchangeRateSetting}
+                                    size="md"
+                                />
+                            )}
+                            <Tooltip text={isExchangeRateExpanded ? '접기' : '펼치기'}>
+                                <button
+                                    className={`toggle-button ${isExchangeRateExpanded ? 'expanded' : 'collapsed'}`}
+                                    onClick={onExchangeRateToggle}
+                                >
+                                    {isExchangeRateExpanded ? '▲' : '▼'}
+                                </button>
+                            </Tooltip>
+                        </div>
                     </div>
 
                     {isExchangeRateExpanded && (
@@ -86,14 +86,30 @@ export default function PriceSettingByItemModal({
 
                     {/* 공식설정 섹션 */}
                     <div className="section-header formula-header" id="formula-section">
-                        <h3>공식 설정</h3>
-                        <button
-                            className={`toggle-button ${isFormulaExpanded ? 'expanded' : 'collapsed'}`}
-                            onClick={onFormulaToggle}
-                            title={isFormulaExpanded ? '접기' : '펼치기'}
-                        >
-                            {isFormulaExpanded ? '▲' : '▼'}
-                        </button>
+                        <div className="section-title-row">
+                            <h3>공식 설정</h3>
+
+                        </div>
+                        <div className="section-controls">
+                            {settingStatus && (
+                                <SettingStatusBadge status={settingStatus.formulaAndMargin} size="md" />
+                            )}
+                            {onFormulaAndMarginSetting && (
+                                <SaveIcon 
+                                    settingType="formulaAndMargin"
+                                    onClick={onFormulaAndMarginSetting}
+                                    size="md"
+                                />
+                            )}
+                            <Tooltip text={isFormulaExpanded ? '접기' : '펼치기'}>
+                                <button
+                                    className={`toggle-button ${isFormulaExpanded ? 'expanded' : 'collapsed'}`}
+                                    onClick={onFormulaToggle}
+                                >
+                                    {isFormulaExpanded ? '▲' : '▼'}
+                                </button>
+                            </Tooltip>
+                        </div>
                     </div>
 
                     {isFormulaExpanded && (
@@ -107,7 +123,15 @@ export default function PriceSettingByItemModal({
 
                     {/* 마진목록 섹션 */}
                     <div className="section-header margin-list-header">
-                        <h3>마진 목록</h3>
+                        <div className="section-title-row">
+                            <h3>마진 목록</h3>
+
+                        </div>
+                        <div className="section-controls">
+                            {settingStatus && (
+                                <SettingStatusBadge status={settingStatus.marginList} size="md" />
+                            )}
+                        </div>
                     </div>
                     {/* 마진 목록 섹션 */}
                     <MarginListByItemSection
