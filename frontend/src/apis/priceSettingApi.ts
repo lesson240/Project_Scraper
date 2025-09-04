@@ -1,65 +1,45 @@
 // path: frontend/src/apis/priceSettingApi.ts
-import axios, { AxiosInstance } from 'axios';
-import {
-    PriceSettingRequest,
-    PriceSettingResponse,
-    ExchangeRateInfo,
+import axios, { AxiosResponse } from 'axios';
+import type { 
+    PriceSettingRequest, 
+    PriceSettingResponse, 
     SaveData,
-    SellingPriceFormulaInfo,
-    PlatformMarginRateInfo,
-    MarginListByItems
+    ExchangeRateInfo
 } from '@/types/priceSetting.types';
-import {
-    ValidationError,
-    APIError,
-    NetworkError
-} from '@/exceptions';
+import { 
+    ValidationError, 
+    APIError, 
+    NetworkError 
+} from '@/exceptions/PriceSettingExceptions';
 
-// API 기본 URL
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
-
-// Axios 인스턴스 생성
-const priceSettingApiClient: AxiosInstance = axios.create({
-    baseURL: API_BASE_URL,
-    timeout: 5000, // 5초로 단축
+// API 클라이언트 설정
+const priceSettingApiClient = axios.create({
+    baseURL: 'http://localhost:8000',
+    timeout: 30000,
     headers: {
         'Content-Type': 'application/json',
     },
 });
 
-// 응답 인터셉터 설정
+// 응답 인터셉터 - 에러 처리
 priceSettingApiClient.interceptors.response.use(
-    (response) => response,
+    (response: AxiosResponse) => response,
     (error) => {
-        if (error.code === 'ECONNABORTED') {
-            throw new NetworkError('요청 시간이 초과되었습니다.', error);
-        }
-
         if (error.response) {
+            // 서버에서 응답을 받았지만 에러 상태 코드
             const { status, data } = error.response;
-
-            if (status === 422) {
-                throw new ValidationError(
-                    data.detail?.message || '데이터 검증에 실패했습니다.',
-                    'request',
-                    data.detail?.details || data
-                );
-            }
-
-            if (status >= 500) {
-                throw new APIError(`서버 오류 (${status})`, status, data.detail || data);
-            }
-
-            if (status >= 400) {
-                throw new APIError(`클라이언트 오류 (${status})`, status, data.detail || data);
-            }
+            throw new APIError(
+                data?.message || `서버 오류 (${status})`,
+                status,
+                data
+            );
+        } else if (error.request) {
+            // 요청은 보냈지만 응답을 받지 못함
+            throw new NetworkError('네트워크 오류가 발생했습니다.', error);
+        } else {
+            // 요청 설정 중 오류 발생
+            throw new NetworkError('요청 설정 중 오류가 발생했습니다.', error);
         }
-
-        if (error.request) {
-            throw new NetworkError('네트워크 연결에 실패했습니다.', error);
-        }
-
-        throw new NetworkError('알 수 없는 오류가 발생했습니다.', error);
     }
 );
 
@@ -102,7 +82,9 @@ export const priceSettingApi = {
                     exchangeShippingFee: saveData.formulaSettings.exchangeShippingFee,
                     internationalShippingFee: saveData.formulaSettings.internationalShippingFee,
                     freeShipping: saveData.formulaSettings.freeShipping,
-                    optimizeShippingFee: saveData.formulaSettings.optimizeShippingFee
+                    optimizeShippingFee: saveData.formulaSettings.optimizeShippingFee,
+                    baseDiscount: saveData.formulaSettings.baseDiscount,
+                    baseDiscountUnit: saveData.formulaSettings.baseDiscountUnit
                 },
                 platformMarginRateInfo: {
                     smartstore: saveData.platformMarginRateInfo.smartstore,
@@ -115,31 +97,16 @@ export const priceSettingApi = {
                 marginListByItems: saveData.marginListByItems
             };
 
-            // if (import.meta.env.DEV) {
-            //     console.log('🚀 프론트엔드에서 백엔드로 전송하는 데이터:', transformedData);
-            //     console.log('📊 데이터 구조:', {
-            //         exchangeRatesInfo: transformedData.exchangeRatesInfo.length,
-            //         sellingPriceFormulaInfo: Object.keys(transformedData.sellingPriceFormulaInfo),
-            //         platformMarginRateInfo: Object.keys(transformedData.platformMarginRateInfo),
-            //         marginListByItems: Object.keys(transformedData.marginListByItems.items)
-            //     });
-            //     console.log('🔍 exchangeRatesInfo 상세:', JSON.stringify(transformedData.exchangeRatesInfo, null, 2));
-            //     console.log('🔍 marginListByItems 상세:', JSON.stringify(transformedData.marginListByItems, null, 2));
-            //     console.log('�� platformMarginRateInfo 상세:', JSON.stringify(transformedData.platformMarginRateInfo, null, 2));
-            // }
+            if (import.meta.env.DEV) {
+                console.log('📤 가격 설정 데이터 전송 중...');
+            }
 
             const response = await priceSettingApiClient.post('/api/price-setting/save', transformedData);
             return response.data;
 
         } catch (error) {
             if (import.meta.env.DEV) {
-                console.error('❌ API 호출 실패 상세:', {
-                    error,
-                    message: error.message,
-                    response: error.response?.data,
-                    status: error.response?.status,
-                    statusText: error.response?.statusText
-                });
+                console.error('❌ 가격 설정 저장 실패:', error.message);
             }
 
             if (error instanceof ValidationError || error instanceof APIError || error instanceof NetworkError) {
@@ -160,27 +127,10 @@ export const priceSettingApi = {
                 throw new ValidationError('상품 코드가 없습니다.', 'originGoodsCode', originGoodsCode);
             }
 
-            // const startTime = Date.now();
-            // console.log(`🕐 [타임아웃 디버깅] 개별 상품 데이터 로드 시작: ${originGoodsCode}`);
-            
             const response = await priceSettingApiClient.get(`/api/price-setting/load/${originGoodsCode}`);
-            
-            // const endTime = Date.now();
-            // const duration = endTime - startTime;
-            // console.log(`🕐 [타임아웃 디버깅] 개별 상품 데이터 로드 완료: ${originGoodsCode} (${duration}ms)`);
-            
             return response.data;
 
         } catch (error) {
-            // const endTime = Date.now();
-            // const duration = endTime - startTime;
-            // console.log(`🕐 [타임아웃 디버깅] 개별 상품 데이터 로드 에러: ${originGoodsCode} (${duration}ms)`);
-            // console.error('🕐 [타임아웃 디버깅] 에러 상세:', error);
-            
-            if (error instanceof APIError && error.statusCode === 404) {
-                return null;
-            }
-
             if (error instanceof ValidationError || error instanceof APIError || error instanceof NetworkError) {
                 throw error;
             }
@@ -194,38 +144,17 @@ export const priceSettingApi = {
      */
     getInfo: async () => {
         try {
-            // const startTime = Date.now();
-            // console.log('🕐 [타임아웃 디버깅] 프론트엔드 API 호출 시작');
-            
             const response = await priceSettingApiClient.get('/api/price-setting/load/info');
-            
-            // const endTime = Date.now();
-            // const duration = endTime - startTime;
-            // console.log(`🕐 [타임아웃 디버깅] 프론트엔드 API 응답 시간: ${duration}ms`);
-            
-            // 응답 구조에 따라 데이터 반환
-            if (response.data.success) {
-                return response.data.data;
-            } else if (response.data) {
-                return response.data;
-            } else {
-                return null;
-            }
+            return response.data;
 
         } catch (error) {
-            // const endTime = Date.now();
-            // const duration = endTime - startTime;
-            // console.log(`🕐 [타임아웃 디버깅] 프론트엔드 API 에러 발생 시간: ${duration}ms`);
-            // console.error('🕐 [타임아웃 디버깅] 에러 상세:', error);
-            
             if (error instanceof APIError && error.statusCode === 404) {
                 return null;
             }
-
             if (error instanceof ValidationError || error instanceof APIError || error instanceof NetworkError) {
                 throw error;
             }
-            throw new NetworkError('가격 설정 정보 조회 중 오류가 발생했습니다.', error as Error);
+            throw new NetworkError('공통 가격 설정 조회 중 오류가 발생했습니다.', error as Error);
         }
     },
 

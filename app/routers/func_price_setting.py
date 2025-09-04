@@ -37,6 +37,9 @@ async def health_check():
 async def save_price_setting(request_data: PriceSettingRequest):
     """가격 설정 데이터를 저장합니다."""
     try:
+        if __debug__:
+            print(f"📥 가격 설정 데이터 저장 요청 수신: {len(request_data.marginListByItems.items)}개 상품")
+        
         # PriceSettingRequest는 이미 올바른 구조를 가지고 있으므로 직접 사용
         service = await get_price_setting_service()
         result = await service.save_price_setting_data(request_data)
@@ -44,6 +47,12 @@ async def save_price_setting(request_data: PriceSettingRequest):
         return result
         
     except ValidationError as e:
+        if __debug__:
+            print(f"❌ 데이터 검증 실패: {str(e)}")
+            if hasattr(e, 'errors'):
+                for error in e.errors():
+                    print(f"  - 필드: {error.get('loc', 'unknown')} - {error.get('msg', 'unknown')}")
+        
         raise HTTPException(
             status_code=422,
             detail={

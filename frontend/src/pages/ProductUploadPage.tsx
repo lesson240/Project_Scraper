@@ -26,12 +26,65 @@ export default function ProductUploadPage() {
 
   /** 검색 버튼 클릭 시 */
   const handleSearch = async (payload: Record<string, any>) => {
+    const startTime = Date.now();
+    
     try {
+      console.log("🔍 API 요청 시작");
+      console.log("📋 요청 데이터:", payload);
+      console.log("🌐 요청 URL:", axios.defaults.baseURL + "/product-data");
+      console.log("⏰ 시작 시간:", new Date().toISOString());
+      
+      // fetch로도 동시에 테스트
+      console.log("🧪 fetch로 동시 테스트 시작");
+      const fetchPromise = fetch('http://localhost:8000/v1/product-data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      
       const res = await axios.post("/product-data", payload);
-      setItems(res.data);
+      const endTime = Date.now();
+      const duration = endTime - startTime;
+      
+      console.log("✅ API 요청 성공");
+      console.log("📊 응답 상태:", res.status);
+      console.log("⏱️ 응답 시간:", duration + "ms");
       console.log("📦 백엔드 응답 데이터:", res.data);
-    } catch (err) {
-      console.error("조회 실패", err);
+      setItems(res.data);
+      
+      // fetch 결과도 확인
+      try {
+        const fetchRes = await fetchPromise;
+        console.log("🧪 fetch 결과:", fetchRes.status);
+      } catch (fetchErr) {
+        console.log("🧪 fetch 에러:", fetchErr);
+      }
+      
+    } catch (err: any) {
+      const endTime = Date.now();
+      const duration = endTime - startTime;
+      
+      console.error("❌ API 요청 실패");
+      console.error("⏱️ 실패 시간:", duration + "ms");
+      console.error("🚫 에러 타입:", err.constructor.name);
+      console.error("🚫 에러 메시지:", err.message);
+      console.error("🚫 에러 코드:", err.code);
+      console.error("📡 에러 응답:", err.response);
+      console.error("🌐 에러 요청:", err.request);
+      console.error("⚙️ 에러 설정:", err.config);
+      
+      // fetch로도 테스트
+      try {
+        console.log("🧪 fetch로 재시도...");
+        const fetchRes = await fetch('http://localhost:8000/v1/product-data', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        console.log("🧪 fetch 성공:", fetchRes.status);
+      } catch (fetchErr) {
+        console.log("🧪 fetch도 실패:", fetchErr);
+      }
     }
   };
 

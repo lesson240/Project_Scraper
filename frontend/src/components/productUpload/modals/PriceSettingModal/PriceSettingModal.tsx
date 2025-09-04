@@ -130,7 +130,7 @@ export default function PriceSettingModal({
                             <h3>마진 목록</h3>
                         </div>
                         <div className="section-controls">
-                            {settingStatus && (
+                            {settingStatus && 'marginList' in settingStatus && (
                                 <SettingStatusBadge status={settingStatus.marginList} size="md" />
                             )}
                         </div>
@@ -179,7 +179,9 @@ export default function PriceSettingModal({
                         exchangeRate: 1, // 기본값
                         baseMarginRate: sellingPriceFormulaInfo.baseMarginRate,
                         additionalMargin: sellingPriceFormulaInfo.additionalMargin,
-                        internationalShippingFee: sellingPriceFormulaInfo.internationalShippingFee
+                        internationalShippingFee: sellingPriceFormulaInfo.internationalShippingFee,
+                        baseDiscount: sellingPriceFormulaInfo.baseDiscount,
+                        baseDiscountUnit: sellingPriceFormulaInfo.baseDiscountUnit
                     }))}
                 />
             </ModalFooter>

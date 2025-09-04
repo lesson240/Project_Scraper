@@ -17,6 +17,8 @@ export interface SellingPriceFormulaInfo {
     internationalShippingFee: number;
     freeShipping: boolean;
     optimizeShippingFee: boolean;
+    baseDiscount: number;
+    baseDiscountUnit: string;
 }
 
 //  🆕 3. 플랫폼별 마진율 모델 (PlatformMarginRateInfo)
@@ -37,17 +39,22 @@ export interface CalculatedProductData {
     marginList: Record<string, CalculatedItemInfo>;
 }
 
-//  🆕 5. 플랫폼별 계산된 마진 정보 모델 (CalculatedItemInfo)
+//  🆕 5. 플랫폼별 계산된 마진 정보 모델 (CalculatedItemInfo)_수정 필요 ExpectedMargin ExpectedMarginRate
 export interface CalculatedItemInfo {
     ExpectedMargin: number;
     ExpectedMarginRate: number;
-    selling_price: number;
-    // 원가와 할인가 기준 계산을 위한 추가 필드
+    originalBasePrice: number;
+    originalBasePriceWithDiscount: number;
+    originalPriceDiscountRate: number;
+    // 🆕 새로 추가된 필드들 - Optional로 설정하여 기존 데이터와 호환
     originalPriceMargin?: number;
     originalPriceMarginRate?: number;
+    totalBasePrice: number;
+    totalBasePriceWithDiscount: number;
+    totalPriceDiscountRate: number;
+    // 🆕 새로 추가된 필드들 - Optional로 설정하여 기존 데이터와 호환
     totalPriceMargin?: number;
     totalPriceMarginRate?: number;
-    totalPriceSellingPrice?: number; // 할인가 기준 설정 상품가
 }
 
 //  🆕 6. 플랫폼별 마진 정보를 Dict화 (PlatformMargins)
@@ -57,7 +64,17 @@ export interface PlatformMargins {
     auction: CalculatedItemInfo;
     gmarket: CalculatedItemInfo;
     elevenst: CalculatedItemInfo;
-    openmarket: CalculatedItemInfo;
+    openmarket?: CalculatedItemInfo;
+}
+
+//  🆕 6-1. 플랫폼별 마진율만을 위한 간단한 타입 (FormulaSection용)
+export interface PlatformMarginRates {
+    smartstore: { ExpectedMarginRate: number };
+    coupang: { ExpectedMarginRate: number };
+    auction: { ExpectedMarginRate: number };
+    gmarket: { ExpectedMarginRate: number };
+    elevenst: { ExpectedMarginRate: number };
+    openmarket: { ExpectedMarginRate: number };
 }
 
 //  🆕 7. 전체 마진 목록을 originGoodsCode 기준으로 Dict화 (MarginListByItems)
@@ -174,6 +191,8 @@ export interface SaveData {
         internationalShippingFee: number;
         freeShipping: boolean;
         optimizeShippingFee: boolean;
+        baseDiscount: number;
+        baseDiscountUnit: string;
     };
     platformMarginRateInfo: PlatformMarginRateInfo;
     marginListByItems: MarginListByItems;
@@ -192,7 +211,7 @@ export interface PriceSettingModalUIProps {
     isLoading: boolean;
     error: string | null;
     sellingPriceFormulaInfo: SellingPriceFormulaInfo;
-    platformMargins: PlatformMargins;
+    platformMargins: PlatformMarginRates;
     isExchangeRateExpanded: boolean;
     isFormulaExpanded: boolean;
     onAppliedRateChange: (currency: string, value: number) => void;
@@ -201,7 +220,7 @@ export interface PriceSettingModalUIProps {
     onFormulaReset: () => void;
     onMarginChange: (platform: string, value: number) => void;
     onMarginReset: () => void;
-    onPlatformMarginChange: (platform: keyof PlatformMargins, value: number) => void;
+    onPlatformMarginChange: (platform: keyof PlatformMarginRates, value: number) => void;
     onExchangeRateToggle: () => void;
     onFormulaToggle: () => void;
     onCalculateMargin: () => void;
@@ -211,6 +230,7 @@ export interface PriceSettingModalUIProps {
     settingStatus?: {
         exchangeRate: '미설정' | '설정 완료';
         formulaAndMargin: '미설정' | '설정 완료';
+        marginList: '미설정' | '설정 완료';
         overall: '미설정' | '설정 완료';
     };
     onExchangeRateSetting?: () => void;
@@ -221,7 +241,7 @@ export interface MarginListSectionProps {
     selectedProducts: Product[];
     calculatedPrices: CalculatedProductData[];
     exchangeRates: ExchangeRateData[];
-    platformMargins: PlatformMargins;
+    platformMargins: PlatformMarginRates;
     sellingPriceFormulaInfo?: SellingPriceFormulaInfo;
     onMarginChange: (productId: string, platform: string, value: number) => void;
     onMarginReset: (productId: string) => void;
@@ -239,9 +259,9 @@ export interface ExchangeRateSectionProps {
 
 export interface FormulaSectionProps {
     sellingPriceFormulaInfo: SellingPriceFormulaInfo;
-    platformMargins: PlatformMargins;
+    platformMargins: PlatformMarginRates;
     onFormulaChange: (field: keyof SellingPriceFormulaInfo, value: any) => void;
-    onPlatformMarginChange: (platform: keyof PlatformMargins, value: number) => void;
+    onPlatformMarginChange: (platform: keyof PlatformMarginRates, value: number) => void;
 }
 
 export interface PriceSettingModalFooterProps {

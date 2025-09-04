@@ -68,7 +68,7 @@
 
 .formula-sections-container {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
     gap: 30px;
 }
 
@@ -92,8 +92,17 @@
     align-items: stretch !important;
 }
 
+/* 공식 섹션들을 나란히 배치하는 컨테이너 */
+.formula-container {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+    flex-wrap: wrap; /* 화면이 작을 때 줄바꿈 */
+}
+
 /* 기본 선택자도 유지 (fallback) */
 .base-formula,
+.base-discount-formula,
 .platform-formula {
     background: #f8f9fa;
     padding: 20px;
@@ -106,10 +115,40 @@
     overflow: visible;
     /* Flexbox로 내부 요소 정렬 */
     display: flex;
+    /* 나란히 배치를 위한 flex 속성 */
+    flex: 1;
+    min-width: 200px; /* 최소 너비 설정 */
     flex-direction: column;
     /* 내부 요소가 테두리를 넘어가지 않도록 설정 */
     box-sizing: border-box;
     align-items: stretch;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 1200px) {
+    .formula-container {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .base-formula,
+    .base-discount-formula,
+    .platform-formula {
+        min-width: auto;
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .formula-container {
+        gap: 10px;
+    }
+    
+    .base-formula,
+    .base-discount-formula,
+    .platform-formula {
+        padding: 15px;
+    }
 }
 
 .price-setting-modal .formula-section .base-formula h4,
@@ -125,6 +164,7 @@
 }
 
 .base-formula h4,
+.base-discount-formula h4,
 .platform-formula h4 {
     margin: 0 0 15px 0;
     font-size: 16px;
@@ -260,6 +300,7 @@
     }
 
     .base-formula,
+    .base-discount-formula,
     .platform-formula {
         /* 모바일에서는 전체 너비 사용 */
         width: 100%;

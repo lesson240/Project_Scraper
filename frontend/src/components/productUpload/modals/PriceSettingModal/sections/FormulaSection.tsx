@@ -3,9 +3,10 @@ import React from 'react';
 import type {
     FormulaSectionProps,
     SellingPriceFormulaInfo,
-    PlatformMargins
+    PlatformMarginRates
 } from '@/types/priceSetting.types';
 import NumberInput from '@/components/common/NumberInput';
+import ComboInput from '@/components/common/ComboInput';
 import '@/styles/productUpload/modals/PriceSettingModal/sections/FormulaSection.css';
 
 export default function FormulaSection({
@@ -20,7 +21,7 @@ export default function FormulaSection({
         onFormulaChange(field, value);
     };
 
-    const handlePlatformMarginChange = (platform: keyof PlatformMargins, value: number) => {
+    const handlePlatformMarginChange = (platform: keyof PlatformMarginRates, value: number) => {
         // console.log(`플랫폼 마진 변경: ${platform} =`, value);
         onPlatformMarginChange(platform, value);
     };
@@ -111,6 +112,30 @@ export default function FormulaSection({
                                 onChange={(value) => handleFormulaChange('internationalShippingFee', value)}
                                 min={0}
                                 className="formula-input"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <div className="base-discount-formula">
+                    <h4>기본 판매가 공식 (스마트스토어)</h4>
+                    <div className="formula-display">
+                        원가×환율×(1+기본 마진율)+추가마진+국제운송료-할인가
+                    </div>
+
+                    <div className="formula-inputs">
+                        <div className="formula-inputs-container">
+                            <NumberInput
+                                label="할인가 or 할인율(%)"
+                                value={sellingPriceFormulaInfo.baseDiscount}
+                                onChange={(value) => handleFormulaChange('baseDiscount', value)}
+                                className="formula-input"
+                            />
+                            <ComboInput
+                                label="단위"
+                                options={['원', '%']}
+                                value={String(sellingPriceFormulaInfo.baseDiscountUnit)}
+                                onChange={(value) => handleFormulaChange('baseDiscountUnit', value)}
                             />
                         </div>
                     </div>

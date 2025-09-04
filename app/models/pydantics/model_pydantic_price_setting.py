@@ -22,6 +22,8 @@ class SellingPriceFormulaInfo(BaseModel):
     internationalShippingFee: float = Field(default=0, description="국제 운송료", ge=0)
     freeShipping: bool = Field(default=False, description="무료 배송 여부")
     optimizeShippingFee: bool = Field(default=False, description="배송비 최적화 여부")
+    baseDiscount: float = Field(default=0, description="할인가", ge=0)
+    baseDiscountUnit: str = Field(default="원", description="할인 단위")
 
 # 🆕 3. 플랫폼별 마진율 모델
 class PlatformMarginRateInfo(BaseModel):
@@ -40,17 +42,39 @@ class CalculatedItemInfo(BaseModel):
     """플랫폼별 계산된 마진 정보 - 예상 마진, 마진율, 판매가"""
     ExpectedMargin: float = Field(..., description="예상 마진", ge=0)
     ExpectedMarginRate: float = Field(..., description="예상 마진율 (%)", ge=0, le=100)
-    selling_price: float = Field(..., description="판매가", gt=0)
+    originalBasePrice: float = Field(..., description="원가 기준 설정 상품가", ge=0)
+    originalBasePriceWithDiscount: float = Field(..., description="원가 기준 설정 할인가", ge=0)
+    originalPriceDiscountRate: float = Field(..., description="원가 기준 할인율 (%)", ge=0, le=100)
+    # 🆕 새로 추가된 필드들 - Optional로 설정하여 기존 데이터와 호환
+    originalPriceMargin: Optional[float] = Field(None, description="원가 기준 마진", ge=0)
+    originalPriceMarginRate: Optional[float] = Field(None, description="원가 기준 마진율 (%)", ge=0, le=100)
+    totalBasePrice: float = Field(..., description="행사가 기준 설정 상품가", ge=0)
+    totalBasePriceWithDiscount: float = Field(..., description="행사가 기준 설정 할인가", ge=0)
+    totalPriceDiscountRate: float = Field(..., description="행사가 기준 할인율 (%)", ge=0, le=100)
+    # 🆕 새로 추가된 필드들 - Optional로 설정하여 기존 데이터와 호환
+    totalPriceMargin: Optional[float] = Field(None, description="행사가 기준 마진", ge=0)
+    totalPriceMarginRate: Optional[float] = Field(None, description="행사가 기준 마진율 (%)", ge=0, le=100)
 
-    @validator('ExpectedMargin', 'ExpectedMarginRate', 'selling_price')
+    @validator('ExpectedMargin', 'ExpectedMarginRate', 'originalBasePrice', 'originalBasePriceWithDiscount', 
+              'originalPriceDiscountRate', 'totalBasePrice', 'totalBasePriceWithDiscount', 'totalPriceDiscountRate')
     def validate_positive_values(cls, v):
         if v < 0:
             raise ValueError('값은 0 이상이어야 합니다')
         return v
+    
+    @validator('originalPriceMargin', 'originalPriceMarginRate', 'totalPriceMargin', 'totalPriceMarginRate')
+    def validate_optional_positive_values(cls, v):
+        if v is not None and v < 0:
+            raise ValueError('값은 0 이상이어야 합니다')
+        return v
 
-    @validator("ExpectedMarginRate", pre=True, always=True)
+    @validator("ExpectedMarginRate", "originalPriceDiscountRate", "totalPriceDiscountRate", pre=True, always=True)
     def coerce_rate(cls, v):
         return float(v)
+    
+    @validator("originalPriceMarginRate", "totalPriceMarginRate", pre=True, always=True)
+    def coerce_optional_rate(cls, v):
+        return float(v) if v is not None else None
 
 # 🆕 5. 플랫폼별 마진 정보를 Dict화
 class PlatformMargins(BaseModel):
@@ -60,7 +84,7 @@ class PlatformMargins(BaseModel):
     auction: CalculatedItemInfo = Field(..., description="옥션 마진 정보")
     gmarket: CalculatedItemInfo = Field(..., description="지마켓 마진 정보")
     elevenst: CalculatedItemInfo = Field(..., description="11번가 마진 정보")
-    openmarket: CalculatedItemInfo = Field(None, description="오픈마켓 마진 정보")
+    openmarket: Optional[CalculatedItemInfo] = Field(None, description="오픈마켓 마진 정보")
 
 # 🆕 6. 전체 마진 목록을 originGoodsCode 기준으로 Dict화
 class MarginListByItems(BaseModel):

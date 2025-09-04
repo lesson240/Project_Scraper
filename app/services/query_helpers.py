@@ -26,7 +26,13 @@ def build_base_filters(inquiry):
     if inquiry.group_name: filters.update(expr("group_name", inquiry.group_name))
     if inquiry.memo_name:  filters.update(expr("memo", inquiry.memo_name))
     if inquiry.origin_goods_code: filters.update(expr("origin_goods_code", inquiry.origin_goods_code))
-    if inquiry.origin_goods_name: filter.update(expr("origin_goods_name", inquiry.origin_goods_name))
+    if inquiry.origin_goods_name: filters.update(expr("origin_goods_name", inquiry.origin_goods_name))
+    # sold_out 필터 추가
+    if inquiry.sold_out: 
+        if inquiry.sold_out == "판매":
+            filters["sold_out"] = {"$ne": "품절"}
+        elif inquiry.sold_out == "품절":
+            filters["sold_out"] = "품절"
     return filters
 
 async def merge_results(inquiry, management_goods, base_filters):

@@ -39,6 +39,9 @@ class FilterSectionInquiry:
         self.modified_goods_name = kwargs.get("modified_goods_name", "")
         self.promotion_period = kwargs.get("promotion_period", "")
         self.origin_goods_name = kwargs.get("origin_goods_name", "")
+        # 프론트엔드에서 추가로 보내는 필드들
+        self.un_uploaded_market = kwargs.get("un_uploaded_market", "")
+        self.sold_out = kwargs.get("sold_out", "")
 
         self.mongodb_service = mongodb_service
         if self.mongodb_service and self.mongodb_service.client is None:

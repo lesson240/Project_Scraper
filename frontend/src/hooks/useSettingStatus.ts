@@ -58,7 +58,7 @@ export function useSettingStatus(
           return rate.appliedRate !== undefined && rate.appliedRate !== null && rate.appliedRate > 0;
         }
         const value = rate[field as keyof ExchangeRateData];
-        return value !== undefined && value !== null && value !== 0 && value !== '';
+        return value !== undefined && value !== null && value !== 0;
       });
     });
 
@@ -73,14 +73,14 @@ export function useSettingStatus(
 
     // 공식 설정 필드 확인
     // 필수 필드: baseMarginRate (0이면 안됨)
-    // 선택 필드: additionalMargin, baseShippingFee, internationalShippingFee (0이어도 됨)
+    // 선택 필드: additionalMargin, baseShippingFee, internationalShippingFee, baseDiscount, baseDiscountUnit (0이어도 됨)
     const requiredFormulaFields = ['baseMarginRate', 'returnShippingFee', 'exchangeShippingFee'];
-    const optionalFormulaFields = ['additionalMargin', 'baseShippingFee', 'internationalShippingFee'];
+    const optionalFormulaFields = ['additionalMargin', 'baseShippingFee', 'internationalShippingFee', 'baseDiscount', 'baseDiscountUnit'];
     
     // 필수 필드 검증 (0이면 안됨)
     const requiredFormulaValid = requiredFormulaFields.every(field => {
       const value = formulaSettings[field as keyof SellingPriceFormulaInfo];
-      return value !== undefined && value !== null && value !== 0 && value !== '';
+      return value !== undefined && value !== null && value !== 0;
     });
     
     // 선택 필드 검증 (0이어도 되지만 undefined/null이면 안됨)
@@ -95,7 +95,7 @@ export function useSettingStatus(
     const marginFields = ['smartstore', 'coupang', 'auction', 'gmarket', 'elevenst'];
     const marginValid = marginFields.every(field => {
       const value = platformMarginRates[field as keyof PlatformMarginRateInfo];
-      return value !== undefined && value !== null && value !== 0 && value !== '';
+      return value !== undefined && value !== null && value !== 0;
     });
 
     return (formulaValid && marginValid) ? '설정 완료' : '미설정';
@@ -118,8 +118,7 @@ export function useSettingStatus(
         (product.coupangPrice !== undefined && product.coupangPrice !== null && product.coupangPrice > 0) ||
         (product.auctionPrice !== undefined && product.auctionPrice !== null && product.auctionPrice > 0) ||
         (product.gmarketPrice !== undefined && product.gmarketPrice !== null && product.gmarketPrice > 0) ||
-        (product.elevenstPrice !== undefined && product.elevenstPrice !== null && product.elevenstPrice > 0) ||
-        (product.openmarketPrice !== undefined && product.openmarketPrice !== null && product.openmarketPrice > 0)
+        (product.elevenstPrice !== undefined && product.elevenstPrice !== null && product.elevenstPrice > 0)
       );
     });
     

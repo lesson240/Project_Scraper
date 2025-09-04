@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API 직접 테스트</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ccc; }
+        button { padding: 10px 20px; margin: 5px; }
+        .result { margin-top: 10px; padding: 10px; background: #f5f5f5; }
+        .error { background: #ffebee; color: #c62828; }
+        .success { background: #e8f5e8; color: #2e7d32; }
+    </style>
+</head>
+<body>
+    <h1>API 직접 테스트</h1>
+    
+    <div class="test-section">
+        <h2>1. 기본 연결 테스트</h2>
+        <button onclick="testConnection()">백엔드 연결 테스트</button>
+        <div id="connectionResult" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. product-data API 테스트</h2>
+        <button onclick="testProductData()">product-data 요청</button>
+        <div id="productDataResult" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. axios 라이브러리 테스트</h2>
+        <button onclick="testAxios()">axios로 요청</button>
+        <div id="axiosResult" class="result"></div>
+    </div>
+
+    <script>
+        // 1. 기본 연결 테스트
+        async function testConnection() {
+            const resultDiv = document.getElementById('connectionResult');
+            resultDiv.innerHTML = '연결 테스트 중...';
+            
+            try {
+                const response = await fetch('http://localhost:8000/v1/', {
+                    method: 'GET',
+                    mode: 'cors'
+                });
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `<div class="success">✅ 연결 성공: ${response.status}</div>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">❌ 연결 실패: ${response.status}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ 연결 에러: ${error.message}</div>`;
+            }
+        }
+
+        // 2. product-data API 테스트
+        async function testProductData() {
+            const resultDiv = document.getElementById('productDataResult');
+            resultDiv.innerHTML = 'API 요청 중...';
+            
+            const startTime = Date.now();
+            
+            try {
+                const response = await fetch('http://localhost:8000/v1/product-data', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ sold_out: '판매' }),
+                    mode: 'cors'
+                });
+                
+                const endTime = Date.now();
+                const duration = endTime - startTime;
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            ✅ API 요청 성공<br>
+                            응답 시간: ${duration}ms<br>
+                            데이터 개수: ${data.length}개
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">❌ API 에러: ${response.status} ${response.statusText}</div>`;
+                }
+            } catch (error) {
+                const endTime = Date.now();
+                const duration = endTime - startTime;
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        ❌ API 요청 실패<br>
+                        에러: ${error.message}<br>
+                        경과 시간: ${duration}ms
+                    </div>
+                `;
+            }
+        }
+
+        // 3. axios 라이브러리 테스트
+        async function testAxios() {
+            const resultDiv = document.getElementById('axiosResult');
+            resultDiv.innerHTML = 'axios 로딩 중...';
+            
+            try {
+                // axios CDN에서 로드
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js';
+                script.onload = async () => {
+                    resultDiv.innerHTML = 'axios 요청 중...';
+                    
+                    const startTime = Date.now();
+                    
+                    try {
+                        const response = await axios.post('http://localhost:8000/v1/product-data', {
+                            sold_out: '판매'
+                        }, {
+                            timeout: 10000,
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        });
+                        
+                        const endTime = Date.now();
+                        const duration = endTime - startTime;
+                        
+                        resultDiv.innerHTML = `
+                            <div class="success">
+                                ✅ axios 요청 성공<br>
+                                응답 시간: ${duration}ms<br>
+                                데이터 개수: ${response.data.length}개
+                            </div>
+                        `;
+                    } catch (error) {
+                        const endTime = Date.now();
+                        const duration = endTime - startTime;
+                        resultDiv.innerHTML = `
+                            <div class="error">
+                                ❌ axios 요청 실패<br>
+                                에러: ${error.message}<br>
+                                경과 시간: ${duration}ms<br>
+                                상태: ${error.response?.status || 'N/A'}
+                            </div>
+                        `;
+                    }
+                };
+                document.head.appendChild(script);
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ axios 로드 실패: ${error.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>

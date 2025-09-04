@@ -7,8 +7,7 @@ from unittest.mock import AsyncMock, MagicMock
 from datetime import datetime
 from app.services.service_price_setting import PriceSettingService
 from app.models import (
-    ExchangeRateData,
-    ProductPriceData,
+    ExchangeRateInfo,
     PriceSettingRequest
 )
 from app.exceptions.price_setting_exceptions import (

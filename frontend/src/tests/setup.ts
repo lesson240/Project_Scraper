@@ -5,7 +5,6 @@
  */
 
 import '@testing-library/jest-dom';
-
 // Mock IntersectionObserver
 global.IntersectionObserver = class IntersectionObserver {
     readonly root: Element | null = null;
@@ -41,3 +40,4 @@ Object.defineProperty(window, 'matchMedia', {
         dispatchEvent: () => {},
     }),
 });
+

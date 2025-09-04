@@ -7,6 +7,7 @@ import type {
 } from '@/types/priceSetting.types';
 import NumberInput from '@/components/common/NumberInput';
 import '@/styles/productUpload/modals/PriceSettingModal/sections/FormulaSection.css';
+import ComboInput from '@/components/common/ComboInput';
 
 export default function FormulaByItemSection({
     sellingPriceFormulaInfo,
@@ -56,7 +57,7 @@ export default function FormulaByItemSection({
 
             <div className="formula-sections-container">
                 <div className="base-formula">
-                    <h4>기본 판매가 공식 (스마트스토어)</h4>
+                    <h4>설정 상품가 공식 (스마트스토어)</h4>
                     <div className="formula-display">
                         원가×환율×(1+기본 마진율)+추가마진+국제운송료
                     </div>
@@ -115,7 +116,31 @@ export default function FormulaByItemSection({
                         </div>
                     </div>
                 </div>
+                
+                <div className="base-discount-formula">
+                    <h4>설정 할인가 공식</h4>
+                    <div className="formula-display">
+                        원가×환율×(1+기본 마진율)+추가마진+국제운송료-할인가
+                    </div>
 
+                    <div className="formula-inputs">
+                        <div className="formula-inputs-container">
+                            <NumberInput
+                                label="할인가 or 할인율(%)"
+                                value={sellingPriceFormulaInfo.baseDiscount}
+                                onChange={(value) => handleFormulaChange('baseDiscount', value)}
+                                className="formula-input"
+                            />
+                            <ComboInput
+                                label="단위"
+                                options={['원', '%']}
+                                value={String(sellingPriceFormulaInfo.baseDiscountUnit)}
+                                onChange={(value) => handleFormulaChange('baseDiscountUnit', value)}
+                            />
+                        </div>
+                    </div>
+                </div>
+                
                 <div className="platform-formula">
                     <h4>플랫폼 기본 마진율</h4>
                     <div className="formula-display">

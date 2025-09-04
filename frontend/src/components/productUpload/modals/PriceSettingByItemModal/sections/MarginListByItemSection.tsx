@@ -100,8 +100,8 @@ export default function MarginListByItemSection({
                             <th>썸네일</th>
                             <th>상품명</th>
                             <th>원가</th>
-                            <th>할인가</th>
-                            <th>할인 종료일</th>
+                            <th>행사가</th>
+                            <th>행사 종료일</th>
                             <th>재고</th>
                             <th>위너가</th>
                         </tr>
@@ -164,14 +164,18 @@ export default function MarginListByItemSection({
                     <thead>
                         <tr>
                             <th rowSpan={2}>플랫폼</th>
-                            <th colSpan={3}>원가</th>
-                            <th colSpan={3}>할인가</th>
+                            <th colSpan={5}>원가</th>
+                            <th colSpan={5}>행사가</th>
                         </tr>
                         <tr>
                             <th>설정 상품가</th>
+                            <th>설정 할인가</th>
+                            <th>예상 할인율</th>
                             <th>예상 마진율</th>
                             <th>예상 마진</th>
                             <th>설정 상품가</th>
+                            <th>설정 할인가</th>
+                            <th>예상 할인율</th>
                             <th>예상 마진율</th>
                             <th>예상 마진</th>
                         </tr>
@@ -202,24 +206,36 @@ export default function MarginListByItemSection({
                                             {platform.name}
                                         </td>
                                         {/* 원가 기준 컬럼들 */}
-                                        <td className={`inform-cell ${getPriceClass(margin.originalPriceMargin || margin.ExpectedMargin, 'selling')}`}>
-                                            {roundUpToTen(margin.selling_price).toLocaleString()}
+                                        <td className={`inform-cell ${margin.originalBasePrice ? getPriceClass(margin.originalBasePrice, 'selling') : ''}`}>
+                                            {margin.originalBasePrice ? roundUpToTen(margin.originalBasePrice).toLocaleString() : '-'}
                                         </td>
-                                        <td className={`inform-cell ${getMarginClass(margin.originalPriceMarginRate || margin.ExpectedMarginRate, 'rate')}`}>
-                                            {(margin.originalPriceMarginRate || margin.ExpectedMarginRate).toFixed(1)}%
+                                        <td className={`inform-cell ${margin.originalBasePriceWithDiscount ? getPriceClass(margin.originalBasePriceWithDiscount, 'selling') : ''}`}>
+                                            {margin.originalBasePriceWithDiscount ? roundUpToTen(margin.originalBasePriceWithDiscount).toLocaleString() : '-'}
+                                        </td>
+                                        <td className={`inform-cell ${margin.originalPriceDiscountRate ? getMarginClass(margin.originalPriceDiscountRate, 'rate') : ''}`}>
+                                            {margin.originalPriceDiscountRate ? (margin.originalPriceDiscountRate).toFixed(1) : '-'}%
+                                        </td>    
+                                        <td className={`inform-cell ${margin.originalPriceMarginRate ? getMarginClass(margin.originalPriceMarginRate, 'rate') : ''}`}>
+                                            {margin.originalPriceMarginRate ? (margin.originalPriceMarginRate).toFixed(1) : '-'}%
                                         </td>                                   
-                                        <td className={`inform-cell ${getMarginClass(margin.originalPriceMargin || margin.ExpectedMargin, 'margin')}`}>
-                                            {roundUpToTen(margin.originalPriceMargin || margin.ExpectedMargin).toLocaleString()}
+                                        <td className={`inform-cell ${margin.originalPriceMargin ? getMarginClass(margin.originalPriceMargin, 'margin') : ''}`}>
+                                            {margin.originalPriceMargin ? roundUpToTen(margin.originalPriceMargin).toLocaleString() : '-'}
                                         </td>
                                         {/* 할인가 기준 컬럼들 */}
-                                        <td className={`inform-cell ${getPriceClass(margin.totalPriceMargin || margin.ExpectedMargin, 'selling')}`}>
-                                            {roundUpToTen(margin.totalPriceSellingPrice || margin.selling_price).toLocaleString()}
+                                        <td className={`inform-cell ${margin.totalBasePrice ? getPriceClass(margin.totalBasePrice, 'selling') : ''}`}>
+                                            {margin.totalBasePrice ? roundUpToTen(margin.totalBasePrice).toLocaleString() : '-'}
                                         </td>
-                                        <td className={`inform-cell ${getMarginClass(margin.totalPriceMarginRate || margin.ExpectedMarginRate, 'rate')}`}>
-                                            {(margin.totalPriceMarginRate || margin.ExpectedMarginRate).toFixed(1)}%
-                                        </td>                                    
-                                        <td className={`inform-cell ${getMarginClass(margin.totalPriceMargin || margin.ExpectedMargin, 'margin')}`}>
-                                            {roundUpToTen(margin.totalPriceMargin || margin.ExpectedMargin).toLocaleString()}
+                                        <td className={`inform-cell ${margin.totalBasePriceWithDiscount ? getPriceClass(margin.totalBasePriceWithDiscount, 'selling') : ''}`}>
+                                            {margin.totalBasePriceWithDiscount ? roundUpToTen(margin.totalBasePriceWithDiscount).toLocaleString() : '-'}
+                                        </td>
+                                        <td className={`inform-cell ${margin.totalPriceDiscountRate ? getMarginClass(margin.totalPriceDiscountRate, 'rate') : ''}`}>
+                                            {margin.totalPriceDiscountRate ? (margin.totalPriceDiscountRate).toFixed(1) : '-'}%
+                                        </td>
+                                        <td className={`inform-cell ${margin.totalPriceMarginRate ? getMarginClass(margin.totalPriceMarginRate, 'rate') : ''}`}>
+                                            {margin.totalPriceMarginRate ? (margin.totalPriceMarginRate).toFixed(1) : '-'}%
+                                        </td>
+                                        <td className={`inform-cell ${margin.totalPriceMargin ? getMarginClass(margin.totalPriceMargin, 'margin') : ''}`}>
+                                            {margin.totalPriceMargin ? roundUpToTen(margin.totalPriceMargin).toLocaleString() : '-'}
                                         </td>
                                     </tr>
                                 );

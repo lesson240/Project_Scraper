@@ -31,6 +31,8 @@ type Props = {
     baseMarginRate?: number;
     additionalMargin?: number;
     internationalShippingFee?: number;
+    baseDiscount?: number;
+    baseDiscountUnit?: string;
   }>;
   showToastMessage?: (message: string) => void;
 };
@@ -61,6 +63,8 @@ export default function PriceSettingModalFooter({
           sellingPriceFormulaInfo.baseMarginRate,
           sellingPriceFormulaInfo.additionalMargin,
           sellingPriceFormulaInfo.internationalShippingFee,
+          sellingPriceFormulaInfo.baseDiscount,
+          sellingPriceFormulaInfo.baseDiscountUnit,
           platformMarginRateInfo,
           undefined // totalPrice는 별도로 처리하지 않음 (기본값 사용)
         );
@@ -77,6 +81,11 @@ export default function PriceSettingModalFooter({
 
   const handleSave = () => {
     try {
+      // 🔍 디버깅: calculatedProductData 구조 확인
+      console.log('🔍 calculatedProductData:', calculatedProductData);
+      console.log('🔍 calculatedProductData 타입:', typeof calculatedProductData);
+      console.log('🔍 calculatedProductData 길이:', calculatedProductData?.length);
+      
       // 저장할 데이터 구성 - SaveData 타입에 맞게 수정
       const saveData: SaveData = {
         exchangeRates: exchangeRatesInfo.map(rate => ({
@@ -91,23 +100,27 @@ export default function PriceSettingModalFooter({
           exchangeShippingFee: sellingPriceFormulaInfo.exchangeShippingFee,
           internationalShippingFee: sellingPriceFormulaInfo.internationalShippingFee,
           freeShipping: sellingPriceFormulaInfo.freeShipping,
-          optimizeShippingFee: sellingPriceFormulaInfo.optimizeShippingFee
+          optimizeShippingFee: sellingPriceFormulaInfo.optimizeShippingFee,
+          baseDiscount: sellingPriceFormulaInfo.baseDiscount,
+          baseDiscountUnit: sellingPriceFormulaInfo.baseDiscountUnit
         },
         platformMarginRateInfo,
         marginListByItems: {
           items: calculatedProductData.reduce((acc, product) => {
+            // 각 플랫폼별로 CalculatedItemInfo 객체 생성
             acc[product.originGoodsCode] = {
               smartstore: product.marginList.smartstore,
               coupang: product.marginList.coupang,
               auction: product.marginList.auction,
               gmarket: product.marginList.gmarket,
               elevenst: product.marginList.elevenst,
-              openmarket: product.marginList.openmarket
+              ...(product.marginList.openmarket && { openmarket: product.marginList.openmarket })
             };
             return acc;
           }, {} as Record<string, PlatformMargins>)
         }
       };
+      
 
       // 부모 컴포넌트의 onSave 호출
       onSave(saveData);

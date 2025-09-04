@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API 테스트</title>
+</head>
+<body>
+    <h1>API 테스트 페이지</h1>
+    <button id="testBtn">API 테스트 실행</button>
+    <div id="result"></div>
+
+    <script>
+        const testBtn = document.getElementById('testBtn');
+        const resultDiv = document.getElementById('result');
+
+        testBtn.addEventListener('click', async () => {
+            try {
+                console.log('API 테스트 시작');
+                resultDiv.innerHTML = 'API 요청 중...';
+                
+                const response = await fetch('http://localhost:8000/v1/product-data', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ sold_out: '판매' })
+                });
+
+                console.log('응답 상태:', response.status);
+                console.log('응답 헤더:', response.headers);
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('응답 데이터:', data);
+                    resultDiv.innerHTML = `성공! 데이터 ${data.length}개 받음`;
+                } else {
+                    resultDiv.innerHTML = `에러: ${response.status} ${response.statusText}`;
+                }
+            } catch (error) {
+                console.error('에러:', error);
+                resultDiv.innerHTML = `에러: ${error.message}`;
+            }
+        });
+    </script>
+</body>
+</html>

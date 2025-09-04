@@ -29,6 +29,9 @@ class BrandCodeRequestModel(BaseModel):
     origin_goods_code: Optional[str] = Field(None)
     modified_goods_name: Optional[str] = Field(None)
     promotion_period: Optional[str] = Field(None)
+    # 프론트엔드에서 추가로 보내는 필드들
+    un_uploaded_market: Optional[str] = Field(None)
+    sold_out: Optional[str] = Field(None)
 
 
 # 판매동기화 버튼 클릭 시 get BaseModel

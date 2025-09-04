@@ -65,8 +65,10 @@ export default function MarginListSection({
                         <tr>
                             <th>썸네일</th>
                             <th>상품명</th>
-                            <th>원본 할인가</th>
-                            <th>설정 상품가 (￦)</th>
+                            <th>원가</th>
+                            <th>설정 상품가</th>
+                            <th>설정 할인가</th>
+                            <th>예상 할인율</th>
                             <th>예상 마진율</th>
                             <th>예상 마진</th>
                         </tr>
@@ -89,14 +91,28 @@ export default function MarginListSection({
                                     </td>
                                     <td className="set-price">
                                         {isCalculated && calculated ? (
-                                            calculated.marginList.smartstore.selling_price.toLocaleString()
+                                            calculated.marginList.smartstore.originalBasePrice.toLocaleString()
+                                        ) : (
+                                            '-'
+                                        )}
+                                    </td>
+                                    <td className="set-price">
+                                        {isCalculated && calculated ? (
+                                            calculated.marginList.smartstore.originalBasePriceWithDiscount.toLocaleString()
+                                        ) : (
+                                            '-'
+                                        )}
+                                    </td>
+                                    <td className="set-price">
+                                        {isCalculated && calculated ? (
+                                            `${calculated.marginList.smartstore.originalPriceDiscountRate.toFixed(1)}%`
                                         ) : (
                                             '-'
                                         )}
                                     </td>
                                     <td className="main-margin-rate">
                                         {isCalculated && calculated ? (
-                                            `${calculated.marginList.smartstore.ExpectedMarginRate.toFixed(2)}%`
+                                            `${calculated.marginList.smartstore.ExpectedMarginRate.toFixed(1)}%`
                                         ) : (
                                             '-'
                                         )}

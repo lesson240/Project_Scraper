@@ -31,6 +31,8 @@ type Props = {
     baseMarginRate?: number;
     additionalMargin?: number;
     internationalShippingFee?: number;
+    baseDiscount?: number;
+    baseDiscountUnit?: string;
   }>;
 };
 
@@ -59,6 +61,8 @@ export default function PriceSettingModalFooter({
           sellingPriceFormulaInfo.baseMarginRate,
           sellingPriceFormulaInfo.additionalMargin,
           sellingPriceFormulaInfo.internationalShippingFee,
+          sellingPriceFormulaInfo.baseDiscount,
+          sellingPriceFormulaInfo.baseDiscountUnit,
           platformMarginRateInfo
         );
       });
@@ -102,7 +106,9 @@ export default function PriceSettingModalFooter({
         exchangeShippingFee: sellingPriceFormulaInfo.exchangeShippingFee,
         internationalShippingFee: sellingPriceFormulaInfo.internationalShippingFee,
         freeShipping: sellingPriceFormulaInfo.freeShipping,
-        optimizeShippingFee: sellingPriceFormulaInfo.optimizeShippingFee
+        optimizeShippingFee: sellingPriceFormulaInfo.optimizeShippingFee,
+        baseDiscount: sellingPriceFormulaInfo.baseDiscount,
+        baseDiscountUnit: sellingPriceFormulaInfo.baseDiscountUnit
       },
       platformMarginRateInfo,
       marginListByItems: {

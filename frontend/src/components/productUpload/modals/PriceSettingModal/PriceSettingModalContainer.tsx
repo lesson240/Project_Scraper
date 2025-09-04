@@ -26,7 +26,9 @@ const DEFAULT_FORMULA_SETTINGS: SellingPriceFormulaInfo = {
     baseShippingFee: 3000,
     returnShippingFee: 5000,
     exchangeShippingFee: 8000,
-    internationalShippingFee: 4000
+    internationalShippingFee: 4000,
+    baseDiscount: 5000,
+    baseDiscountUnit: '원'
 };
 
 const DEFAULT_PLATFORM_MARGIN_RATE: PlatformMarginRateInfo = {
@@ -115,18 +117,21 @@ export default function PriceSettingModalContainer(props: ContainerProps) {
 
 
                 // 공식 설정 복원 (새로운 구조에 맞춰 수정)
-                if (savedData.sellingPriceFormulaInfo) {
+                if (savedData.sellingPriceFormulaInfo && typeof savedData.sellingPriceFormulaInfo === 'object') {
                     const formulaInfo = savedData.sellingPriceFormulaInfo;
                     setFormulaSettings(prev => ({
                         ...prev,
-                        baseMarginRate: formulaInfo.baseMarginRate || prev.baseMarginRate,
-                        additionalMargin: formulaInfo.additionalMargin || prev.additionalMargin,
-                        baseShippingFee: formulaInfo.baseShippingFee || prev.baseShippingFee,
-                        returnShippingFee: formulaInfo.returnShippingFee || prev.returnShippingFee,
-                        exchangeShippingFee: formulaInfo.exchangeShippingFee || prev.exchangeShippingFee,
-                        internationalShippingFee: formulaInfo.internationalShippingFee || prev.internationalShippingFee,
-                        freeShipping: formulaInfo.freeShipping !== undefined ? formulaInfo.freeShipping : prev.freeShipping,
-                        optimizeShippingFee: formulaInfo.optimizeShippingFee !== undefined ? formulaInfo.optimizeShippingFee : prev.optimizeShippingFee
+                        baseMarginRate: formulaInfo?.baseMarginRate || prev.baseMarginRate,
+                        additionalMargin: formulaInfo?.additionalMargin || prev.additionalMargin,
+                        baseShippingFee: formulaInfo?.baseShippingFee || prev.baseShippingFee,
+                        returnShippingFee: formulaInfo?.returnShippingFee || prev.returnShippingFee,
+                        exchangeShippingFee: formulaInfo?.exchangeShippingFee || prev.exchangeShippingFee,
+                        internationalShippingFee: formulaInfo?.internationalShippingFee || prev.internationalShippingFee,
+                        freeShipping: formulaInfo?.freeShipping !== undefined ? formulaInfo.freeShipping : prev.freeShipping,
+                        optimizeShippingFee: formulaInfo?.optimizeShippingFee !== undefined ? formulaInfo.optimizeShippingFee : prev.optimizeShippingFee,
+                        // 🆕 baseDiscount와 baseDiscountUnit에 대한 안전한 처리
+                        baseDiscount: (formulaInfo && typeof formulaInfo.baseDiscount === 'number') ? formulaInfo.baseDiscount : (prev?.baseDiscount || 0),
+                        baseDiscountUnit: (formulaInfo && typeof formulaInfo.baseDiscountUnit === 'string') ? formulaInfo.baseDiscountUnit : (prev?.baseDiscountUnit || '원')
                     }));
                 }
 
@@ -162,11 +167,6 @@ export default function PriceSettingModalContainer(props: ContainerProps) {
                 // 3) 데이터가 없다면 기본 상수 로드
                 if (import.meta.env.DEV) {
                     console.log('�� 기본 가격 설정 상수를 사용합니다.');
-                    console.log('❌ MongoDB 데이터 부족:', {
-                        hasFormulaData,
-                        hasMarginData,
-                        savedData: !!savedData
-                    });
                 }
                 setFormulaSettings(DEFAULT_FORMULA_SETTINGS);
                 setPlatformMarginRates(DEFAULT_PLATFORM_MARGIN_RATE);
@@ -204,7 +204,6 @@ export default function PriceSettingModalContainer(props: ContainerProps) {
     const handleCalculateMargin = async (): Promise<void> => {
         if (import.meta.env.DEV) {
             // console.log('🚀 마진 계산 시작...');
-            // console.log('📊 선택된 상품 수:', props.selectedProducts.length);
             // console.log('💱 환율 데이터 수:', exchangeRates.length);
             // console.log('⚙️ 공식 설정:', formulaSettings);
             // console.log('💰 플랫폼 기본 마진율:', platformMarginRates);
@@ -237,11 +236,15 @@ export default function PriceSettingModalContainer(props: ContainerProps) {
                     exchangeRate: 1, // 기본값, 실제로는 환율 데이터에서 가져와야 함
                     baseMarginRate: formulaSettings.baseMarginRate,
                     additionalMargin: formulaSettings.additionalMargin,
-                    internationalShippingFee: formulaSettings.internationalShippingFee
+                    internationalShippingFee: formulaSettings.internationalShippingFee,
+                    baseDiscount: formulaSettings.baseDiscount,
+                    baseDiscountUnit: formulaSettings.baseDiscountUnit
                 })),
                 formulaSettings.baseMarginRate,
                 formulaSettings.additionalMargin,
                 formulaSettings.internationalShippingFee,
+                formulaSettings.baseDiscount,
+                formulaSettings.baseDiscountUnit,
                 platformMarginRates
             );
             // if (import.meta.env.DEV) {
@@ -251,9 +254,6 @@ export default function PriceSettingModalContainer(props: ContainerProps) {
             setCalculatedPrices(newCalculatedPrices);
             setIsCalculated(true);
 
-            // if (import.meta.env.DEV) {
-            //     console.log('✅ 마진 계산 완료:', newCalculatedPrices.length, '개 상품');
-            // }
         } catch (error) {
             if (import.meta.env.DEV) {
                 console.error('❌ 마진 계산 실패:', error);
@@ -393,12 +393,12 @@ export default function PriceSettingModalContainer(props: ContainerProps) {
                 onSyncRates={handleSyncRates}
                 sellingPriceFormulaInfo={formulaSettings}
                 platformMargins={{
-                    smartstore: { ExpectedMargin: 0, ExpectedMarginRate: platformMarginRates.smartstore, selling_price: 0 },
-                    coupang: { ExpectedMargin: 0, ExpectedMarginRate: platformMarginRates.coupang, selling_price: 0 },
-                    auction: { ExpectedMargin: 0, ExpectedMarginRate: platformMarginRates.auction, selling_price: 0 },
-                    gmarket: { ExpectedMargin: 0, ExpectedMarginRate: platformMarginRates.gmarket, selling_price: 0 },
-                    elevenst: { ExpectedMargin: 0, ExpectedMarginRate: platformMarginRates.elevenst, selling_price: 0 },
-                    openmarket: { ExpectedMargin: 0, ExpectedMarginRate: platformMarginRates.openmarket, selling_price: 0 }
+                    smartstore: { ExpectedMarginRate: platformMarginRates.smartstore },
+                    coupang: { ExpectedMarginRate: platformMarginRates.coupang },
+                    auction: { ExpectedMarginRate: platformMarginRates.auction },
+                    gmarket: { ExpectedMarginRate: platformMarginRates.gmarket },
+                    elevenst: { ExpectedMarginRate: platformMarginRates.elevenst },
+                    openmarket: { ExpectedMarginRate: platformMarginRates.openmarket }
                 }}
                 onFormulaChange={(field, value) => setFormulaSettings(prev => ({ ...prev, [field]: value }))}
                 onFormulaReset={() => setFormulaSettings(DEFAULT_FORMULA_SETTINGS)}

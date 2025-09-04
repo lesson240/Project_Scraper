@@ -128,7 +128,7 @@ export default function PriceSettingByItemModal({
 
                         </div>
                         <div className="section-controls">
-                            {settingStatus && (
+                            {settingStatus && 'marginList' in settingStatus && (
                                 <SettingStatusBadge status={settingStatus.marginList} size="md" />
                             )}
                         </div>
@@ -178,7 +178,9 @@ export default function PriceSettingByItemModal({
                         exchangeRate: 1, // 기본값
                         baseMarginRate: sellingPriceFormulaInfo.baseMarginRate,
                         additionalMargin: sellingPriceFormulaInfo.additionalMargin,
-                        internationalShippingFee: sellingPriceFormulaInfo.internationalShippingFee
+                        internationalShippingFee: sellingPriceFormulaInfo.internationalShippingFee,
+                        baseDiscount: sellingPriceFormulaInfo.baseDiscount,
+                        baseDiscountUnit: sellingPriceFormulaInfo.baseDiscountUnit
                     }))}
                     showToastMessage={showToastMessage}
                 />

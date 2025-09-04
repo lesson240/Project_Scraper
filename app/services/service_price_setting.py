@@ -82,15 +82,18 @@ class PriceSettingService:
             # None 값이 아닌 필드만 포함
             update_data = {k: v for k, v in update_data.items() if v is not None}
 
-            print(f"🔍 ModifiedGoodsDetail 업데이트 데이터: {origin_goods_code}")
-            print(f"📊 업데이트할 필드: {list(update_data.keys())}")
+            # 개발 환경에서만 업데이트 로깅
+            if __debug__:
+                print(f"🔍 상품 데이터 업데이트: {origin_goods_code}, {len(update_data)}개 필드")
 
             # ModifiedGoodsDetail 컬렉션 업데이트
             result = await modified_goods_collection.update_one(
                 {"origin_goods_code": origin_goods_code},
                 {"$set": update_data}
             )
-            print(f"✅ ModifiedGoodsDetail 업데이트 완료: {origin_goods_code}, 수정된 문서 수: {result.modified_count}")            
+            # 개발 환경에서만 성공 로깅
+            if __debug__:
+                print(f"✅ 상품 데이터 업데이트 완료: {origin_goods_code}")            
             return result.modified_count > 0
                 
         except Exception as e:
@@ -181,8 +184,9 @@ class PriceSettingService:
                 
             except Exception as validation_error:
                 # �� 디버깅: 모델 검증 실패 시 상세 정보 로깅
-                print(f"❌ BasePriceSettingODM 모델 검증 실패: {str(validation_error)}")
-                print(f"🔍 검증 실패한 데이터: exchangeRatesInfo={len(request_data.exchangeRatesInfo)}개, sellingPriceFormulaInfo={request_data.sellingPriceFormulaInfo}, platformMarginRateInfo={request_data.platformMarginRateInfo}")
+                # 개발 환경에서만 검증 실패 로깅
+                if __debug__:
+                    print(f"❌ 데이터 모델 검증 실패: {str(validation_error)}")
                 raise ModelValidationError(
                     message="BasePriceSetting 데이터 검증 실패",
                     model_name="BasePriceSettingODM",
@@ -200,9 +204,9 @@ class PriceSettingService:
                 )
                 
             except Exception as e:
-                # 🔍 디버깅: 데이터베이스 저장 실패 시 상세 정보 로깅
-                print(f"❌ base_price_setting 저장 실패: {str(e)}")
-                print(f"�� 저장하려던 데이터: {base_doc.dict()}")
+                # 개발 환경에서만 저장 실패 로깅
+                if __debug__:
+                    print(f"❌ 공통 설정 저장 실패: {str(e)}")
                 raise DatabaseError(
                     message=f"BasePriceSetting 저장 중 오류 발생: {str(e)}",
                     operation="update_one",
@@ -231,10 +235,12 @@ class PriceSettingService:
             raise validation_error
         except Exception as e:
             # �� 디버깅: 예상치 못한 오류 시 상세 정보 로깅
-            print(f"❌ 예상치 못한 오류: {str(e)}")
+            if __debug__:
+                print(f"❌ 예상치 못한 오류: {str(e)}")
             print(f"�� 오류 타입: {type(e).__name__}")
             import traceback
-            print(f"🔍 스택 트레이스: {traceback.format_exc()}")
+            if __debug__:
+                print(f"🔍 스택 트레이스: {traceback.format_exc()}")
             raise DatabaseError(
                 message=f"가격 설정 데이터 저장 중 예상치 못한 오류 발생: {str(e)}",
                 operation="save_price_setting_data",
@@ -250,9 +256,7 @@ class PriceSettingService:
             # ModifiedGoodsDetail 컬렉션에서 데이터 조회
             modified_goods_collection = self.scrapmarket_db.ModifiedGoodsDetail
             search_criteria = {"origin_goods_code": origin_goods_code}
-            # print(f"🔍 검색 조건: {search_criteria}")
             result = await modified_goods_collection.find_one(search_criteria)
-            # print(f"🔍 find_one 결과: {result}")
             
             if result:
                 if '_id' in result and isinstance(result['_id'], ObjectId):
@@ -263,6 +267,29 @@ class PriceSettingService:
                 # MongoDB ObjectId 제거
                 if '_id' in result:
                     del result['_id']
+                
+                # 🆕 새 필드들이 없을 경우 기본값으로 채우기 (기존 데이터 호환성)
+                if 'marginListByItems' in result and result['marginListByItems']:
+                    for platform, margin_data in result['marginListByItems'].items():
+                        if isinstance(margin_data, dict):
+                            # 새 필드들이 없으면 None으로 설정
+                            if 'originalPriceMargin' not in margin_data:
+                                margin_data['originalPriceMargin'] = None
+                            if 'originalPriceMarginRate' not in margin_data:
+                                margin_data['originalPriceMarginRate'] = None
+                            if 'totalPriceMargin' not in margin_data:
+                                margin_data['totalPriceMargin'] = None
+                            if 'totalPriceMarginRate' not in margin_data:
+                                margin_data['totalPriceMarginRate'] = None
+                
+                # 🆕 sellingPriceFormulaInfo 필드들도 기본값으로 채우기
+                if 'sellingPriceFormulaInfo' in result and result['sellingPriceFormulaInfo']:
+                    formula_info = result['sellingPriceFormulaInfo']
+                    if 'baseDiscount' not in formula_info:
+                        formula_info['baseDiscount'] = 0
+                    if 'baseDiscountUnit' not in formula_info:
+                        formula_info['baseDiscountUnit'] = '원'
+                
                 return result
             else:
                 return None
@@ -296,6 +323,15 @@ class PriceSettingService:
                 # MongoDB ObjectId 제거
                 if 'id' in result:
                     del result['id']
+                
+                # 🆕 sellingPriceFormulaInfo 필드들도 기본값으로 채우기
+                if 'sellingPriceFormulaInfo' in result and result['sellingPriceFormulaInfo']:
+                    formula_info = result['sellingPriceFormulaInfo']
+                    if 'baseDiscount' not in formula_info:
+                        formula_info['baseDiscount'] = 0
+                    if 'baseDiscountUnit' not in formula_info:
+                        formula_info['baseDiscountUnit'] = '원'
+                
                 # total_time = time.time() - start_time
                 # print(f"🕐 [타임아웃 디버깅] load_base_price_setting_info 완료 (데이터 있음): {total_time:.3f}초")
                 return result
