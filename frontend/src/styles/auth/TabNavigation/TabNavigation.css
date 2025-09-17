@@ -1,0 +1,95 @@
+/* path: frontend/src/styles/auth/TabNavigation/TabNavigation.css */
+
+.auth-tabs {
+  display: flex;
+  border-bottom: 2px solid var(--auth-border-primary);
+  margin-bottom: var(--auth-spacing-xl);
+  background: var(--auth-bg-primary);
+  border-radius: var(--auth-radius-md) var(--auth-radius-md) 0 0;
+  overflow: hidden;
+}
+
+.auth-tab {
+  flex: 1;
+  padding: var(--auth-spacing-md) var(--auth-spacing-lg);
+  text-align: center;
+  font-size: var(--auth-text-base);
+  font-weight: var(--auth-font-medium);
+  color: var(--auth-text-secondary);
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  border-bottom: 3px solid transparent;
+  transition: var(--auth-transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--auth-spacing-sm);
+  position: relative;
+}
+
+.auth-tab:hover:not(.active) {
+  color: var(--auth-text-primary);
+  background: var(--auth-bg-secondary);
+}
+
+.auth-tab.active {
+  color: var(--auth-primary-color);
+  border-bottom-color: var(--auth-primary-color);
+  background: var(--auth-bg-primary);
+  font-weight: var(--auth-font-semibold);
+}
+
+.auth-tab-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+}
+
+.auth-tab-label {
+  white-space: nowrap;
+}
+
+/* 탭 애니메이션 */
+.auth-tab::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 3px;
+  background: var(--auth-primary-color);
+  transition: var(--auth-transition-fast);
+  transform: translateX(-50%);
+}
+
+.auth-tab.active::before {
+  width: 100%;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 640px) {
+  .auth-tab {
+    padding: var(--auth-spacing-sm) var(--auth-spacing-md);
+    font-size: var(--auth-text-sm);
+  }
+  
+  .auth-tab-icon {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-tab {
+    padding: var(--auth-spacing-xs) var(--auth-spacing-sm);
+    font-size: var(--auth-text-xs);
+  }
+  
+  .auth-tab-icon {
+    width: 16px;
+    height: 16px;
+  }
+}

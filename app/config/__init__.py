@@ -3,12 +3,12 @@
 
 # 데이터베이스 설정
 from .database import (
-    AWS_ACCESS_KEY,
-    AWS_SECRET_KEY,
-    AWS_REGION,
-    SQS_QUEUE_URL,
-    NAVER_API_ID,
-    NAVER_API_SECRET
+    MONGODB_URL,
+    DATABASE_NAME,
+    db,
+    connect_to_mongo,
+    close_mongo_connection,
+    get_database
 )
 
 # MongoDB 설정
@@ -47,12 +47,12 @@ from .imagehost import (
 # 공통 설정
 __all__ = [
     # 데이터베이스
-    'AWS_ACCESS_KEY',
-    'AWS_SECRET_KEY',
-    'AWS_REGION',
-    'SQS_QUEUE_URL',
-    'NAVER_API_ID',
-    'NAVER_API_SECRET',
+    'MONGODB_URL',
+    'DATABASE_NAME',
+    'db',
+    'connect_to_mongo',
+    'close_mongo_connection',
+    'get_database',
     
     # MongoDB
     'MONGO_DB_NAME',

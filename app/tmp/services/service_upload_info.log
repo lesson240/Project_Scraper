@@ -159,3 +159,9 @@
 2025-09-04 23:33:05,968 - INFO - 🚀 FilterSectionInquiry 실행 시작
 2025-09-04 23:33:05,968 - INFO - 📋 검색 조건: brand_code=None, brand_name=None, origin_goods_code=None
 2025-09-04 23:33:06,056 - INFO - ✅ FilterSectionInquiry 실행 완료 - 결과 수: 4개
+2025-09-05 20:02:10,567 - INFO - 🚀 FilterSectionInquiry 실행 시작
+2025-09-05 20:02:10,567 - INFO - 📋 검색 조건: brand_code=None, brand_name=None, origin_goods_code=None
+2025-09-05 20:02:10,576 - INFO - 🚀 FilterSectionInquiry 실행 시작
+2025-09-05 20:02:10,577 - INFO - 📋 검색 조건: brand_code=None, brand_name=None, origin_goods_code=None
+2025-09-05 20:02:11,163 - INFO - ✅ FilterSectionInquiry 실행 완료 - 결과 수: 4개
+2025-09-05 20:02:11,204 - INFO - ✅ FilterSectionInquiry 실행 완료 - 결과 수: 4개

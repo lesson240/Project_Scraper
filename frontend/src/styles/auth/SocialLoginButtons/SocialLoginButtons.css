@@ -1,0 +1,189 @@
+/* path: frontend/src/styles/auth/SocialLoginButtons/SocialLoginButtons.css */
+
+.social-login-buttons {
+  width: 100%;
+  margin-top: var(--auth-spacing-xl);
+}
+
+.social-login-divider {
+  position: relative;
+  text-align: center;
+  margin: var(--auth-spacing-xl) 0;
+}
+
+.social-login-divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--auth-border-primary);
+}
+
+.divider-text {
+  background: var(--auth-bg-primary);
+  color: var(--auth-text-tertiary);
+  font-size: var(--auth-text-sm);
+  padding: 0 var(--auth-spacing-md);
+  position: relative;
+  z-index: 1;
+}
+
+.social-login-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--auth-spacing-md);
+  margin-bottom: var(--auth-spacing-lg);
+}
+
+.social-login-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--auth-spacing-sm);
+  padding: var(--auth-spacing-md) var(--auth-spacing-lg);
+  border: 2px solid var(--auth-border-primary);
+  border-radius: var(--auth-radius-md);
+  background: var(--auth-bg-primary);
+  color: var(--auth-text-primary);
+  font-size: var(--auth-text-base);
+  font-weight: var(--auth-font-medium);
+  cursor: pointer;
+  transition: var(--auth-transition-fast);
+  position: relative;
+  overflow: hidden;
+}
+
+.social-login-button:hover:not(:disabled) {
+  border-color: var(--provider-color);
+  background: var(--provider-color);
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: var(--auth-shadow-md);
+}
+
+.social-login-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.social-login-button--naver {
+  border-color: #03C75A;
+  color: #03C75A;
+}
+
+.social-login-button--naver:hover:not(:disabled) {
+  background: #03C75A;
+  color: white;
+}
+
+.social-login-button--google {
+  border-color: #4285F4;
+  color: #4285F4;
+}
+
+.social-login-button--google:hover:not(:disabled) {
+  background: #4285F4;
+  color: white;
+}
+
+.social-login-button--kakao {
+  border-color: #FEE500;
+  color: #333;
+  background: #FEE500;
+}
+
+.social-login-button--kakao:hover:not(:disabled) {
+  background: #FDD835;
+  color: #333;
+}
+
+.social-login-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+}
+
+.social-login-text {
+  font-weight: var(--auth-font-semibold);
+}
+
+.social-login-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: social-login-spin 1s linear infinite;
+}
+
+@keyframes social-login-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.social-login-notice {
+  text-align: center;
+  margin-top: var(--auth-spacing-lg);
+}
+
+.notice-text {
+  font-size: var(--auth-text-xs);
+  color: var(--auth-text-tertiary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.notice-link {
+  color: var(--auth-primary-color);
+  text-decoration: none;
+  transition: var(--auth-transition-fast);
+}
+
+.notice-link:hover {
+  text-decoration: underline;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 640px) {
+  .social-login-grid {
+    gap: var(--auth-spacing-sm);
+  }
+  
+  .social-login-button {
+    padding: var(--auth-spacing-sm) var(--auth-spacing-md);
+    font-size: var(--auth-text-sm);
+  }
+  
+  .social-login-icon {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .social-login-spinner {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .social-login-button {
+    padding: var(--auth-spacing-xs) var(--auth-spacing-sm);
+    font-size: var(--auth-text-xs);
+  }
+  
+  .social-login-icon {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .social-login-spinner {
+    width: 16px;
+    height: 16px;
+  }
+}

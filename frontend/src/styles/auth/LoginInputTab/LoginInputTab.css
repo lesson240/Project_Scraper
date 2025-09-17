@@ -1,0 +1,111 @@
+/* path: frontend/src/styles/auth/LoginInputTab/LoginInputTab.css */
+
+.login-input-tab {
+  width: 100%;
+}
+
+.login-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--auth-spacing-lg);
+}
+
+.login-remember {
+  display: flex;
+  align-items: center;
+  gap: var(--auth-spacing-sm);
+  cursor: pointer;
+  user-select: none;
+}
+
+.login-remember input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--auth-primary-color);
+  cursor: pointer;
+}
+
+.login-remember-text {
+  font-size: var(--auth-text-sm);
+  color: var(--auth-text-secondary);
+  cursor: pointer;
+}
+
+.login-forgot-password {
+  font-size: var(--auth-text-sm);
+  color: var(--auth-primary-color);
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: var(--auth-transition-fast);
+}
+
+.login-forgot-password:hover:not(:disabled) {
+  color: var(--auth-primary-hover);
+  text-decoration: underline;
+}
+
+.login-forgot-password:disabled {
+  color: var(--auth-text-tertiary);
+  cursor: not-allowed;
+}
+
+.login-error-message {
+  text-align: center;
+  margin-bottom: var(--auth-spacing-md);
+  padding: var(--auth-spacing-sm);
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: var(--auth-radius-md);
+}
+
+/* 폼 애니메이션 */
+.auth-form {
+  animation: login-form-fade-in 0.3s ease-out;
+}
+
+@keyframes login-form-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 반응형 디자인 */
+@media (max-width: 640px) {
+  .login-options {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--auth-spacing-sm);
+  }
+  
+  .login-remember {
+    order: 2;
+  }
+  
+  .login-forgot-password {
+    order: 1;
+    align-self: flex-end;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-options {
+    gap: var(--auth-spacing-xs);
+  }
+  
+  .login-remember-text {
+    font-size: var(--auth-text-xs);
+  }
+  
+  .login-forgot-password {
+    font-size: var(--auth-text-xs);
+  }
+}

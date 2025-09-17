@@ -1,0 +1,63 @@
+.calendar-input.with-button {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.calendar-input.with-button .calendar-label {
+  font-size: 12px;
+  color: #495057;
+  margin-bottom: 6px;
+}
+
+.calendar-input.with-button .calendar-row {
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px; /* 컨테이너 라운드 */
+  overflow: hidden; /* 버튼과 입력이 일체감 있게 */
+}
+
+.calendar-input.with-button .calendar-text-field {
+  flex: 1;
+  height: 36px;
+  border: none; /* 컨테이너가 border 담당 */
+  border-radius: 0; /* 내부 모서리 둥근 자국 제거 */
+  padding: 8px 12px;
+  outline: none;
+  border-right: 1px solid #ddd; /* 버튼과 구분선 */
+}
+
+.calendar-input.with-button .calendar-text-field:focus {
+  box-shadow: none;
+}
+
+.calendar-input.with-button .btn {
+  height: 36px;
+  border: none;
+  border-radius: 0; /* 컨테이너와 라운드 일치 */
+}
+
+.calendar-input.with-button .btn.seventh {
+  background-color: #f8f9fa;
+  color: #495057;
+  border-left: 1px solid #ddd;
+}
+
+.calendar-input.with-button .btn.seventh:hover {
+  background-color: #00b5ad !important;
+  color: #fff !important;
+  border-color: #00b5ad !important;
+}
+
+.calendar-input.with-button .btn.seventh.is-verified,
+.calendar-input.with-button .btn.seventh.is-verified:hover,
+.calendar-input.with-button .btn.seventh.is-verified:active {
+  background-color: #00b5ad !important;
+  color: #fff !important;
+  border-color: #00b5ad !important;
+  cursor: default;
+}
+
+

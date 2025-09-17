@@ -50,7 +50,15 @@ export default function FunctionButtons({
                         {`조회 상품: ${currentCount}개 (총 ${totalCount}개)`}
                     </span>
                 </div>
-                                <Button 
+                <Button 
+                    variant="secondary" 
+                    onClick={onGoodsNameSet}
+                    disabled={selectedProductsCount === 0}
+                    title={selectedProductsCount === 0 ? "상품을 선택해주세요" : "상품명 설정"}
+                >
+                    상품명 설정
+                </Button>
+                <Button 
                     variant="secondary" 
                     onClick={onPriceSet}
                     disabled={selectedProductsCount === 0}
@@ -67,7 +75,6 @@ export default function FunctionButtons({
                     태그 설정
                 </Button>
                 <Button variant="secondary" onClick={onDetailPageSet}>상세페이지 설정</Button>
-                <Button variant="secondary" onClick={onGoodsNameSet}>상품명 설정</Button>
                 <Button variant="third-rate" onClick={onSalesRegistrationSet}>판매 등록</Button>
                 <Button variant="sixth" onClick={onGoodsDeleteSet}>상품 삭제</Button>
                 <div className="toggle-wrapper">

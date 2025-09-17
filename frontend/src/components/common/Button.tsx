@@ -14,6 +14,7 @@ type Props = {
   onClick?: () => void;
   disabled?: boolean;
   title?: string;
+  className?: string;
   children: React.ReactNode;
 };
 
@@ -24,13 +25,14 @@ export default function Button({
   onClick,
   disabled = false,
   title,
+  className,
   children,
 }: Props) {
   return (
     <button
       type={type}
       data-custom-type={customType}
-      className={`btn ${variant}`}
+      className={`btn ${variant}${className ? ` ${className}` : ""}`}
       onClick={onClick}
       disabled={disabled}
       title={title}

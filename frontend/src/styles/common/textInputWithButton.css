@@ -11,23 +11,103 @@
   border-radius: 8px;
   background-color: #fff;
   overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.input-with-button .input-field-wrapper {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
 }
 
 .input-with-button .input-field {
   flex: 1;
-  height: 40px;
-  padding: 10px 12px;
+  height: 36px;
+  padding: 8px 12px;
   border: none; /* 기존 border 제거 */
   font-size: 14px;
   outline: none;
+  background-color: transparent;
+}
+
+.input-with-button .countdown-display {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #e74c3c;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  pointer-events: none;
 }
 
 .input-with-button .btn {
-  height: 100%;
-  padding: 0 12px;
+  height: 36px;
+  padding: 8px 16px;
+  border: none;
   border-left: 1px solid #ddd; /* input과 구분선 */
   border-radius: 0; /* 컨테이너와 동일하게 맞춤 */
   font-size: 12px;
-  background-color: #f9f9f9;
+  font-weight: 500;
+  background-color: #f8f9fa;
+  color: #495057;
   cursor: pointer;
+  margin: 0;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+/* seventh 버튼의 hover 효과를 우선 적용 */
+.input-with-button .btn.seventh:hover {
+  background-color: #00b5ad !important;
+  color: #fff !important;
+  border-color: #00b5ad !important;
+}
+
+/* 인증 완료 상태의 버튼(hover 비활성 + 고정 색상) */
+.input-with-button .btn.seventh.is-verified,
+.input-with-button .btn.seventh.is-verified:hover,
+.input-with-button .btn.seventh.is-verified:active {
+  background-color: #00b5ad !important; /* hover 색상을 기본으로 고정 */
+  color: #fff !important;
+  border-color: #00b5ad !important;
+  cursor: default;
+}
+
+.input-with-button .btn:not(.seventh):hover {
+  background-color: #e9ecef;
+  color: #212529;
+}
+
+.input-with-button .btn:active {
+  background-color: #dee2e6;
+}
+
+/* 툴팁 스타일 (TextInput과 동일) */
+.input-with-button .tooltip-icon {
+  color: #6c757d;
+  font-size: 12px;
+  margin-left: 4px;
+  cursor: help;
+}
+
+.input-with-button .required-icon {
+  color: #dc3545;
+  font-size: 14px;
+  margin-left: 2px;
+}
+
+.input-with-button .required-text {
+  color: #dc3545;
+  font-size: 12px;
+  margin-left: 4px;
+}
+
+.input-with-button .optional-text {
+  color: #6c757d;
+  font-size: 12px;
+  margin-left: 4px;
 }

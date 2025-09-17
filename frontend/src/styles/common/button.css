@@ -84,16 +84,19 @@
   background-color: #f9f9f9;
   color: #596380;
   font-size: 12px;
-  padding: 10px 10px;
-  height: 40px;
-  width: 60px;
+  padding: 8px 12px;
+  height: 36px;
+  width: auto;
+  min-width: 80px;
   margin: 0;
-
+  border: 1px solid #ddd;
+  border-radius: 6px;
 }
 
 .btn.seventh:hover {
   background-color: #00b5ad;
   color: #fff;
+  border-color: #00b5ad;
 }
 
 .btn.eighth {

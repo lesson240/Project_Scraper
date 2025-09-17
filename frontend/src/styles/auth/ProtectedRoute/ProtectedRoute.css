@@ -1,0 +1,105 @@
+/* path: frontend/src/styles/auth/ProtectedRoute/ProtectedRoute.css */
+
+.protected-route-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: var(--auth-bg-secondary);
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--auth-border-primary);
+  border-top: 4px solid var(--auth-primary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: var(--auth-spacing-lg);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-size: var(--auth-text-lg);
+  color: var(--auth-text-secondary);
+  margin: 0;
+}
+
+.protected-route-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: var(--auth-bg-secondary);
+  padding: var(--auth-spacing-xl);
+  text-align: center;
+}
+
+.error-icon {
+  font-size: 4rem;
+  margin-bottom: var(--auth-spacing-lg);
+}
+
+.error-title {
+  font-size: var(--auth-text-2xl);
+  font-weight: var(--auth-font-bold);
+  color: var(--auth-text-primary);
+  margin: 0 0 var(--auth-spacing-md) 0;
+}
+
+.error-message {
+  font-size: var(--auth-text-base);
+  color: var(--auth-text-secondary);
+  margin: 0 0 var(--auth-spacing-xl) 0;
+  max-width: 500px;
+  line-height: 1.6;
+}
+
+.error-button {
+  padding: var(--auth-spacing-md) var(--auth-spacing-xl);
+  background: var(--auth-primary-color);
+  color: var(--auth-text-inverse);
+  border: none;
+  border-radius: var(--auth-radius-md);
+  font-size: var(--auth-text-base);
+  font-weight: var(--auth-font-semibold);
+  cursor: pointer;
+  transition: var(--auth-transition-fast);
+}
+
+.error-button:hover {
+  background: var(--auth-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--auth-shadow-md);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 640px) {
+  .protected-route-error {
+    padding: var(--auth-spacing-lg);
+  }
+  
+  .error-icon {
+    font-size: 3rem;
+    margin-bottom: var(--auth-spacing-md);
+  }
+  
+  .error-title {
+    font-size: var(--auth-text-xl);
+  }
+  
+  .error-message {
+    font-size: var(--auth-text-sm);
+  }
+  
+  .error-button {
+    padding: var(--auth-spacing-sm) var(--auth-spacing-lg);
+    font-size: var(--auth-text-sm);
+  }
+}

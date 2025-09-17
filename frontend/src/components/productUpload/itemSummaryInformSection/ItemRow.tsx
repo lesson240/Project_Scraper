@@ -158,9 +158,10 @@ export default function ItemRow({
         <td>
           <div className="table-col-left">
             <div className="goods-details">
-              <div className="basic-info">상품 수집일: {item.collection_time}</div>
-              <div className="basic-info">원본 할인가 (¥): {item.goods_origin}</div>
-              <div className="basic-info">설정 상품가 (￦): {item.priceRange}</div>
+              <div className="basic-info">행사 종료일(￦): {item.promotion_period}</div>
+              <div className="basic-info">원가(￦): {item.goods_origin}</div>
+              <div className="basic-info">행사가(￦): {item.total_price }</div>
+              <div className="basic-info">설정 할인가(￦): {item.priceRange}</div>
               {item.priceRequired && (
                 <div className="alert">가격 설정해 주세요</div>
               )}

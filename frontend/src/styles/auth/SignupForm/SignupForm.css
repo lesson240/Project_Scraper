@@ -1,0 +1,145 @@
+/* path: frontend/src/styles/auth/SignupForm/SignupForm.css */
+
+.signup-form {
+  width: 100%;
+}
+
+.signup-form-section {
+  margin-bottom: var(--auth-spacing-xl);
+  padding-bottom: var(--auth-spacing-lg);
+  border-bottom: 1px solid var(--auth-border-primary);
+}
+
+.signup-form-section:last-of-type {
+  border-bottom: none;
+  margin-bottom: var(--auth-spacing-lg);
+}
+
+.signup-section-title {
+  font-size: var(--auth-text-lg);
+  font-weight: var(--auth-font-semibold);
+  color: var(--auth-text-primary);
+  margin-bottom: var(--auth-spacing-lg);
+  padding-left: var(--auth-spacing-sm);
+  border-left: 4px solid var(--auth-primary-color);
+}
+
+.required {
+  color: var(--auth-error-color);
+  font-weight: var(--auth-font-bold);
+}
+
+.signup-terms {
+  display: flex;
+  flex-direction: column;
+  gap: var(--auth-spacing-md);
+}
+
+.signup-term-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--auth-spacing-sm);
+  cursor: pointer;
+  user-select: none;
+  padding: var(--auth-spacing-sm);
+  border-radius: var(--auth-radius-md);
+  transition: var(--auth-transition-fast);
+}
+
+.signup-term-item:hover {
+  background: var(--auth-bg-secondary);
+}
+
+.signup-term-item input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--auth-primary-color);
+  cursor: pointer;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.signup-term-text {
+  font-size: var(--auth-text-sm);
+  color: var(--auth-text-primary);
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+.signup-error-message {
+  text-align: center;
+  margin-bottom: var(--auth-spacing-md);
+  padding: var(--auth-spacing-sm);
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: var(--auth-radius-md);
+}
+
+/* 폼 애니메이션 */
+.auth-form {
+  animation: signup-form-fade-in 0.3s ease-out;
+}
+
+@keyframes signup-form-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 섹션별 애니메이션 */
+.signup-form-section {
+  animation: signup-section-slide-in 0.4s ease-out;
+}
+
+@keyframes signup-section-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* 반응형 디자인 */
+@media (max-width: 640px) {
+  .signup-form-section {
+    margin-bottom: var(--auth-spacing-lg);
+    padding-bottom: var(--auth-spacing-md);
+  }
+  
+  .signup-section-title {
+    font-size: var(--auth-text-base);
+    margin-bottom: var(--auth-spacing-md);
+  }
+  
+  .signup-terms {
+    gap: var(--auth-spacing-sm);
+  }
+  
+  .signup-term-item {
+    padding: var(--auth-spacing-xs);
+  }
+  
+  .signup-term-text {
+    font-size: var(--auth-text-xs);
+  }
+}
+
+@media (max-width: 480px) {
+  .signup-form-section {
+    margin-bottom: var(--auth-spacing-md);
+    padding-bottom: var(--auth-spacing-sm);
+  }
+  
+  .signup-section-title {
+    font-size: var(--auth-text-sm);
+    margin-bottom: var(--auth-spacing-sm);
+  }
+}

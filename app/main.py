@@ -1,12 +1,18 @@
 # 프로젝트의 루트 디렉토리를 구하기
 import sys
 from pathlib import Path
+import os
+from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.append(str(BASE_DIR))
 
+# .env 파일 로드
+load_dotenv(os.path.join(BASE_DIR, '.env'))
+
 # 프로젝트 Module 불러오기
 from app.utils.util_logging import setup_logger
+from app.config.database import connect_to_mongo, close_mongo_connection
 
 # 강제 모듈 리로드를 위한 importlib 사용
 import importlib
@@ -22,7 +28,7 @@ from app.routers import (
     page_product_collection,
     page_product_upload,
     page_user_setting,
-    user_account,
+    page_user_account,
     api_exchange_rates,
     api_exchange_rate_sync,
     func_price_setting,
@@ -65,12 +71,16 @@ routers = [
     (page_product_collection.router, ["PageProductCollection"]),
     (page_product_upload.router, ["PageProductUpload"]),
     (page_user_setting.router, ["PageUserSetting"]),
-    (user_account.router, ["UserAccount"]),
+    (page_user_account.router, ["UserAccount"]),
     (imagehost_router, ["ImageHost"]),  # ImageHost 라우터 추가
 ]
 
+# 인증 라우터 추가
+from app.routers import auth_router
+
 # API 라우터들은 버전 접두사 없이 직접 등록
 api_routers = [
+    (auth_router.router, ["Auth"]),  # 인증 API 라우터 추가
     (api_exchange_rates.router, ["ExchangeRates"]),  # 환율 API 라우터 추가
     (api_exchange_rate_sync.router, ["ExchangeRateSync"]),  # 환율 동기화 API 라우터 추가
     (func_price_setting.router, ["PriceSetting"]),  # 가격 설정 기능 라우터 추가
@@ -84,6 +94,9 @@ async def lifespan(app: FastAPI):
     # startup
     logger.info("정상적으로 서버에 연결되었습니다.")
     logger.info(f"FastAPI started on: http://127.0.0.1:8000{prefix}/")
+    
+    # MongoDB 연결
+    await connect_to_mongo()
     await mongodb_service.connect()
 
     yield  # app 실행 유지
@@ -91,6 +104,7 @@ async def lifespan(app: FastAPI):
     # shutdown
     logger.info("정상적으로 서버에 연결 해제되었습니다.")
     logger.info(f"Application shutdown: {datetime.now()}")
+    await close_mongo_connection()
     await mongodb_service.close()
 
 

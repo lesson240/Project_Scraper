@@ -1,0 +1,183 @@
+/* path: frontend/src/styles/auth/SignupForm/EmailVerification.css */
+
+.email-verification {
+  border-radius: 8px;
+}
+
+.verification-input-group {
+  margin-bottom: 1rem;
+}
+
+.verification-input-group .input-with-button {
+  width: 100%;
+}
+
+.verification-input-group .input-with-button .input-container {
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  background-color: #fff;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.verification-input-group .input-with-button .input-container:focus-within {
+  border-color: #20c997;
+  box-shadow: 0 0 0 3px rgba(32, 201, 151, 0.1);
+}
+
+.verification-input-group .input-with-button .input-field {
+  background-color: transparent;
+  color: #333;
+  border: none;
+}
+
+.verification-input-group .input-with-button .input-field::placeholder {
+  color: #adb5bd;
+}
+
+.verification-input-group .input-with-button .input-field:focus {
+  outline: none;
+}
+
+.verification-input-group .input-with-button.error .input-container {
+  border-color: #e74c3c;
+  box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+}
+
+/* 이메일 유효성 검사 결과 스타일 (비밀번호 일치 스타일과 동일) */
+.email-validation {
+  display: flex;
+  align-items: center;
+  margin-top: 4px;
+  padding: 6px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  gap: 4px;
+}
+
+.email-validation.valid {
+  background-color: #d5f4e6;
+  color: #27ae60;
+  border: 1px solid #a9dfbf;
+}
+
+.email-validation.invalid {
+  background-color: #fadbd8;
+  color: #e74c3c;
+  border: 1px solid #f1948a;
+}
+
+.email-validation .validation-icon {
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.email-validation .validation-text {
+  font-size: 12px;
+}
+
+.verification-code-group {
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+  animation: slideDown 0.3s ease-out;
+}
+
+.verification-code-group .input-with-button {
+  width: 100%;
+}
+
+.verification-code-group .input-with-button .input-container {
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  background-color: #fff;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.verification-code-group .input-with-button .input-container:focus-within {
+  border-color: #20c997;
+  box-shadow: 0 0 0 3px rgba(32, 201, 151, 0.1);
+}
+
+.verification-code-group .input-with-button .input-field {
+  background-color: transparent;
+  color: #333;
+  border: none;
+}
+
+.verification-code-group .input-with-button .input-field::placeholder {
+  color: #adb5bd;
+}
+
+.verification-code-group .input-with-button .input-field:focus {
+  outline: none;
+}
+
+.verification-code-group .input-with-button.error .input-container {
+  border-color: #e74c3c;
+  box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.verification-status.verified {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 4px;
+  font-size: 12px;
+  color: #27ae60;
+  font-weight: 500;
+  background-color: #d5f4e6;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid #a9dfbf;
+}
+
+.verification-completed {
+  margin: 12px 0;
+  padding: 12px;
+  background-color: #d5f4e6;
+  border: 1px solid #a9dfbf;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.verified-email {
+  margin-top: 8px;
+  font-size: 14px;
+  color: #27ae60;
+  font-weight: 500;
+}
+
+.verification-error {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .verification-input-group,
+  .verification-code-group {
+    flex-direction: column;
+  }
+  
+  .verification-code-input-group {
+    margin-bottom: 0.5rem;
+  }
+}

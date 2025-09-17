@@ -53,6 +53,14 @@ export default function FormulaSection({
                     />
                     오기입 배송비 최적화
                 </label>
+                <label className="checkbox-option">
+                    <input
+                        type="checkbox"
+                        checked={sellingPriceFormulaInfo.optimizeShippingFee}
+                        onChange={(e) => handleFormulaChange('optimizeShippingFee', e.target.checked)}
+                    />
+                    900원 단위 절상
+                </label>
             </div>
 
             <div className="formula-sections-container">

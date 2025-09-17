@@ -1,0 +1,129 @@
+/* path: frontend/src/styles/auth/FindAccountTab/FindAccountTab.css */
+
+.find-account-tab {
+  width: 100%;
+}
+
+.find-account-tabs {
+  display: flex;
+  border-bottom: 2px solid var(--auth-border-primary);
+  margin-bottom: var(--auth-spacing-xl);
+  background: var(--auth-bg-primary);
+  border-radius: var(--auth-radius-md) var(--auth-radius-md) 0 0;
+  overflow: hidden;
+}
+
+.find-account-tab-button {
+  flex: 1;
+  padding: var(--auth-spacing-md) var(--auth-spacing-lg);
+  text-align: center;
+  font-size: var(--auth-text-base);
+  font-weight: var(--auth-font-medium);
+  color: var(--auth-text-secondary);
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  border-bottom: 3px solid transparent;
+  transition: var(--auth-transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--auth-spacing-sm);
+  position: relative;
+}
+
+.find-account-tab-button:hover:not(.active):not(:disabled) {
+  color: var(--auth-text-primary);
+  background: var(--auth-bg-secondary);
+}
+
+.find-account-tab-button.active {
+  color: var(--auth-primary-color);
+  border-bottom-color: var(--auth-primary-color);
+  background: var(--auth-bg-primary);
+  font-weight: var(--auth-font-semibold);
+}
+
+.find-account-tab-button:disabled {
+  color: var(--auth-text-tertiary);
+  cursor: not-allowed;
+}
+
+.find-account-tab-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+}
+
+.find-account-tab-label {
+  white-space: nowrap;
+}
+
+/* 탭 애니메이션 */
+.find-account-tab-button::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 3px;
+  background: var(--auth-primary-color);
+  transition: var(--auth-transition-fast);
+  transform: translateX(-50%);
+}
+
+.find-account-tab-button.active::before {
+  width: 100%;
+}
+
+.find-account-error {
+  text-align: center;
+  margin-bottom: var(--auth-spacing-md);
+  padding: var(--auth-spacing-sm);
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: var(--auth-radius-md);
+}
+
+/* 폼 애니메이션 */
+.auth-form {
+  animation: find-account-form-fade-in 0.3s ease-out;
+}
+
+@keyframes find-account-form-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 반응형 디자인 */
+@media (max-width: 640px) {
+  .find-account-tab-button {
+    padding: var(--auth-spacing-sm) var(--auth-spacing-md);
+    font-size: var(--auth-text-sm);
+  }
+  
+  .find-account-tab-icon {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .find-account-tab-button {
+    padding: var(--auth-spacing-xs) var(--auth-spacing-sm);
+    font-size: var(--auth-text-xs);
+  }
+  
+  .find-account-tab-icon {
+    width: 16px;
+    height: 16px;
+  }
+}

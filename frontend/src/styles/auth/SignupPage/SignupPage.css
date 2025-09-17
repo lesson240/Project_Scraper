@@ -1,0 +1,77 @@
+/* path: frontend/src/styles/auth/SignupPage/SignupPage.css */
+
+/* SignupPage 전용 스타일 */
+
+.signup-page-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--auth-bg-secondary) 0%, var(--auth-bg-tertiary) 100%);
+}
+
+.signup-page-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--auth-spacing-lg);
+}
+
+/* 회원가입 성공/실패 메시지 */
+.signup-message {
+  padding: var(--auth-spacing-md);
+  border-radius: var(--auth-radius-md);
+  font-size: var(--auth-text-sm);
+  text-align: center;
+  margin-bottom: var(--auth-spacing-md);
+}
+
+.signup-message.success {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--auth-success-color);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.signup-message.error {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--auth-error-color);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+/* 푸터 링크 스타일 */
+.auth-footer {
+  margin-top: var(--auth-spacing-xl);
+  padding-top: var(--auth-spacing-lg);
+  border-top: 1px solid var(--auth-border-primary);
+  text-align: center;
+}
+
+.auth-footer-text {
+  font-size: var(--auth-text-sm);
+  color: var(--auth-text-secondary);
+  margin: 0;
+}
+
+.auth-footer .auth-link {
+  color: var(--auth-primary-color);
+  text-decoration: none;
+  font-weight: var(--auth-font-medium);
+  transition: var(--auth-transition-fast);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: inherit;
+}
+
+.auth-footer .auth-link:hover {
+  color: var(--auth-primary-hover);
+  text-decoration: underline;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 640px) {
+  .signup-page-content {
+    gap: var(--auth-spacing-md);
+  }
+  
+  .auth-footer {
+    margin-top: var(--auth-spacing-lg);
+    padding-top: var(--auth-spacing-md);
+  }
+}
