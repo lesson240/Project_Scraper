@@ -67,6 +67,7 @@ colorlog==6.8.2
 # ===== Security =====
 cryptography>=41.0.0
 bcrypt==4.1.3
+PyJWT==2.8.0
 
 # ===== System & Platform =====
 psutil>=5.9.0
