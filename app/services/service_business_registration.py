@@ -3,7 +3,7 @@
 import json
 import os
 from typing import Dict, Optional
-from urllib.parse import urlencode
+from urllib.parse import urlencode, unquote
 
 import requests
 
@@ -95,7 +95,14 @@ def verify_with_odcloud(
 
     base_url = "https://api.odcloud.kr/api"
     path = "/nts-businessman/v1/validate"
-    url = f"{base_url}{path}?{urlencode({'serviceKey': api_key})}"
+    # serviceKey 이중 인코딩 방지: 이미 %2A 형태가 포함되면 한 번 디코드 시도
+    service_key = (api_key or "").strip()
+    try:
+        if "%25" in service_key or "%2" in service_key.lower():
+            service_key = unquote(service_key)
+    except Exception:
+        pass
+    url = f"{base_url}{path}"
 
     payload = {
         "businesses": [
@@ -114,7 +121,8 @@ def verify_with_odcloud(
     }
 
     try:
-        resp = requests.post(url, json=payload, timeout=10)
+        # params로 전달하여 requests가 적절히 인코딩 처리(이중 인코딩 방지)
+        resp = requests.post(url, params={"serviceKey": service_key}, json=payload, timeout=10)
         resp.raise_for_status()
         data = resp.json()
         # 응답 포맷 참고: data["data"][0]["valid"] / "status" / "request_cnt" 등

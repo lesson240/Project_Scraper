@@ -1,10 +1,12 @@
 // path: frontend/src/components/auth/SignupForm/SignupFormContainer.tsx
 
 import React, { useState } from 'react';
+import { verifyBusiness } from '@/apis/businessApi';
 import type { SignupFormData, SignupValidationErrors } from '@/types/auth';
 import SignupForm from './SignupForm';
 import EmailVerification from './parts/EmailVerification';
 import BusinessRegistrationVerification from './parts/BusinessRegistrationVerification';
+import Toast from '@/components/common/Toast';
 import '@/styles/auth/SignupForm/EmailVerification.css';
 import '@/styles/auth/SignupForm/BusinessRegistrationVerification.css';
 
@@ -30,93 +32,81 @@ export default function SignupFormContainer({
   error
 }: SignupFormContainerProps) {
   const [formData, setFormData] = useState<SignupFormData>({
-    id: '',
     email: '',
     password: '',
     confirmPassword: '',
     businessName: '',
+    representativeName: '',
     businessRegistration: '',
     businessOpenningDate: '',
     phone: '',
+    referralCode: '',
     termsAgreement: false,
     privacyAgreement: false,
     marketingAgreement: false
   });
-  
+
   const [validationErrors, setValidationErrors] = useState<SignupValidationErrors>({});
   const [emailVerified, setEmailVerified] = useState(false);
   const [businessVerified, setBusinessVerified] = useState(false);
-  
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
   // 이메일 인증 상태
   const [isEmailCodeSent, setIsEmailCodeSent] = useState(false);
   const [isEmailVerifying, setIsEmailVerifying] = useState(false);
   const [emailVerificationCode, setEmailVerificationCode] = useState('');
-  
+
   // 사업자등록번호 인증 상태
   const [isBusinessVerifying, setIsBusinessVerifying] = useState(false);
 
   const validateForm = (): boolean => {
     const errors: SignupValidationErrors = {};
 
-    // 아이디 검증
-    if (!formData.id) {
-      errors.id = '아이디를 입력해주세요.';
-    } else if (formData.id.length < 4) {
-      errors.id = '아이디는 4자 이상이어야 합니다.';
-    }
-
     // 이메일 검증
-    if (!formData.email) {
-      errors.email = '이메일을 입력해주세요.';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      errors.email = '올바른 이메일 형식을 입력해주세요.';
+    if (!formData.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      errors.email = 'error';
+    }
+    // 이메일 인증 미완료 시 회원가입 제한 (경고 테두리만 표시)
+    if (!emailVerified) {
+      errors.email = 'error';
     }
 
     // 비밀번호 검증 (기본 검증만 유지, 상세 검증은 PasswordValidation에서 처리)
-    if (!formData.password) {
-      errors.password = '비밀번호를 입력해주세요.';
-    } else if (formData.password.length < 8) {
-      errors.password = '비밀번호는 8자 이상이어야 합니다.';
-    } else if (!/(?=.*[a-zA-Z])(?=.*\d)/.test(formData.password)) {
-      errors.password = '비밀번호는 영문과 숫자를 포함해야 합니다.';
+    if (!formData.password || formData.password.length < 8 || !(/(?=.*[a-zA-Z])(?=.*\d)/.test(formData.password))) {
+      errors.password = 'error';
     }
 
     // 비밀번호 확인 검증
-    if (!formData.confirmPassword) {
-      errors.confirmPassword = '비밀번호 확인을 입력해주세요.';
-    } else if (formData.password !== formData.confirmPassword) {
-      errors.confirmPassword = '비밀번호가 일치하지 않습니다.';
+    if (!formData.confirmPassword || formData.password !== formData.confirmPassword) {
+      errors.confirmPassword = 'error';
     }
 
-    // 사업자명 검증
-    if (!formData.businessName) {
-      errors.businessName = '사업자명을 입력해주세요.';
-    } else if (formData.businessName.length < 2) {
-      errors.businessName = '사업자명은 2자 이상이어야 합니다.';
+    // 상호 검증
+    if (!formData.businessName || formData.businessName.length < 2) {
+      errors.businessName = 'error';
+    }
+
+    // 대표자 성명 검증
+    if (!formData.representativeName) {
+      errors.representativeName = 'error';
     }
 
     // 휴대폰 번호 검증
-    if (!formData.phone) {
-      errors.phone = '휴대폰 번호를 입력해주세요.';
-    } else if (!/^01[0-9]-?[0-9]{4}-?[0-9]{4}$/.test(formData.phone.replace(/-/g, ''))) {
-      errors.phone = '올바른 휴대폰 번호 형식을 입력해주세요.';
+    if (!formData.phone || !/^01[0-9]-?[0-9]{4}-?[0-9]{4}$/.test(formData.phone.replace(/-/g, ''))) {
+      errors.phone = 'error';
     }
 
     // 사업자등록번호 검증
-    if (!formData.businessRegistration) {
-      errors.businessRegistration = '사업자등록 번호를 입력해주세요.';
-    } else if (!/[0-9]{3}-?[0-9]{2}-?[0-9]{5}$/.test(formData.businessRegistration.replace(/-/g, ''))) {
-      errors.businessRegistration = '올바른 사업자등록 번호 형식을 입력해주세요.';
-    } else if (!businessVerified) {
-      errors.businessRegistration = '사업자등록번호 인증을 완료해주세요.';
+    if (!formData.businessRegistration || !/[0-9]{3}-?[0-9]{2}-?[0-9]{5}$/.test(formData.businessRegistration.replace(/-/g, '')) || !businessVerified) {
+      errors.businessRegistration = 'error';
     }
 
     // 약관 동의 검증
     if (!formData.termsAgreement) {
-      errors.termsAgreement = '이용약관에 동의해주세요.';
+      errors.termsAgreement = 'error';
     }
     if (!formData.privacyAgreement) {
-      errors.privacyAgreement = '개인정보처리방침에 동의해주세요.';
+      errors.privacyAgreement = 'error';
     }
 
     setValidationErrors(errors);
@@ -126,7 +116,7 @@ export default function SignupFormContainer({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
     const checked = (e.target as HTMLInputElement).checked;
-    
+
     setFormData(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value
@@ -143,7 +133,7 @@ export default function SignupFormContainer({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (validateForm()) {
       onSubmit(formData);
     }
@@ -159,7 +149,7 @@ export default function SignupFormContainer({
     // TODO: 실제 이메일 인증번호 검증 API 호출
     console.log('이메일 인증번호 검증:', code);
     setIsEmailVerifying(true);
-    
+
     // 임시로 2초 후 성공 처리
     setTimeout(() => {
       setIsEmailVerifying(false);
@@ -172,15 +162,36 @@ export default function SignupFormContainer({
   };
 
   const handleBusinessVerification = async (businessRegistration: string) => {
-    // TODO: 실제 사업자등록번호 검증 API 호출로 교체
-    console.log('사업자등록번호 검증 요청:', businessRegistration, formData.businessName, formData.businessOpenningDate);
-    setIsBusinessVerifying(true);
-    
-    // 임시로 2초 후 성공 처리
-    setTimeout(() => {
+    try {
+      setIsBusinessVerifying(true);
+      const digits = businessRegistration.replace(/[^0-9]/g, '').slice(0, 10);
+      const openDate = (formData.businessOpenningDate || '').replace(/[^0-9]/g, '');
+      const owner = formData.representativeName.trim();
+
+      const res = await verifyBusiness({
+        b_no: digits,
+        start_dt: openDate,
+        p_nm: owner,
+        b_nm: formData.businessName,
+      });
+
+      if (res.valid) {
+        setBusinessVerified(true);
+        setValidationErrors(prev => ({ ...prev, businessRegistration: undefined }));
+        setToastMessage('사업자등록번호 인증이 완료되었습니다.');
+      } else {
+        setBusinessVerified(false);
+        setValidationErrors(prev => ({ ...prev, businessRegistration: res.message || '사업자등록번호 인증 실패' }));
+        setToastMessage(res.message || '사업자등록번호 인증에 실패했습니다.');
+      }
+    } catch (e: any) {
+      setBusinessVerified(false);
+      const msg = e?.response?.data?.detail || '사업자등록번호 인증 요청 중 오류가 발생했습니다.';
+      setValidationErrors(prev => ({ ...prev, businessRegistration: msg }));
+      setToastMessage(msg);
+    } finally {
       setIsBusinessVerifying(false);
-      setBusinessVerified(true);
-    }, 2000);
+    }
   };
 
   // 약관 동의 관련 핸들러
@@ -248,32 +259,37 @@ export default function SignupFormContainer({
   // ==================== 렌더링 ====================
   // UI 컴포넌트에 상태와 핸들러를 전달하여 렌더링
   return (
-    <SignupForm
-      formData={formData}
-      validationErrors={validationErrors}
-      emailVerified={emailVerified}
-      businessVerified={businessVerified}
-      isLoading={isLoading}
-      error={error}
-      onInputChange={handleInputChange}
-      onSubmit={handleSubmit}
-      // 이메일 인증 관련
-      isEmailCodeSent={isEmailCodeSent}
-      isEmailVerifying={isEmailVerifying}
-      emailVerificationCode={emailVerificationCode}
-      onEmailSendCode={handleEmailSendCode}
-      onEmailVerifyCode={handleEmailVerifyCode}
-      onEmailCodeChange={handleEmailCodeChange}
-      // 사업자등록번호 인증 관련
-      isBusinessVerifying={isBusinessVerifying}
-      onBusinessVerification={handleBusinessVerification}
-      // 비밀번호 관련
-      onPasswordChange={handlePasswordChange}
-      onConfirmPasswordChange={handleConfirmPasswordChange}
-      // 약관 동의 관련
-      onTermsChange={handleTermsChange}
-      onViewTerms={handleViewTerms}
-      onViewPrivacy={handleViewPrivacy}
-    />
+    <>
+      {toastMessage && (
+        <Toast message={toastMessage} onClose={() => setToastMessage(null)} />
+      )}
+      <SignupForm
+        formData={formData}
+        validationErrors={validationErrors}
+        emailVerified={emailVerified}
+        businessVerified={businessVerified}
+        isLoading={isLoading}
+        error={error}
+        onInputChange={handleInputChange}
+        onSubmit={handleSubmit}
+        // 이메일 인증 관련
+        isEmailCodeSent={isEmailCodeSent}
+        isEmailVerifying={isEmailVerifying}
+        emailVerificationCode={emailVerificationCode}
+        onEmailSendCode={handleEmailSendCode}
+        onEmailVerifyCode={handleEmailVerifyCode}
+        onEmailCodeChange={handleEmailCodeChange}
+        // 사업자등록번호 인증 관련
+        isBusinessVerifying={isBusinessVerifying}
+        onBusinessVerification={handleBusinessVerification}
+        // 비밀번호 관련
+        onPasswordChange={handlePasswordChange}
+        onConfirmPasswordChange={handleConfirmPasswordChange}
+        // 약관 동의 관련
+        onTermsChange={handleTermsChange}
+        onViewTerms={handleViewTerms}
+        onViewPrivacy={handleViewPrivacy}
+      />
+    </>
   );
 }

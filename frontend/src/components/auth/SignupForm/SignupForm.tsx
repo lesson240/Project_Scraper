@@ -78,39 +78,6 @@ export default function SignupForm({
       <form className="auth-form" onSubmit={onSubmit}>
         <div className="signup-form-section">
           <h3 className="signup-section-title">기본 정보</h3>
-          
-          <div className="auth-form-group">
-            <TextInput
-              label="아이디"
-              value={formData.id}
-              onChange={(value) => onInputChange({ target: { name: 'id', value } } as any)}
-              type="text"
-              showTooltip={"*"}
-              className={`${validationErrors.id ? 'error' : ''}`}
-            />
-            {validationErrors.id && (
-              <div className="auth-error">{validationErrors.id}</div>
-            )}
-          </div>
-
-          <PasswordValidation
-            password={formData.password}
-            confirmPassword={formData.confirmPassword}
-            isValid={!validationErrors.password && !validationErrors.confirmPassword}
-            errors={{
-              password: validationErrors.password,
-              confirmPassword: validationErrors.confirmPassword
-            }}
-            onPasswordChange={onPasswordChange}
-            onConfirmPasswordChange={onConfirmPasswordChange}
-            isLoading={isLoading}
-          />
-
-          <div className="auth-form-group">
-            {validationErrors.email && (
-              <div className="auth-error">{validationErrors.email}</div>
-            )}
-          </div>
 
           <EmailVerification
             email={formData.email}
@@ -128,15 +95,30 @@ export default function SignupForm({
             validationErrors={validationErrors}
           />
 
+          <PasswordValidation
+            password={formData.password}
+            confirmPassword={formData.confirmPassword}
+            isValid={!validationErrors.password && !validationErrors.confirmPassword}
+            errors={{
+              password: validationErrors.password,
+              confirmPassword: validationErrors.confirmPassword
+            }}
+            onPasswordChange={onPasswordChange}
+            onConfirmPasswordChange={onConfirmPasswordChange}
+            isLoading={isLoading}
+          />
+
           <BusinessRegistrationVerification
             businessRegistration={formData.businessRegistration}
             businessName={formData.businessName}
+            representativeName={formData.representativeName}
             businessOpenningDate={formData.businessOpenningDate}
-            verified={emailVerified && businessVerified}
+            verified={businessVerified}
             isLoading={isLoading}
             isVerifying={isBusinessVerifying}
             onVerify={onBusinessVerification}
             onBusinessNameChange={(value) => onInputChange({ target: { name: 'businessName', value } } as any)}
+            onRepresentativeNameChange={(value) => onInputChange({ target: { name: 'representativeName', value } } as any)}
             onBusinessRegistrationChange={(value) => onInputChange({ target: { name: 'businessRegistration', value } } as any)}
             onBusinessOpenningDateChange={(value) => onInputChange({ target: { name: 'businessOpenningDate', value } } as any)}
             error={validationErrors.businessRegistration || validationErrors.businessName || validationErrors.businessOpenningDate}
@@ -147,7 +129,6 @@ export default function SignupForm({
 
         <div className="signup-form-section">
           <h3 className="signup-section-title">추가 정보</h3>
-          
           <div className="auth-form-group">
             <TextInput
               label="휴대폰 번호"
@@ -157,9 +138,15 @@ export default function SignupForm({
               showTooltip={"*"}
               className={`${validationErrors.phone ? 'error' : ''}`}
             />
-            {validationErrors.phone && (
-              <div className="auth-error">{validationErrors.phone}</div>
-            )}
+          </div>
+          <div className="auth-form-group">
+            <TextInput
+              label="추천인 코드"
+              value={formData.referralCode || ''}
+              onChange={(value) => onInputChange({ target: { name: 'referralCode', value } } as any)}
+              type="text"
+              className={`${validationErrors.referralCode ? 'error' : ''}`}
+            />
           </div>
         </div>
 
@@ -177,20 +164,21 @@ export default function SignupForm({
           onViewPrivacy={onViewPrivacy}
         />
 
-
         {error && (
           <div className="auth-error signup-error-message">
             {error}
           </div>
         )}
 
-        <Button
-          type="submit"
-          variant="primary"
-          disabled={isLoading}
-        >
-          {isLoading ? '회원가입 중...' : '회원가입'}
-        </Button>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
+          <Button
+            type="submit"
+            variant="primary"
+            disabled={isLoading}
+          >
+            {isLoading ? '회원가입 중...' : '회원가입'}
+          </Button>
+        </div>
       </form>
     </div>
   );

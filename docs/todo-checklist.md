@@ -36,6 +36,9 @@
 - [O] 사업자등록번호 자동 하이픈 포맷팅 및 숫자만 입력 제한
 - [O] `CalendarInput.tsx` / `CalendarInputWithButton.tsx` 생성 및 스타일 분리
 - [O] 버튼-인풋 일체형 라운드 및 hover/verified 스타일 정리
+- [O] 백엔드 라우터 `/v1/business/verify` 추가 및 메인 포함
+- [ ] 프론트 `SignupFormContainer`에서 실제 API 연동 및 상태 반영
+- [ ] 실패 케이스 에러 메시지/UX 정교화
 
 ### 6. 비밀번호 찾기 기능 
 - [O] PasswordResetModal 컴포넌트 구현

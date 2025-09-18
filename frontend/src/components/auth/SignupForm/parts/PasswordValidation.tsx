@@ -42,7 +42,7 @@ export default function PasswordValidation({
   // 비밀번호 요구사항 검증
   const getPasswordRequirements = (pwd: string) => {
     const requirements = [];
-    
+
     if (pwd.length < 8) {
       requirements.push('최소 8자 이상');
     }
@@ -77,19 +77,7 @@ export default function PasswordValidation({
           className={errors.password ? 'error' : ''}
           disabled={isLoading}
         />
-        {errors.password && (
-          <div className="password-error">{errors.password}</div>
-        )}
       </div>
-
-      {/* 비밀번호 요구사항 표시 */}
-      {password && passwordRequirements.length > 0 && (
-        <div className="password-requirements">
-          <span className="requirements-text">
-            {passwordRequirements.join(', ')}해주세요.
-          </span>
-        </div>
-      )}
 
       {/* 비밀번호 확인 입력 */}
       <div className="password-input-group">
@@ -102,24 +90,7 @@ export default function PasswordValidation({
           className={errors.confirmPassword ? 'error' : ''}
           disabled={isLoading}
         />
-        {errors.confirmPassword && (
-          <div className="password-error">{errors.confirmPassword}</div>
-        )}
       </div>
-
-      {/* 비밀번호 일치 여부 표시 */}
-      {confirmPassword && (
-        <div className={`password-match ${passwordsMatch ? 'match' : 'no-match'}`}>
-          {passwordsMatch ? (
-            <span className="match-icon">✓</span>
-          ) : (
-            <span className="no-match-icon">✗</span>
-          )}
-          <span className="match-text">
-            {passwordsMatch ? '비밀번호가 일치합니다' : '비밀번호가 일치하지 않습니다'}
-          </span>
-        </div>
-      )}
     </div>
 
   );

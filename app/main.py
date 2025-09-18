@@ -77,10 +77,12 @@ routers = [
 
 # 인증 라우터 추가
 from app.routers import auth_router
+from app.routers import business_router
 
 # API 라우터들은 버전 접두사 없이 직접 등록
 api_routers = [
     (auth_router.router, ["Auth"]),  # 인증 API 라우터 추가
+    (business_router.router, ["Business"]),  # 사업자등록 검증 라우터 추가
     (api_exchange_rates.router, ["ExchangeRates"]),  # 환율 API 라우터 추가
     (api_exchange_rate_sync.router, ["ExchangeRateSync"]),  # 환율 동기화 API 라우터 추가
     (func_price_setting.router, ["PriceSetting"]),  # 가격 설정 기능 라우터 추가
@@ -144,9 +146,9 @@ app.mount(
 # 라우터 포함
 include_routers(app, routers, prefix=prefix)
 
-# API 라우터들은 버전 접두사 없이 직접 등록
+# API 라우터들도 버전 접두사(prefix)로 등록하여 프론트(base /v1)와 일치
 for router, router_tags in api_routers:
-    app.include_router(router, tags=router_tags)
+    app.include_router(router, prefix=prefix, tags=router_tags)
 
 # 테스트용 간단한 라우터 추가
 @app.get("/test")

@@ -113,14 +113,27 @@ REDIS_URL=redis://localhost:6379
 
 ### 3. 의존성 설치
 ```bash
-# 프론트엔드
+# 프론트엔드 (권장)
 cd frontend
-npm install
+# lockfile 기반 재현 가능한 설치
+npm ci
+# 혹은 최초 셋업/lockfile 변경 시
+# npm install
 
 # 백엔드
 cd app
 pip install -r requirements.txt
 ```
+
+#### 다른 PC에서 pull 후 빠른 설치 명령어
+```bash
+# 프로젝트 루트에서 실행 (동일 결과)
+npm --prefix frontend ci   # 또는: npm --prefix frontend install
+```
+
+> 참고: 프론트엔드 의존성은 `frontend/package.json`/`package-lock.json`로 관리되며, 
+> 백엔드는 `app/requirements.txt`(또는 루트 `requirements.txt`)로 관리됩니다. 
+> Python의 `requirements.txt`만 설치하면 React 패키지(jotai 등)는 설치되지 않습니다.
 
 ### 4. 데이터베이스 설정
 ```bash
@@ -141,6 +154,32 @@ uvicorn main:app --reload
 cd frontend
 npm run dev
 ```
+
+#### 트러블슈팅
+- 모듈을 찾을 수 없음(예: "Failed to resolve import 'jotai'") 발생 시:
+  - 프론트 디렉터리에서 의존성 재설치: `cd frontend && npm ci` (또는 `npm install`)
+  - 그래도 안되면 캐시/lockfile 정리 후 재설치:
+    ```bash
+    cd frontend
+    rm -rf node_modules package-lock.json
+    npm install
+    ```
+
+> 참고: 프론트엔드 의존성은 `frontend/package.json`/`package-lock.json`로 관리되며, 
+> 백엔드는 `app/requirements.txt`(또는 루트 `requirements.txt`)로 관리됩니다. 
+> Python의 `requirements.txt`만 설치하면 React 패키지(jotai 등)는 설치되지 않습니다.
+
+### 회원가입 폼 구조 변경 내역
+- 아이디 필드 제거. 이메일 인증 UI를 기본 정보의 최상단(기존 아이디 위치)으로 이동
+- 추가 정보 섹션에 `추천인 코드` 입력 추가(선택 사항)
+- 이메일 인증이 완료되지 않으면 회원가입 제출 불가. 경고는 입력 테두리만 사용
+
+저장 스키마 요약
+- email, passwordHash
+- businessName, representativeName, businessRegistration(숫자만), businessOpeningDate(YYYYMMDD)
+- phoneNumber, referralCode(optional)
+- userType: free | paid | manager | admin
+- createdAt, updatedAt, isActive
 
 ## 📚 API 문서
 

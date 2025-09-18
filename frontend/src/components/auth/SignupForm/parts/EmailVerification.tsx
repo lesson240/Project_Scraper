@@ -78,7 +78,7 @@ export default function EmailVerification({
   // 이메일 유효성 상태
   const emailValidation = {
     isValid: isValidEmail(email),
-    message: email.length > 0 
+    message: email.length > 0
       ? (isValidEmail(email) ? '올바른 이메일 형식입니다.' : '올바른 이메일을 입력해주세요.')
       : ''
   };
@@ -87,7 +87,7 @@ export default function EmailVerification({
       showToastMessage('이메일을 먼저 입력해주세요.');
       return;
     }
-    
+
     try {
       const response = await authApi.sendVerificationCode(value);
       if (response.success) {
@@ -104,7 +104,7 @@ export default function EmailVerification({
       showToastMessage('인증번호를 입력해주세요.');
       return;
     }
-    
+
     try {
       const response = await authApi.verifyCode(email, verificationCode);
       if (response.success) {
@@ -175,17 +175,13 @@ export default function EmailVerification({
         </div>
       )}
 
-      {error && (
-        <div className="verification-error">
-          {error}
-        </div>
-      )}
+      {/* 에러 텍스트 출력 제거: 시각적 테두리/토스트만 사용 */}
 
       {/* Toast 알림 */}
       {showToast && (
-        <Toast 
-          message={toastMessage} 
-          onClose={closeToast} 
+        <Toast
+          message={toastMessage}
+          onClose={closeToast}
         />
       )}
     </div>

@@ -1,14 +1,15 @@
 // path: frontend/src/types/auth/signup.types.ts
 
 export interface SignupFormData {
-  id: string;
   email: string;
   password: string;
   confirmPassword: string;
   businessName: string;
+  representativeName: string;
   businessRegistration: string;
   businessOpenningDate: string;
   phone: string;
+  referralCode?: string;
   termsAgreement: boolean;
   privacyAgreement: boolean;
   marketingAgreement?: boolean;
@@ -22,14 +23,15 @@ export interface SignupResponse {
 }
 
 export interface SignupValidationErrors {
-  id?: string;
   email?: string;
   password?: string;
   confirmPassword?: string;
   businessName?: string;
+  representativeName?: string;
   businessRegistration?: string;
   businessOpenningDate?: string;
   phone?: string;
+  referralCode?: string;
   termsAgreement?: string;
   privacyAgreement?: string;
   general?: string;

@@ -1,16 +1,17 @@
-import React from "react";
+import React, { useId } from "react";
 import "@/styles/common/textInput.css";
 
 type TooltipType = false | "?" | "*" | "required" | "optional";
 
 type Props = {
-    label?: string;
-    value: string;
-    onChange: (value: string) => void;
-    showTooltip?: TooltipType;
-    className?: string;
-    type?: "text" | "password" | "email" | "tel" | "businessNumber";
-    disabled?: boolean;
+  label?: string;
+  value: string;
+  onChange: (value: string) => void;
+  showTooltip?: TooltipType;
+  className?: string;
+  type?: "text" | "password" | "email" | "tel" | "businessNumber";
+  disabled?: boolean;
+  name?: string;
 };
 
 export default function TextInput({
@@ -21,12 +22,14 @@ export default function TextInput({
   className,
   type = "text",
   disabled = false,
+  name,
 }: Props) {
   const isFullWidth = className?.includes("full-width");
+  const inputId = useId();
 
   const renderTooltip = () => {
     if (!showTooltip) return null;
-    
+
     switch (showTooltip) {
       case "?":
         return <span className="tooltip-icon">?</span>;
@@ -47,20 +50,19 @@ export default function TextInput({
 
     switch (type) {
       case "tel":
-        // 전화번호: 숫자만 허용하고 자동으로 하이픈 삽입 (최대 11자리)
-        processedValue = processedValue.replace(/[^0-9]/g, '');
-        // 11자리 제한
-        if (processedValue.length > 11) {
-          processedValue = processedValue.substring(0, 11);
-        }
-        // 하이픈 자동 삽입
-        if (processedValue.length >= 7) {
-          processedValue = processedValue.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
-        } else if (processedValue.length >= 3) {
-          processedValue = processedValue.replace(/(\d{3})(\d{0,4})/, '$1-$2');
+        // 전화번호: 입력 진행 단계에 맞춰 하이픈 삽입
+        {
+          const digits = processedValue.replace(/[^0-9]/g, '').slice(0, 11);
+          if (digits.length <= 3) {
+            processedValue = digits; // 예: 010
+          } else if (digits.length <= 7) {
+            processedValue = `${digits.slice(0, 3)}-${digits.slice(3)}`; // 예: 010-4, 010-4900
+          } else {
+            processedValue = `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`; // 예: 010-4900-3, 010-4900-3931
+          }
         }
         break;
-      
+
       case "businessNumber":
         // 숫자만 허용 (최대 10자리)
         processedValue = processedValue.replace(/[^0-9]/g, '');
@@ -69,15 +71,15 @@ export default function TextInput({
           processedValue = processedValue.substring(0, 10);
         }
         break;
-      
+
       case "password":
         // 비밀번호는 그대로 유지
         break;
-      
+
       case "email":
         // 이메일은 그대로 유지 (브라우저 검증 활용)
         break;
-      
+
       case "text":
       default:
         // 일반 텍스트는 그대로 유지
@@ -110,7 +112,7 @@ export default function TextInput({
     <div className={`input-box ${isFullWidth ? "inline" : ""}`}>
       <div className={`input-group ${isFullWidth ? "inline" : ""}`}>
         {label && !isFullWidth && (
-          <label className="input-label">
+          <label className="input-label" htmlFor={inputId}>
             {label}
             {renderTooltip()}
           </label>
@@ -122,6 +124,8 @@ export default function TextInput({
           value={value}
           onChange={handleInputChange}
           disabled={disabled}
+          id={inputId}
+          name={name}
         />
       </div>
     </div>

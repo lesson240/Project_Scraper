@@ -33,6 +33,19 @@
   background: linear-gradient(90deg, var(--auth-primary-color), var(--auth-success-color));
 }
 
+/* Backdrop blur compatibility */
+/* only apply when supported to avoid Safari <9 errors */
+.selected-products-badge {
+  background-color: rgba(255, 255, 255, .65);
+}
+
+@supports ((-webkit-backdrop-filter: blur(10px)) or (backdrop-filter: blur(10px))) {
+  .selected-products-badge {
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+  }
+}
+
 .auth-header {
   text-align: center;
   margin-bottom: var(--auth-spacing-2xl);
@@ -203,6 +216,25 @@
   text-decoration: underline;
 }
 
+/* Selection compatibility ordering and prefixes */
+.select-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: auto;
+  z-index: 30;
+  -ms-user-select: none;
+  /* IE/Edge legacy */
+  -moz-user-select: none;
+  /* Firefox */
+  -webkit-user-select: none;
+  /* Safari */
+  user-select: none;
+  /* Standard */
+  -webkit-user-drag: none;
+  /* Non-Firefox */
+  touch-action: none;
+}
+
 .auth-footer {
   text-align: center;
   margin-top: var(--auth-spacing-xl);
@@ -227,8 +259,13 @@
 }
 
 @keyframes auth-spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* 반응형 디자인 */
@@ -236,12 +273,12 @@
   .auth-container {
     padding: var(--auth-spacing-sm);
   }
-  
+
   .auth-card {
     padding: var(--auth-spacing-xl);
     max-width: 100%;
   }
-  
+
   .auth-title {
     font-size: var(--auth-text-xl);
   }

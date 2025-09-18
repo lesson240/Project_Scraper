@@ -119,11 +119,13 @@
   box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
 }
 
+/* transform/opacity 기반 애니메이션만 사용 (layout 속성 변경 제거) */
 @keyframes slideDown {
   from {
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -160,23 +162,16 @@
   font-weight: 500;
 }
 
-.verification-error {
-  color: #dc3545;
-  font-size: 0.875rem;
-  margin-bottom: 1rem;
-  padding: 0.5rem;
-  background-color: #f8d7da;
-  border: 1px solid #f5c6cb;
-  border-radius: 4px;
-}
+/* 에러 텍스트 박스는 사용하지 않음 */
 
 /* 반응형 디자인 */
 @media (max-width: 768px) {
+
   .verification-input-group,
   .verification-code-group {
     flex-direction: column;
   }
-  
+
   .verification-code-input-group {
     margin-bottom: 0.5rem;
   }

@@ -13,17 +13,22 @@ const axiosInstance = axios.create({
   },
 });
 
+// Debug flag (follow docs '디버그 로그 시스템')
+const DEBUG_HTTP = (import.meta as any).env?.DEV === true || String((import.meta as any).env?.VITE_DEBUG_HTTP).toLowerCase() === "true";
+
 // 요청 인터셉터
 axiosInstance.interceptors.request.use(
   (config) => {
-    console.log("🚀 Axios 요청 인터셉터");
-    console.log("📍 요청 URL:", config.baseURL + config.url);
-    console.log("📋 요청 데이터:", config.data);
-    console.log("🔧 요청 설정:", config);
+    if (DEBUG_HTTP) {
+      console.log("🚀 Axios 요청 인터셉터");
+      console.log("📍 요청 URL:", (config.baseURL || baseURL) + (config.url || ""));
+      console.log("📋 요청 데이터:", config.data);
+      console.log("🔧 요청 설정:", config);
+    }
     return config;
   },
   (error) => {
-    console.error("❌ 요청 인터셉터 에러:", error);
+    if (DEBUG_HTTP) console.error("❌ 요청 인터셉터 에러:", error);
     return Promise.reject(error);
   }
 );
@@ -31,15 +36,19 @@ axiosInstance.interceptors.request.use(
 // 응답 인터셉터
 axiosInstance.interceptors.response.use(
   (response) => {
-    console.log("✅ Axios 응답 인터셉터");
-    console.log("📊 응답 상태:", response.status);
-    console.log("📦 응답 데이터:", response.data);
+    if (DEBUG_HTTP) {
+      console.log("✅ Axios 응답 인터셉터");
+      console.log("📊 응답 상태:", response.status);
+      console.log("📦 응답 데이터:", response.data);
+    }
     return response;
   },
   (error) => {
-    console.error("❌ 응답 인터셉터 에러:", error);
-    console.error("🚫 에러 응답:", error.response);
-    console.error("🌐 에러 요청:", error.request);
+    if (DEBUG_HTTP) {
+      console.error("❌ 응답 인터셉터 에러:", error);
+      console.error("🚫 에러 응답:", error.response);
+      console.error("🌐 에러 요청:", error.request);
+    }
     return Promise.reject(error);
   }
 );

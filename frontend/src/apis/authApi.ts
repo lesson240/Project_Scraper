@@ -1,19 +1,21 @@
 // path: frontend/src/apis/authApi.ts
 
 import axios, { AxiosResponse, AxiosError } from 'axios';
-import type { 
-  LoginFormData, 
-  SignupFormData, 
-  LoginResponse, 
+import type {
+  LoginFormData,
+  SignupFormData,
+  LoginResponse,
   SignupResponse,
   FindIdFormData,
   FindPasswordFormData,
-  FindAccountResponse 
+  FindAccountResponse
 } from '@/types/auth';
 
-// API 클라이언트 설정
+// API 클라이언트 설정 (백엔드는 버전 prefix /v1 사용)
+const _BASE = (import.meta as any).env?.VITE_API_BASE_URL || 'http://localhost:8000';
+const authApiBaseURL = `${String(_BASE).replace(/\/$/, '')}/v1`;
 const authApiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000',
+  baseURL: authApiBaseURL,
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
@@ -39,19 +41,19 @@ authApiClient.interceptors.response.use(
   (response: AxiosResponse) => response,
   async (error: AxiosError) => {
     const originalRequest = error.config;
-    
+
     if (error.response?.status === 401 && originalRequest && !originalRequest._retry) {
       originalRequest._retry = true;
-      
+
       try {
         const refreshToken = localStorage.getItem('refreshToken');
         if (refreshToken) {
           const response = await authApiClient.post('/auth/refresh', { refreshToken });
           const { token, refreshToken: newRefreshToken } = response.data;
-          
+
           localStorage.setItem('token', token);
           localStorage.setItem('refreshToken', newRefreshToken);
-          
+
           // 원래 요청 재시도
           originalRequest.headers.Authorization = `Bearer ${token}`;
           return authApiClient(originalRequest);
@@ -63,7 +65,7 @@ authApiClient.interceptors.response.use(
         window.location.href = '/login';
       }
     }
-    
+
     return Promise.reject(error);
   }
 );
