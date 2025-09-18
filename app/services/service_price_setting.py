@@ -6,16 +6,12 @@ from motor.motor_asyncio import AsyncIOMotorClient
 import logging
 from app.services.service_mongodb import mongodb_service
 from app.config.mongodb import MONGO_DB_NAME_SETTINGS
-from app.models.pydantics.model_pydantic_price_setting import ExchangeRateInfo
-from app.models.odmantics.model_odmantic_price_setting import (
-    BasePriceSettingODM, 
-    ModifiedGoodsDetailODM
-)
 from app.models import (
     PriceSettingRequest,
     PriceSettingResponse,
     ExchangeRateInfo,
     BasePriceSettingODM,
+    ModifiedGoodsDetailODM
 )
 from app.exceptions import (
     ExchangeRateError,

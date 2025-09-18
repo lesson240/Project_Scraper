@@ -16,6 +16,7 @@ from .pydantics.model_pydantic_price_setting import (
 # 🆕 ODMantic 모델들
 from .odmantics.model_odmantic_price_setting import (
     BasePriceSettingODM,
+    ModifiedGoodsDetailODM,
     ExchangeRateODM
 )
 
