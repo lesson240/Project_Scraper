@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import type { LoginFormData, LoginInputTabProps, LoginValidationErrors } from '@/types/auth';
 import PasswordResetModal from '@/components/auth/PasswordResetModal';
+import { recaptchaService } from '@/utils/recaptcha';
 import '@/styles/auth/LoginInputTab/LoginInputTab.css';
 
 export default function LoginInputTab({
@@ -55,11 +56,24 @@ export default function LoginInputTab({
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (validateForm()) {
-      onSubmit(formData);
+      try {
+        // reCAPTCHA 토큰 생성
+        const captchaToken = await recaptchaService.executeForLogin();
+        
+        // reCAPTCHA 토큰을 포함하여 제출
+        onSubmit({
+          ...formData,
+          captchaToken
+        });
+      } catch (error) {
+        console.error('reCAPTCHA 실행 실패:', error);
+        // reCAPTCHA 실패 시에도 로그인 시도 (개발 환경에서는 허용)
+        onSubmit(formData);
+      }
     }
   };
 

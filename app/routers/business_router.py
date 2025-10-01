@@ -1,6 +1,7 @@
 # path: app/routers/business_router.py
 
 from fastapi import APIRouter, HTTPException
+from app.config.database import get_database
 from pydantic import BaseModel, Field
 from typing import Optional, Dict, Any
 
@@ -33,6 +34,23 @@ async def verify_business(request: BusinessVerifyRequest) -> BusinessVerifyRespo
     if not validate_business_number(number):
         raise HTTPException(status_code=400, detail="잘못된 사업자등록번호 형식입니다.")
 
+    # 1) DB 중복 선검사
+    try:
+        db = get_database()
+        users = db.users
+        exists = await users.find_one({"business_info.business_registration": number})
+        if exists:
+            return BusinessVerifyResponse(
+                valid=False,
+                status="DUPLICATE",
+                message="동일한 사업자등록번호가 이미 존재합니다.",
+                raw={"matched_user_id": str(exists.get("_id"))}
+            )
+    except Exception:
+        # DB 점검 실패 시에도 외부 검증은 계속 진행
+        pass
+
+    # 2) 외부 진위확인
     result = verify_with_odcloud(
         b_no=number,
         start_dt=request.start_dt,

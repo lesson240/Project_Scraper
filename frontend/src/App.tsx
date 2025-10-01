@@ -25,6 +25,7 @@ export default function App() {
         </ProtectedRoute>
       }>
         <Route index element={<DashboardPage />} />
+        <Route path="dashboard" element={<DashboardPage />} />
         <Route path="collect" element={<ProductCollect />} />
         <Route path="upload" element={<ProductUpload />} />
       </Route>

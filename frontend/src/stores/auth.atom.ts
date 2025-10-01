@@ -59,17 +59,32 @@ export const loginAtom = atom(
     set(authAtom, (prev) => ({ ...prev, isLoading: true, error: null }));
     
     try {
-      // TODO: 실제 API 호출로 대체
-      const response = await fetch('/api/auth/login', {
+      // API base URL 설정
+      const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
+      const response = await fetch(`${baseURL}/v1/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(credentials),
+        body: JSON.stringify({
+          email: credentials.email,
+          password: credentials.password,
+          remember_me: Boolean(credentials.rememberMe),
+          captcha_token: credentials.captchaToken || undefined,
+        }),
+        signal: controller.signal,
       });
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
-        throw new Error('로그인에 실패했습니다.');
+        let msg = '로그인에 실패했습니다.';
+        try {
+          const err = await response.json();
+          msg = (err && (err.detail || err.message)) || msg;
+        } catch {}
+        throw new Error(msg);
       }
 
       const data = await response.json();
@@ -77,21 +92,24 @@ export const loginAtom = atom(
       set(authAtom, {
         isAuthenticated: true,
         user: data.user,
-        token: data.token,
-        refreshToken: data.refreshToken,
+        token: data.access_token,
+        refreshToken: data.refresh_token,
         isLoading: false,
         error: null,
       });
 
       // 토큰을 localStorage에 저장
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('refreshToken', data.refreshToken);
+      localStorage.setItem('token', data.access_token);
+      localStorage.setItem('refreshToken', data.refresh_token);
       
     } catch (error) {
+      const message = (error instanceof DOMException && error.name === 'AbortError')
+        ? '요청 시간이 초과되었습니다. 네트워크 상태를 확인해주세요.'
+        : (error instanceof Error ? error.message : '로그인 중 오류가 발생했습니다.');
       set(authAtom, (prev) => ({
         ...prev,
         isLoading: false,
-        error: error instanceof Error ? error.message : '로그인 중 오류가 발생했습니다.',
+        error: message,
       }));
     }
   }

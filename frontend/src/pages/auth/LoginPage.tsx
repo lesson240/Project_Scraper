@@ -72,7 +72,7 @@ export default function LoginPage() {
     try {
       setError(null);
       await login(credentials);
-      navigate('/');
+      navigate('/dashboard');
     } catch (error) {
       setError(error instanceof Error ? error.message : '로그인에 실패했습니다.');
     }

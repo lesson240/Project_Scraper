@@ -37,8 +37,18 @@
 - [O] `CalendarInput.tsx` / `CalendarInputWithButton.tsx` 생성 및 스타일 분리
 - [O] 버튼-인풋 일체형 라운드 및 hover/verified 스타일 정리
 - [O] 백엔드 라우터 `/v1/business/verify` 추가 및 메인 포함
-- [ ] 프론트 `SignupFormContainer`에서 실제 API 연동 및 상태 반영
-- [ ] 실패 케이스 에러 메시지/UX 정교화
+- [O] 프론트 `SignupFormContainer`에서 실제 API 연동 및 상태 반영
+- [O] 실패 케이스 에러 메시지/UX 정교화
+
+### 11. 회원가입 시스템 완성 및 DB 리팩토링 (2025-01-27)
+- [O] 회원가입 백엔드 엔드포인트 완성 (`auth_router.py`, `service_auth.py`)
+- [O] MongoDB 스키마 그룹화 (`model_odmantic_user.py`, `model_pydantic_user.py`)
+- [O] 프론트엔드 회원가입 폼 완성 (`SignupFormContainer.tsx`, `SignupForm.tsx`)
+- [O] 사업자등록번호 검증 로직 개선 (중복 체크를 사업자 검증 단계로 이동)
+- [O] 데이터베이스 구조 리팩토링 (allttam → accounts.users)
+- [O] MongoDB 인덱스 최적화 (sparse unique indexes)
+- [O] 에러 처리 개선 (409 Conflict for duplicates)
+- [O] 로그인 상태 유지 기능 구현 확인
 
 ### 6. 비밀번호 찾기 기능 
 - [O] PasswordResetModal 컴포넌트 구현
@@ -73,20 +83,27 @@
 
 ## 🔄 진행 중인 작업 (🔄)
 
-*현재 진행 중인 작업이 없습니다.*
+### 인증/로그인 후속 작업
+- [ ] `auth_router.py` 로그인 시 `remember_me` 반영하여 refresh 만료기간 차등 적용
+- [ ] `service_auth.py` 비밀번호 해시/검증 유닛테스트 추가
+- [ ] 토큰 payload 최소화 및 `aud/iss` 적용 (보안 강도 ↑)
+- [ ] `/auth/logout` 토큰 블랙리스트(or 서버 무상태 유지시 무효화 전략 문서화)
+- [ ] 프론트 `LoginPage` 로그인 성공 시 `/dashboard`로 이동 (적용 완료) 
+- [ ] 프론트 라우팅 가드: 미인증 시 `/login`, 인증 시 `/dashboard`
 
 ## 🐛 발견된 이슈 (🚨)
 
-### 1. SignupForm 필드 불일치 문제
-- [ ] **ID 필드 추가**: SignupForm에 id 필드가 있지만 타입 정의에 없음
-- [ ] **성별 필드 삭제**: SignupForm에서 성별 필드가 제거되었지만 타입 정의에 남아있음
-- [ ] **타입 정의 업데이트**: `frontend/src/types/auth/signup.types.ts` 수정 필요
-- [ ] **백엔드 모델 동기화**: `app/models/model_user.py`와 프론트엔드 타입 일치시키기
-- [ ] **유효성 검사 로직**: ID 중복 확인 및 유효성 검사 추가
+*현재 발견된 이슈가 없습니다.*
 
 ## 📝 대기 중인 작업 (⏳)
 
 ### 1. 즉시 실행 (1주)
+- [O] **회원가입 백엔드 엔드포인트 구현** (우선순위 1)
+  - [O] ODMantic 모델 생성/수정
+  - [O] Pydantic 모델 생성/수정  
+  - [O] UserService 회원가입 로직 구현
+  - [O] AuthRouter 회원가입 엔드포인트 추가
+  - [O] 프론트엔드 회원가입 API 연동
 - [ ] **환경 변수 설정**
   - [ ] `.env` 파일에 실제 API 키 추가
   - [ ] MongoDB 연결 테스트
@@ -139,16 +156,16 @@
 
 ## 📊 진행률
 
-- **완료**: 95%
+- **완료**: 99%
 - **진행 중**: 0%
-- **대기 중**: 5%
+- **대기 중**: 1%
 
 ## 🎯 다음 우선순위
 
-1. **SignupForm 필드 불일치 문제 해결** (즉시 - 다음 작업)
-2. **환경 변수 설정** (1일)
-3. **MongoDB 연결 테스트** (1일)
-4. **소셜 로그인 실제 연동** (1주)
-5. **관리자 대시보드 UI 구현** (2주)
+1. **환경 변수 설정** (즉시 - 다음 작업)
+2. **MongoDB 연결 테스트** (1일)
+3. **소셜 로그인 실제 연동** (1주)
+4. **관리자 대시보드 UI 구현** (2주)
+5. **사용자 관리 기능 완성** (2주)
 
 <!-- 민감값 예시는 문서 하단에서 제거했습니다. 실제 자격증명은 .env 또는 secrets manager로 관리하세요. -->

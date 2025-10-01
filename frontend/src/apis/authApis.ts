@@ -1,6 +1,17 @@
 // path: frontend/src/apis/authApis.ts
-// LEGACY API - 기존 시스템과의 호환성을 위해 유지
-// 새로운 프로젝트에서는 authApi.ts 사용 권장
+// ===========================================
+// ⚠️  DEPRECATED LEGACY API  ⚠️
+// ===========================================
+// 이 파일은 기존 시스템과의 호환성을 위해 유지됩니다.
+// 새로운 프로젝트에서는 반드시 authApi.ts를 사용하세요.
+// 
+// 마이그레이션 가이드:
+// - getUser() → authApi.getProfile()
+// - login() → authApi.login()
+// - signup() → authApi.signup()
+// - naverCheck() → authApi.socialLogin()
+// - naverLogin() → authApi.socialLogin()
+// ===========================================
 
 import { Login, Signup } from "@/interface/user";
 import axiosInstance from "@/utils/axiosInstance";
@@ -8,6 +19,7 @@ import Cookies from "js-cookie";
 
 /**
  * @deprecated 이 파일은 레거시 API입니다. 새로운 프로젝트에서는 authApi.ts를 사용하세요.
+ * @see authApi.ts - 새로운 표준화된 API 클라이언트
  */
 
 export const getUser = async () => {

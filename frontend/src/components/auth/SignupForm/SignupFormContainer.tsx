@@ -2,13 +2,24 @@
 
 import React, { useState } from 'react';
 import { verifyBusiness } from '@/apis/businessApi';
-import type { SignupFormData, SignupValidationErrors } from '@/types/auth';
+import { authApi } from '@/apis/authApi';
+import type { SignupFormData, SignupValidationErrors, SignupPayload } from '@/types/auth';
 import SignupForm from './SignupForm';
 import EmailVerification from './parts/EmailVerification';
 import BusinessRegistrationVerification from './parts/BusinessRegistrationVerification';
 import Toast from '@/components/common/Toast';
 import '@/styles/auth/SignupForm/EmailVerification.css';
 import '@/styles/auth/SignupForm/BusinessRegistrationVerification.css';
+
+// sha256 해시 생성 유틸리티 (브라우저 SubtleCrypto 사용)
+async function sha256Hex(input: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(input);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  return hashHex;
+}
 
 /**
  * SignupFormContainer - Container Component
@@ -38,7 +49,7 @@ export default function SignupFormContainer({
     businessName: '',
     representativeName: '',
     businessRegistration: '',
-    businessOpenningDate: '',
+    businessOpeningDate: '',
     phone: '',
     referralCode: '',
     termsAgreement: false,
@@ -131,26 +142,70 @@ export default function SignupFormContainer({
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (validateForm()) {
-      onSubmit(formData);
+      try {
+        // SignupFormData -> SignupPayload 매핑
+        const primaryId = formData.email?.trim() || '';
+        const accountHash = await sha256Hex(primaryId);
+
+        const payload: SignupPayload = {
+          basic_info: {
+            email: formData.email?.trim() || undefined,
+            password: formData.password || undefined
+          },
+          business_info: {
+            business_name: formData.businessName,
+            representative: formData.representativeName,
+            business_registration: formData.businessRegistration.replace(/[^0-9]/g, ''),
+            business_opening_date: (formData.businessOpeningDate || '').replace(/[^0-9]/g, '')
+          },
+          additional_info: {
+            phone: formData.phone.replace(/[^0-9]/g, ''),
+            referral_code: formData.referralCode || undefined
+          },
+          agreement_info: {
+            terms_agreement: !!formData.termsAgreement,
+            privacy_agreement: !!formData.privacyAgreement,
+            marketing_agreement: !!formData.marketingAgreement
+          },
+          auth_identity: {
+            login_type: 'email',
+            primary_id: primaryId || undefined,
+            composite_id: undefined,
+            account_hash: accountHash
+          }
+        };
+
+        const response = await authApi.signup(payload);
+        
+        if (response.success) {
+          setToastMessage('회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.');
+          setTimeout(() => {
+            window.location.href = '/login';
+          }, 800);
+        } else {
+          console.error('회원가입 실패:', response.message);
+          setToastMessage(response.message || '회원가입에 실패했습니다.');
+        }
+      } catch (error) {
+        console.error('회원가입 오류:', error);
+        setToastMessage('회원가입 요청 중 오류가 발생했습니다.');
+      }
     }
   };
 
   const handleEmailSendCode = async (email: string) => {
-    // TODO: 실제 이메일 인증번호 발송 API 호출
     console.log('이메일 인증번호 발송 요청:', email);
     setIsEmailCodeSent(true);
   };
 
   const handleEmailVerifyCode = async (code: string) => {
-    // TODO: 실제 이메일 인증번호 검증 API 호출
     console.log('이메일 인증번호 검증:', code);
     setIsEmailVerifying(true);
 
-    // 임시로 2초 후 성공 처리
     setTimeout(() => {
       setIsEmailVerifying(false);
       setEmailVerified(true);
@@ -165,7 +220,7 @@ export default function SignupFormContainer({
     try {
       setIsBusinessVerifying(true);
       const digits = businessRegistration.replace(/[^0-9]/g, '').slice(0, 10);
-      const openDate = (formData.businessOpenningDate || '').replace(/[^0-9]/g, '');
+      const openDate = (formData.businessOpeningDate || '').replace(/[^0-9]/g, '');
       const owner = formData.representativeName.trim();
 
       const res = await verifyBusiness({
@@ -201,7 +256,6 @@ export default function SignupFormContainer({
       [field]: value
     }));
 
-    // 입력 시 해당 필드의 에러 메시지 제거
     if (validationErrors[field as keyof SignupValidationErrors]) {
       setValidationErrors(prev => ({
         ...prev,
@@ -211,13 +265,11 @@ export default function SignupFormContainer({
   };
 
   const handleViewTerms = () => {
-    // TODO: 이용약관 모달 또는 새 창으로 표시
     console.log('이용약관 보기');
     window.open('/terms', '_blank');
   };
 
   const handleViewPrivacy = () => {
-    // TODO: 개인정보처리방침 모달 또는 새 창으로 표시
     console.log('개인정보처리방침 보기');
     window.open('/privacy', '_blank');
   };
@@ -229,7 +281,6 @@ export default function SignupFormContainer({
       password
     }));
 
-    // 비밀번호 입력 시 에러 메시지 제거
     if (validationErrors.password) {
       setValidationErrors(prev => ({
         ...prev,
@@ -244,7 +295,6 @@ export default function SignupFormContainer({
       confirmPassword
     }));
 
-    // 비밀번호 확인 입력 시 에러 메시지 제거
     if (validationErrors.confirmPassword) {
       setValidationErrors(prev => ({
         ...prev,

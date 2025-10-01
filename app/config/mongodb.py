@@ -23,19 +23,19 @@ def load_secrets():
 
 # MongoDB 설정
 MONGODB_CONFIG = {
-    "uri": os.getenv("MONGODB_URI", "mongodb://localhost:27017"),
-    "db_name": os.getenv("MONGODB_DB_NAME", "project_scraper"),
-    "collection_name": "exchange_rates"
+    "uri": os.getenv("MONGO_URL") or os.getenv("MONGODB_URI", "mongodb://localhost:27017"),
+    "db_name": os.getenv("DATABASE_NAME") or os.getenv("MONGODB_DB_NAME", "accounts"),
+    "collection_name": "exchange_rates",
 }
 
 # MongoDB 데이터베이스 이름
-MONGO_DB_NAME = "scrapmarket"
+MONGO_DB_NAME = os.getenv("DATABASE_NAME") or os.getenv("MONGODB_DB_NAME", "accounts")
 MONGO_DB_NAME_RECORDS = "records"
 MONGO_DB_NAME_USERS = "users"
 MONGO_DB_NAME_IMAGES = "images"
 MONGO_DB_NAME_EXTERNAL_API = "externalApi"
 MONGO_DB_NAME_SETTINGS = "settings"
-MONGO_DB_URL = load_secrets().get("MONGO_URL", "mongodb://localhost:27017")
+MONGO_DB_URL = os.getenv("MONGO_URL") or load_secrets().get("MONGO_URL", "mongodb://localhost:27017")
 
 # MongoDB 컬렉션 구조 정의
 MONGODB_COLLECTIONS = {

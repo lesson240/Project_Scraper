@@ -112,7 +112,7 @@ export default function SignupForm({
             businessRegistration={formData.businessRegistration}
             businessName={formData.businessName}
             representativeName={formData.representativeName}
-            businessOpenningDate={formData.businessOpenningDate}
+            businessOpeningDate={formData.businessOpeningDate}
             verified={businessVerified}
             isLoading={isLoading}
             isVerifying={isBusinessVerifying}
@@ -120,8 +120,8 @@ export default function SignupForm({
             onBusinessNameChange={(value) => onInputChange({ target: { name: 'businessName', value } } as any)}
             onRepresentativeNameChange={(value) => onInputChange({ target: { name: 'representativeName', value } } as any)}
             onBusinessRegistrationChange={(value) => onInputChange({ target: { name: 'businessRegistration', value } } as any)}
-            onBusinessOpenningDateChange={(value) => onInputChange({ target: { name: 'businessOpenningDate', value } } as any)}
-            error={validationErrors.businessRegistration || validationErrors.businessName || validationErrors.businessOpenningDate}
+            onBusinessOpeningDateChange={(value) => onInputChange({ target: { name: 'businessOpeningDate', value } } as any)}
+            error={validationErrors.businessRegistration || validationErrors.businessName || validationErrors.businessOpeningDate}
           />
 
           {/* 사업자 개업일 입력은 BusinessRegistrationVerification로 이동 */}

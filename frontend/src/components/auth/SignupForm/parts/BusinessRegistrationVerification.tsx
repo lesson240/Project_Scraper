@@ -9,7 +9,7 @@ interface BusinessRegistrationVerificationProps {
   businessRegistration: string;
   businessName: string; // 상호
   representativeName: string; // 대표자 성명
-  businessOpenningDate: string;
+  businessOpeningDate: string;
   verified: boolean;
   isLoading?: boolean;
   isVerifying: boolean;
@@ -17,7 +17,7 @@ interface BusinessRegistrationVerificationProps {
   onBusinessNameChange: (value: string) => void;
   onRepresentativeNameChange: (value: string) => void;
   onBusinessRegistrationChange: (value: string) => void;
-  onBusinessOpenningDateChange: (value: string) => void;
+  onBusinessOpeningDateChange: (value: string) => void;
   error?: string;
 }
 
@@ -25,7 +25,7 @@ export default function BusinessRegistrationVerification({
   businessRegistration,
   businessName,
   representativeName,
-  businessOpenningDate,
+  businessOpeningDate,
   verified,
   isLoading = false,
   isVerifying,
@@ -33,11 +33,11 @@ export default function BusinessRegistrationVerification({
   onBusinessNameChange,
   onRepresentativeNameChange,
   onBusinessRegistrationChange,
-  onBusinessOpenningDateChange,
+  onBusinessOpeningDateChange,
   error
 }: BusinessRegistrationVerificationProps) {
   const handleVerify = () => {
-    if (!businessName || !representativeName || !businessRegistration || !businessOpenningDate) {
+    if (!businessName || !representativeName || !businessRegistration || !businessOpeningDate) {
       alert('상호/대표자 성명/사업자번호/개업일을 모두 입력해주세요.');
       return;
     }
@@ -52,7 +52,7 @@ export default function BusinessRegistrationVerification({
           value={businessName}
           onChange={onBusinessNameChange}
           type="text"
-          showTooltip={"*"}
+          showTooltip={'*'}
           className={`${error ? 'error' : ''}`}
           disabled={verified}
         />
@@ -63,12 +63,11 @@ export default function BusinessRegistrationVerification({
           value={representativeName}
           onChange={onRepresentativeNameChange}
           type="text"
-          showTooltip={"*"}
+          showTooltip={'*'}
           className={`${error ? 'error' : ''}`}
           disabled={verified}
         />
       </div>
-
 
       <div className="auth-form-group">
         <TextInput
@@ -85,7 +84,7 @@ export default function BusinessRegistrationVerification({
             onBusinessRegistrationChange(formatted);
           }}
           type="businessNumber"
-          showTooltip={"*"}
+          showTooltip={'*'}
           className={`${error ? 'error' : ''}`}
           disabled={verified}
         />
@@ -94,8 +93,8 @@ export default function BusinessRegistrationVerification({
       <div className="auth-form-group">
         <CalendarInputWithButton
           label="사업자 개업일"
-          value={businessOpenningDate}
-          onChange={onBusinessOpenningDateChange}
+          value={businessOpeningDate}
+          onChange={onBusinessOpeningDateChange}
           buttonLabel={isVerifying ? '인증 중...' : (verified ? '인증 완료' : '인증하기')}
           onButtonClick={handleVerify}
           disabledButton={isLoading || isVerifying || verified}

@@ -7,7 +7,7 @@ import '@/styles/auth/FindAccountTab/FindAccountTab.css';
 const FIND_TABS = [
   {
     id: 'findId',
-    label: '아이디 찾기',
+    label: '이메일 찾기',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path

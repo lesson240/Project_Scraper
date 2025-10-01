@@ -13,40 +13,57 @@
 
 ## 📊 컬렉션 설계
 
-### users 컬렉션
+### users 컬렉션 (그룹화 스키마)
 ```javascript
 {
   _id: ObjectId,
-  email: String, // 기본 로그인용 이메일
-  password: String, // 해시된 비밀번호
-  name: String,
-  phone: String,
-  birthDate: Date,
-  gender: String,
   
-  // 소셜 로그인 연동 정보
-  socialAccounts: [{
-    provider: String, // 'naver', 'google', 'kakao'
-    providerId: String,
-    email: String,
-    name: String,
-    profileImage: String,
-    connectedAt: Date
-  }],
+  basic_info: {
+    email: String,          // 직접가입 필수(UNIQUE, partial)
+    password: String|null   // 직접가입 해시, 소셜은 null
+  },
   
-  // 계정 상태 관리
-  status: String, // 'active', 'inactive', 'suspended'
-  emailVerified: Boolean,
-  phoneVerified: Boolean,
+  business_info: {
+    business_name: String,
+    representative: String,
+    business_registration: String, // UNIQUE
+    business_opening_date: String  // YYYY-MM-DD
+  },
   
-  // 메타데이터
-  createdAt: Date,
-  updatedAt: Date,
-  lastLoginAt: Date,
+  additional_info: {
+    phone: String,
+    referral_code: String|null
+  },
   
-  // 권한 관리
-  roles: [String], // ['user', 'admin', 'moderator']
-  permissions: [String]
+  agreement_info: {
+    terms_agreement: Boolean,
+    privacy_agreement: Boolean,
+    marketing_agreement: Boolean
+  },
+  
+  status_info: {
+    account_status: String, // 'active' | 'inactive' | 'suspended'
+    plan_type: String,      // 'free' | 'paid' | 'manager' | 'admin'
+    created_at: Date,
+    updated_at: Date,
+    last_login_at: Date|null
+  },
+  
+  social_account: {
+    provider: String,
+    provider_id: String,    // UNIQUE 복합 인덱스(provider+provider_id)
+    email: String|null,
+    name: String|null,
+    profile_image: String|null,
+    connected_at: Date
+  }|null,
+  
+  auth_identity: {
+    login_type: String,     // 'email' | 'social'
+    primary_id: String|null,
+    composite_id: String|null,
+    account_hash: String    // sha256(primary_id or provider:provider_id)
+  }
 }
 ```
 
@@ -128,11 +145,18 @@
 ### 성능 최적화 인덱스
 ```javascript
 // users 컬렉션
-db.users.createIndex({ "email": 1 }, { unique: true })
-db.users.createIndex({ "socialAccounts.providerId": 1, "socialAccounts.provider": 1 })
-db.users.createIndex({ "status": 1 })
-db.users.createIndex({ "createdAt": 1 })
-db.users.createIndex({ "lastLoginAt": 1 })
+db.users.createIndex({ "business_info.business_registration": 1 }, { unique: true })
+db.users.createIndex(
+  { "basic_info.email": 1 },
+  { unique: true, partialFilterExpression: { "basic_info.email": { $exists: true, $ne: null } } }
+)
+db.users.createIndex(
+  { "social_account.provider": 1, "social_account.provider_id": 1 },
+  { unique: true, partialFilterExpression: { "social_account": { $exists: true, $ne: null } } }
+)
+db.users.createIndex({ "status_info.account_status": 1 })
+db.users.createIndex({ "status_info.created_at": 1 })
+db.users.createIndex({ "status_info.last_login_at": 1 })
 
 // products 컬렉션
 db.products.createIndex({ "originGoodsCode": 1 })

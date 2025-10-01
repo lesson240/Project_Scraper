@@ -63,6 +63,22 @@ export default function PasswordValidation({
   };
 
   const passwordRequirements = getPasswordRequirements(password);
+  
+  // 비밀번호 유효성 상태
+  const passwordValidation = {
+    isValid: password.length >= 8 && passwordRequirements.length === 0,
+    message: password.length > 0
+      ? (passwordRequirements.length === 0 ? '안전한 비밀번호입니다.' : `필요: ${passwordRequirements.join(', ')}`)
+      : ''
+  };
+
+  // 비밀번호 확인 유효성 상태
+  const confirmPasswordValidation = {
+    isValid: passwordsMatch,
+    message: confirmPassword.length > 0
+      ? (passwordsMatch ? '비밀번호가 일치합니다.' : '비밀번호가 일치하지 않습니다.')
+      : ''
+  };
 
   return (
     <div className="password-validation">
@@ -77,6 +93,17 @@ export default function PasswordValidation({
           className={errors.password ? 'error' : ''}
           disabled={isLoading}
         />
+        {/* 비밀번호 유효성 검사 결과 표시 */}
+        {passwordValidation.message && (
+          <div className={`password-validation-message ${passwordValidation.isValid ? 'valid' : 'invalid'}`}>
+            <span className="validation-icon">
+              {passwordValidation.isValid ? '✓' : '✗'}
+            </span>
+            <span className="validation-text">
+              {passwordValidation.message}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* 비밀번호 확인 입력 */}
@@ -90,6 +117,17 @@ export default function PasswordValidation({
           className={errors.confirmPassword ? 'error' : ''}
           disabled={isLoading}
         />
+        {/* 비밀번호 확인 유효성 검사 결과 표시 */}
+        {confirmPasswordValidation.message && (
+          <div className={`password-validation-message ${confirmPasswordValidation.isValid ? 'valid' : 'invalid'}`}>
+            <span className="validation-icon">
+              {confirmPasswordValidation.isValid ? '✓' : '✗'}
+            </span>
+            <span className="validation-text">
+              {confirmPasswordValidation.message}
+            </span>
+          </div>
+        )}
       </div>
     </div>
 

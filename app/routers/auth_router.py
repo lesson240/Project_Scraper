@@ -12,13 +12,17 @@ import hashlib
 import logging
 
 from app.models.model_user import User, SocialAccount
+from app.models.pydantics.model_pydantic_user import SignupRequest as NewSignupRequest, SignupResponse as NewSignupResponse
 from app.services.service_auth import AuthService
+from app.services.service_user import UserService
 from app.services.service_email import EmailService
+from app.services.service_captcha import CaptchaService
 from app.exceptions.auth_exceptions import (
     AuthenticationError,
     ValidationError,
     UserNotFoundError,
-    InvalidCredentialsError
+    InvalidCredentialsError,
+    UserAlreadyExistsError,
 )
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
@@ -26,7 +30,8 @@ security = HTTPBearer()
 logger = logging.getLogger(__name__)
 
 # JWT 설정
-SECRET_KEY = "your-secret-key"  # 실제 운영에서는 환경변수로 관리
+import os
+SECRET_KEY = os.getenv("JWT_SECRET", "change-me")  # 실제 운영에서는 환경변수로 관리
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 15
 REFRESH_TOKEN_EXPIRE_DAYS = 7
@@ -36,6 +41,7 @@ class LoginRequest(BaseModel):
     email: str
     password: str
     remember_me: Optional[bool] = False
+    captcha_token: Optional[str] = None
 
 class SignupRequest(BaseModel):
     email: EmailStr
@@ -81,6 +87,12 @@ class UserResponse(BaseModel):
 def get_auth_service() -> AuthService:
     return AuthService()
 
+def get_user_service() -> UserService:
+    return UserService()
+
+def get_captcha_service() -> CaptchaService:
+    return CaptchaService()
+
 def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)) -> User:
     try:
         token = credentials.credentials
@@ -101,17 +113,34 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(securit
 @router.post("/login", response_model=TokenResponse)
 async def login(
     request: LoginRequest,
-    auth_service: AuthService = Depends(get_auth_service)
+    auth_service: AuthService = Depends(get_auth_service),
+    captcha_service: CaptchaService = Depends(get_captcha_service)
 ):
     """사용자 로그인"""
     try:
+        # reCAPTCHA 검증 (토큰이 있는 경우). DEV에서 토큰이 비어오면 건너뜀
+        if request.captcha_token:
+            # 클라이언트 IP 추출 (실제 구현에서는 request.client.host 사용)
+            remote_ip = None  # TODO: 실제 IP 추출
+            is_captcha_valid = await captcha_service.verify_for_login(request.captcha_token, remote_ip)
+            if not is_captcha_valid:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST, 
+                    detail="자동입력방지 검증에 실패했습니다."
+                )
+        else:
+            # 토큰 미제공 시, 운영 환경에서는 실패 처리
+            import os
+            if os.getenv("ENV", "development") not in ("development", "dev", "local"):
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="자동입력방지 토큰이 필요합니다")
+        
         # 이메일로 사용자 조회
         user = await auth_service.get_user_by_email(request.email)
         if not user:
             raise InvalidCredentialsError("Invalid email or password")
         
         # 비밀번호 검증
-        if not bcrypt.checkpw(request.password.encode('utf-8'), user.password.encode('utf-8')):
+        if not user.password or not bcrypt.checkpw(request.password.encode('utf-8'), user.password.encode('utf-8')):
             raise InvalidCredentialsError("Invalid email or password")
         
         # JWT 토큰 생성
@@ -124,7 +153,7 @@ async def login(
             "email": user.email,
             "name": user.name,
             "phone": user.phone,
-            "profile_image": user.profile_image,
+            "profile_image": getattr(user, "profile_image", None),
             "roles": user.roles,
             "permissions": user.permissions,
             "social_accounts": [social.dict() for social in user.social_accounts]
@@ -142,58 +171,23 @@ async def login(
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal server error")
 
-@router.post("/signup", response_model=TokenResponse)
+@router.post("/signup", response_model=NewSignupResponse)
 async def signup(
-    request: SignupRequest,
-    auth_service: AuthService = Depends(get_auth_service)
+    request: NewSignupRequest,
+    user_service: UserService = Depends(get_user_service)
 ):
-    """사용자 회원가입"""
+    """사용자 회원가입 (그룹화 스키마)"""
     try:
-        # 비밀번호 확인
-        if request.password != request.confirm_password:
-            raise ValidationError("Passwords do not match")
-        
-        # 약관 동의 확인
-        if not request.terms_agreement or not request.privacy_agreement:
-            raise ValidationError("Terms and privacy agreement required")
-        
         # 사용자 생성
-        user = await auth_service.create_user(
-            email=request.email,
-            password=request.password,
-            name=request.name,
-            phone=request.phone,
-            birth_date=request.birth_date,
-            gender=request.gender,
-            marketing_agreement=request.marketing_agreement
-        )
-        
-        # JWT 토큰 생성
-        access_token = create_access_token(data={"sub": str(user.id)})
-        refresh_token = create_refresh_token(data={"sub": str(user.id)})
-        
-        # 사용자 정보 반환
-        user_data = {
-            "id": str(user.id),
-            "email": user.email,
-            "name": user.name,
-            "phone": user.phone,
-            "profile_image": user.profile_image,
-            "roles": user.roles,
-            "permissions": user.permissions,
-            "social_accounts": [social.dict() for social in user.social_accounts]
-        }
-        
-        return TokenResponse(
-            access_token=access_token,
-            refresh_token=refresh_token,
-            expires_in=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
-            user=user_data
-        )
+        result = await user_service.create_user_from_signup(request)
+        return result
         
     except ValidationError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+    except UserAlreadyExistsError as e:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
     except Exception as e:
+        logger.error(f"회원가입 오류: {str(e)}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal server error")
 
 @router.post("/logout")
@@ -237,7 +231,7 @@ async def refresh_token(
                 "email": user.email,
                 "name": user.name,
                 "phone": user.phone,
-                "profile_image": user.profile_image,
+                "profile_image": getattr(user, "profile_image", None),
                 "roles": user.roles,
                 "permissions": user.permissions,
                 "social_accounts": [social.dict() for social in user.social_accounts]

@@ -174,12 +174,27 @@ npm run dev
 - 추가 정보 섹션에 `추천인 코드` 입력 추가(선택 사항)
 - 이메일 인증이 완료되지 않으면 회원가입 제출 불가. 경고는 입력 테두리만 사용
 
-저장 스키마 요약
-- email, passwordHash
-- businessName, representativeName, businessRegistration(숫자만), businessOpeningDate(YYYYMMDD)
-- phoneNumber, referralCode(optional)
-- userType: free | paid | manager | admin
-- createdAt, updatedAt, isActive
+데이터 모델 규칙
+- 백엔드/DB 필드명: snake_case(언더스코어)
+- 프론트 UI 타입은 평탄 구조 유지, 전송 시 그룹화 스키마로 매핑
+- users 컬렉션 그룹 필드: basic_info, business_info, additional_info, agreement_info, status_info, social_account, auth_identity
+- 중복 규칙:
+  - business_info.business_registration: unique
+  - basic_info.email: unique(partial)
+  - social_account.provider + social_account.provider_id: unique(partial)
+
+users 컬렉션 스키마(요약)
+```
+{
+  "basic_info": { "email": "", "password": "" },
+  "business_info": { "business_name": "", "representative": "", "business_registration": "", "business_opening_date": "" },
+  "additional_info": { "phone": "", "referral_code": "" },
+  "agreement_info": { "terms_agreement": true, "privacy_agreement": true, "marketing_agreement": false },
+  "status_info": { "account_status": "active", "plan_type": "free", "created_at": "", "updated_at": "", "last_login_at": "" },
+  "social_account": { "provider": "google", "provider_id": "..." },
+  "auth_identity": { "login_type": "email", "primary_id": "...", "composite_id": "...", "account_hash": "..." }
+}
+```
 
 ## 📚 API 문서
 

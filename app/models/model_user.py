@@ -22,7 +22,14 @@ class User(BaseModel):
     name: str
     phone: Optional[str] = None
     birth_date: Optional[str] = None
-    gender: Optional[str] = None
+    # gender 필드 제거 (프론트엔드에서 사용하지 않음)
+    
+    # 사업자 정보 (추가)
+    business_name: Optional[str] = None
+    representative_name: Optional[str] = None
+    business_registration: Optional[str] = None
+    business_opening_date: Optional[str] = None
+    business_verified: bool = False
     
     # 소셜 로그인 연동 정보
     social_accounts: List[SocialAccount] = []
@@ -57,8 +64,14 @@ class UserCreate(BaseModel):
     confirm_password: str
     name: str
     phone: str
-    birth_date: str
-    gender: str
+    # birth_date, gender 필드 제거 (프론트엔드에서 사용하지 않음)
+    
+    # 사업자 정보 추가
+    business_name: str
+    representative_name: str
+    business_registration: str
+    business_opening_date: str
+    
     terms_agreement: bool
     privacy_agreement: bool
     marketing_agreement: bool = False

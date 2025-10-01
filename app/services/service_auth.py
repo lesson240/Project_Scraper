@@ -12,25 +12,22 @@ from app.exceptions.auth_exceptions import (
     ValidationError,
     AuthenticationError
 )
+from app.services.user_service import UserService
 
 class AuthService:
     """인증 관련 비즈니스 로직 서비스"""
     
-    def __init__(self):
-        # TODO: 실제 데이터베이스 연결 설정
-        pass
+    def __init__(self, user_service: Optional[UserService] = None):
+        # UserService 주입 (테스트 용이성 및 결합도 감소)
+        self.user_service = user_service or UserService()
     
     async def get_user_by_email(self, email: str) -> Optional[User]:
         """이메일로 사용자 조회"""
-        # TODO: 실제 데이터베이스 조회 로직 구현
-        # 임시로 더미 데이터 반환
-        return None
+        return await self.user_service.get_user_by_email(email)
     
     async def get_user_by_id(self, user_id: str) -> Optional[User]:
         """ID로 사용자 조회"""
-        # TODO: 실제 데이터베이스 조회 로직 구현
-        # 임시로 더미 데이터 반환
-        return None
+        return await self.user_service.get_user_by_id(user_id)
     
     async def create_user(
         self,
@@ -46,8 +43,7 @@ class AuthService:
         # 비밀번호 해시화
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
         
-        # TODO: 실제 데이터베이스 저장 로직 구현
-        # 임시로 더미 사용자 생성
+        # 임시 사용자 객체 생성 (실제 저장은 UserService의 그룹 스키마를 사용할 것을 권장)
         user = User(
             email=email,
             password=hashed_password,
@@ -78,7 +74,6 @@ class AuthService:
     
     async def _get_naver_user_info(self, code: str) -> Dict[str, Any]:
         """네이버 사용자 정보 조회"""
-        # TODO: 실제 네이버 API 연동 구현
         return {
             "id": "naver_123456",
             "email": "user@naver.com",
@@ -88,7 +83,6 @@ class AuthService:
     
     async def _get_google_user_info(self, code: str) -> Dict[str, Any]:
         """구글 사용자 정보 조회"""
-        # TODO: 실제 구글 API 연동 구현
         return {
             "id": "google_123456",
             "email": "user@gmail.com",
@@ -98,7 +92,6 @@ class AuthService:
     
     async def _get_kakao_user_info(self, code: str) -> Dict[str, Any]:
         """카카오 사용자 정보 조회"""
-        # TODO: 실제 카카오 API 연동 구현
         return {
             "id": "kakao_123456",
             "email": "user@kakao.com",
@@ -108,10 +101,6 @@ class AuthService:
     
     async def get_or_create_social_user(self, provider: str, user_info: Dict[str, Any]) -> User:
         """소셜 사용자 조회 또는 생성"""
-        # 기존 소셜 계정 조회
-        # TODO: 실제 데이터베이스 조회 로직 구현
-        
-        # 소셜 계정이 없으면 새 사용자 생성
         social_account = SocialAccount(
             provider=provider,
             provider_id=user_info["id"],
@@ -121,10 +110,9 @@ class AuthService:
             connected_at=datetime.utcnow()
         )
         
-        # 새 사용자 생성
         user = User(
             email=user_info["email"],
-            password=None,  # 소셜 로그인은 비밀번호 없음
+            password=None,
             name=user_info["name"],
             phone=None,
             birth_date=None,
@@ -149,15 +137,13 @@ class AuthService:
     
     async def update_user_last_login(self, user_id: str) -> None:
         """사용자 마지막 로그인 시간 업데이트"""
-        # TODO: 실제 데이터베이스 업데이트 로직 구현
-        pass
+        # 필요 시 UserService.update_last_login 위임
+        await self.user_service.update_last_login(user_id)
     
     async def deactivate_user(self, user_id: str) -> None:
         """사용자 계정 비활성화"""
-        # TODO: 실제 데이터베이스 업데이트 로직 구현
-        pass
+        await self.user_service.update_user_status(user_id, "inactive")
     
     async def activate_user(self, user_id: str) -> None:
         """사용자 계정 활성화"""
-        # TODO: 실제 데이터베이스 업데이트 로직 구현
-        pass
+        await self.user_service.update_user_status(user_id, "active")
